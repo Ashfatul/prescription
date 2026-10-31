@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card } from "@/components/common/card";
 
 type QueueItem = {
   id: string;
@@ -48,22 +47,58 @@ export function DoctorQueue({ doctorId }: { doctorId: string }) {
   }, [doctorId]);
 
   if (!data) {
-    return <Card>Loading queue...</Card>;
+    return (
+      <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 text-xs text-slate-400">
+        Loading queue status...
+      </div>
+    );
   }
 
   return (
-    <Card>
-      <h3 className="text-lg font-semibold">Live Queue</h3>
-      <p className="mt-1 text-sm text-zinc-500">Current serial: {data.currentSerial || "-"}</p>
-      <div className="mt-4 space-y-2">
-        {data.queue.map((item) => (
-          <div key={item.id} className="flex items-center justify-between rounded-lg bg-zinc-100 px-3 py-2 text-sm dark:bg-zinc-800">
-            <span>#{item.serialNumber}</span>
-            <span>{item.patient.user.name}</span>
-            <span>{item.status}</span>
-          </div>
-        ))}
+    <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+      <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div>
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">
+            Live Consultation Serial
+          </h3>
+          <p className="text-xs text-slate-500">Real-time room call sequence</p>
+        </div>
+        <div className="text-right">
+          <span className="text-xs text-slate-400 block font-medium">Now Calling</span>
+          <span className="text-2xl font-black text-[var(--brand-text)]">
+            #{data.currentSerial || "1"}
+          </span>
+        </div>
       </div>
-    </Card>
+
+      <div className="space-y-2">
+        {data.queue.length === 0 ? (
+          <p className="py-6 text-center text-xs text-slate-400">
+            No patients currently queued in the waiting room.
+          </p>
+        ) : (
+          data.queue.map((item) => (
+            <div
+              key={item.id}
+              className={`flex items-center justify-between p-3 rounded-2xl border text-xs transition ${
+                item.serialNumber === data.currentSerial
+                  ? "bg-[var(--brand-surface)] border-[var(--brand-border)] font-bold text-[var(--brand-text)] shadow-xs"
+                  : "bg-[var(--bg-app)] border-slate-200/60 dark:border-slate-800/60 text-slate-700 dark:text-slate-300"
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <span className="px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold">
+                  #{item.serialNumber}
+                </span>
+                <span className="font-semibold">{item.patient.user.name}</span>
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-200/70 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                {item.status}
+              </span>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
   );
 }

@@ -253,8 +253,13 @@ async function main() {
     }
   }
 
+  // Clear and seed comprehensive catalog
+  await prisma.medicine.deleteMany({});
+  await prisma.diagnosticTest.deleteMany({});
+
   await prisma.medicine.createMany({
     data: [
+      // Analgesics & Antipyretics
       {
         name: "Napa Extra",
         type: "Tablet",
@@ -262,17 +267,55 @@ async function main() {
         instructions: "1 tablet after meal, 2-3 times daily as needed",
       },
       {
-        name: "Monas",
+        name: "Ace Plus",
+        type: "Tablet",
+        dosage: "500mg + 65mg",
+        instructions: "1 tablet 3 times daily after meals",
+      },
+      {
+        name: "Torax",
         type: "Tablet",
         dosage: "10mg",
-        instructions: "1 tablet at night daily",
+        instructions: "1 tablet twice daily after meals (max 5 days)",
       },
+      {
+        name: "Clofenac SR",
+        type: "Tablet",
+        dosage: "100mg",
+        instructions: "1 tablet once daily after dinner with PPI",
+      },
+      // PPIs & Antacids
       {
         name: "Maxpro",
         type: "Capsule",
         dosage: "20mg",
+        instructions: "1 capsule 30 minutes before breakfast & dinner",
+      },
+      {
+        name: "Seclo",
+        type: "Capsule",
+        dosage: "20mg",
         instructions: "1 capsule 30 minutes before breakfast",
       },
+      {
+        name: "Pantonix",
+        type: "Tablet",
+        dosage: "20mg",
+        instructions: "1 tablet twice daily 30 mins before meals",
+      },
+      {
+        name: "Finix",
+        type: "Tablet",
+        dosage: "20mg",
+        instructions: "1 tablet once daily in morning before food",
+      },
+      {
+        name: "Entacyd Plus",
+        type: "Suspension",
+        dosage: "200ml",
+        instructions: "2 teaspoons 1 hour after meals and at bedtime",
+      },
+      // Antibiotics
       {
         name: "Azithrocin",
         type: "Tablet",
@@ -280,47 +323,205 @@ async function main() {
         instructions: "1 tablet daily 1 hour before meal for 5 days",
       },
       {
+        name: "Moxaclav",
+        type: "Tablet",
+        dosage: "625mg",
+        instructions: "1 tablet twice daily after food for 7 days",
+      },
+      {
+        name: "Cef-3",
+        type: "Capsule",
+        dosage: "200mg",
+        instructions: "1 capsule twice daily after meals for 7 days",
+      },
+      {
+        name: "Ciprocin",
+        type: "Tablet",
+        dosage: "500mg",
+        instructions: "1 tablet every 12 hours after meals for 7 days",
+      },
+      {
+        name: "Levoking",
+        type: "Tablet",
+        dosage: "500mg",
+        instructions: "1 tablet once daily after meals for 7 days",
+      },
+      // Antihistamines & Respiratory
+      {
+        name: "Monas",
+        type: "Tablet",
+        dosage: "10mg",
+        instructions: "1 tablet at night daily",
+      },
+      {
+        name: "Bilasten",
+        type: "Tablet",
+        dosage: "20mg",
+        instructions: "1 tablet daily on empty stomach",
+      },
+      {
+        name: "Fexo",
+        type: "Tablet",
+        dosage: "120mg",
+        instructions: "1 tablet once daily in evening",
+      },
+      {
         name: "Tofen",
         type: "Syrup",
         dosage: "100ml",
         instructions: "2 teaspoons twice daily after meals",
       },
+      {
+        name: "Ventolin Evohaler",
+        type: "Inhaler",
+        dosage: "100mcg/puff",
+        instructions: "2 puffs as needed for shortness of breath or wheezing",
+      },
+      {
+        name: "Seretide Evohaler",
+        type: "Inhaler",
+        dosage: "25/125mcg",
+        instructions: "2 puffs twice daily followed by mouth rinse with water",
+      },
+      // Cardiovascular & Antihypertensives
+      {
+        name: "Osartil",
+        type: "Tablet",
+        dosage: "50mg",
+        instructions: "1 tablet once daily in the morning",
+      },
+      {
+        name: "Camlosart",
+        type: "Tablet",
+        dosage: "5/50mg",
+        instructions: "1 tablet once daily in the morning",
+      },
+      {
+        name: "Bislol",
+        type: "Tablet",
+        dosage: "2.5mg",
+        instructions: "1 tablet once daily in the morning",
+      },
+      {
+        name: "Rosu",
+        type: "Tablet",
+        dosage: "10mg",
+        instructions: "1 tablet at night after dinner",
+      },
+      {
+        name: "Clopilet",
+        type: "Tablet",
+        dosage: "75mg",
+        instructions: "1 tablet once daily after meals",
+      },
+      // Antidiabetics
+      {
+        name: "Comet",
+        type: "Tablet",
+        dosage: "500mg",
+        instructions: "1 tablet twice daily with main meals",
+      },
+      {
+        name: "Glucolead",
+        type: "Tablet",
+        dosage: "2mg",
+        instructions: "1 tablet once daily before breakfast",
+      },
+      {
+        name: "Galvus Met",
+        type: "Tablet",
+        dosage: "50/500mg",
+        instructions: "1 tablet twice daily with meals",
+      },
+      // Supplements
+      {
+        name: "D-Rise",
+        type: "Capsule",
+        dosage: "20,000 IU",
+        instructions: "1 capsule weekly for 8 weeks after heavy lunch",
+      },
+      {
+        name: "Calbo-D",
+        type: "Tablet",
+        dosage: "500mg + 200 IU",
+        instructions: "1 tablet once daily after meals",
+      },
+      {
+        name: "B-50 Forte",
+        type: "Tablet",
+        dosage: "High Potency B-Complex",
+        instructions: "1 tablet twice daily after meals",
+      },
     ],
-    skipDuplicates: true,
   });
 
   await prisma.diagnosticTest.createMany({
     data: [
       {
-        name: "CBC with ESR",
-        instructions: "Fasting not required",
+        name: "CBC with ESR (Complete Blood Count)",
+        instructions: "Fasting not required. Clean blood sample.",
       },
       {
         name: "Chest X-Ray P/A View",
-        instructions: "Bring previous X-ray plates if available",
+        instructions: "Bring previous X-ray plates if available. Metal objects removed.",
       },
       {
         name: "Serum Creatinine",
-        instructions: "Morning sample preferred",
+        instructions: "Morning sample preferred. Avoid strenuous exercise 24h prior.",
       },
       {
-        name: "Echocardiogram (2D & Color Doppler)",
-        instructions: "Prior appointment recommended",
+        name: "Fasting Blood Sugar (FBS)",
+        instructions: "8-10 hours strict overnight fasting required before sample.",
       },
       {
-        name: "Serum Lipid Profile",
-        instructions: "10-12 hours overnight fasting mandatory",
+        name: "2-Hour Postprandial Blood Sugar (2HABF)",
+        instructions: "Sample taken exactly 2 hours after beginning breakfast.",
       },
       {
         name: "HbA1c (Glycated Hemoglobin)",
-        instructions: "Fasting not required",
+        instructions: "Measures 3-month sugar control. Fasting not required.",
       },
       {
-        name: "Ultrasonography of Whole Abdomen",
-        instructions: "Overnight fasting and full bladder required",
+        name: "Serum Lipid Profile (Cholesterol, TG, HDL, LDL)",
+        instructions: "10-12 hours overnight fasting mandatory. Water allowed.",
+      },
+      {
+        name: "Serum Electrolytes (Na+, K+, Cl-)",
+        instructions: "Morning venous blood sample preferred.",
+      },
+      {
+        name: "Serum Uric Acid",
+        instructions: "Fasting preferred. Avoid meat/alcohol night before.",
+      },
+      {
+        name: "Liver Function Tests (SGPT, SGOT, Alk Phos, Bilirubin)",
+        instructions: "Morning fasting blood sample.",
+      },
+      {
+        name: "Thyroid Function Test (TSH, FT4)",
+        instructions: "Morning sample before taking morning thyroid medication.",
+      },
+      {
+        name: "Urine Routine & Microscopic Examination (R/M/E)",
+        instructions: "Clean catch mid-stream urine in sterile container.",
+      },
+      {
+        name: "Ultrasonography of Whole Abdomen (USG)",
+        instructions: "6 hours overnight fasting and full urinary bladder required.",
+      },
+      {
+        name: "ECG (12-Lead Electrocardiogram)",
+        instructions: "Rest comfortably in supine position 10 minutes before test.",
+      },
+      {
+        name: "Echocardiogram (2D & Color Doppler)",
+        instructions: "Cardiac imaging. Prior appointment recommended.",
+      },
+      {
+        name: "Serum 25-OH Vitamin D",
+        instructions: "Random venous blood sample. Fasting not required.",
       },
     ],
-    skipDuplicates: true,
   });
 
   await prisma.template.upsert({

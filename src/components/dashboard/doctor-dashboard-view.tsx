@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Card } from "@/components/common/card";
+import { useSearchParams, useRouter } from "next/navigation";
 import { DoctorQueue } from "@/components/dashboard/doctor-queue";
 import { DoctorProfileEditor } from "@/components/dashboard/doctor-profile-editor";
 import { PrescriptionEditor } from "@/components/dashboard/prescription-editor";
+import { CatalogManager } from "@/components/dashboard/catalog-manager";
+import { TemplateManager } from "@/components/dashboard/template-manager";
 
 type DoctorData = {
   id: string;
@@ -63,6 +65,8 @@ type PrescriptionSummary = {
   };
 };
 
+export type DoctorTabType = "prescription" | "queue" | "catalog" | "templates" | "profile" | "history";
+
 export function DoctorDashboardView({
   doctor: initialDoctor,
   appointments,
@@ -75,7 +79,26 @@ export function DoctorDashboardView({
   recentPrescriptions: PrescriptionSummary[];
 }) {
   const [doctor, setDoctor] = useState<DoctorData>(initialDoctor);
-  const [activeTab, setActiveTab] = useState<"prescription" | "queue" | "profile" | "history">("prescription");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const urlTab = searchParams.get("tab");
+  const activeTab: DoctorTabType =
+    urlTab === "catalog"
+      ? "catalog"
+      : urlTab === "templates"
+      ? "templates"
+      : urlTab === "profile"
+      ? "profile"
+      : urlTab === "queue"
+      ? "queue"
+      : urlTab === "history"
+      ? "history"
+      : "prescription";
+
+  const handleTabChange = (tab: DoctorTabType) => {
+    router.replace(`/dashboard/doctor?tab=${tab}`);
+  };
 
   const handleProfileUpdated = (updated: Partial<DoctorData>) => {
     setDoctor((prev) => ({
@@ -86,80 +109,105 @@ export function DoctorDashboardView({
 
   return (
     <div className="space-y-6">
-      {/* Top Professional Doctor Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl border border-teal-200/70 bg-gradient-to-r from-teal-50 via-white to-cyan-50 p-6 shadow-sm dark:border-teal-900/60 dark:from-zinc-900 dark:via-zinc-900 dark:to-teal-950/30">
-        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+      {/* Top Clinical Header Banner */}
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 dark:border-slate-800/90 bg-[var(--bg-surface)] p-6 shadow-sm">
+        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="rounded-md bg-teal-600 px-2.5 py-0.5 text-xs font-bold text-white">
-                Doctor Portal
+            <div className="flex items-center gap-2 mb-2">
+              <span className="rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] px-3 py-1 text-xs font-bold">
+                Doctor Practice Portal
               </span>
               <span
-                className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                className={`rounded-full px-3 py-1 text-[11px] font-semibold ${
                   doctor.available
-                    ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
-                    : "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
+                    ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+                    : "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
                 }`}
               >
-                {doctor.available ? "● Active Serial Queue" : "○ Queue Paused"}
+                {doctor.available ? "● Active Consultation Queue" : "○ Queue Paused"}
               </span>
             </div>
 
-            <h1 className="mt-2 text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-3xl">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
               {doctor.user.name}
             </h1>
-            <p className="text-sm font-semibold text-teal-800 dark:text-teal-300">
+            <p className="text-sm font-semibold text-[var(--brand-text)] mt-0.5">
               {doctor.degrees ? `${doctor.degrees} • ` : ""}
               {doctor.specialization}
             </p>
 
-            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-600 dark:text-zinc-400">
-              {doctor.hospital && <span>🏥 Working for: <strong className="text-zinc-800 dark:text-zinc-200">{doctor.hospital}</strong></span>}
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+              {doctor.hospital && (
+                <span>
+                  🏥 Working for: <strong className="text-slate-800 dark:text-slate-200">{doctor.hospital}</strong>
+                </span>
+              )}
               {doctor.designation && <span>• {doctor.designation}</span>}
-              {doctor.bmdcRegNo && <span>• BMDC: {doctor.bmdcRegNo}</span>}
+              {doctor.bmdcRegNo && <span>• BMDC: <strong>{doctor.bmdcRegNo}</strong></span>}
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          {/* Quick Tab Switcher Pill Bar */}
+          <div className="flex flex-wrap gap-1.5 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
             <button
-              onClick={() => setActiveTab("prescription")}
-              className={`rounded-xl px-4 py-2 text-xs font-bold transition shadow-xs ${
+              onClick={() => handleTabChange("prescription")}
+              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${
                 activeTab === "prescription"
-                  ? "bg-teal-600 text-white"
-                  : "bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                  ? "bg-[var(--brand-primary)] text-white shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              📝 Create Prescription
+              📝 Prescribe
             </button>
             <button
-              onClick={() => setActiveTab("queue")}
-              className={`rounded-xl px-4 py-2 text-xs font-bold transition shadow-xs ${
+              onClick={() => handleTabChange("queue")}
+              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${
                 activeTab === "queue"
-                  ? "bg-teal-600 text-white"
-                  : "bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                  ? "bg-[var(--brand-primary)] text-white shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               🩺 Queue ({appointments.length})
             </button>
             <button
-              onClick={() => setActiveTab("profile")}
-              className={`rounded-xl px-4 py-2 text-xs font-bold transition shadow-xs ${
-                activeTab === "profile"
-                  ? "bg-teal-600 text-white"
-                  : "bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+              onClick={() => handleTabChange("catalog")}
+              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${
+                activeTab === "catalog"
+                  ? "bg-[var(--brand-primary)] text-white shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              👤 Profile & Hospital
+              💊 Catalog
             </button>
             <button
-              onClick={() => setActiveTab("history")}
-              className={`rounded-xl px-4 py-2 text-xs font-bold transition shadow-xs ${
-                activeTab === "history"
-                  ? "bg-teal-600 text-white"
-                  : "bg-white text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+              onClick={() => handleTabChange("templates")}
+              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${
+                activeTab === "templates"
+                  ? "bg-[var(--brand-primary)] text-white shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              📋 History ({recentPrescriptions.length})
+              📋 Templates
+            </button>
+            <button
+              onClick={() => handleTabChange("profile")}
+              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${
+                activeTab === "profile"
+                  ? "bg-[var(--brand-primary)] text-white shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              👤 Profile
+            </button>
+            <button
+              onClick={() => handleTabChange("history")}
+              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${
+                activeTab === "history"
+                  ? "bg-[var(--brand-primary)] text-white shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              📜 History ({recentPrescriptions.length})
             </button>
           </div>
         </div>
@@ -167,13 +215,11 @@ export function DoctorDashboardView({
 
       {/* Tab 1: Professional Prescription Generator */}
       {activeTab === "prescription" && (
-        <div>
-          <PrescriptionEditor
-            doctor={doctor}
-            appointments={appointments}
-            patients={patients}
-          />
-        </div>
+        <PrescriptionEditor
+          doctor={doctor}
+          appointments={appointments}
+          patients={patients}
+        />
       )}
 
       {/* Tab 2: Live Queue & Today's Appointments */}
@@ -181,38 +227,48 @@ export function DoctorDashboardView({
         <div className="grid gap-6 lg:grid-cols-2">
           <DoctorQueue doctorId={doctor.id} />
 
-          <Card>
-            <div className="flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-800">
-              <h2 className="text-lg font-semibold">Today&apos;s Booked Appointments</h2>
-              <span className="text-xs text-zinc-500">{appointments.length} patients waiting</span>
+          <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                  Today&apos;s Booked Appointments
+                </h2>
+                <p className="text-xs text-slate-500">Live patient schedule queue</p>
+              </div>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                {appointments.length} patients waiting
+              </span>
             </div>
 
-            <div className="mt-4 space-y-2.5">
+            <div className="space-y-2.5">
               {appointments.length === 0 ? (
-                <p className="py-6 text-sm text-zinc-500">No appointments scheduled for today.</p>
+                <p className="py-8 text-center text-sm text-slate-400">
+                  No appointments scheduled for today.
+                </p>
               ) : (
                 appointments.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between rounded-xl bg-zinc-50 p-3 text-sm transition hover:bg-zinc-100/80 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/80"
+                    className="flex items-center justify-between p-3.5 rounded-2xl bg-[var(--bg-app)] border border-slate-200/70 dark:border-slate-800/70 text-sm transition hover:border-[var(--brand-border)]"
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="rounded bg-teal-100 px-2 py-0.5 text-xs font-bold text-teal-800 dark:bg-teal-900/60 dark:text-teal-300">
+                        <span className="rounded-md bg-[var(--brand-surface)] px-2 py-0.5 text-xs font-bold text-[var(--brand-text)]">
                           Serial #{item.serialNumber}
                         </span>
-                        <span className="font-semibold text-zinc-900 dark:text-zinc-100">
+                        <span className="font-semibold text-slate-900 dark:text-white">
                           {item.patient.user.name}
                         </span>
                       </div>
-                      <p className="mt-1 text-xs text-zinc-500">
+                      <p className="mt-1 text-xs text-slate-500">
                         {item.patient.user.email} • {item.patient.gender || "Patient"}
                       </p>
                     </div>
 
                     <button
-                      onClick={() => setActiveTab("prescription")}
-                      className="rounded-lg bg-teal-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-teal-700"
+                      type="button"
+                      onClick={() => handleTabChange("prescription")}
+                      className="rounded-xl bg-[var(--brand-primary)] px-3.5 py-1.5 text-xs font-bold text-white transition hover:opacity-90 shadow-xs"
                     >
                       Prescribe
                     </button>
@@ -220,67 +276,85 @@ export function DoctorDashboardView({
                 ))
               )}
             </div>
-          </Card>
+          </div>
         </div>
       )}
 
-      {/* Tab 3: Doctor Profile & Hospital Affiliation */}
+      {/* Tab 3: Pharmaceutical & Diagnostic Test Catalog */}
+      {activeTab === "catalog" && <CatalogManager />}
+
+      {/* Tab 4: Hospital & Prescription Templates */}
+      {activeTab === "templates" && <TemplateManager />}
+
+      {/* Tab 5: Doctor Profile & Chamber Settings */}
       {activeTab === "profile" && (
-        <DoctorProfileEditor
-          doctor={doctor}
-          onSaved={handleProfileUpdated}
-        />
+        <DoctorProfileEditor doctor={doctor} onSaved={handleProfileUpdated} />
       )}
 
-      {/* Tab 4: Prescription History */}
+      {/* Tab 6: Prescription History & Archive */}
       {activeTab === "history" && (
-        <Card>
-          <div className="flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-800">
+        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
-              <h2 className="text-lg font-semibold">Prescription Archive</h2>
-              <p className="text-xs text-zinc-500">View and print previously generated prescriptions</p>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                Prescription Archive
+              </h2>
+              <p className="text-xs text-slate-500">
+                View, re-print, and inspect previously issued prescriptions
+              </p>
             </div>
             <button
-              onClick={() => setActiveTab("prescription")}
-              className="rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white"
+              type="button"
+              onClick={() => handleTabChange("prescription")}
+              className="rounded-xl bg-[var(--brand-primary)] px-4 py-2 text-xs font-bold text-white shadow-xs"
             >
               + Create New
             </button>
           </div>
 
-          <div className="mt-4 overflow-x-auto">
+          <div className="overflow-x-auto">
             {recentPrescriptions.length === 0 ? (
-              <p className="py-6 text-sm text-zinc-500">No prescriptions found.</p>
+              <p className="py-8 text-center text-sm text-slate-400">
+                No past prescriptions found in your archive.
+              </p>
             ) : (
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-zinc-200 text-xs text-zinc-500 dark:border-zinc-800">
-                    <th className="pb-2">Patient</th>
-                    <th className="pb-2">Date</th>
-                    <th className="pb-2">Medicines</th>
-                    <th className="pb-2">Tests</th>
-                    <th className="pb-2 text-right">Actions</th>
+                  <tr className="border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase text-slate-400">
+                    <th className="pb-3">Patient Name</th>
+                    <th className="pb-3">Date Issued</th>
+                    <th className="pb-3">Medicines</th>
+                    <th className="pb-3">Lab Tests</th>
+                    <th className="pb-3 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                   {recentPrescriptions.map((p) => {
                     const medCount = Array.isArray(p.medicinesJson) ? p.medicinesJson.length : 0;
                     const testCount = Array.isArray(p.testsJson) ? p.testsJson.length : 0;
                     const dateStr = new Date(p.createdAt).toLocaleDateString();
 
                     return (
-                      <tr key={p.id} className="text-xs hover:bg-zinc-50 dark:hover:bg-zinc-800/40">
-                        <td className="py-3 font-semibold text-zinc-800 dark:text-zinc-200">
+                      <tr key={p.id} className="text-xs hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                        <td className="py-3.5 font-bold text-slate-900 dark:text-white">
                           {p.patient.user.name}
                         </td>
-                        <td className="py-3 text-zinc-500">{dateStr}</td>
-                        <td className="py-3 text-zinc-600 dark:text-zinc-400">{medCount} items</td>
-                        <td className="py-3 text-zinc-600 dark:text-zinc-400">{testCount} items</td>
-                        <td className="py-3 text-right">
+                        <td className="py-3.5 text-slate-500">{dateStr}</td>
+                        <td className="py-3.5 text-slate-600 dark:text-slate-300">
+                          <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">
+                            {medCount} items
+                          </span>
+                        </td>
+                        <td className="py-3.5 text-slate-600 dark:text-slate-300">
+                          <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">
+                            {testCount} items
+                          </span>
+                        </td>
+                        <td className="py-3.5 text-right">
                           <Link
                             href={`/prescriptions/${p.id}/print`}
                             target="_blank"
-                            className="inline-flex items-center gap-1 rounded-lg bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700 transition hover:bg-teal-100 dark:bg-teal-950/40 dark:text-teal-300"
+                            className="inline-flex items-center gap-1 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] px-3 py-1.5 text-xs font-bold transition hover:opacity-90 shadow-xs"
                           >
                             <span>🖨️ View & Print</span>
                           </Link>
@@ -292,7 +366,7 @@ export function DoctorDashboardView({
               </table>
             )}
           </div>
-        </Card>
+        </div>
       )}
     </div>
   );

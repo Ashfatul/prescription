@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card } from "@/components/common/card";
 
 export type TemplateContent = {
   hospitalName?: string;
@@ -92,7 +91,7 @@ export function TemplateManager() {
     setHospitalWebsite("www.metropolitanhospital.com");
     setThemeColor("#0f766e");
     setDisclaimer(
-      "This is a legally valid computer-generated medical prescription. Please keep it safe for follow-up visits. For medical emergencies, call our 24/7 hotline 10678 or visit the nearest emergency room immediately.",
+      "This is a legally valid computer-generated medical prescription. Please keep it safe for follow-up visits. For medical emergencies, call our 24/7 hotline 10678 or visit the nearest emergency room immediately."
     );
     setIsDefault(false);
     setStatusMsg(null);
@@ -176,28 +175,28 @@ export function TemplateManager() {
   };
 
   return (
-    <Card>
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 pb-3 dark:border-zinc-800">
+    <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
         <div>
-          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-            Main Prescription Templates
+          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+            Hospital Prescription Master Templates
           </h2>
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-slate-500">
             Configure hospital branding, layout styles, and legal disclaimers used across doctor prescriptions.
           </p>
         </div>
         <button
           onClick={openCreateModal}
-          className="rounded-xl bg-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700"
+          className="rounded-2xl bg-[var(--brand-primary)] px-4 py-2 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
         >
-          + Create New Template
+          + Create Master Template
         </button>
       </div>
 
       {loading ? (
-        <p className="py-6 text-sm text-zinc-500">Loading templates...</p>
+        <p className="py-8 text-center text-xs text-slate-400">Loading templates...</p>
       ) : (
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2">
           {templates.map((tpl) => {
             const content = (tpl.contentJson as TemplateContent) || {};
             const color = content.themeColor || "#0f766e";
@@ -205,48 +204,50 @@ export function TemplateManager() {
             return (
               <div
                 key={tpl.id}
-                className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-zinc-50 p-4 transition dark:border-zinc-800 dark:bg-zinc-900/60"
+                className="flex flex-col justify-between p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-[var(--bg-app)] transition hover:border-[var(--brand-border)] shadow-xs"
               >
                 <div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-zinc-900 dark:text-zinc-100">{tpl.name}</span>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-bold text-sm text-slate-900 dark:text-white truncate">
+                      {tpl.name}
+                    </span>
                     {tpl.isDefault && (
-                      <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[11px] font-semibold text-teal-800 dark:bg-teal-900/60 dark:text-teal-300">
-                        Main Default
+                      <span className="rounded-full bg-[var(--brand-surface)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)] border border-[var(--brand-border)]">
+                        Default Template
                       </span>
                     )}
                   </div>
 
-                  <div className="mt-3 rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-950">
+                  <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-[var(--bg-surface)] p-4 space-y-1.5 shadow-xs">
                     <div className="flex items-center gap-2">
-                      <div className="h-4 w-4 rounded-full" style={{ backgroundColor: color }} />
-                      <h4 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">
+                      <div className="h-4 w-4 rounded-full shadow-xs" style={{ backgroundColor: color }} />
+                      <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                         {content.hospitalName || "Hospital Name"}
                       </h4>
                     </div>
                     {content.hospitalTagline && (
-                      <p className="mt-0.5 text-xs text-zinc-500 italic">{content.hospitalTagline}</p>
+                      <p className="text-xs text-slate-500 italic">{content.hospitalTagline}</p>
                     )}
-                    <p className="mt-1.5 text-[11px] text-zinc-500">
+                    <p className="text-[11px] text-slate-600 dark:text-slate-400 pt-1">
                       📍 {content.hospitalAddress || "Address not set"}
                     </p>
-                    <p className="text-[11px] text-zinc-500">
+                    <p className="text-[11px] text-slate-600 dark:text-slate-400">
                       📞 {content.hospitalPhone || "Phone not set"}
                     </p>
                   </div>
                 </div>
 
-                <div className="mt-4 flex items-center justify-end gap-2 border-t border-zinc-200/70 pt-3 dark:border-zinc-800/70">
+                <div className="mt-4 flex items-center justify-end gap-2 border-t border-slate-200/60 dark:border-slate-800/60 pt-3">
                   <button
                     onClick={() => openEditModal(tpl)}
-                    className="rounded-lg border border-zinc-300 bg-white px-3 py-1 text-xs font-medium text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                    className="rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 shadow-xs"
                   >
                     Edit Template
                   </button>
                   {!tpl.isDefault && (
                     <button
                       onClick={() => handleDelete(tpl.id)}
-                      className="rounded-lg border border-red-200 bg-red-50 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-100 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
+                      className="rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-100 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
                     >
                       Delete
                     </button>
@@ -259,23 +260,23 @@ export function TemplateManager() {
       )}
 
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl dark:bg-zinc-900">
-            <div className="flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-800">
-              <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4 animate-in fade-in duration-150">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-[var(--bg-elevated)] p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 {editingId ? "Edit Main Prescription Template" : "Create Main Prescription Template"}
               </h3>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-sm font-semibold text-zinc-400 hover:text-zinc-600"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
               >
-                ✕ Close
+                ✕
               </button>
             </div>
 
             {statusMsg && (
               <div
-                className={`mt-4 rounded-xl p-3 text-sm ${
+                className={`rounded-2xl p-3 text-xs font-medium ${
                   statusMsg.type === "success"
                     ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300"
                     : "bg-red-50 text-red-800 dark:bg-red-950/40 dark:text-red-300"
@@ -285,111 +286,129 @@ export function TemplateManager() {
               </div>
             )}
 
-            <form onSubmit={handleSave} className="mt-4 space-y-4">
+            <form onSubmit={handleSave} className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-xs font-semibold">Template Title *</label>
+                  <label className="mb-1 block text-xs font-semibold uppercase text-slate-500">
+                    Template Title *
+                  </label>
                   <input
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. Modern Hospital Standard"
-                    className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                    className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] px-3.5 py-2 text-xs focus:outline-none focus:border-[var(--brand-primary)]"
                   />
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-xs font-semibold">Theme Color</label>
+                  <label className="mb-1 block text-xs font-semibold uppercase text-slate-500">
+                    Theme Color
+                  </label>
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
                       value={themeColor}
                       onChange={(e) => setThemeColor(e.target.value)}
-                      className="h-9 w-12 cursor-pointer rounded-lg border border-zinc-300 p-1 dark:border-zinc-700 dark:bg-zinc-950"
+                      className="h-9 w-12 cursor-pointer rounded-xl border border-slate-300 dark:border-slate-700 p-1"
                     />
                     <input
                       value={themeColor}
                       onChange={(e) => setThemeColor(e.target.value)}
                       placeholder="#0f766e"
-                      className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                      className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] px-3.5 py-2 text-xs focus:outline-none"
                     />
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="mb-1 block text-xs font-semibold">Hospital / Organization Name *</label>
+                <label className="mb-1 block text-xs font-semibold uppercase text-slate-500">
+                  Hospital / Organization Name *
+                </label>
                 <input
                   required
                   value={hospitalName}
                   onChange={(e) => setHospitalName(e.target.value)}
                   placeholder="e.g. Metropolitan Specialized Hospital"
-                  className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                  className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] px-3.5 py-2 text-xs focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-xs font-semibold">Hospital Tagline / Motto</label>
+                <label className="mb-1 block text-xs font-semibold uppercase text-slate-500">
+                  Hospital Tagline / Motto
+                </label>
                 <input
                   value={hospitalTagline}
                   onChange={(e) => setHospitalTagline(e.target.value)}
                   placeholder="e.g. Center of Medical Excellence & Compassionate Care"
-                  className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                  className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] px-3.5 py-2 text-xs focus:outline-none"
                 />
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-xs font-semibold">Hospital Address</label>
+                  <label className="mb-1 block text-xs font-semibold uppercase text-slate-500">
+                    Hospital Address
+                  </label>
                   <input
                     value={hospitalAddress}
                     onChange={(e) => setHospitalAddress(e.target.value)}
                     placeholder="Plot 12, Road 4, Sector 7, Dhaka"
-                    className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                    className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] px-3.5 py-2 text-xs focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-xs font-semibold">Hotline / Phone</label>
+                  <label className="mb-1 block text-xs font-semibold uppercase text-slate-500">
+                    Hotline / Phone
+                  </label>
                   <input
                     value={hospitalPhone}
                     onChange={(e) => setHospitalPhone(e.target.value)}
                     placeholder="+880 2-8901234 / Emergency 10678"
-                    className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                    className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] px-3.5 py-2 text-xs focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-xs font-semibold">Email</label>
+                  <label className="mb-1 block text-xs font-semibold uppercase text-slate-500">
+                    Email
+                  </label>
                   <input
                     value={hospitalEmail}
                     onChange={(e) => setHospitalEmail(e.target.value)}
                     placeholder="contact@hospital.com"
-                    className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                    className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] px-3.5 py-2 text-xs focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-xs font-semibold">Website</label>
+                  <label className="mb-1 block text-xs font-semibold uppercase text-slate-500">
+                    Website
+                  </label>
                   <input
                     value={hospitalWebsite}
                     onChange={(e) => setHospitalWebsite(e.target.value)}
                     placeholder="www.hospital.com"
-                    className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                    className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] px-3.5 py-2 text-xs focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="mb-1 block text-xs font-semibold">Legal & Emergency Disclaimer</label>
+                <label className="mb-1 block text-xs font-semibold uppercase text-slate-500">
+                  Legal & Emergency Disclaimer
+                </label>
                 <textarea
                   rows={2}
                   value={disclaimer}
                   onChange={(e) => setDisclaimer(e.target.value)}
                   placeholder="Computer generated prescription disclaimer..."
-                  className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                  className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] px-3.5 py-2 text-xs focus:outline-none"
                 />
               </div>
 
@@ -399,33 +418,33 @@ export function TemplateManager() {
                   id="defaultTpl"
                   checked={isDefault}
                   onChange={(e) => setIsDefault(e.target.checked)}
-                  className="h-4 w-4 rounded text-teal-600 focus:ring-teal-500"
+                  className="h-4 w-4 rounded text-[var(--brand-primary)] focus:ring-[var(--brand-primary)]"
                 />
-                <label htmlFor="defaultTpl" className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                  Set as Default Template for Doctors
+                <label htmlFor="defaultTpl" className="text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer">
+                  Set as Default Master Template for Doctors
                 </label>
               </div>
 
-              <div className="flex justify-end gap-3 pt-3">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="rounded-xl border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700"
+                  className="rounded-2xl border border-slate-300 dark:border-slate-700 px-4 py-2 text-xs font-semibold hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-xl bg-teal-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 disabled:opacity-70"
+                  className="rounded-2xl bg-[var(--brand-primary)] px-5 py-2 text-xs font-bold text-white shadow-xs hover:opacity-90 disabled:opacity-70"
                 >
-                  {saving ? "Saving..." : "Save Template"}
+                  {saving ? "Saving..." : "Save Master Template"}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-    </Card>
+    </div>
   );
 }
