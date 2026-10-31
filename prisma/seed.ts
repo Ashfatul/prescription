@@ -15,7 +15,6 @@ async function main() {
   );
 
   const roleByName = Object.fromEntries(roleRecords.map((r) => [r.name, r.id]));
-
   const passwordHash = await bcrypt.hash("Pass1234!", 10);
 
   const admin = await prisma.user.upsert({
@@ -26,19 +25,6 @@ async function main() {
       email: "admin@ppms.local",
       passwordHash,
       roleId: roleByName.SUPER_ADMIN,
-    },
-  });
-
-  const doctorUser = await prisma.user.upsert({
-    where: { email: "doctor@ppms.local" },
-    update: {},
-    create: {
-      name: "Dr. Fahim Rahman",
-      email: "doctor@ppms.local",
-      passwordHash,
-      roleId: roleByName.DOCTOR,
-      imageUrl:
-        "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80",
     },
   });
 
@@ -64,19 +50,6 @@ async function main() {
     },
   });
 
-  const doctor = await prisma.doctor.upsert({
-    where: { userId: doctorUser.id },
-    update: {},
-    create: {
-      userId: doctorUser.id,
-      specialization: "Medicine",
-      scheduleJson: {
-        sundayToThursday: "10:00 AM - 2:00 PM",
-      },
-      available: true,
-    },
-  });
-
   const patient = await prisma.patient.upsert({
     where: { userId: patientUser.id },
     update: {},
@@ -87,27 +60,150 @@ async function main() {
     },
   });
 
+  const doctorsData = [
+    {
+      name: "Dr. Fahim Rahman",
+      email: "doctor@ppms.local",
+      imageUrl:
+        "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80",
+      specialization: "General Medicine",
+      available: true,
+      schedule: {
+        days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
+        startTime: "09:00 AM",
+        endTime: "01:00 PM",
+        chamber: "Room 301",
+      },
+    },
+    {
+      name: "Dr. Sarah Jenkins",
+      email: "sarah.jenkins@ppms.local",
+      imageUrl:
+        "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=400&q=80",
+      specialization: "Cardiology",
+      available: true,
+      schedule: {
+        days: ["Monday", "Wednesday", "Friday"],
+        startTime: "10:00 AM",
+        endTime: "02:00 PM",
+        chamber: "Cardio Suite 204",
+      },
+    },
+    {
+      name: "Dr. Tariq Al-Mansoor",
+      email: "tariq.mansoor@ppms.local",
+      imageUrl:
+        "https://images.unsplash.com/photo-1622902046580-2b47f47f5471?auto=format&fit=crop&w=400&q=80",
+      specialization: "Pediatrics & Child Health",
+      available: true,
+      schedule: {
+        days: ["Sunday", "Tuesday", "Thursday"],
+        startTime: "04:00 PM",
+        endTime: "08:00 PM",
+        chamber: "Pediatric Wing 102",
+      },
+    },
+    {
+      name: "Dr. Ayesha Siddiqua",
+      email: "ayesha.siddiqua@ppms.local",
+      imageUrl:
+        "https://images.unsplash.com/photo-1594824813637-2309e53b6ee9?auto=format&fit=crop&w=400&q=80",
+      specialization: "Dermatology",
+      available: true,
+      schedule: {
+        days: ["Saturday", "Monday", "Wednesday"],
+        startTime: "02:00 PM",
+        endTime: "06:00 PM",
+        chamber: "Skin Clinic 405",
+      },
+    },
+    {
+      name: "Dr. Marcus Vance",
+      email: "marcus.vance@ppms.local",
+      imageUrl:
+        "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=400&q=80",
+      specialization: "Orthopedics & Trauma",
+      available: false,
+      schedule: {
+        days: ["Sunday", "Monday", "Wednesday", "Thursday"],
+        startTime: "11:00 AM",
+        endTime: "03:00 PM",
+        chamber: "Orthopedic Center 512",
+      },
+    },
+    {
+      name: "Dr. Nusrat Parvin",
+      email: "nusrat.parvin@ppms.local",
+      imageUrl:
+        "https://images.unsplash.com/photo-1651008376811-b90baee60c1f?auto=format&fit=crop&w=400&q=80",
+      specialization: "Gynecology & Obstetrics",
+      available: true,
+      schedule: {
+        days: ["Sunday", "Tuesday", "Wednesday", "Thursday"],
+        startTime: "05:00 PM",
+        endTime: "09:00 PM",
+        chamber: "Women's Health 208",
+      },
+    },
+  ];
+
   const now = new Date();
   const todayAtTen = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0, 0);
 
-  await prisma.appointment.upsert({
-    where: {
-      doctorId_appointmentDate_serialNumber: {
-        doctorId: doctor.id,
-        appointmentDate: todayAtTen,
-        serialNumber: 1,
+  for (let i = 0; i < doctorsData.length; i++) {
+    const item = doctorsData[i];
+
+    const user = await prisma.user.upsert({
+      where: { email: item.email },
+      update: {
+        name: item.name,
+        imageUrl: item.imageUrl,
       },
-    },
-    update: {},
-    create: {
-      doctorId: doctor.id,
-      patientId: patient.id,
-      appointmentDate: todayAtTen,
-      serialNumber: 1,
-      status: AppointmentStatus.BOOKED,
-      notes: "Follow-up visit",
-    },
-  });
+      create: {
+        name: item.name,
+        email: item.email,
+        passwordHash,
+        roleId: roleByName.DOCTOR,
+        imageUrl: item.imageUrl,
+      },
+    });
+
+    const doc = await prisma.doctor.upsert({
+      where: { userId: user.id },
+      update: {
+        specialization: item.specialization,
+        scheduleJson: item.schedule,
+        available: item.available,
+      },
+      create: {
+        userId: user.id,
+        specialization: item.specialization,
+        scheduleJson: item.schedule,
+        available: item.available,
+      },
+    });
+
+    if (item.available) {
+      await prisma.appointment.upsert({
+        where: {
+          doctorId_appointmentDate_serialNumber: {
+            doctorId: doc.id,
+            appointmentDate: todayAtTen,
+            serialNumber: i + 1,
+          },
+        },
+        update: {},
+        create: {
+          doctorId: doc.id,
+          patientId: patient.id,
+          appointmentDate: todayAtTen,
+          serialNumber: i + 1,
+          status: AppointmentStatus.BOOKED,
+          notes: "Initial consultation",
+        },
+      });
+    }
+  }
 
   await prisma.medicine.createMany({
     data: [
@@ -141,12 +237,6 @@ async function main() {
     skipDuplicates: true,
   });
 
-  console.log("Seed completed.");
-  console.log("Admin login: admin@ppms.local / Pass1234!");
-  console.log("Doctor login: doctor@ppms.local / Pass1234!");
-  console.log("Patient login: patient@ppms.local / Pass1234!");
-  console.log("Staff login: staff@ppms.local / Pass1234!");
-
   await prisma.template.upsert({
     where: { id: "default-template" },
     update: {},
@@ -160,6 +250,7 @@ async function main() {
     },
   });
 
+  console.log("Seed completed successfully with 6 doctors.");
   void staffUser;
 }
 
