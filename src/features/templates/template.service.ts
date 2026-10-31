@@ -3,7 +3,8 @@ import { db } from "@/lib/db";
 import { templateSchema } from "@/features/templates/template.schema";
 
 export const templateService = {
-  list: () => db.template.findMany({ orderBy: { createdAt: "desc" } }),
+  list: () => db.template.findMany({ orderBy: [{ isDefault: "desc" }, { createdAt: "desc" }] }),
+  get: (id: string) => db.template.findUnique({ where: { id } }),
   create: (input: unknown) => {
     const data = templateSchema.parse(input);
     return db.template.create({
@@ -19,7 +20,7 @@ export const templateService = {
       where: { id },
       data: {
         ...data,
-        contentJson: data.contentJson as Prisma.InputJsonValue | undefined,
+        contentJson: (data.contentJson ?? undefined) as Prisma.InputJsonValue | undefined,
       },
     });
   },

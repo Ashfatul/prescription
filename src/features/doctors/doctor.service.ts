@@ -17,6 +17,12 @@ export async function createDoctor(input: unknown) {
     data: {
       userId: data.userId,
       specialization: data.specialization,
+      degrees: data.degrees,
+      designation: data.designation,
+      hospital: data.hospital,
+      bmdcRegNo: data.bmdcRegNo,
+      chamberAddress: data.chamberAddress,
+      contactNumber: data.contactNumber,
       available: data.available,
       scheduleJson: data.scheduleJson as Prisma.InputJsonValue | undefined,
     },
@@ -35,7 +41,7 @@ export async function updateDoctor(id: string, input: unknown) {
     where: { id },
     data: {
       ...data,
-      scheduleJson: data.scheduleJson as Prisma.InputJsonValue | undefined,
+      scheduleJson: (data.scheduleJson ?? undefined) as Prisma.InputJsonValue | undefined,
     },
     include: { user: true },
   });

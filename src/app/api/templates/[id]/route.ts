@@ -5,6 +5,20 @@ import { ok } from "@/lib/http";
 import { requireUser } from "@/lib/auth/session";
 import { templateService } from "@/features/templates/template.service";
 
+import { AppError } from "@/lib/errors";
+
+export async function GET(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  return withErrorHandling(req, async () => {
+    await requireUser(req);
+    const { id } = await context.params;
+    const item = await templateService.get(id);
+    if (!item) {
+      throw new AppError("Template not found", 404);
+    }
+    return ok(item);
+  });
+}
+
 export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   return withErrorHandling(req, async () => {
     await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.DOCTOR]);

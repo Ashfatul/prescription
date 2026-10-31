@@ -67,6 +67,12 @@ async function main() {
       imageUrl:
         "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80",
       specialization: "General Medicine",
+      degrees: "MBBS, FCPS (Medicine), MACP (USA)",
+      designation: "Senior Consultant, Department of Medicine",
+      hospital: "Metropolitan Specialized Hospital",
+      bmdcRegNo: "BMDC-A-41285",
+      chamberAddress: "Room 301, 3rd Floor, Diagnostic & Consultation Block",
+      contactNumber: "+880 1711-234567",
       available: true,
       schedule: {
         days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
@@ -81,6 +87,12 @@ async function main() {
       imageUrl:
         "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=400&q=80",
       specialization: "Cardiology",
+      degrees: "MBBS, MD (Cardiology), FACC (USA)",
+      designation: "Associate Professor & Interventional Cardiologist",
+      hospital: "National Heart & Vascular Institute",
+      bmdcRegNo: "BMDC-A-32918",
+      chamberAddress: "Cardio Suite 204, 2nd Floor",
+      contactNumber: "+880 1819-345678",
       available: true,
       schedule: {
         days: ["Monday", "Wednesday", "Friday"],
@@ -95,6 +107,12 @@ async function main() {
       imageUrl:
         "https://images.unsplash.com/photo-1622902046580-2b47f47f5471?auto=format&fit=crop&w=400&q=80",
       specialization: "Pediatrics & Child Health",
+      degrees: "MBBS, DCH, FCPS (Pediatrics)",
+      designation: "Consultant Pediatrician",
+      hospital: "Green Valley Children & Mother Hospital",
+      bmdcRegNo: "BMDC-A-54012",
+      chamberAddress: "Pediatric Wing 102, Ground Floor",
+      contactNumber: "+880 1912-456789",
       available: true,
       schedule: {
         days: ["Sunday", "Tuesday", "Thursday"],
@@ -109,6 +127,12 @@ async function main() {
       imageUrl:
         "https://images.unsplash.com/photo-1594824813637-2309e53b6ee9?auto=format&fit=crop&w=400&q=80",
       specialization: "Dermatology",
+      degrees: "MBBS, DDV, FCPS (Dermatology)",
+      designation: "Assistant Professor & Dermatologist",
+      hospital: "Skin & Laser Center, Care Hospital",
+      bmdcRegNo: "BMDC-A-62874",
+      chamberAddress: "Skin Clinic 405, 4th Floor",
+      contactNumber: "+880 1613-567890",
       available: true,
       schedule: {
         days: ["Saturday", "Monday", "Wednesday"],
@@ -123,6 +147,12 @@ async function main() {
       imageUrl:
         "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=400&q=80",
       specialization: "Orthopedics & Trauma",
+      degrees: "MBBS, MS (Orthopedics), AO Trauma Fellow",
+      designation: "Senior Orthopedic & Joint Surgeon",
+      hospital: "Apex Orthopedic & Trauma Hospital",
+      bmdcRegNo: "BMDC-A-29401",
+      chamberAddress: "Orthopedic Center 512, 5th Floor",
+      contactNumber: "+880 1514-678901",
       available: false,
       schedule: {
         days: ["Sunday", "Monday", "Wednesday", "Thursday"],
@@ -137,6 +167,12 @@ async function main() {
       imageUrl:
         "https://images.unsplash.com/photo-1651008376811-b90baee60c1f?auto=format&fit=crop&w=400&q=80",
       specialization: "Gynecology & Obstetrics",
+      degrees: "MBBS, DGO, FCPS (Obs & Gynae)",
+      designation: "Consultant Obstetrician & Gynecologist",
+      hospital: "City Women & Children Care Hospital",
+      bmdcRegNo: "BMDC-A-48193",
+      chamberAddress: "Women's Health 208, 2nd Floor",
+      contactNumber: "+880 1715-789012",
       available: true,
       schedule: {
         days: ["Sunday", "Tuesday", "Wednesday", "Thursday"],
@@ -172,12 +208,24 @@ async function main() {
       where: { userId: user.id },
       update: {
         specialization: item.specialization,
+        degrees: item.degrees,
+        designation: item.designation,
+        hospital: item.hospital,
+        bmdcRegNo: item.bmdcRegNo,
+        chamberAddress: item.chamberAddress,
+        contactNumber: item.contactNumber,
         scheduleJson: item.schedule,
         available: item.available,
       },
       create: {
         userId: user.id,
         specialization: item.specialization,
+        degrees: item.degrees,
+        designation: item.designation,
+        hospital: item.hospital,
+        bmdcRegNo: item.bmdcRegNo,
+        chamberAddress: item.chamberAddress,
+        contactNumber: item.contactNumber,
         scheduleJson: item.schedule,
         available: item.available,
       },
@@ -199,7 +247,7 @@ async function main() {
           appointmentDate: todayAtTen,
           serialNumber: i + 1,
           status: AppointmentStatus.BOOKED,
-          notes: "Initial consultation",
+          notes: "Consultation appointment",
         },
       });
     }
@@ -208,16 +256,34 @@ async function main() {
   await prisma.medicine.createMany({
     data: [
       {
-        name: "Napa",
+        name: "Napa Extra",
         type: "Tablet",
-        dosage: "500mg",
-        instructions: "1 tablet after meal, twice daily",
+        dosage: "500mg + 65mg",
+        instructions: "1 tablet after meal, 2-3 times daily as needed",
       },
       {
         name: "Monas",
         type: "Tablet",
         dosage: "10mg",
-        instructions: "1 tablet at night",
+        instructions: "1 tablet at night daily",
+      },
+      {
+        name: "Maxpro",
+        type: "Capsule",
+        dosage: "20mg",
+        instructions: "1 capsule 30 minutes before breakfast",
+      },
+      {
+        name: "Azithrocin",
+        type: "Tablet",
+        dosage: "500mg",
+        instructions: "1 tablet daily 1 hour before meal for 5 days",
+      },
+      {
+        name: "Tofen",
+        type: "Syrup",
+        dosage: "100ml",
+        instructions: "2 teaspoons twice daily after meals",
       },
     ],
     skipDuplicates: true,
@@ -226,12 +292,32 @@ async function main() {
   await prisma.diagnosticTest.createMany({
     data: [
       {
-        name: "CBC",
+        name: "CBC with ESR",
+        instructions: "Fasting not required",
+      },
+      {
+        name: "Chest X-Ray P/A View",
+        instructions: "Bring previous X-ray plates if available",
+      },
+      {
+        name: "Serum Creatinine",
         instructions: "Morning sample preferred",
       },
       {
-        name: "X-Ray Chest",
-        instructions: "Carry previous reports",
+        name: "Echocardiogram (2D & Color Doppler)",
+        instructions: "Prior appointment recommended",
+      },
+      {
+        name: "Serum Lipid Profile",
+        instructions: "10-12 hours overnight fasting mandatory",
+      },
+      {
+        name: "HbA1c (Glycated Hemoglobin)",
+        instructions: "Fasting not required",
+      },
+      {
+        name: "Ultrasonography of Whole Abdomen",
+        instructions: "Overnight fasting and full bladder required",
       },
     ],
     skipDuplicates: true,
@@ -239,18 +325,45 @@ async function main() {
 
   await prisma.template.upsert({
     where: { id: "default-template" },
-    update: {},
+    update: {
+      name: "Professional Hospital Template",
+      isDefault: true,
+      contentJson: {
+        hospitalName: "Metropolitan Specialized Hospital",
+        hospitalTagline: "Center of Medical Excellence & Compassionate Care",
+        hospitalAddress: "Plot 12, Road 4, Sector 7, Uttara, Dhaka-1230",
+        hospitalPhone: "+880 2-8901234 / Emergency: 10678",
+        hospitalEmail: "info@metropolitanhospital.com",
+        hospitalWebsite: "www.metropolitanhospital.com",
+        themeColor: "#0f766e",
+        showVitals: true,
+        showClinicalNotes: true,
+        disclaimer:
+          "This is a legally valid computer-generated medical prescription. Please keep it safe for follow-up visits. For medical emergencies, call our 24/7 hotline 10678 or visit the nearest emergency room immediately.",
+      },
+    },
     create: {
       id: "default-template",
-      name: "Default Prescription",
+      name: "Professional Hospital Template",
+      isDefault: true,
       createdById: admin.id,
       contentJson: {
-        header: "PPMS Standard Template",
+        hospitalName: "Metropolitan Specialized Hospital",
+        hospitalTagline: "Center of Medical Excellence & Compassionate Care",
+        hospitalAddress: "Plot 12, Road 4, Sector 7, Uttara, Dhaka-1230",
+        hospitalPhone: "+880 2-8901234 / Emergency: 10678",
+        hospitalEmail: "info@metropolitanhospital.com",
+        hospitalWebsite: "www.metropolitanhospital.com",
+        themeColor: "#0f766e",
+        showVitals: true,
+        showClinicalNotes: true,
+        disclaimer:
+          "This is a legally valid computer-generated medical prescription. Please keep it safe for follow-up visits. For medical emergencies, call our 24/7 hotline 10678 or visit the nearest emergency room immediately.",
       },
     },
   });
 
-  console.log("Seed completed successfully with 6 doctors.");
+  console.log("Seed completed successfully with 6 doctors and professional template.");
   void staffUser;
 }
 

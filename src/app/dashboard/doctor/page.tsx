@@ -1,58 +1,96 @@
-import Link from "next/link";
 import { Card } from "@/components/common/card";
-import { DoctorQueue } from "@/components/dashboard/doctor-queue";
-import { QuickPrescriptionForm } from "@/components/dashboard/quick-prescription-form";
+import { DoctorDashboardView } from "@/components/dashboard/doctor-dashboard-view";
 import { requirePageUser } from "@/lib/auth/page-auth";
 import { db } from "@/lib/db";
 
 export default async function DoctorDashboardPage() {
   const user = await requirePageUser(["DOCTOR"]);
 
-  const doctor = await db.doctor.findUnique({ where: { userId: user.id } });
-  if (!doctor) {
-    return <p>Doctor profile is not configured yet.</p>;
-  }
-
-  const todaysAppointments = await db.appointment.findMany({
-    where: { doctorId: doctor.id },
-    include: { patient: { include: { user: true } } },
-    orderBy: { serialNumber: "asc" },
-    take: 10,
+  const doctor = await db.doctor.findUnique({
+    where: { userId: user.id },
+    include: { user: true },
   });
 
-  return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <DoctorQueue doctorId={doctor.id} />
-
+  if (!doctor) {
+    return (
       <Card>
-        <h2 className="mb-2 text-lg font-semibold">Today Appointments</h2>
-        <div className="space-y-2">
-          {todaysAppointments.map((item: (typeof todaysAppointments)[number]) => (
-            <div key={item.id} className="rounded-lg bg-zinc-100 p-2 text-sm dark:bg-zinc-800">
-              <div className="flex justify-between">
-                <span>#{item.serialNumber}</span>
-                <span>{item.patient.user.name}</span>
-              </div>
-              <div className="mt-1 text-xs text-zinc-500">Status: {item.status}</div>
-            </div>
-          ))}
-        </div>
-
-        {todaysAppointments[0] && (
-          <div className="mt-4">
-            <QuickPrescriptionForm doctorId={doctor.id} patientId={todaysAppointments[0].patientId} />
-          </div>
-        )}
-
-        <Link
-          href="/api/prescriptions"
-          target="_blank"
-          rel="noreferrer"
-          className="mt-3 inline-block rounded-lg bg-teal-600 px-3 py-1 text-sm text-white"
-        >
-          Prescription API
-        </Link>
+        <h2 className="text-lg font-bold">Doctor Profile Not Found</h2>
+        <p className="mt-2 text-sm text-zinc-500">
+          Your user account is not linked to a doctor record. Please contact the administrator.
+        </p>
       </Card>
-    </div>
+    );
+  }
+
+  const [todaysAppointments, patients, recentPrescriptions] = await Promise.all([
+    db.appointment.findMany({
+      where: { doctorId: doctor.id },
+      include: {
+        patient: {
+          include: {
+            user: true,
+          },
+        },
+      },
+      orderBy: { serialNumber: "asc" },
+      take: 20,
+    }),
+    db.patient.findMany({
+      include: {
+        user: true,
+      },
+      take: 50,
+      orderBy: { createdAt: "desc" },
+    }),
+    db.prescription.findMany({
+      where: { doctorId: doctor.id },
+      include: {
+        patient: {
+          include: {
+            user: true,
+          },
+        },
+        template: true,
+      },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+    }),
+  ]);
+
+  // Format appointments with serialized dates for client component
+  const serializedAppointments = todaysAppointments.map((appt) => ({
+    id: appt.id,
+    serialNumber: appt.serialNumber,
+    status: appt.status,
+    appointmentDate: appt.appointmentDate.toISOString(),
+    patientId: appt.patientId,
+    patient: {
+      id: appt.patient.id,
+      gender: appt.patient.gender,
+      user: {
+        name: appt.patient.user.name,
+        email: appt.patient.user.email,
+        phone: appt.patient.user.phone,
+      },
+    },
+  }));
+
+  const serializedPatients = patients.map((p) => ({
+    id: p.id,
+    gender: p.gender,
+    user: {
+      name: p.user.name,
+      email: p.user.email,
+      phone: p.user.phone,
+    },
+  }));
+
+  return (
+    <DoctorDashboardView
+      doctor={doctor}
+      appointments={serializedAppointments}
+      patients={serializedPatients}
+      recentPrescriptions={recentPrescriptions}
+    />
   );
 }

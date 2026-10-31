@@ -1,4 +1,4 @@
-import { RoleName } from "@prisma/client";
+import { Prisma, RoleName } from "@prisma/client";
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import {
@@ -58,6 +58,9 @@ export async function createPrescription(input: unknown) {
         notes: data.notes,
         medicinesJson: data.medicines,
         testsJson: data.tests,
+        vitalsJson: (data.vitals ?? undefined) as Prisma.InputJsonValue | undefined,
+        clinicalInfoJson: (data.clinicalInfo ?? undefined) as Prisma.InputJsonValue | undefined,
+        doctorOverrideJson: (data.doctorOverride ?? undefined) as Prisma.InputJsonValue | undefined,
         templateId: data.templateId,
       },
     });
@@ -120,6 +123,9 @@ export async function updatePrescription(id: string, input: unknown) {
       notes: data.notes,
       medicinesJson: data.medicines,
       testsJson: data.tests,
+      vitalsJson: (data.vitals ?? undefined) as Prisma.InputJsonValue | undefined,
+      clinicalInfoJson: (data.clinicalInfo ?? undefined) as Prisma.InputJsonValue | undefined,
+      doctorOverrideJson: (data.doctorOverride ?? undefined) as Prisma.InputJsonValue | undefined,
       templateId: data.templateId,
     },
   });
