@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoleName {
+  SUPER_ADMIN
+  DOCTOR
+  PATIENT
+  STAFF
+}
+
+enum AppointmentStatus {
+  BOOKED
+  COMPLETED
+  CANCELLED
+}
+
+model Role {
+  id    String   @id @default(cuid())
+  name  RoleName @unique
+  users User[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  phone        String?
+  imageUrl     String?
+  roleId       String
+  role         Role     @relation(fields: [roleId], references: [id])
+  doctor       Doctor?
+  patient      Patient?
+  files        File[]   @relation("UserFiles")
+  templates    Template[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Doctor {
+  id             String         @id @default(cuid())
+  userId         String         @unique
+  user           User           @relation(fields: [userId], references: [id])
+  specialization String
+  scheduleJson   Json?
+  available      Boolean        @default(true)
+  queueStart     Int            @default(1)
+  appointments   Appointment[]
+  prescriptions  Prescription[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model Patient {
+  id            String         @id @default(cuid())
+  userId        String         @unique
+  user          User           @relation(fields: [userId], references: [id])
+  dateOfBirth   DateTime?
+  gender        String?
+  medicalHistory String?
+  appointments  Appointment[]
+  prescriptions Prescription[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Appointment {
+  id              String            @id @default(cuid())
+  doctorId         String
+  doctor           Doctor            @relation(fields: [doctorId], references: [id])
+  patientId        String
+  patient          Patient           @relation(fields: [patientId], references: [id])
+  appointmentDate  DateTime
+  serialNumber     Int
+  status           AppointmentStatus @default(BOOKED)
+  notes            String?
+  prescription     Prescription?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@unique([doctorId, appointmentDate, serialNumber])
+  @@index([doctorId, appointmentDate])
+}
+
+model Prescription {
+  id             String                 @id @default(cuid())
+  doctorId       String
+  doctor         Doctor                 @relation(fields: [doctorId], references: [id])
+  patientId      String
+  patient        Patient                @relation(fields: [patientId], references: [id])
+  appointmentId  String?                @unique
+  appointment    Appointment?           @relation(fields: [appointmentId], references: [id])
+  medicinesJson  Json
+  testsJson      Json
+  notes          String?
+  templateId     String?
+  template       Template?              @relation(fields: [templateId], references: [id])
+  attachments    PrescriptionAttachment[]
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+}
+
+model Medicine {
+  id           String   @id @default(cuid())
+  name         String
+  type         String
+  dosage       String
+  instructions String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model DiagnosticTest {
+  id           String   @id @default(cuid())
+  name         String
+  instructions String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model File {
+  id                 String                   @id @default(cuid())
+  url                String
+  publicId           String
+  fileType           String
+  originalName       String
+  uploadedById       String
+  uploadedBy         User                     @relation("UserFiles", fields: [uploadedById], references: [id])
+  prescriptionLinks  PrescriptionAttachment[]
+  createdAt          DateTime                 @default(now())
+}
+
+model Template {
+  id            String         @id @default(cuid())
+  name          String
+  contentJson   Json?
+  imageUrl      String?
+  createdById   String
+  createdBy     User           @relation(fields: [createdById], references: [id])
+  prescriptions Prescription[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model PrescriptionAttachment {
+  id             String       @id @default(cuid())
+  prescriptionId String
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id])
+  fileId         String
+  file           File         @relation(fields: [fileId], references: [id])
+
+  @@unique([prescriptionId, fileId])
+}
