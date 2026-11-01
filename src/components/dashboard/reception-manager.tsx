@@ -469,15 +469,31 @@ export function ReceptionManager() {
 
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 uppercase mb-1">
-                        Known Allergies / History
+                        Known History / Comorbidities / Allergies
                       </label>
                       <input
                         type="text"
-                        placeholder="e.g. Penicillin allergy"
+                        placeholder="e.g. Diabetic, HTN, Penicillin allergy"
                         value={walkinHistory}
                         onChange={(e) => setWalkinHistory(e.target.value)}
                         className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
                       />
+                      <div className="flex flex-wrap gap-1 pt-1.5">
+                        {["Diabetic", "HTN", "Asthma", "Heart Disease", "NKDA"].map((chip) => (
+                          <button
+                            key={chip}
+                            type="button"
+                            onClick={() =>
+                              setWalkinHistory((prev) =>
+                                prev ? `${prev}, ${chip}` : chip
+                              )
+                            }
+                            className="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] cursor-pointer transition"
+                          >
+                            + {chip}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>

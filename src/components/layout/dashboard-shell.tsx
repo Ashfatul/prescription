@@ -21,6 +21,7 @@ import {
   FileText,
   Compass,
   ClipboardList,
+  Building2,
 } from "lucide-react";
 
 interface DashboardShellProps {
@@ -109,6 +110,13 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             href: "/dashboard/admin?tab=templates",
             tabKey: "templates",
             icon: <FileCode2 className="w-4 h-4" />,
+          },
+          {
+            section: "Configuration",
+            label: "Hospital & Chamber Settings",
+            href: "/dashboard/admin?tab=settings",
+            tabKey: "settings",
+            icon: <Building2 className="w-4 h-4" />,
           },
         ]
       : []),

@@ -23,6 +23,11 @@ export async function createDoctor(input: unknown) {
       bmdcRegNo: data.bmdcRegNo,
       chamberAddress: data.chamberAddress,
       contactNumber: data.contactNumber,
+      bio: data.bio,
+      visitingHours: data.visitingHours,
+      consultationFee: data.consultationFee,
+      experienceYears: data.experienceYears,
+      signatureUrl: data.signatureUrl,
       available: data.available,
       scheduleJson: data.scheduleJson as Prisma.InputJsonValue | undefined,
     },
@@ -37,7 +42,7 @@ export async function updateDoctor(id: string, input: unknown) {
     throw new AppError("Doctor not found", 404);
   }
 
-  return db.doctor.update({
+  const updated = await db.doctor.update({
     where: { id },
     data: {
       ...data,
@@ -45,6 +50,15 @@ export async function updateDoctor(id: string, input: unknown) {
     },
     include: { user: true },
   });
+
+  if (data.signatureUrl !== undefined && existing.userId) {
+    await db.user.update({
+      where: { id: existing.userId },
+      data: { signatureUrl: data.signatureUrl },
+    });
+  }
+
+  return updated;
 }
 
 export async function deleteDoctor(id: string) {

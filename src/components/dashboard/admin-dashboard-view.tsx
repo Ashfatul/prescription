@@ -6,6 +6,7 @@ import { TemplateManager } from "@/components/dashboard/template-manager";
 import { CatalogManager } from "@/components/dashboard/catalog-manager";
 import { UserManager } from "@/components/dashboard/user-manager";
 import { RolePermissionManager } from "@/components/dashboard/role-permission-manager";
+import { SettingsManager } from "@/components/dashboard/settings-manager";
 import {
   Users,
   Pill,
@@ -39,7 +40,7 @@ interface AdminDashboardViewProps {
   }>;
 }
 
-type TabKey = "overview" | "users" | "catalog" | "tests" | "templates" | "roles";
+type TabKey = "overview" | "users" | "catalog" | "tests" | "templates" | "roles" | "settings";
 
 export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
   const searchParams = useSearchParams();
@@ -56,6 +57,8 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
       ? "templates"
       : urlTab === "roles"
       ? "roles"
+      : urlTab === "settings"
+      ? "settings"
       : "overview";
 
   return (
@@ -360,6 +363,9 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
 
       {/* Role Permissions Tab Content */}
       {activeTab === "roles" && <RolePermissionManager />}
+
+      {/* Hospital & Chamber Settings Tab Content */}
+      {activeTab === "settings" && <SettingsManager />}
     </div>
   );
 }

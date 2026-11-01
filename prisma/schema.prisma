@@ -34,6 +34,7 @@ model User {
   passwordHash String
   phone        String?
   imageUrl     String?
+  signatureUrl String?
   theme        String   @default("system")
   accent       String   @default("teal")
   roleId       String
@@ -47,23 +48,28 @@ model User {
 }
 
 model Doctor {
-  id             String         @id @default(cuid())
-  userId         String         @unique
-  user           User           @relation(fields: [userId], references: [id])
-  specialization String
-  degrees        String?
-  designation    String?
-  hospital       String?
-  bmdcRegNo      String?
-  chamberAddress String?
-  contactNumber  String?
-  scheduleJson   Json?
-  available      Boolean        @default(true)
-  queueStart     Int            @default(1)
-  appointments   Appointment[]
-  prescriptions  Prescription[]
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  id              String         @id @default(cuid())
+  userId          String         @unique
+  user            User           @relation(fields: [userId], references: [id])
+  specialization  String
+  degrees         String?
+  designation     String?
+  hospital        String?
+  bmdcRegNo       String?
+  chamberAddress  String?
+  contactNumber   String?
+  bio             String?
+  visitingHours   String?
+  consultationFee String?
+  experienceYears String?
+  signatureUrl    String?
+  scheduleJson    Json?
+  available       Boolean        @default(true)
+  queueStart      Int            @default(1)
+  appointments    Appointment[]
+  prescriptions   Prescription[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 }
 
 model Patient {
@@ -105,6 +111,7 @@ model Prescription {
   patient            Patient                @relation(fields: [patientId], references: [id])
   appointmentId      String?                @unique
   appointment        Appointment?           @relation(fields: [appointmentId], references: [id])
+  version            Int                    @default(1)
   medicinesJson      Json
   testsJson          Json
   vitalsJson         Json?
@@ -114,8 +121,28 @@ model Prescription {
   templateId         String?
   template           Template?              @relation(fields: [templateId], references: [id])
   attachments        PrescriptionAttachment[]
+  versions           PrescriptionVersion[]
   createdAt          DateTime               @default(now())
   updatedAt          DateTime               @updatedAt
+}
+
+model PrescriptionVersion {
+  id                 String       @id @default(cuid())
+  prescriptionId     String
+  prescription       Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  versionNumber      Int
+  changeReason       String?
+  medicinesJson      Json
+  testsJson          Json
+  vitalsJson         Json?
+  clinicalInfoJson   Json?
+  doctorOverrideJson Json?
+  notes              String?
+  createdAt          DateTime     @default(now())
+  createdById        String?
+
+  @@unique([prescriptionId, versionNumber])
+  @@index([prescriptionId])
 }
 
 model Medicine {
@@ -169,4 +196,13 @@ model PrescriptionAttachment {
   file           File         @relation(fields: [fileId], references: [id])
 
   @@unique([prescriptionId, fileId])
+}
+
+model SystemSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  category  String   @default("general")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

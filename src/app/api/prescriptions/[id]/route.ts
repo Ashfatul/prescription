@@ -12,7 +12,10 @@ export async function GET(req: NextRequest, context: { params: Promise<{ id: str
   return withErrorHandling(req, async () => {
     await requireUser(req);
     const { id } = await context.params;
-    return ok(await getPrescription(id));
+    const { searchParams } = new URL(req.url);
+    const versionParam = searchParams.get("version");
+    const versionNumber = versionParam ? parseInt(versionParam, 10) : undefined;
+    return ok(await getPrescription(id, isNaN(Number(versionNumber)) ? undefined : versionNumber));
   });
 }
 

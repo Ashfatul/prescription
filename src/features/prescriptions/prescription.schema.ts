@@ -20,6 +20,8 @@ const vitalsSchema = z
     weight: z.string().optional(),
     pulse: z.string().optional(),
     temp: z.string().optional(),
+    bloodSugar: z.string().optional(),
+    spo2: z.string().optional(),
   })
   .optional();
 
@@ -29,6 +31,8 @@ const clinicalInfoSchema = z
     diagnosis: z.string().optional(),
     advice: z.string().optional(),
     followUp: z.string().optional(),
+    medicalHistory: z.string().optional(),
+    allergies: z.string().optional(),
   })
   .optional();
 
@@ -57,6 +61,9 @@ export const prescriptionSchema = z.object({
   doctorOverride: doctorOverrideSchema,
   templateId: z.string().optional(),
   attachmentIds: z.array(z.string()).default([]),
+  changeReason: z.string().optional(),
 });
 
-export const prescriptionUpdateSchema = prescriptionSchema.partial();
+export const prescriptionUpdateSchema = prescriptionSchema.partial().extend({
+  changeReason: z.string().optional(),
+});

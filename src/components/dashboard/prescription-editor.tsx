@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import {
   Paperclip,
@@ -22,9 +22,12 @@ type DoctorInfo = {
   bmdcRegNo?: string | null;
   chamberAddress?: string | null;
   contactNumber?: string | null;
+  signatureUrl?: string | null;
   user: {
     name: string;
     email: string;
+    phone?: string | null;
+    signatureUrl?: string | null;
   };
 };
 
@@ -36,6 +39,8 @@ type PatientInfo = {
     phone?: string | null;
   };
   gender?: string | null;
+  dateOfBirth?: string | null;
+  medicalHistory?: string | null;
 };
 
 type AppointmentInfo = {
@@ -110,77 +115,216 @@ const ADVICE_PRESETS = [
   "Monitor Blood Pressure & Fasting Blood Sugar regularly.",
 ];
 
+const HISTORY_PRESETS = [
+  "Diabetes Mellitus (DM)",
+  "Hypertension (HTN)",
+  "Bronchial Asthma / COPD",
+  "Ischemic Heart Disease (IHD)",
+  "Chronic Kidney Disease (CKD)",
+  "Dyslipidemia / High Cholesterol",
+  "Hypothyroidism",
+  "Hyperuricemia / Gout",
+  "No Known Major Illness",
+];
+
+const ALLERGY_PRESETS = [
+  "No Known Drug Allergies (NKDA)",
+  "Penicillin Group",
+  "Cephalosporins",
+  "Sulfa Drugs",
+  "NSAIDs / Aspirin",
+  "Ciprofloxacin / Quinolones",
+  "Paracetamol",
+];
+
+const FOLLOWUP_PRESETS = [
+  "After 3 days",
+  "After 5 days",
+  "After 7 days",
+  "After 14 days",
+  "After 1 month",
+  "With investigation report",
+  "As needed (SOS)",
+];
+
+const FORMULATION_OPTIONS: SelectOption[] = [
+  { value: "Tablet", label: "Tablet", badge: "Tab" },
+  { value: "Capsule", label: "Capsule", badge: "Cap" },
+  { value: "Syrup", label: "Syrup", badge: "Syr" },
+  { value: "Suspension", label: "Suspension", badge: "Susp" },
+  { value: "Injection", label: "Injection", badge: "Inj" },
+  { value: "Inhaler", label: "Inhaler", badge: "Inh" },
+  { value: "Eye Drops", label: "Eye Drops", badge: "Drop" },
+  { value: "Ear Drops", label: "Ear Drops", badge: "Drop" },
+  { value: "Ointment", label: "Ointment", badge: "Oint" },
+  { value: "Cream", label: "Cream", badge: "Crm" },
+  { value: "Gel", label: "Gel", badge: "Gel" },
+  { value: "Suppository", label: "Suppository", badge: "Supp" },
+  { value: "Spray", label: "Spray", badge: "Spry" },
+  { value: "Lotion", label: "Lotion", badge: "Lot" },
+];
+
+function appendBulletLine(existingText: string, newItem: string, bullet = "• "): string {
+  const trimmed = existingText.trimEnd();
+  const cleanItem = newItem.trim().replace(/^([•\-\–\—]|\-\-)\s*/, "");
+  const formattedLine = `${bullet}${cleanItem}`;
+
+  if (!trimmed) {
+    return formattedLine;
+  }
+
+  const existingLines = trimmed
+    .split("\n")
+    .map((line) => line.trim().replace(/^([•\-\–\—]|\-\-)\s*/, ""));
+  if (existingLines.includes(cleanItem)) {
+    return trimmed;
+  }
+
+  return `${trimmed}\n${formattedLine}`;
+}
+
+export type PrescriptionRevisionData = {
+  id: string;
+  version: number;
+  patientId: string;
+  appointmentId?: string | null;
+  templateId?: string | null;
+  medicinesJson: unknown;
+  testsJson: unknown;
+  vitalsJson?: unknown;
+  clinicalInfoJson?: unknown;
+  doctorOverrideJson?: unknown;
+  notes?: string | null;
+  patient?: {
+    id: string;
+    gender?: string | null;
+    dateOfBirth?: string | null;
+    medicalHistory?: string | null;
+    user: {
+      name: string;
+      email: string;
+      phone?: string | null;
+    };
+  };
+};
+
+const REVISION_REASON_PRESETS = [
+  "Updated after lab / diagnostic report",
+  "Follow-up visit dose adjustment",
+  "Medication change due to allergy / intolerance",
+  "Added new complementary medication",
+  "Titrated medicine dose based on BP / Sugar readings",
+  "Patient symptoms improved / stepped down medication",
+];
+
 export function PrescriptionEditor({
   doctor,
   appointments = [],
   patients = [],
+  initialPrescriptionToRevise = null,
+  onCancelRevision,
   onPrescriptionCreated,
 }: {
   doctor: DoctorInfo;
   appointments?: AppointmentInfo[];
   patients?: PatientInfo[];
+  initialPrescriptionToRevise?: PrescriptionRevisionData | null;
+  onCancelRevision?: () => void;
   onPrescriptionCreated?: (id: string) => void;
 }) {
+  // Revision Mode State
+  const [editingPrescription, setEditingPrescription] = useState<PrescriptionRevisionData | null>(
+    initialPrescriptionToRevise || null
+  );
+  const [changeReason, setChangeReason] = useState("");
+  const [savedVersionNumber, setSavedVersionNumber] = useState<number | null>(null);
+
   // Base Template
   const [templates, setTemplates] = useState<TemplateOption[]>([]);
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>(
+    initialPrescriptionToRevise?.templateId || ""
+  );
 
   // Catalog loaded from DB
   const [catalogMedicines, setCatalogMedicines] = useState<SelectOption[]>([]);
   const [catalogTests, setCatalogTests] = useState<SelectOption[]>([]);
 
   // Doctor Header Override
-  const [customizeDoctorHeader, setCustomizeDoctorHeader] = useState(false);
-  const [docName, setDocName] = useState(doctor.user.name || "");
-  const [docSpecialization, setDocSpecialization] = useState(doctor.specialization || "");
-  const [docDegrees, setDocDegrees] = useState(doctor.degrees || "");
-  const [docDesignation, setDocDesignation] = useState(doctor.designation || "");
-  const [docHospital, setDocHospital] = useState(doctor.hospital || "");
-  const [docRegNo, setDocRegNo] = useState(doctor.bmdcRegNo || "");
-  const [docChamber, setDocChamber] = useState(doctor.chamberAddress || "");
-  const [docContact, setDocContact] = useState(doctor.contactNumber || "");
+  const initO = (initialPrescriptionToRevise?.doctorOverrideJson as Record<string, string>) || {};
+  const [customizeDoctorHeader, setCustomizeDoctorHeader] = useState(
+    Boolean(initO.doctorName || initO.specialization || initO.hospital)
+  );
+  const [docName, setDocName] = useState(initO.doctorName || doctor.user.name || "");
+  const [docSpecialization, setDocSpecialization] = useState(initO.specialization || doctor.specialization || "");
+  const [docDegrees, setDocDegrees] = useState(initO.degrees || doctor.degrees || "");
+  const [docDesignation, setDocDesignation] = useState(initO.designation || doctor.designation || "");
+  const [docHospital, setDocHospital] = useState(initO.hospital || doctor.hospital || "");
+  const [docRegNo, setDocRegNo] = useState(initO.bmdcRegNo || doctor.bmdcRegNo || "");
+  const [docChamber, setDocChamber] = useState(initO.chamberAddress || doctor.chamberAddress || "");
+  const [docContact, setDocContact] = useState(initO.contactNumber || doctor.contactNumber || "");
+  const docSignatureUrl = initO.signatureUrl || doctor.signatureUrl || doctor.user?.signatureUrl || "";
 
   // Patient Selection
   const [selectedPatientId, setSelectedPatientId] = useState<string>(
-    appointments[0]?.patientId || patients[0]?.id || ""
+    initialPrescriptionToRevise?.patientId || appointments[0]?.patientId || patients[0]?.id || ""
   );
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string>(
-    appointments[0]?.id || ""
+    initialPrescriptionToRevise?.appointmentId || appointments[0]?.id || ""
   );
 
   // Vitals
-  const [bp, setBp] = useState("120/80 mmHg");
-  const [weight, setWeight] = useState("");
-  const [pulse, setPulse] = useState("72 bpm");
-  const [temp, setTemp] = useState("98.4 °F");
+  const initV = (initialPrescriptionToRevise?.vitalsJson as Record<string, string>) || {};
+  const [bp, setBp] = useState(initV.bp || "120/80 mmHg");
+  const [weight, setWeight] = useState(initV.weight || "");
+  const [pulse, setPulse] = useState(initV.pulse || "72 bpm");
+  const [temp, setTemp] = useState(initV.temp || "98.4 °F");
+  const [bloodSugar, setBloodSugar] = useState(initV.bloodSugar || "");
+  const [spo2, setSpo2] = useState(initV.spo2 || "");
+
+  // Patient History & Comorbidities
+  const initC = (initialPrescriptionToRevise?.clinicalInfoJson as Record<string, string>) || {};
+  const [medicalHistory, setMedicalHistory] = useState(initC.medicalHistory || "");
+  const [allergies, setAllergies] = useState(initC.allergies || "");
 
   // Clinical Details
-  const [complaints, setComplaints] = useState("");
-  const [diagnosis, setDiagnosis] = useState("");
+  const [complaints, setComplaints] = useState(initC.complaints || "");
+  const [diagnosis, setDiagnosis] = useState(initC.diagnosis || "");
 
   // Diagnostic Tests
-  const [tests, setTests] = useState<TestRow[]>([
-    { name: "CBC with ESR (Complete Blood Count)", instructions: "Clean blood sample" },
-  ]);
+  const [tests, setTests] = useState<TestRow[]>(() => {
+    if (initialPrescriptionToRevise && Array.isArray(initialPrescriptionToRevise.testsJson)) {
+      return initialPrescriptionToRevise.testsJson as TestRow[];
+    }
+    return [{ name: "CBC with ESR (Complete Blood Count)", instructions: "Clean blood sample" }];
+  });
 
   // Medicines (Rx)
-  const [medicines, setMedicines] = useState<MedicineRow[]>([
-    {
-      type: "Tablet",
-      name: "Napa Extra",
-      dosage: "500mg + 65mg",
-      frequency: "1 + 0 + 1",
-      duration: "5 Days",
-      instructions: "1 tablet after meal, 2-3 times daily as needed",
-    },
-  ]);
+  const [medicines, setMedicines] = useState<MedicineRow[]>(() => {
+    if (
+      initialPrescriptionToRevise &&
+      Array.isArray(initialPrescriptionToRevise.medicinesJson) &&
+      initialPrescriptionToRevise.medicinesJson.length > 0
+    ) {
+      return initialPrescriptionToRevise.medicinesJson as MedicineRow[];
+    }
+    return [
+      {
+        type: "Tablet",
+        name: "Napa Extra",
+        dosage: "500mg + 65mg",
+        frequency: "1 + 0 + 1",
+        duration: "5 Days",
+        instructions: "1 tablet after meal, 2-3 times daily as needed",
+      },
+    ];
+  });
 
   // Advice & Follow-Up
   const [advice, setAdvice] = useState(
-    "Drink plenty of boiled warm water. Take adequate bed rest. Avoid oily & spicy foods."
+    initC.advice || "Drink plenty of boiled warm water. Take adequate bed rest. Avoid oily & spicy foods."
   );
-  const [followUp, setFollowUp] = useState("After 7 days with investigation reports");
-  const [notes, setNotes] = useState("");
+  const [followUp, setFollowUp] = useState(initC.followUp || "After 7 days with investigation reports");
+  const [notes, setNotes] = useState(initialPrescriptionToRevise?.notes || "");
 
   // Attachments
   const [attachments, setAttachments] = useState<
@@ -298,6 +442,11 @@ export function PrescriptionEditor({
     setSelectedPatientId(patientId);
     const appt = appointments.find((a) => a.patientId === patientId);
     setSelectedAppointmentId(appt?.id || "");
+
+    const pat = appt?.patient || patients.find((p) => p.id === patientId);
+    if (pat?.medicalHistory && !medicalHistory.trim()) {
+      setMedicalHistory(pat.medicalHistory);
+    }
   };
 
   const addMedicine = (preset?: Partial<MedicineRow>) => {
@@ -387,22 +536,84 @@ export function PrescriptionEditor({
     setTests((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Helper to append preset to text areas
+  // Helper to append preset to text areas on separate lines with bullet markers
   const appendComplaint = (phrase: string) => {
-    setComplaints((prev) => (prev ? `${prev}, ${phrase}` : phrase));
+    setComplaints((prev) => appendBulletLine(prev, phrase));
   };
 
   const setDiagnosisPreset = (dx: string) => {
-    setDiagnosis((prev) => (prev ? `${prev} & ${dx}` : dx));
+    setDiagnosis((prev) => appendBulletLine(prev, dx));
   };
 
   const appendAdvice = (adv: string) => {
-    setAdvice((prev) => (prev ? `${prev} ${adv}` : adv));
+    setAdvice((prev) => appendBulletLine(prev, adv));
   };
+
+  const appendHistory = (item: string) => {
+    setMedicalHistory((prev) => appendBulletLine(prev, item));
+  };
+
+  const appendAllergy = (item: string) => {
+    setAllergies((prev) => appendBulletLine(prev, item));
+  };
+
+  // Patient options for SearchableSelect
+  const patientOptions: SelectOption[] = useMemo(() => {
+    const list: SelectOption[] = [];
+    appointments.forEach((appt) => {
+      list.push({
+        value: appt.patientId,
+        label: `${appt.patient.user.name} (Serial #${appt.serialNumber})`,
+        description: `${appt.patient.user.email}${appt.patient.user.phone ? ` • Tel: ${appt.patient.user.phone}` : ""}`,
+        badge: `Today #${appt.serialNumber}`,
+      });
+    });
+    patients
+      .filter((p) => !appointments.some((a) => a.patientId === p.id))
+      .forEach((p) => {
+        list.push({
+          value: p.id,
+          label: p.user.name,
+          description: `${p.user.email}${p.user.phone ? ` • Tel: ${p.user.phone}` : ""}`,
+          badge: "Patient Record",
+        });
+      });
+    return list;
+  }, [appointments, patients]);
+
+  // Template options for SearchableSelect
+  const templateOptions: SelectOption[] = useMemo(
+    () =>
+      templates.map((tpl) => ({
+        value: tpl.id,
+        label: `${tpl.name}${tpl.isDefault ? " (Default)" : ""}`,
+        badge: tpl.isDefault ? "Default" : undefined,
+        description: tpl.contentJson?.hospitalName
+          ? `Hospital: ${tpl.contentJson.hospitalName}`
+          : undefined,
+      })),
+    [templates]
+  );
 
   const currentPatient =
     appointments.find((a) => a.patientId === selectedPatientId)?.patient ||
     patients.find((p) => p.id === selectedPatientId);
+
+  const patientAge = useMemo(() => {
+    if (!currentPatient) return undefined;
+    if (currentPatient.dateOfBirth) {
+      const birth = new Date(currentPatient.dateOfBirth);
+      const diffYears = Math.floor(
+        (Date.now() - birth.getTime()) / (365.25 * 24 * 60 * 60 * 1000)
+      );
+      if (diffYears > 0 && diffYears < 130) return diffYears;
+    }
+    if (currentPatient.medicalHistory) {
+      const match = currentPatient.medicalHistory.match(/Age:\s*(\d+)/i);
+      if (match) return match[1];
+    }
+    return undefined;
+  }, [currentPatient]);
 
   const selectedTemplate = templates.find((t) => t.id === selectedTemplateId);
 
@@ -430,8 +641,22 @@ export function PrescriptionEditor({
       templateId: selectedTemplateId || undefined,
       medicines: medicines.filter((m) => m.name.trim()),
       tests: tests.filter((t) => t.name.trim()),
-      vitals: { bp, weight, pulse, temp },
-      clinicalInfo: { complaints, diagnosis, advice, followUp },
+      vitals: {
+        bp: bp.trim() || undefined,
+        weight: weight.trim() || undefined,
+        pulse: pulse.trim() || undefined,
+        temp: temp.trim() || undefined,
+        bloodSugar: bloodSugar.trim() || undefined,
+        spo2: spo2.trim() || undefined,
+      },
+      clinicalInfo: {
+        complaints: complaints.trim() || undefined,
+        diagnosis: diagnosis.trim() || undefined,
+        advice: advice.trim() || undefined,
+        followUp: followUp.trim() || undefined,
+        medicalHistory: medicalHistory.trim() || undefined,
+        allergies: allergies.trim() || undefined,
+      },
       doctorOverride: {
         doctorName: docName,
         specialization: docSpecialization,
@@ -441,36 +666,50 @@ export function PrescriptionEditor({
         bmdcRegNo: docRegNo,
         chamberAddress: docChamber,
         contactNumber: docContact,
+        signatureUrl: docSignatureUrl || doctor.signatureUrl || doctor.user?.signatureUrl || undefined,
       },
       notes,
       attachmentIds: attachments.map((a) => a.id),
     };
 
     try {
-      const res = await fetch("/api/prescriptions", {
-        method: "POST",
+      const isRevision = Boolean(editingPrescription);
+      const url = isRevision ? `/api/prescriptions/${editingPrescription!.id}` : "/api/prescriptions";
+      const method = isRevision ? "PATCH" : "POST";
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          ...payload,
+          changeReason: changeReason.trim() || undefined,
+        }),
       });
 
       const data = await res.json();
       setSubmitting(false);
 
       if (!res.ok || !data.success) {
-        setErrorMessage(data.message || "Failed to create prescription.");
+        setErrorMessage(data.message || "Failed to save prescription.");
         return;
       }
 
       setCreatedPrescriptionId(data.data.id);
+      const nextVer = data.data.version || (editingPrescription ? (editingPrescription.version || 1) + 1 : 1);
+      setSavedVersionNumber(nextVer);
       onPrescriptionCreated?.(data.data.id);
     } catch {
       setSubmitting(false);
-      setErrorMessage("Network error while creating prescription.");
+      setErrorMessage("Network error while saving prescription.");
     }
   };
 
   const resetForm = () => {
     setCreatedPrescriptionId(null);
+    setSavedVersionNumber(null);
+    setEditingPrescription(null);
+    setChangeReason("");
+    onCancelRevision?.();
     setMedicines([
       {
         type: "Tablet",
@@ -484,8 +723,18 @@ export function PrescriptionEditor({
     setTests([{ name: "CBC with ESR (Complete Blood Count)", instructions: "Clean blood sample" }]);
     setComplaints("");
     setDiagnosis("");
+    setMedicalHistory("");
+    setAllergies("");
+    setBloodSugar("");
+    setSpo2("");
+    setAdvice("");
+    setFollowUp("");
     setNotes("");
     setAttachments([]);
+  };
+
+  const handleCancelRevision = () => {
+    resetForm();
   };
 
   return (
@@ -496,29 +745,31 @@ export function PrescriptionEditor({
           <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <span>Prescription Generator</span>
             <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)]">
-              Fast Prescribing
+              {editingPrescription ? `Revising v${editingPrescription.version || 1}` : "Fast Prescribing"}
             </span>
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Auto-fill medicines from catalog, 1-click clinical presets, and multi-page preview.
+            {editingPrescription
+              ? `Creating Version ${(editingPrescription.version || 1) + 1} • All previous versions are permanently preserved in history.`
+              : "Auto-fill medicines from catalog, 1-click clinical presets, and multi-page preview."}
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           {templates.length > 0 && (
             <div className="flex items-center gap-2">
-              <label className="text-xs font-semibold text-slate-500">Template:</label>
-              <select
-                value={selectedTemplateId}
-                onChange={(e) => setSelectedTemplateId(e.target.value)}
-                className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-[var(--bg-surface)] text-xs text-slate-800 dark:text-slate-200 font-medium focus:outline-none"
-              >
-                {templates.map((tpl) => (
-                  <option key={tpl.id} value={tpl.id}>
-                    {tpl.name} {tpl.isDefault ? "(Default)" : ""}
-                  </option>
-                ))}
-              </select>
+              <label className="text-xs font-semibold text-slate-500 whitespace-nowrap hidden sm:inline">
+                Template:
+              </label>
+              <div className="w-48 sm:w-60">
+                <SearchableSelect
+                  options={templateOptions}
+                  value={selectedTemplateId}
+                  placeholder="Select template..."
+                  searchPlaceholder="Search layout templates..."
+                  onChange={(val) => setSelectedTemplateId(val)}
+                />
+              </div>
             </div>
           )}
 
@@ -537,36 +788,102 @@ export function PrescriptionEditor({
         </div>
       </div>
 
+      {/* Revision Mode Banner with Reason presets */}
+      {editingPrescription && (
+        <div className="rounded-3xl border-2 border-amber-500/40 bg-amber-50/80 dark:bg-amber-950/30 dark:border-amber-700/60 p-6 shadow-sm space-y-4 animate-in fade-in">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start sm:items-center gap-3.5">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500 text-white font-black text-lg shadow-sm">
+                v{(editingPrescription.version || 1) + 1}
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-black uppercase tracking-wider text-amber-900 dark:text-amber-300">
+                    Modifying Existing Prescription
+                  </span>
+                  <span className="rounded-full bg-amber-200/90 dark:bg-amber-900/60 px-2.5 py-0.5 text-[11px] font-bold text-amber-900 dark:text-amber-200 border border-amber-300/60 dark:border-amber-700/60">
+                    Current Active: v{editingPrescription.version || 1} ➔ Next: v{(editingPrescription.version || 1) + 1}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-700 dark:text-slate-300 mt-1 font-medium">
+                  Patient: <strong className="text-slate-900 dark:text-white">{currentPatient?.user.name}</strong> • Rx ID: <code className="font-mono text-xs">{editingPrescription.id}</code>
+                </p>
+                <p className="text-[11px] text-amber-800/90 dark:text-amber-400/90 mt-0.5">
+                  Preserving History: All earlier versions remain archived and directly inspectable & printable by both you and the patient.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleCancelRevision}
+              className="self-start sm:self-auto px-4 py-2 rounded-xl text-xs font-bold border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition shadow-2xs"
+            >
+              ✕ Cancel Revision / New Rx
+            </button>
+          </div>
+
+          <div className="pt-3 border-t border-amber-200/70 dark:border-amber-900/40 space-y-2">
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              Revision Reason / Clinical Note for Version {(editingPrescription.version || 1) + 1}:
+            </label>
+            <input
+              type="text"
+              value={changeReason}
+              onChange={(e) => setChangeReason(e.target.value)}
+              placeholder="e.g. Updated after CBC report returned; adjusted antibiotic dosage..."
+              className="w-full rounded-xl border border-amber-300/80 dark:border-amber-800/80 bg-white dark:bg-slate-900 px-3.5 py-2 text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            />
+            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+              <span className="text-[11px] font-semibold text-slate-500 mr-1">1-Click Reasons:</span>
+              {REVISION_REASON_PRESETS.map((reason) => (
+                <button
+                  key={reason}
+                  type="button"
+                  onClick={() => setChangeReason(reason)}
+                  className="text-[11px] px-2.5 py-1 rounded-lg bg-amber-100/90 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-800/50 transition font-medium border border-amber-300/60 dark:border-amber-800/50 cursor-pointer"
+                >
+                  + {reason}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Success Notification Banner */}
       {createdPrescriptionId && (
         <div className="p-6 rounded-3xl border-2 border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40 dark:border-emerald-700 shadow-sm animate-in fade-in">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 text-xs font-bold">
-                ✓ Prescription Generated Successfully
+                ✓ {savedVersionNumber && savedVersionNumber > 1 ? `Version ${savedVersionNumber} Saved (History Preserved)` : "Prescription Generated Successfully"}
               </span>
               <h3 className="text-base font-bold text-slate-900 dark:text-white mt-2">
-                Ready for Printing & Patient Sharing
+                {savedVersionNumber && savedVersionNumber > 1
+                  ? `Prescription Updated to Version ${savedVersionNumber}`
+                  : "Ready for Printing & Patient Sharing"}
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400">
                 Prescription ID: <code className="font-mono font-semibold">{createdPrescriptionId}</code>
+                {savedVersionNumber && ` • Active Version: v${savedVersionNumber}`}
               </p>
             </div>
 
             <div className="flex items-center gap-3">
               <Link
-                href={`/prescriptions/${createdPrescriptionId}/print`}
+                href={`/prescriptions/${createdPrescriptionId}/print${savedVersionNumber ? `?version=${savedVersionNumber}` : ""}`}
                 target="_blank"
                 className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-semibold shadow-sm hover:opacity-90 transition-all"
               >
-                <span>🖨️ View & Print Full A4</span>
+                <span>🖨️ View & Print Full A4 (v{savedVersionNumber || 1})</span>
               </Link>
               <button
                 type="button"
                 onClick={resetForm}
                 className="px-4 py-2.5 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition-all"
               >
-                + New Prescription
+                + Write Another Prescription
               </button>
             </div>
           </div>
@@ -692,28 +1009,32 @@ export function PrescriptionEditor({
               <label className="block text-xs font-semibold text-slate-500 mb-1.5">
                 Select Patient *
               </label>
-              <select
-                value={selectedPatientId}
-                onChange={(e) => handlePatientSelect(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs font-medium focus:outline-none focus:border-[var(--brand-primary)]"
-              >
-                <option value="">-- Choose Patient --</option>
-                {appointments.map((appt) => (
-                  <option key={appt.id} value={appt.patientId}>
-                    Serial #{appt.serialNumber} — {appt.patient.user.name} ({appt.patient.user.email})
-                  </option>
-                ))}
-                {patients
-                  .filter((p) => !appointments.some((a) => a.patientId === p.id))
-                  .map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.user.name} ({p.user.email})
-                    </option>
-                  ))}
-              </select>
+              {editingPrescription ? (
+                <div className="p-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-default)] flex items-center justify-between">
+                  <div className="min-w-0 pr-2">
+                    <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                      {currentPatient?.user.name}
+                    </p>
+                    <p className="text-[11px] text-slate-500 truncate">
+                      {currentPatient?.user.email} {currentPatient?.user.phone ? `• Tel: ${currentPatient.user.phone}` : ""}
+                    </p>
+                  </div>
+                  <span className="shrink-0 px-2.5 py-1 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-[10px] font-bold">
+                    🔒 Locked for Revision
+                  </span>
+                </div>
+              ) : (
+                <SearchableSelect
+                  options={patientOptions}
+                  value={selectedPatientId}
+                  onChange={(val) => handlePatientSelect(val)}
+                  placeholder="Search patient by name, serial #, phone..."
+                  searchPlaceholder="Search patients in queue or archive..."
+                />
+              )}
             </div>
 
-            <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               <div>
                 <label className="block text-[11px] font-semibold text-slate-500 mb-1">
                   BP (mmHg)
@@ -723,18 +1044,6 @@ export function PrescriptionEditor({
                   value={bp}
                   onChange={(e) => setBp(e.target.value)}
                   placeholder="120/80"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">
-                  Weight (kg)
-                </label>
-                <input
-                  type="text"
-                  value={weight}
-                  onChange={(e) => setWeight(e.target.value)}
-                  placeholder="65 kg"
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
                 />
               </div>
@@ -762,6 +1071,111 @@ export function PrescriptionEditor({
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
                 />
               </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                  Weight (kg)
+                </label>
+                <input
+                  type="text"
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
+                  placeholder="65 kg"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                  RBS / Sugar
+                </label>
+                <input
+                  type="text"
+                  value={bloodSugar}
+                  onChange={(e) => setBloodSugar(e.target.value)}
+                  placeholder="7.2 mmol/L"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                  SpO2 (%)
+                </label>
+                <input
+                  type="text"
+                  value={spo2}
+                  onChange={(e) => setSpo2(e.target.value)}
+                  placeholder="98%"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Patient Chronic History & Drug Allergies Area */}
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Medical History & Chronic Comorbidities */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Medical History & Comorbidities (Diabetes, HTN, etc.)
+                </label>
+                <span className="text-[10px] font-mono text-slate-400">Hx</span>
+              </div>
+              <textarea
+                rows={3}
+                value={medicalHistory}
+                onChange={(e) => setMedicalHistory(e.target.value)}
+                placeholder="Click quick presets below or type patient chronic conditions (each on a separate line)..."
+                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed"
+              />
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                <span className="text-[10px] uppercase font-bold text-slate-400 self-center">
+                  Quick chips:
+                </span>
+                {HISTORY_PRESETS.map((chip) => (
+                  <button
+                    key={chip}
+                    type="button"
+                    onClick={() => appendHistory(chip)}
+                    className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition-all cursor-pointer"
+                  >
+                    + {chip}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Drug Allergies & Safety Precautions */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-semibold text-rose-600 dark:text-rose-400">
+                  Drug Allergies & Safety Alerts
+                </label>
+                <span className="text-[10px] uppercase font-bold px-1.5 py-0.2 rounded bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900/40">
+                  Safety Critical
+                </span>
+              </div>
+              <textarea
+                rows={3}
+                value={allergies}
+                onChange={(e) => setAllergies(e.target.value)}
+                placeholder="Click quick presets below or type drug allergies (e.g. Penicillin, Sulfa drugs)..."
+                className="w-full px-3.5 py-2.5 rounded-2xl border border-rose-200 dark:border-rose-900/60 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-rose-500 leading-relaxed"
+              />
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                <span className="text-[10px] uppercase font-bold text-slate-400 self-center">
+                  Quick chips:
+                </span>
+                {ALLERGY_PRESETS.map((chip) => (
+                  <button
+                    key={chip}
+                    type="button"
+                    onClick={() => appendAllergy(chip)}
+                    className="px-2 py-0.5 rounded-lg bg-rose-50 dark:bg-rose-950/30 text-[11px] text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-900/40 hover:bg-rose-100 hover:text-rose-900 transition-all cursor-pointer"
+                  >
+                    + {chip}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -779,11 +1193,11 @@ export function PrescriptionEditor({
                 Chief Complaints / Symptoms
               </label>
               <textarea
-                rows={3}
+                rows={4}
                 value={complaints}
                 onChange={(e) => setComplaints(e.target.value)}
-                placeholder="Click quick presets below or type specific patient symptoms..."
-                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
+                placeholder="Click quick presets below or type patient symptoms (each on a separate line)..."
+                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed"
               />
               <div className="flex flex-wrap gap-1.5 pt-1">
                 <span className="text-[10px] uppercase font-bold text-slate-400 self-center">
@@ -794,7 +1208,7 @@ export function PrescriptionEditor({
                     key={chip}
                     type="button"
                     onClick={() => appendComplaint(chip)}
-                    className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition-all"
+                    className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition-all cursor-pointer"
                   >
                     + {chip}
                   </button>
@@ -808,11 +1222,11 @@ export function PrescriptionEditor({
                 Clinical Diagnosis (Dx)
               </label>
               <textarea
-                rows={3}
+                rows={4}
                 value={diagnosis}
                 onChange={(e) => setDiagnosis(e.target.value)}
-                placeholder="Select common clinical conditions or type custom diagnosis..."
-                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
+                placeholder="Click quick presets below or type clinical conditions (each on a separate line)..."
+                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed"
               />
               <div className="flex flex-wrap gap-1.5 pt-1">
                 <span className="text-[10px] uppercase font-bold text-slate-400 self-center">
@@ -823,7 +1237,7 @@ export function PrescriptionEditor({
                     key={chip}
                     type="button"
                     onClick={() => setDiagnosisPreset(chip)}
-                    className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition-all"
+                    className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition-all cursor-pointer"
                   >
                     + {chip}
                   </button>
@@ -945,24 +1359,18 @@ export function PrescriptionEditor({
 
                 {/* Primary Drug Search and Type/Dosage */}
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                  <div className="sm:col-span-2">
+                  <div className="sm:col-span-3">
                     <label className="block text-[10px] font-semibold text-slate-500 uppercase mb-1">
                       Formulation
                     </label>
-                    <select
+                    <SearchableSelect
+                      options={FORMULATION_OPTIONS}
                       value={med.type}
-                      onChange={(e) => updateMedicine(index, "type", e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs font-medium focus:outline-none"
-                    >
-                      <option value="Tablet">Tablet</option>
-                      <option value="Capsule">Capsule</option>
-                      <option value="Syrup">Syrup</option>
-                      <option value="Suspension">Suspension</option>
-                      <option value="Injection">Injection</option>
-                      <option value="Inhaler">Inhaler</option>
-                      <option value="Eye Drops">Eye Drops</option>
-                      <option value="Ointment">Ointment</option>
-                    </select>
+                      placeholder="Select formulation..."
+                      searchPlaceholder="Search formulation..."
+                      allowCustom
+                      onChange={(val) => updateMedicine(index, "type", val)}
+                    />
                   </div>
 
                   <div className="sm:col-span-6">
@@ -978,7 +1386,7 @@ export function PrescriptionEditor({
                     />
                   </div>
 
-                  <div className="sm:col-span-4">
+                  <div className="sm:col-span-3">
                     <label className="block text-[10px] font-semibold text-slate-500 uppercase mb-1">
                       Strength / Dosage
                     </label>
@@ -987,7 +1395,7 @@ export function PrescriptionEditor({
                       value={med.dosage}
                       onChange={(e) => updateMedicine(index, "dosage", e.target.value)}
                       placeholder="e.g. 20mg, 500mg"
-                      className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs focus:outline-none"
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1086,11 +1494,11 @@ export function PrescriptionEditor({
                 Special Advice / Dietary Precautions
               </label>
               <textarea
-                rows={3}
+                rows={4}
                 value={advice}
                 onChange={(e) => setAdvice(e.target.value)}
-                placeholder="Dietary instructions, physical activity, restrictions..."
-                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
+                placeholder="Click quick presets below or type dietary instructions, physical activity, restrictions..."
+                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed"
               />
               <div className="flex flex-wrap gap-1.5 pt-1">
                 <span className="text-[10px] uppercase font-bold text-slate-400 self-center">
@@ -1101,7 +1509,7 @@ export function PrescriptionEditor({
                     key={chip}
                     type="button"
                     onClick={() => appendAdvice(chip)}
-                    className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition-all"
+                    className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition-all cursor-pointer"
                   >
                     + {chip}
                   </button>
@@ -1121,6 +1529,21 @@ export function PrescriptionEditor({
                   placeholder="e.g. After 7 days with investigation reports"
                   className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
                 />
+                <div className="flex flex-wrap gap-1.5 pt-1.5">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 self-center">
+                    Quick chips:
+                  </span>
+                  {FOLLOWUP_PRESETS.map((chip) => (
+                    <button
+                      key={chip}
+                      type="button"
+                      onClick={() => setFollowUp(chip)}
+                      className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition-all cursor-pointer"
+                    >
+                      + {chip}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div>
@@ -1222,6 +1645,8 @@ export function PrescriptionEditor({
           >
             {submitting ? (
               <span>Saving Prescription...</span>
+            ) : editingPrescription ? (
+              <span>💾 Save as Version {(editingPrescription.version || 1) + 1} (Preserve History)</span>
             ) : (
               <span>✓ Save & Generate Prescription</span>
             )}
@@ -1233,6 +1658,9 @@ export function PrescriptionEditor({
       <PrescriptionPreviewModal
         isOpen={showPreviewModal}
         onClose={() => setShowPreviewModal(false)}
+        prescriptionId={editingPrescription?.id || createdPrescriptionId || undefined}
+        version={editingPrescription ? (editingPrescription.version || 1) + 1 : savedVersionNumber || 1}
+        changeReason={changeReason || undefined}
         doctor={{
           name: docName,
           specialization: docSpecialization,
@@ -1242,11 +1670,13 @@ export function PrescriptionEditor({
           bmdcRegNo: docRegNo,
           chamberAddress: docChamber,
           contactNumber: docContact,
+          signatureUrl: docSignatureUrl || doctor.signatureUrl || doctor.user?.signatureUrl || undefined,
         }}
         patient={{
           name: currentPatient?.user.name || "Patient",
           gender: currentPatient?.gender || "Not specified",
           phone: currentPatient?.user.phone || undefined,
+          age: patientAge,
         }}
         hospitalInfo={{
           name: selectedTemplate?.contentJson?.hospitalName || docHospital || "Metropolitan Specialized Hospital",
@@ -1257,8 +1687,15 @@ export function PrescriptionEditor({
           disclaimer: selectedTemplate?.contentJson?.disclaimer,
           themeColor: selectedTemplate?.contentJson?.themeColor || "#0f766e",
         }}
-        vitals={{ bp, weight, pulse, temp }}
-        clinicalInfo={{ complaints, diagnosis, advice, followUp }}
+        vitals={{ bp, weight, pulse, temp, bloodSugar, spo2 }}
+        clinicalInfo={{
+          complaints,
+          diagnosis,
+          advice,
+          followUp,
+          medicalHistory,
+          allergies,
+        }}
         medicines={medicines}
         tests={tests}
       />

@@ -24,6 +24,8 @@ type Vitals = {
   weight?: string;
   pulse?: string;
   temp?: string;
+  bloodSugar?: string;
+  spo2?: string;
 };
 
 type ClinicalInfo = {
@@ -31,6 +33,8 @@ type ClinicalInfo = {
   diagnosis?: string;
   advice?: string;
   followUp?: string;
+  medicalHistory?: string;
+  allergies?: string;
 };
 
 type DoctorOverride = {
@@ -42,6 +46,7 @@ type DoctorOverride = {
   bmdcRegNo?: string;
   chamberAddress?: string;
   contactNumber?: string;
+  signatureUrl?: string;
 };
 
 type CustomTextBlock = {
@@ -94,10 +99,14 @@ type TemplateContent = {
 
 export default async function PrintablePrescriptionPage({
   params,
+  searchParams,
 }: {
   params: Promise<Params>;
+  searchParams?: Promise<{ version?: string }>;
 }) {
   const { id } = await params;
+  const sParams = searchParams ? await searchParams : {};
+  const requestedVersion = sParams.version ? parseInt(sParams.version, 10) : undefined;
 
   const prescription = await db.prescription.findUnique({
     where: { id },
@@ -107,6 +116,9 @@ export default async function PrintablePrescriptionPage({
       template: true,
       appointment: true,
       attachments: { include: { file: true } },
+      versions: {
+        orderBy: { versionNumber: "asc" },
+      },
     },
   });
 
@@ -114,8 +126,39 @@ export default async function PrintablePrescriptionPage({
     notFound();
   }
 
+  const activeVersion = prescription.version || 1;
+  const targetVersionRecord = requestedVersion
+    ? prescription.versions.find((v) => v.versionNumber === requestedVersion)
+    : null;
+
+  const currentVersion = targetVersionRecord ? targetVersionRecord.versionNumber : activeVersion;
+  const isHistorical = targetVersionRecord ? targetVersionRecord.versionNumber !== activeVersion : false;
+  const changeReason = targetVersionRecord
+    ? targetVersionRecord.changeReason
+    : prescription.versions.find((v) => v.versionNumber === activeVersion)?.changeReason || null;
+
+  // Clinical & Medicines Data (From version snapshot if target selected, else active prescription)
+  const medicines = (
+    (targetVersionRecord ? targetVersionRecord.medicinesJson : prescription.medicinesJson) as MedicineItem[]
+  ) || [];
+  const tests = (
+    (targetVersionRecord ? targetVersionRecord.testsJson : prescription.testsJson) as TestItem[]
+  ) || [];
+  const vitals = (
+    (targetVersionRecord ? targetVersionRecord.vitalsJson : prescription.vitalsJson) as Vitals
+  ) || {};
+  const clinicalInfo = (
+    (targetVersionRecord ? targetVersionRecord.clinicalInfoJson : prescription.clinicalInfoJson) as ClinicalInfo
+  ) || {};
+  const override = (
+    (targetVersionRecord && targetVersionRecord.doctorOverrideJson
+      ? targetVersionRecord.doctorOverrideJson
+      : prescription.doctorOverrideJson) as DoctorOverride
+  ) || {};
+
+  const displayDate = targetVersionRecord ? targetVersionRecord.createdAt : prescription.createdAt;
+
   // Doctor Info (Priority: doctorOverrideJson -> doctor profile -> user record)
-  const override = (prescription.doctorOverrideJson as DoctorOverride) || {};
   const docProfile = prescription.doctor;
 
   const doctorName = override.doctorName || docProfile.user.name;
@@ -126,6 +169,7 @@ export default async function PrintablePrescriptionPage({
   const bmdcRegNo = override.bmdcRegNo || docProfile.bmdcRegNo;
   const chamber = override.chamberAddress || docProfile.chamberAddress;
   const contactPhone = override.contactNumber || docProfile.contactNumber || docProfile.user.phone;
+  const signatureUrl = override.signatureUrl || docProfile.signatureUrl || docProfile.user.signatureUrl;
 
   // Template / Hospital Info
   const tplContent = (prescription.template?.contentJson as TemplateContent) || {};
@@ -151,13 +195,7 @@ export default async function PrintablePrescriptionPage({
     tplContent.disclaimer ||
     "This is a legally valid computer-generated medical prescription. In case of sudden emergency or deterioration, report immediately to the nearest hospital emergency room.";
 
-  // Clinical & Medicines Data
-  const medicines = (prescription.medicinesJson as MedicineItem[]) || [];
-  const tests = (prescription.testsJson as TestItem[]) || [];
-  const vitals = (prescription.vitalsJson as Vitals) || {};
-  const clinicalInfo = (prescription.clinicalInfoJson as ClinicalInfo) || {};
-
-  const formattedDate = new Date(prescription.createdAt).toLocaleDateString("en-US", {
+  const formattedDate = new Date(displayDate).toLocaleDateString("en-US", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -165,31 +203,79 @@ export default async function PrintablePrescriptionPage({
 
   return (
     <div className="min-h-screen bg-zinc-100 py-6 text-zinc-900 print:bg-white print:p-0 print:py-0">
+      {/* Historical Version Notice (Hidden in Print) */}
+      {isHistorical && (
+        <div className="mx-auto mb-4 flex max-w-4xl flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 p-4 text-xs text-amber-900 dark:text-amber-200 shadow-sm print:hidden">
+          <div className="flex items-center gap-2.5">
+            <span className="text-xl">⚠️</span>
+            <div>
+              <p className="font-bold text-sm">
+                Viewing Historical Snapshot: Version {currentVersion}
+              </p>
+              <p className="text-amber-800/90 dark:text-amber-300/80 text-[11px] mt-0.5">
+                Archived on {new Date(displayDate).toLocaleDateString()} {changeReason ? `• "${changeReason}"` : ""}. The latest active prescription is <strong>Version {activeVersion}</strong>.
+              </p>
+            </div>
+          </div>
+          <Link
+            href={`/prescriptions/${id}/print`}
+            className="self-start sm:self-auto px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold transition shadow-xs text-xs"
+          >
+            Switch to Latest v{activeVersion}
+          </Link>
+        </div>
+      )}
+
       {/* Floating Action Bar - Hidden in Print */}
-      <div className="mx-auto mb-6 flex max-w-4xl items-center justify-between rounded-2xl bg-white px-5 py-3 shadow-md print:hidden dark:bg-zinc-900">
-        <div className="flex items-center gap-3">
+      <div className="mx-auto mb-6 flex max-w-4xl flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-white px-5 py-3 shadow-md print:hidden dark:bg-zinc-900">
+        <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/dashboard/doctor"
             className="flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800"
           >
-            ← Back to Doctor Dashboard
+            ← Back to Dashboard
           </Link>
           <span className="text-xs text-zinc-500">
-            Prescription ID: <code className="font-mono font-bold text-zinc-700 dark:text-zinc-300">{id}</code>
+            Rx ID: <code className="font-mono font-bold text-zinc-700 dark:text-zinc-300">{id}</code>
+          </span>
+          <span className="px-2.5 py-0.5 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-xs font-bold">
+            Version {currentVersion} {isHistorical ? "(Archived Snapshot)" : "(Latest Active)"}
           </span>
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="hidden text-xs text-zinc-500 sm:inline">
-            📄 Formatted for A4 Prescription Paper
-          </span>
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Version Switcher if multiple versions exist */}
+          {prescription.versions.length > 1 && (
+            <div className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl">
+              <span className="text-[11px] font-bold text-zinc-500 px-2 uppercase tracking-wider">
+                Revisions:
+              </span>
+              {prescription.versions.map((ver) => {
+                const isSelected = ver.versionNumber === currentVersion;
+                return (
+                  <Link
+                    key={ver.id}
+                    href={`/prescriptions/${id}/print?version=${ver.versionNumber}`}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition ${
+                      isSelected
+                        ? "bg-[var(--brand-primary)] text-white shadow-xs"
+                        : "text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                    }`}
+                  >
+                    v{ver.versionNumber}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
           <PrintButton />
         </div>
       </div>
 
       {/* Main Prescription Paper (A4 Standard) */}
       <main
-        className="relative mx-auto min-h-[1050px] max-w-4xl overflow-hidden rounded-2xl p-10 shadow-xl print:m-0 print:min-h-0 print:w-full print:max-w-none print:rounded-none print:p-8 print:shadow-none"
+        className="relative mx-auto min-h-[1050px] max-w-4xl overflow-hidden rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl print:m-0 print:min-h-0 print:w-full print:max-w-none print:rounded-none print:p-5 print:pt-4 print:pb-4 print:shadow-none"
         style={{
           borderColor: themeColor,
           backgroundColor: backgroundColor,
@@ -243,17 +329,17 @@ export default async function PrintablePrescriptionPage({
           <div>
             {/* Top Header: Hospital & Doctor Information */}
             <header
-              className="border-b-2 pb-5"
+              className="border-b-2 pb-3.5 mb-3"
               style={{
                 borderColor: themeColor,
                 transform: tplContent.headerOffsetY ? `translateY(${tplContent.headerOffsetY}px)` : undefined,
               }}
             >
-              <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
+              <div className="flex flex-col justify-between gap-3 md:flex-row md:items-start">
                 {/* Left Column: Doctor Profile */}
                 <div className="max-w-md">
                   <h1
-                    className="text-2xl font-bold tracking-tight"
+                    className="text-xl sm:text-2xl font-bold tracking-tight"
                     style={{
                       color: themeColor,
                       fontSize: tplContent.doctorTitleSize ? `${tplContent.doctorTitleSize}px` : undefined,
@@ -261,7 +347,7 @@ export default async function PrintablePrescriptionPage({
                   >
                     {doctorName}
                   </h1>
-                  {degrees && <p className="text-sm font-semibold opacity-90">{degrees}</p>}
+                  {degrees && <p className="text-xs sm:text-sm font-semibold opacity-90">{degrees}</p>}
                   <p className="text-xs font-medium opacity-85">{specialization}</p>
                   {designation && <p className="text-xs opacity-75">{designation}</p>}
                   {hospitalAffiliation && (
@@ -270,7 +356,7 @@ export default async function PrintablePrescriptionPage({
                     </p>
                   )}
                   {bmdcRegNo && (
-                    <p className="mt-1 text-[11px] font-mono opacity-70">
+                    <p className="mt-0.5 text-[11px] font-mono opacity-70">
                       Reg: {bmdcRegNo}
                     </p>
                   )}
@@ -288,11 +374,11 @@ export default async function PrintablePrescriptionPage({
                     <img
                       src={tplContent.logoUrl}
                       alt={hospitalName}
-                      className="mb-2 h-12 w-auto max-w-[160px] object-contain rounded"
+                      className="mb-1.5 h-10 w-auto max-w-[150px] object-contain rounded"
                     />
                   )}
                   <h2
-                    className="text-xl font-black uppercase tracking-wider"
+                    className="text-lg sm:text-xl font-black uppercase tracking-wider"
                     style={{
                       color: themeColor,
                       fontSize: tplContent.hospitalTitleSize ? `${tplContent.hospitalTitleSize}px` : undefined,
@@ -301,9 +387,9 @@ export default async function PrintablePrescriptionPage({
                     {hospitalName}
                   </h2>
                   {tplContent.showHospitalTagline !== false && hospitalTagline && (
-                    <p className="text-xs italic opacity-75">{hospitalTagline}</p>
+                    <p className="text-[11px] italic opacity-75">{hospitalTagline}</p>
                   )}
-                  <p className="mt-1 text-xs opacity-75">{hospitalAddress}</p>
+                  <p className="mt-0.5 text-xs opacity-75">{hospitalAddress}</p>
                   {tplContent.showHospitalContactBar !== false && (
                     <>
                       <p className="text-xs opacity-75">
@@ -322,8 +408,8 @@ export default async function PrintablePrescriptionPage({
             </header>
 
             {/* Patient Details Strip */}
-            <section className="my-4 rounded-xl border border-zinc-200/80 bg-zinc-50/60 p-3.5 print:bg-transparent print:border-zinc-300">
-              <div className="grid grid-cols-2 gap-3 text-xs sm:grid-cols-4">
+            <section className="mb-3.5 rounded-xl border border-zinc-200/80 bg-zinc-50/60 p-2.5 sm:p-3 print:bg-transparent print:border-zinc-300">
+              <div className="grid grid-cols-2 gap-2 sm:gap-3 text-xs sm:grid-cols-4">
                 <div>
                   <span className="text-[11px] font-medium opacity-65">Patient Name:</span>
                   <p className="text-sm font-bold">{prescription.patient.user.name}</p>
@@ -348,21 +434,26 @@ export default async function PrintablePrescriptionPage({
 
                 <div>
                   <span className="text-[11px] font-medium opacity-65">Prescription No:</span>
-                  <p className="text-xs font-mono font-bold">{id.slice(0, 14)}...</p>
+                  <p className="text-xs font-mono font-bold break-all">
+                    {id} • v{currentVersion}
+                  </p>
                 </div>
               </div>
 
+              {/* Revision note bar if present */}
+              {changeReason && (
+                <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50/80 p-2 text-xs text-amber-900 print:border-zinc-300 print:bg-transparent print:text-zinc-800">
+                  <span className="font-bold">Revision Note (v{currentVersion}):</span>{" "}
+                  <span>{changeReason}</span>
+                </div>
+              )}
+
               {/* Vitals row if present */}
-              {tplContent.showVitals !== false && (vitals.bp || vitals.weight || vitals.pulse || vitals.temp) && (
+              {tplContent.showVitals !== false && (vitals.bp || vitals.weight || vitals.pulse || vitals.temp || vitals.bloodSugar || vitals.spo2) && (
                 <div className="mt-2.5 flex flex-wrap gap-4 border-t border-zinc-200/60 pt-2 text-xs print:border-zinc-300">
                   {vitals.bp && (
                     <span>
                       <strong className="opacity-75">BP:</strong> {vitals.bp}
-                    </span>
-                  )}
-                  {vitals.weight && (
-                    <span>
-                      <strong className="opacity-75">Weight:</strong> {vitals.weight}
                     </span>
                   )}
                   {vitals.pulse && (
@@ -373,6 +464,21 @@ export default async function PrintablePrescriptionPage({
                   {vitals.temp && (
                     <span>
                       <strong className="opacity-75">Temp:</strong> {vitals.temp}
+                    </span>
+                  )}
+                  {vitals.weight && (
+                    <span>
+                      <strong className="opacity-75">Weight:</strong> {vitals.weight}
+                    </span>
+                  )}
+                  {vitals.bloodSugar && (
+                    <span>
+                      <strong className="opacity-75">RBS/Sugar:</strong> {vitals.bloodSugar}
+                    </span>
+                  )}
+                  {vitals.spo2 && (
+                    <span>
+                      <strong className="opacity-75">SpO2:</strong> {vitals.spo2}
                     </span>
                   )}
                 </div>
@@ -388,6 +494,29 @@ export default async function PrintablePrescriptionPage({
             >
               {/* Left Column: Complaints, Diagnosis & Investigations (~35% width) */}
               <aside className="col-span-12 border-b border-zinc-200/80 pb-4 md:col-span-4 md:border-b-0 md:border-r md:pr-4 print:col-span-4 print:border-r print:border-b-0">
+                {/* Past Medical History / Comorbidities */}
+                {clinicalInfo.medicalHistory && (
+                  <div className="mb-5">
+                    <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
+                      Medical History (Hx)
+                    </h3>
+                    <div className="mt-1.5 whitespace-pre-line leading-relaxed text-xs font-medium bg-zinc-50/70 p-2.5 rounded-lg border border-zinc-200/80 print:bg-transparent print:border-zinc-300">
+                      {clinicalInfo.medicalHistory}
+                    </div>
+                  </div>
+                )}
+
+                {/* Drug Allergies / Adverse Alerts */}
+                {clinicalInfo.allergies && (
+                  <div className="mb-5">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-rose-600 print:text-black">
+                      Drug Allergies / Alerts
+                    </h3>
+                    <div className="mt-1.5 whitespace-pre-line leading-relaxed text-xs font-semibold text-rose-900 bg-rose-50/70 p-2.5 rounded-lg border border-rose-200 print:bg-transparent print:text-black print:border-zinc-300">
+                      {clinicalInfo.allergies}
+                    </div>
+                  </div>
+                )}
                 {clinicalInfo.complaints && (
                   <div className="mb-5">
                     <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
@@ -404,7 +533,7 @@ export default async function PrintablePrescriptionPage({
                     <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
                       Diagnosis / Assessment
                     </h3>
-                    <div className="mt-1.5 rounded-lg border border-teal-200 bg-teal-50/50 p-2.5 text-xs font-semibold text-teal-900 print:bg-transparent print:border-zinc-300">
+                    <div className="mt-1.5 rounded-lg border border-teal-200 bg-teal-50/50 p-2.5 text-xs font-semibold text-teal-900 whitespace-pre-line leading-relaxed print:bg-transparent print:border-zinc-300">
                       {clinicalInfo.diagnosis}
                     </div>
                   </div>
@@ -575,12 +704,22 @@ export default async function PrintablePrescriptionPage({
 
               {/* Doctor Signature Block */}
               {tplContent.showSignatureBlock !== false && (
-                <div className="text-center sm:text-right">
-                  <div className="inline-block min-w-[200px] border-b border-zinc-400 pb-1 text-center font-serif text-sm italic opacity-75">
-                    {/* Physical signature area */}
+                <div className="text-center sm:text-right shrink-0">
+                  <div className="inline-flex flex-col items-center sm:items-end justify-end min-w-[200px] border-b border-zinc-400 pb-1 text-center font-serif text-sm italic opacity-90 min-h-12">
+                    {signatureUrl ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={signatureUrl}
+                        alt={`${doctorName} Signature`}
+                        className="max-h-12 max-w-[170px] object-contain mb-0.5"
+                      />
+                    ) : (
+                      <div className="h-8 w-36 border-b border-dashed border-zinc-300" />
+                    )}
                   </div>
-                  <p className="mt-1.5 text-xs font-bold">{doctorName}</p>
+                  <p className="mt-1 text-xs font-bold">{doctorName}</p>
                   <p className="text-[11px] opacity-75">{specialization}</p>
+                  {bmdcRegNo && <p className="text-[10px] font-mono opacity-70">BMDC: {bmdcRegNo}</p>}
                   <p className="text-[10px] opacity-60">Doctor&apos;s Signature & Stamp</p>
                 </div>
               )}

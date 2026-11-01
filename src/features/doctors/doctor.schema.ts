@@ -9,6 +9,11 @@ export const doctorSchema = z.object({
   bmdcRegNo: z.string().optional().nullable(),
   chamberAddress: z.string().optional().nullable(),
   contactNumber: z.string().optional().nullable(),
+  bio: z.string().optional().nullable(),
+  visitingHours: z.string().optional().nullable(),
+  consultationFee: z.string().optional().nullable(),
+  experienceYears: z.string().optional().nullable(),
+  signatureUrl: z.string().optional().nullable(),
   scheduleJson: z.record(z.string(), z.unknown()).optional().nullable(),
   available: z.boolean().optional(),
 });

@@ -6,7 +6,8 @@ export const createUserSchema = z.object({
   email: z.email(),
   password: z.string().min(8),
   phone: z.string().optional(),
-  imageUrl: z.url().optional(),
+  imageUrl: z.string().optional().nullable(),
+  signatureUrl: z.string().optional().nullable(),
   role: z.enum(RoleName),
 });
 

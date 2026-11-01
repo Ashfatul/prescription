@@ -31,13 +31,22 @@ interface AppointmentItem {
 
 interface PrescriptionItem {
   id: string;
+  version?: number;
   createdAt: Date | string;
+  updatedAt?: Date | string;
   doctor: {
     specialization: string;
+    hospital?: string | null;
     user: {
       name: string;
     };
   };
+  versions?: Array<{
+    id: string;
+    versionNumber: number;
+    changeReason?: string | null;
+    createdAt: Date | string;
+  }>;
 }
 
 interface PatientDashboardViewProps {
@@ -54,6 +63,7 @@ export function PatientDashboardView({
   const router = useRouter();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedSlip, setSelectedSlip] = useState<AppointmentItem | null>(null);
+  const [selectedHistoryPrescription, setSelectedHistoryPrescription] = useState<PrescriptionItem | null>(null);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -295,36 +305,73 @@ export function PatientDashboardView({
                 </p>
               </div>
             ) : (
-              prescriptions.map((item) => (
-                <div
-                  key={item.id}
-                  className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between gap-3 hover:border-[var(--brand-border)] transition-all shadow-2xs"
-                >
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-slate-900 dark:text-white">
-                        {item.doctor.user.name}
-                      </span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] font-semibold">
-                        {item.doctor.specialization}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-slate-400" />
-                      Issued on {new Date(item.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
+              prescriptions.map((item) => {
+                const versionCount = item.versions?.length || 1;
+                const latestReason = item.versions?.[0]?.changeReason;
+                const formattedDate = new Date(item.updatedAt || item.createdAt).toLocaleDateString();
 
-                  <Link
-                    href={`/prescriptions/${item.id}/print`}
-                    target="_blank"
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-xs font-bold hover:bg-[var(--brand-primary)] hover:text-white transition-all shadow-xs shrink-0 cursor-pointer"
+                return (
+                  <div
+                    key={item.id}
+                    className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-[var(--brand-border)] transition-all shadow-2xs"
                   >
-                    <Printer className="w-3.5 h-3.5" />
-                    <span>View & Print</span>
-                  </Link>
-                </div>
-              ))
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-bold text-sm text-slate-900 dark:text-white">
+                          {item.doctor.user.name}
+                        </span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] font-semibold">
+                          {item.doctor.specialization}
+                        </span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">
+                          v{item.version || 1}
+                        </span>
+                        {versionCount > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedHistoryPrescription(item)}
+                            className="text-[10px] font-semibold text-[var(--brand-text)] underline hover:opacity-80 cursor-pointer"
+                          >
+                            {versionCount} revisions
+                          </button>
+                        )}
+                      </div>
+
+                      <p className="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-slate-400" />
+                        {item.version && item.version > 1 ? `Updated on ${formattedDate}` : `Issued on ${formattedDate}`}
+                      </p>
+
+                      {latestReason && item.version && item.version > 1 && (
+                        <p className="text-[11px] text-amber-700 dark:text-amber-400 mt-0.5 font-medium">
+                          ↳ Note: {latestReason}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      {versionCount > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedHistoryPrescription(item)}
+                          className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                        >
+                          📜 Versions
+                        </button>
+                      )}
+
+                      <Link
+                        href={`/prescriptions/${item.id}/print`}
+                        target="_blank"
+                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-xs font-bold hover:bg-[var(--brand-primary)] hover:text-white transition-all shadow-xs cursor-pointer"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                        <span>View & Print</span>
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })
             )}
           </div>
         </div>
@@ -377,6 +424,105 @@ export function PatientDashboardView({
                 type="button"
                 onClick={() => setSelectedSlip(null)}
                 className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Patient Prescription Version History Modal */}
+      {selectedHistoryPrescription && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-xl bg-[var(--bg-surface)] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
+                  Prescription Version Timeline
+                </span>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white mt-1">
+                  Dr. {selectedHistoryPrescription.doctor.user.name}
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {selectedHistoryPrescription.doctor.specialization} • Total Revisions: <strong>{selectedHistoryPrescription.versions?.length || 1}</strong>
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSelectedHistoryPrescription(null)}
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {(selectedHistoryPrescription.versions || []).map((ver) => {
+                const isLatest = ver.versionNumber === selectedHistoryPrescription.version;
+                const verDate = new Date(ver.createdAt).toLocaleString(undefined, {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+
+                return (
+                  <div
+                    key={ver.id}
+                    className={`p-4 rounded-2xl border transition-all ${
+                      isLatest
+                        ? "bg-[var(--brand-surface)]/50 border-[var(--brand-border)]"
+                        : "bg-[var(--bg-app)] border-slate-200 dark:border-slate-800"
+                    }`}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`px-2.5 py-0.5 rounded-lg text-xs font-black ${
+                              isLatest
+                                ? "bg-[var(--brand-primary)] text-white"
+                                : "bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                            }`}
+                          >
+                            Version {ver.versionNumber}
+                          </span>
+                          {isLatest && (
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
+                              ● Current Active
+                            </span>
+                          )}
+                          <span className="text-xs text-slate-500">
+                            {verDate}
+                          </span>
+                        </div>
+
+                        <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-2">
+                          ↳ Reason: {ver.changeReason || "Prescription revision"}
+                        </p>
+                      </div>
+
+                      <Link
+                        href={`/prescriptions/${selectedHistoryPrescription.id}/print?version=${ver.versionNumber}`}
+                        target="_blank"
+                        className="self-start sm:self-auto px-3.5 py-2 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-xs font-bold hover:bg-[var(--brand-primary)] hover:text-white transition shadow-xs"
+                      >
+                        🖨️ View & Print v{ver.versionNumber}
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setSelectedHistoryPrescription(null)}
+                className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition cursor-pointer"
               >
                 Close
               </button>
