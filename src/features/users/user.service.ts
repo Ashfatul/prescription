@@ -2,7 +2,7 @@ import { RoleName } from "@prisma/client";
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import { hashPassword } from "@/lib/auth/password";
-import { createUserSchema, updateUserSchema } from "@/features/users/user.schema";
+import { createUserSchema, userPreferencesSchema, updateUserSchema } from "@/features/users/user.schema";
 
 export async function listUsers() {
   return db.user.findMany({
@@ -102,11 +102,63 @@ export async function updateUser(id: string, input: unknown) {
 }
 
 export async function deleteUser(id: string) {
-  const user = await db.user.findUnique({ where: { id }, include: { role: true } });
+  const user = await db.user.findUnique({
+    where: { id },
+    include: { role: true, doctor: true, patient: true },
+  });
   if (!user) {
     throw new AppError("User not found", 404);
   }
 
+  if (user.doctor) {
+    const hasPrescriptions = await db.prescription.count({ where: { doctorId: user.doctor.id } });
+    if (hasPrescriptions > 0) {
+      throw new AppError("Cannot delete physician who has authored active clinical prescriptions.", 400);
+    }
+    await db.appointment.deleteMany({ where: { doctorId: user.doctor.id } });
+    await db.doctor.delete({ where: { id: user.doctor.id } });
+  }
+
+  if (user.patient) {
+    const hasPrescriptions = await db.prescription.count({ where: { patientId: user.patient.id } });
+    if (hasPrescriptions > 0) {
+      throw new AppError("Cannot delete patient who has active prescription medical records.", 400);
+    }
+    await db.appointment.deleteMany({ where: { patientId: user.patient.id } });
+    await db.patient.delete({ where: { id: user.patient.id } });
+  }
+
+  // Unlink or remove templates created by user
+  await db.prescription.updateMany({
+    where: { template: { createdById: id } },
+    data: { templateId: null },
+  });
+  await db.template.deleteMany({ where: { createdById: id } });
+
+  // Remove attachments and files uploaded by user
+  await db.prescriptionAttachment.deleteMany({
+    where: { file: { uploadedById: id } },
+  });
+  await db.file.deleteMany({ where: { uploadedById: id } });
+
   await db.user.delete({ where: { id } });
   return { deleted: true };
+}
+
+export async function updateUserPreferences(userId: string, input: unknown) {
+  const data = userPreferencesSchema.parse(input);
+  return db.user.update({
+    where: { id: userId },
+    data: {
+      ...(data.theme ? { theme: data.theme } : {}),
+      ...(data.accent ? { accent: data.accent } : {}),
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      theme: true,
+      accent: true,
+    },
+  });
 }

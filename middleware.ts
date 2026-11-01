@@ -3,36 +3,69 @@ import { verifyToken } from "@/lib/auth/jwt";
 import { AUTH_COOKIE } from "@/lib/auth/constants";
 import { canAccessDashboardPath } from "@/lib/auth/rbac";
 
-const PUBLIC_PATHS = ["/", "/auth/login", "/api/auth/login", "/api/auth/register", "/api/public/doctors"];
-
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  if (PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))) {
+  const token =
+    req.cookies.get(AUTH_COOKIE)?.value ||
+    req.cookies.get("ppms_session")?.value;
+
+  const payload = token ? await verifyToken(token) : null;
+
+  // If user is already authenticated and visits /auth/login, redirect to /dashboard
+  if (pathname === "/auth/login") {
+    if (payload) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
     return NextResponse.next();
   }
 
-  const token = req.cookies.get(AUTH_COOKIE)?.value;
-
-  if (!token) {
-    if (pathname.startsWith("/api")) {
-      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+  // Dashboard routes require valid auth
+  if (pathname.startsWith("/dashboard")) {
+    if (!payload) {
+      return NextResponse.redirect(new URL("/auth/login", req.url));
     }
-    return NextResponse.redirect(new URL("/auth/login", req.url));
+
+    if (!canAccessDashboardPath(pathname, payload.role)) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+    return NextResponse.next();
   }
 
-  const payload = await verifyToken(token);
-  if (!payload) {
-    return NextResponse.redirect(new URL("/auth/login", req.url));
+  // Prescription print / view routes require auth
+  if (pathname.startsWith("/prescriptions")) {
+    if (!payload) {
+      return NextResponse.redirect(new URL("/auth/login", req.url));
+    }
+    return NextResponse.next();
   }
 
-  if (pathname.startsWith("/dashboard") && !canAccessDashboardPath(pathname, payload.role)) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+  // Protected API routes
+  if (pathname.startsWith("/api")) {
+    const isPublicApi =
+      pathname === "/api/auth/login" ||
+      pathname === "/api/auth/logout" ||
+      pathname === "/api/auth/register" ||
+      pathname === "/api/public/doctors" ||
+      pathname.startsWith("/api/public/");
+
+    if (!isPublicApi && !payload) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+    return NextResponse.next();
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/api/:path*", "/prescriptions/:path*"],
+  matcher: [
+    "/auth/login",
+    "/dashboard/:path*",
+    "/api/:path*",
+    "/prescriptions/:path*",
+  ],
 };

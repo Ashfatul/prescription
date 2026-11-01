@@ -16,8 +16,18 @@ interface DiagnosticTestItem {
   instructions?: string | null;
 }
 
-export function CatalogManager() {
-  const [activeTab, setActiveTab] = useState<"medicines" | "tests">("medicines");
+interface CatalogManagerProps {
+  initialTab?: "medicines" | "tests";
+}
+
+export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps = {}) {
+  const [activeTab, setActiveTab] = useState<"medicines" | "tests">(initialTab);
+  const [prevInitialTab, setPrevInitialTab] = useState(initialTab);
+
+  if (prevInitialTab !== initialTab) {
+    setPrevInitialTab(initialTab);
+    setActiveTab(initialTab);
+  }
   const [medicines, setMedicines] = useState<MedicineItem[]>([]);
   const [tests, setTests] = useState<DiagnosticTestItem[]>([]);
   const [loading, setLoading] = useState(true);

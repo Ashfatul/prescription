@@ -42,6 +42,8 @@ export async function POST(req: NextRequest) {
         name: user.name,
         email: user.email,
         role: user.role.name,
+        theme: user.theme || "system",
+        accent: user.accent || "teal",
       },
     });
 
@@ -51,6 +53,20 @@ export async function POST(req: NextRequest) {
       secure: process.env.NODE_ENV === "production",
       path: "/",
       maxAge: 60 * 60 * 24 * 7,
+    });
+
+    res.cookies.set("ppms_theme", user.theme || "system", {
+      path: "/",
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 365,
+    });
+
+    res.cookies.set("ppms_accent", user.accent || "teal", {
+      path: "/",
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 365,
     });
 
     return res;

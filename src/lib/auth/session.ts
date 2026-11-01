@@ -7,7 +7,9 @@ import { verifyToken } from "@/lib/auth/jwt";
 import { AUTH_COOKIE } from "@/lib/auth/constants";
 
 export async function getAuthFromRequest(req: NextRequest) {
-  const token = req.cookies.get(AUTH_COOKIE)?.value;
+  const token =
+    req.cookies.get(AUTH_COOKIE)?.value ||
+    req.cookies.get("ppms_session")?.value;
   if (!token) {
     return null;
   }
@@ -16,20 +18,27 @@ export async function getAuthFromRequest(req: NextRequest) {
 }
 
 export async function getCurrentUserFromCookie() {
-  const token = (await cookies()).get(AUTH_COOKIE)?.value;
-  if (!token) {
+  try {
+    const cookieStore = await cookies();
+    const token =
+      cookieStore.get(AUTH_COOKIE)?.value ||
+      cookieStore.get("ppms_session")?.value;
+    if (!token) {
+      return null;
+    }
+
+    const payload = await verifyToken(token);
+    if (!payload) {
+      return null;
+    }
+
+    return await db.user.findUnique({
+      where: { id: payload.sub },
+      include: { role: true, doctor: true, patient: true },
+    });
+  } catch {
     return null;
   }
-
-  const payload = await verifyToken(token);
-  if (!payload) {
-    return null;
-  }
-
-  return db.user.findUnique({
-    where: { id: payload.sub },
-    include: { role: true, doctor: true, patient: true },
-  });
 }
 
 export async function requireUser(req: NextRequest, allowedRoles?: RoleName[]) {

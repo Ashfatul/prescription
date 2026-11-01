@@ -21,9 +21,10 @@ enum AppointmentStatus {
 }
 
 model Role {
-  id    String   @id @default(cuid())
-  name  RoleName @unique
-  users User[]
+  id          String   @id @default(cuid())
+  name        RoleName @unique
+  permissions Json?    @default("[]")
+  users       User[]
 }
 
 model User {
@@ -33,6 +34,8 @@ model User {
   passwordHash String
   phone        String?
   imageUrl     String?
+  theme        String   @default("system")
+  accent       String   @default("teal")
   roleId       String
   role         Role     @relation(fields: [roleId], references: [id])
   doctor       Doctor?

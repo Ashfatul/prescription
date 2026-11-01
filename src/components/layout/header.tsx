@@ -1,20 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { LanguageToggle } from "@/components/common/language-toggle";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { useAuth } from "@/lib/auth/auth-context";
 
-export function Header({ loggedIn = false }: { loggedIn?: boolean }) {
-  const router = useRouter();
+export function Header({ loggedIn }: { loggedIn?: boolean }) {
   const pathname = usePathname();
   const { t } = useLanguage();
+  const { user, logout, loading } = useAuth();
+
+  const isLoggedIn = loggedIn !== undefined ? loggedIn : !!user;
 
   const onLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/auth/login");
-    router.refresh();
+    await logout();
   };
 
   return (
@@ -32,24 +33,39 @@ export function Header({ loggedIn = false }: { loggedIn?: boolean }) {
         <nav className="flex items-center gap-2.5">
           <ThemeCustomizer compact />
           <LanguageToggle />
-          {!loggedIn && pathname !== "/auth/login" && (
+
+          {/* User profile pill when authenticated */}
+          {user && (
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 text-xs shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-[var(--brand-primary)] animate-pulse" />
+              <span className="font-bold text-slate-800 dark:text-slate-200 truncate max-w-[130px]">
+                {user.name}
+              </span>
+              <span className="text-[10px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)]">
+                {user.role}
+              </span>
+            </div>
+          )}
+
+          {!isLoggedIn && !loading && pathname !== "/auth/login" && (
             <Link
-              className="rounded-xl bg-[var(--brand-primary)] px-4 py-1.5 text-xs font-semibold text-white shadow-xs hover:opacity-90 transition-all"
+              className="rounded-xl bg-[var(--brand-primary)] px-4 py-1.5 text-xs font-semibold text-white shadow-xs hover:opacity-90 transition-all cursor-pointer"
               href="/auth/login"
             >
               {t.login}
             </Link>
           )}
-          {loggedIn && (
+
+          {isLoggedIn && (
             <>
               <Link
-                className="rounded-xl bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-white dark:bg-slate-100 dark:text-slate-900 shadow-xs hover:opacity-90"
+                className="rounded-xl bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-white dark:bg-slate-100 dark:text-slate-900 shadow-xs hover:opacity-90 transition-all"
                 href="/dashboard"
               >
                 {t.dashboard}
               </Link>
               <button
-                className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:border-slate-800 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:border-slate-800 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
                 onClick={onLogout}
                 type="button"
               >

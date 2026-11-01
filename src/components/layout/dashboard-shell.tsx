@@ -2,10 +2,25 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { RoleName } from "@prisma/client";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
 import { LanguageToggle } from "@/components/common/language-toggle";
+import { useAuth } from "@/lib/auth/auth-context";
+import {
+  BarChart3,
+  Users,
+  Shield,
+  Pill,
+  FlaskConical,
+  FileCode2,
+  PenLine,
+  Clock,
+  History,
+  UserCog,
+  FileText,
+  Compass,
+} from "lucide-react";
 
 interface DashboardShellProps {
   user: {
@@ -19,126 +34,158 @@ interface DashboardShellProps {
   children: React.ReactNode;
 }
 
+interface NavItem {
+  section: string;
+  label: string;
+  href: string;
+  tabKey: string;
+  icon: React.ReactNode;
+}
+
 export function DashboardShell({ user, children }: DashboardShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const router = useRouter();
   const activeTab = searchParams.get("tab") || "main";
 
+  const { logout } = useAuth();
+
   const onLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/auth/login");
-    router.refresh();
+    await logout();
   };
 
   const role = user.role.name;
 
-  // Build navigation items
-  const navItems = [
-    ...(role === RoleName.DOCTOR
-      ? [
-          {
-            label: "Prescription Workspace",
-            href: "/dashboard/doctor",
-            tabKey: "main",
-            icon: (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            ),
-          },
-          {
-            label: "Medicine & Lab Catalog",
-            href: "/dashboard/doctor?tab=catalog",
-            tabKey: "catalog",
-            icon: (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-              </svg>
-            ),
-          },
-          {
-            label: "Hospital Templates",
-            href: "/dashboard/doctor?tab=templates",
-            tabKey: "templates",
-            icon: (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
-              </svg>
-            ),
-          },
-          {
-            label: "Chamber & Credentials",
-            href: "/dashboard/doctor?tab=profile",
-            tabKey: "profile",
-            icon: (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            ),
-          },
-        ]
-      : []),
+  // Build navigation items grouped by semantic section
+  const navItems: NavItem[] = [
     ...(role === RoleName.SUPER_ADMIN || role === RoleName.STAFF
       ? [
           {
+            section: "System Overview",
             label: "System Analytics",
             href: "/dashboard/admin",
             tabKey: "main",
-            icon: (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            ),
+            icon: <BarChart3 className="w-4 h-4" />,
           },
           {
-            label: "Pharmaceutical Catalog",
+            section: "Accounts & Security",
+            label: "User Accounts",
+            href: "/dashboard/admin?tab=users",
+            tabKey: "users",
+            icon: <Users className="w-4 h-4" />,
+          },
+          {
+            section: "Accounts & Security",
+            label: "Role & Permissions",
+            href: "/dashboard/admin?tab=roles",
+            tabKey: "roles",
+            icon: <Shield className="w-4 h-4" />,
+          },
+          {
+            section: "Medical Formulary",
+            label: "Pharmaceutical Drugs",
             href: "/dashboard/admin?tab=catalog",
             tabKey: "catalog",
-            icon: (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-              </svg>
-            ),
+            icon: <Pill className="w-4 h-4" />,
           },
           {
-            label: "Hospital Templates",
+            section: "Medical Formulary",
+            label: "Diagnostic Lab Tests",
+            href: "/dashboard/admin?tab=tests",
+            tabKey: "tests",
+            icon: <FlaskConical className="w-4 h-4" />,
+          },
+          {
+            section: "Prescription Pad",
+            label: "Prescription Designer",
             href: "/dashboard/admin?tab=templates",
             tabKey: "templates",
-            icon: (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
-              </svg>
-            ),
+            icon: <FileCode2 className="w-4 h-4" />,
           },
         ]
       : []),
+
+    ...(role === RoleName.DOCTOR
+      ? [
+          {
+            section: "Clinical Practice",
+            label: "Write Prescription",
+            href: "/dashboard/doctor",
+            tabKey: "main",
+            icon: <PenLine className="w-4 h-4" />,
+          },
+          {
+            section: "Clinical Practice",
+            label: "Chamber Queue",
+            href: "/dashboard/doctor?tab=queue",
+            tabKey: "queue",
+            icon: <Clock className="w-4 h-4" />,
+          },
+          {
+            section: "Clinical Practice",
+            label: "Prescription Archive",
+            href: "/dashboard/doctor?tab=history",
+            tabKey: "history",
+            icon: <History className="w-4 h-4" />,
+          },
+          {
+            section: "Medical Formulary",
+            label: "Pharmaceutical Drugs",
+            href: "/dashboard/doctor?tab=catalog",
+            tabKey: "catalog",
+            icon: <Pill className="w-4 h-4" />,
+          },
+          {
+            section: "Medical Formulary",
+            label: "Diagnostic Lab Tests",
+            href: "/dashboard/doctor?tab=tests",
+            tabKey: "tests",
+            icon: <FlaskConical className="w-4 h-4" />,
+          },
+          {
+            section: "Configuration",
+            label: "Hospital Templates",
+            href: "/dashboard/doctor?tab=templates",
+            tabKey: "templates",
+            icon: <FileCode2 className="w-4 h-4" />,
+          },
+          {
+            section: "Configuration",
+            label: "Chamber & Credentials",
+            href: "/dashboard/doctor?tab=profile",
+            tabKey: "profile",
+            icon: <UserCog className="w-4 h-4" />,
+          },
+        ]
+      : []),
+
     ...(role === RoleName.PATIENT
       ? [
           {
+            section: "Healthcare Portal",
             label: "My Prescriptions",
             href: "/dashboard/patient",
             tabKey: "main",
-            icon: (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            ),
+            icon: <FileText className="w-4 h-4" />,
           },
         ]
       : []),
+
     {
-      label: "Find Doctors / Portal",
+      section: "Public Portal",
+      label: "Find Doctors / Chambers",
       href: "/",
       tabKey: "public",
-      icon: (
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-        </svg>
-      ),
+      icon: <Compass className="w-4 h-4" />,
     },
   ];
+
+  // Group items by section
+  const sections = navItems.reduce<Record<string, NavItem[]>>((acc, item) => {
+    if (!acc[item.section]) acc[item.section] = [];
+    acc[item.section].push(item);
+    return acc;
+  }, {});
 
   const getRoleBadge = (roleName: RoleName) => {
     switch (roleName) {
@@ -169,8 +216,8 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
   const sidebarElement = (
     <div className="flex flex-col h-full justify-between p-4 bg-[var(--bg-sidebar)] border-r border-slate-200/80 dark:border-slate-800/80">
       {/* Brand & Organization Header */}
-      <div>
-        <div className="flex items-center gap-3 px-3 py-3 mb-6">
+      <div className="flex flex-col flex-1 min-h-0">
+        <div className="flex items-center gap-3 px-3 py-3 mb-4 shrink-0">
           <div className="w-10 h-10 rounded-2xl bg-[var(--brand-primary)] text-white flex items-center justify-center font-black text-lg shadow-md shadow-[var(--brand-primary)]/20">
             Rx
           </div>
@@ -184,36 +231,48 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           </div>
         </div>
 
-        {/* Navigation Items */}
-        <nav className="space-y-1">
-          {navItems.map((item) => {
-            const isBaseMatch = pathname === item.href.split("?")[0];
-            const isTabMatch = item.tabKey === "main" ? activeTab === "main" && isBaseMatch : activeTab === item.tabKey;
-            const isActive = isBaseMatch && isTabMatch;
+        {/* Navigation Sections (Scrollable) */}
+        <nav className="flex-1 overflow-y-auto pr-1 -mr-1 space-y-5">
+          {Object.entries(sections).map(([sectionName, items]) => (
+            <div key={sectionName} className="space-y-1">
+              <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                {sectionName}
+              </p>
+              <div className="space-y-0.5">
+                {items.map((item) => {
+                  const isBaseMatch = pathname === item.href.split("?")[0];
+                  const isTabMatch =
+                    item.tabKey === "main"
+                      ? activeTab === "main" && isBaseMatch
+                      : activeTab === item.tabKey;
+                  const isActive = isBaseMatch && isTabMatch;
 
-            return (
-              <Link
-                key={item.label}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all ${
-                  isActive
-                    ? "bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] shadow-xs"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60"
-                }`}
-              >
-                <span className={isActive ? "text-[var(--brand-primary)]" : "text-slate-400"}>
-                  {item.icon}
-                </span>
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+                  return (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                        isActive
+                          ? "bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] font-bold shadow-2xs"
+                          : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60"
+                      }`}
+                    >
+                      <span className={isActive ? "text-[var(--brand-primary)]" : "text-slate-400"}>
+                        {item.icon}
+                      </span>
+                      <span className="truncate">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
       </div>
 
       {/* Footer Area: Theme Switcher & User Profile Card */}
-      <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+      <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800 shrink-0">
         {/* Appearance Control */}
         <div className="flex items-center justify-between px-1">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
@@ -229,29 +288,31 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
               <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
                 {user.name}
               </p>
-              <p className="text-[11px] text-slate-400 truncate">{user.email}</p>
+              <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
             </div>
             <span
-              className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0 ${getRoleBadge(
-                role
+              className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider shrink-0 ${getRoleBadge(
+                role,
               )}`}
             >
               {getRoleTitle(role)}
             </span>
           </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-slate-200/60 dark:border-slate-800">
-            <div className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] font-medium text-slate-500">Connected</span>
-            </div>
+          <div className="flex items-center justify-between pt-2 border-t border-slate-200/60 dark:border-slate-800/60">
+            <span className="text-[10px] text-slate-400">Verified Session</span>
             <button
               type="button"
               onClick={onLogout}
-              className="text-[11px] font-semibold text-red-500 hover:text-red-600 dark:hover:text-red-400 flex items-center gap-1"
+              className="text-[11px] font-semibold text-red-500 hover:text-red-600 dark:hover:text-red-400 flex items-center gap-1 cursor-pointer"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
               </svg>
               <span>Logout</span>
             </button>
@@ -293,7 +354,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="lg:hidden p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="lg:hidden p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />

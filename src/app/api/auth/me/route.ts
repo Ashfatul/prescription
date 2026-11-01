@@ -21,6 +21,9 @@ export async function GET(req: NextRequest) {
       throw new AppError("User not found", 404);
     }
 
-    return ok(user);
+    // Exclude sensitive password hash
+    const safeUser = { ...user };
+    delete (safeUser as { passwordHash?: string }).passwordHash;
+    return ok(safeUser);
   });
 }

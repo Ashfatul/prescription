@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { DoctorList } from "@/components/home/doctor-list";
+import { getCurrentUserFromCookie } from "@/lib/auth/session";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUserFromCookie();
+  const isLoggedIn = !!user;
+
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)]">
-      <Header />
+      <Header loggedIn={isLoggedIn} />
 
       <main className="mx-auto w-full max-w-6xl px-4 py-8 space-y-10">
         {/* Modern Spacious Hero Banner */}
@@ -25,12 +29,29 @@ export default function Home() {
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
-              <Link
-                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 transition-all"
-                href="/auth/login"
-              >
-                <span>🚀 Access Clinical Dashboard</span>
-              </Link>
+              {isLoggedIn && user ? (
+                <>
+                  <Link
+                    className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 transition-all cursor-pointer"
+                    href="/dashboard"
+                  >
+                    <span>🚀 Go to Clinical Dashboard</span>
+                  </Link>
+                  <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs text-slate-600 dark:text-slate-300">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>
+                      Signed in as <strong className="font-bold text-slate-900 dark:text-white">{user.name}</strong> ({user.role.name})
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <Link
+                  className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 transition-all cursor-pointer"
+                  href="/auth/login"
+                >
+                  <span>🚀 Access Clinical Dashboard</span>
+                </Link>
+              )}
               <a
                 href="/api/public/doctors"
                 className="px-5 py-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition-all shadow-xs"

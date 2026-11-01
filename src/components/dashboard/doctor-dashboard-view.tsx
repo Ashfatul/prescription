@@ -65,7 +65,7 @@ type PrescriptionSummary = {
   };
 };
 
-export type DoctorTabType = "prescription" | "queue" | "catalog" | "templates" | "profile" | "history";
+export type DoctorTabType = "prescription" | "queue" | "catalog" | "tests" | "templates" | "profile" | "history";
 
 export function DoctorDashboardView({
   doctor: initialDoctor,
@@ -86,6 +86,8 @@ export function DoctorDashboardView({
   const activeTab: DoctorTabType =
     urlTab === "catalog"
       ? "catalog"
+      : urlTab === "tests"
+      ? "tests"
       : urlTab === "templates"
       ? "templates"
       : urlTab === "profile"
@@ -147,68 +149,23 @@ export function DoctorDashboardView({
             </div>
           </div>
 
-          {/* Quick Tab Switcher Pill Bar */}
-          <div className="flex flex-wrap gap-1.5 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-            <button
-              onClick={() => handleTabChange("prescription")}
-              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${
-                activeTab === "prescription"
-                  ? "bg-[var(--brand-primary)] text-white shadow-xs"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              📝 Prescribe
-            </button>
-            <button
-              onClick={() => handleTabChange("queue")}
-              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${
-                activeTab === "queue"
-                  ? "bg-[var(--brand-primary)] text-white shadow-xs"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              🩺 Queue ({appointments.length})
-            </button>
-            <button
-              onClick={() => handleTabChange("catalog")}
-              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${
-                activeTab === "catalog"
-                  ? "bg-[var(--brand-primary)] text-white shadow-xs"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              💊 Catalog
-            </button>
-            <button
-              onClick={() => handleTabChange("templates")}
-              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${
-                activeTab === "templates"
-                  ? "bg-[var(--brand-primary)] text-white shadow-xs"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              📋 Templates
-            </button>
-            <button
-              onClick={() => handleTabChange("profile")}
-              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${
-                activeTab === "profile"
-                  ? "bg-[var(--brand-primary)] text-white shadow-xs"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              👤 Profile
-            </button>
-            <button
-              onClick={() => handleTabChange("history")}
-              className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${
-                activeTab === "history"
-                  ? "bg-[var(--brand-primary)] text-white shadow-xs"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              📜 History ({recentPrescriptions.length})
-            </button>
+          {/* Quick Action Block */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] px-4 py-2.5">
+              <span className="text-xs text-[var(--text-secondary)]">Queue Waiting:</span>
+              <span className="rounded-full bg-[var(--brand-primary)] px-2.5 py-0.5 text-xs font-bold text-white">
+                {appointments.length}
+              </span>
+            </div>
+
+            {activeTab !== "prescription" && (
+              <Link
+                href="/dashboard/doctor"
+                className="flex items-center gap-1.5 rounded-2xl bg-[var(--brand-primary)] px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:brightness-110 transition"
+              >
+                <span>📝 Write Prescription</span>
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -280,8 +237,11 @@ export function DoctorDashboardView({
         </div>
       )}
 
-      {/* Tab 3: Pharmaceutical & Diagnostic Test Catalog */}
-      {activeTab === "catalog" && <CatalogManager />}
+      {/* Tab 3: Pharmaceutical Catalog */}
+      {activeTab === "catalog" && <CatalogManager initialTab="medicines" />}
+
+      {/* Tab: Diagnostic Lab Tests */}
+      {activeTab === "tests" && <CatalogManager initialTab="tests" />}
 
       {/* Tab 4: Hospital & Prescription Templates */}
       {activeTab === "templates" && <TemplateManager />}

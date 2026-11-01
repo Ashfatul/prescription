@@ -8,5 +8,10 @@ export async function POST() {
     httpOnly: true,
     expires: new Date(0),
   });
+  response.cookies.set("ppms_session", "", {
+    path: "/",
+    httpOnly: true,
+    expires: new Date(0),
+  });
   return response;
 }
