@@ -11,6 +11,8 @@ import {
   Zap,
   Lock,
   AlertTriangle,
+  User,
+  Calendar,
 } from "lucide-react";
 
 interface PricingPlan {
@@ -51,6 +53,7 @@ export function StripeUpgradeModal({
   const [cvc, setCvc] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [initiatingStripe, setInitiatingStripe] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   // Load active plans
@@ -130,6 +133,42 @@ export function StripeUpgradeModal({
     if (clean.startsWith("51") || clean.startsWith("55") || clean.startsWith("22")) return "Mastercard";
     if (clean.startsWith("34") || clean.startsWith("37")) return "Amex";
     return null;
+  };
+
+  const handleOfficialStripeCheckout = async () => {
+    if (!selectedPlanId) {
+      setError("Please select a plan to upgrade.");
+      return;
+    }
+    setInitiatingStripe(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/stripe/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          planId: selectedPlanId,
+          organizationId: organizationId,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.isRealStripe && data.url) {
+        // Redirect to official Stripe Hosted Checkout
+        window.location.href = data.url;
+        return;
+      }
+
+      if (!data.isRealStripe) {
+        setError(data.message || "To use live Stripe Checkout, set STRIPE_SECRET_KEY in .env. You can use direct Sandbox card below.");
+      } else {
+        setError(data.message || "Failed to create Stripe Checkout session.");
+      }
+    } catch {
+      setError("Network error while connecting to Stripe API.");
+    } finally {
+      setInitiatingStripe(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -285,13 +324,63 @@ export function StripeUpgradeModal({
                 )}
               </div>
 
+              {/* Official Stripe Hosted Checkout */}
+              <div className="p-5 rounded-2xl border-2 border-indigo-500/20 bg-indigo-50/40 dark:bg-indigo-950/20 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-[#635BFF] text-white flex items-center justify-center font-black text-xs shadow-xs">
+                      S
+                    </div>
+                    <div>
+                      <h5 className="text-xs font-bold text-slate-900 dark:text-white">
+                        Official Stripe Hosted Checkout
+                      </h5>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                        Pay via Stripe’s authentic secure checkout page (Apple Pay, Google Pay & Cards)
+                      </p>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold border border-indigo-500/20">
+                    Live / Testmode
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  disabled={initiatingStripe || isPending}
+                  onClick={() => void handleOfficialStripeCheckout()}
+                  className="w-full min-h-[44px] rounded-xl bg-[#635BFF] hover:bg-[#5851EA] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer disabled:opacity-50"
+                >
+                  {initiatingStripe ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Connecting to Stripe API...
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="w-4 h-4" />
+                      Proceed to Official Stripe Checkout (${selectedPlan?.price || 49}/{selectedPlan?.billingCycle || "mo"})
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Divider */}
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-px bg-[var(--border-subtle)]" />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  OR IN-APP SANDBOX TEST CARD
+                </span>
+                <div className="flex-1 h-px bg-[var(--border-subtle)]" />
+              </div>
+
               {/* Step 2: Stripe Sandbox Payment Information */}
               <div className="p-4 rounded-2xl border border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-[var(--brand-primary)]" />
                     <span className="text-xs font-bold text-slate-900 dark:text-white">
-                      Stripe Sandbox Payment
+                      Direct Sandbox Card
                     </span>
                     <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold border border-amber-500/20">
                       Sandbox Mode
@@ -319,13 +408,16 @@ export function StripeUpgradeModal({
                     <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1 block">
                       Cardholder Name
                     </label>
-                    <input
-                      type="text"
-                      value={cardHolder}
-                      onChange={(e) => setCardHolder(e.target.value)}
-                      placeholder="Doctor or Clinic Administrator"
-                      className="w-full px-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={cardHolder}
+                        onChange={(e) => setCardHolder(e.target.value)}
+                        placeholder="Doctor or Clinic Administrator"
+                        className="w-full input-icon-left !pl-11 pr-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
+                      />
+                      <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
                   </div>
 
                   <div>
@@ -345,9 +437,9 @@ export function StripeUpgradeModal({
                         value={cardNumber}
                         onChange={(e) => handleCardNumberChange(e.target.value)}
                         placeholder="4242  4242  4242  4242"
-                        className="w-full pl-10 pr-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm font-mono tracking-wider text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
+                        className="w-full input-icon-left !pl-11 pr-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm font-mono tracking-wider text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
                       />
-                      <CreditCard className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <CreditCard className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                     </div>
                   </div>
 
@@ -356,25 +448,32 @@ export function StripeUpgradeModal({
                       <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1 block">
                         Expires (MM/YY)
                       </label>
-                      <input
-                        type="text"
-                        value={expiry}
-                        onChange={(e) => handleExpiryChange(e.target.value)}
-                        placeholder="MM / YY"
-                        className="w-full px-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm font-mono text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
-                      />
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={expiry}
+                          onChange={(e) => handleExpiryChange(e.target.value)}
+                          placeholder="MM / YY"
+                          className="w-full input-icon-left !pl-11 pr-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm font-mono text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
+                        />
+                        <Calendar className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      </div>
                     </div>
                     <div>
                       <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1 block">
                         CVC Security Code
                       </label>
-                      <input
-                        type="password"
-                        value={cvc}
-                        onChange={(e) => handleCvcChange(e.target.value)}
-                        placeholder="123"
-                        className="w-full px-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm font-mono text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
-                      />
+                      <div className="relative">
+                        <input
+                          type="password"
+                          value={cvc}
+                          onChange={(e) => handleCvcChange(e.target.value)}
+                          placeholder="123"
+                          maxLength={4}
+                          className="w-full input-icon-left !pl-11 pr-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm font-mono text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
+                        />
+                        <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -51,6 +51,7 @@ export async function middleware(req: NextRequest) {
       pathname === "/api/auth/change-email" ||
       pathname === "/api/auth/forgot-password" ||
       pathname === "/api/auth/reset-password" ||
+      pathname === "/api/stripe/webhook" ||
       pathname === "/api/public/doctors" ||
       pathname === "/api/pricing-plans" ||
       pathname.startsWith("/api/public/");

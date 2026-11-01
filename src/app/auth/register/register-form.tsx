@@ -18,6 +18,8 @@ import {
   Sparkles,
   MapPin,
   Globe,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { CustomSelect } from "@/components/common/custom-select";
 import { CustomDatePicker } from "@/components/common/custom-date-picker";
@@ -38,8 +40,11 @@ type PricingPlanOption = {
   isPopular?: boolean;
 };
 
-const inputClasses =
-  "w-full px-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]";
+const baseInputClasses =
+  "w-full rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]";
+
+const iconInputClasses = `${baseInputClasses} input-icon-left !pl-11 pr-4`;
+const passwordInputClasses = `${baseInputClasses} input-icon-left !pl-11 pr-11`;
 
 const textareaClasses =
   "w-full px-4 py-3 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[84px] resize-none";
@@ -59,6 +64,7 @@ export function RegisterForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState("");
 
   // Patient fields
@@ -328,14 +334,17 @@ export function RegisterForm() {
                     <Building2 className="w-3 h-3 text-[var(--brand-primary)]" />
                     <span>Clinic / Hospital Name *</span>
                   </label>
-                  <input
-                    type="text"
-                    required
-                    value={clinicName}
-                    onChange={(e) => handleClinicNameChange(e.target.value)}
-                    placeholder="e.g. CareWell Medical Center"
-                    className={inputClasses}
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      required
+                      value={clinicName}
+                      onChange={(e) => handleClinicNameChange(e.target.value)}
+                      placeholder="e.g. CareWell Medical Center"
+                      className={iconInputClasses}
+                    />
+                    <Building2 className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -343,14 +352,17 @@ export function RegisterForm() {
                     <Globe className="w-3 h-3" />
                     <span>Clinic Identifier Slug *</span>
                   </label>
-                  <input
-                    type="text"
-                    required
-                    value={clinicSlug}
-                    onChange={(e) => setClinicSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))}
-                    placeholder="e.g. carewell-center"
-                    className={`${inputClasses} font-mono`}
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      required
+                      value={clinicSlug}
+                      onChange={(e) => setClinicSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))}
+                      placeholder="carewell-center"
+                      className={`${iconInputClasses} font-mono`}
+                    />
+                    <Globe className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                 </div>
               </div>
 
@@ -360,14 +372,17 @@ export function RegisterForm() {
                     <User className="w-3 h-3" />
                     <span>Administrator Name *</span>
                   </label>
-                  <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. Dr. Rayan Chowdhury"
-                    className={inputClasses}
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="e.g. Dr. Rayan Chowdhury"
+                      className={iconInputClasses}
+                    />
+                    <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -375,14 +390,17 @@ export function RegisterForm() {
                     <Mail className="w-3 h-3" />
                     <span>Work Email Address *</span>
                   </label>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="admin@carewell.com"
-                    className={inputClasses}
-                  />
+                  <div className="relative">
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="admin@carewell.com"
+                      className={iconInputClasses}
+                    />
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                 </div>
               </div>
 
@@ -392,13 +410,16 @@ export function RegisterForm() {
                     <Phone className="w-3 h-3" />
                     <span>Contact Phone</span>
                   </label>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+880 1711-223344"
-                    className={inputClasses}
-                  />
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+880 1711-223344"
+                      className={iconInputClasses}
+                    />
+                    <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -406,15 +427,26 @@ export function RegisterForm() {
                     <Lock className="w-3 h-3" />
                     <span>Password (min. 6 chars) *</span>
                   </label>
-                  <input
-                    type="password"
-                    required
-                    minLength={6}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className={inputClasses}
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      minLength={6}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className={passwordInputClasses}
+                    />
+                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer p-1"
+                      title={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -423,13 +455,16 @@ export function RegisterForm() {
                   <MapPin className="w-3 h-3" />
                   <span>Chamber / Clinic Physical Address</span>
                 </label>
-                <input
-                  type="text"
-                  value={clinicAddress}
-                  onChange={(e) => setClinicAddress(e.target.value)}
-                  placeholder="e.g. House 45, Road 11, Banani, Dhaka"
-                  className={inputClasses}
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={clinicAddress}
+                    onChange={(e) => setClinicAddress(e.target.value)}
+                    placeholder="e.g. House 45, Road 11, Banani, Dhaka"
+                    className={iconInputClasses}
+                  />
+                  <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
               </div>
 
               {/* Package Selector */}
@@ -483,14 +518,17 @@ export function RegisterForm() {
                     <User className="w-3 h-3" />
                     <span>Full Name *</span>
                   </label>
-                  <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. Fatima Rahman"
-                    className={inputClasses}
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="e.g. Fatima Rahman"
+                      className={iconInputClasses}
+                    />
+                    <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -498,14 +536,17 @@ export function RegisterForm() {
                     <Mail className="w-3 h-3" />
                     <span>Email Address *</span>
                   </label>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="fatima@example.com"
-                    className={inputClasses}
-                  />
+                  <div className="relative">
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="fatima@example.com"
+                      className={iconInputClasses}
+                    />
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                 </div>
               </div>
 
@@ -515,15 +556,26 @@ export function RegisterForm() {
                     <Lock className="w-3 h-3" />
                     <span>Password (min. 6 chars) *</span>
                   </label>
-                  <input
-                    type="password"
-                    required
-                    minLength={6}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className={inputClasses}
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      minLength={6}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className={passwordInputClasses}
+                    />
+                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer p-1"
+                      title={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -531,13 +583,16 @@ export function RegisterForm() {
                     <Phone className="w-3 h-3" />
                     <span>Phone Number</span>
                   </label>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+880 1811-000000"
-                    className={inputClasses}
-                  />
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+880 1811-000000"
+                      className={iconInputClasses}
+                    />
+                    <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                 </div>
               </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   CreditCard,
   CheckCircle2,
@@ -12,6 +13,7 @@ import {
   FileText,
   Calendar,
   AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import { StripeUpgradeModal } from "./stripe-upgrade-modal";
 
@@ -52,11 +54,18 @@ interface SubscriptionData {
 }
 
 export function ClinicSubscriptionView() {
+  const searchParams = useSearchParams();
+  const sessionId = searchParams?.get("session_id");
+  const isSuccess = searchParams?.get("success");
+  const isCanceled = searchParams?.get("canceled");
+
   const [sub, setSub] = useState<SubscriptionData | null>(null);
   const [plans, setPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [targetPlanId, setTargetPlanId] = useState<string | null>(null);
+  const [verifyingSession, setVerifyingSession] = useState(Boolean(sessionId && isSuccess));
+  const [stripeNotice, setStripeNotice] = useState<string | null>(null);
 
   const fetchDetails = useCallback(() => {
     Promise.all([
@@ -78,6 +87,35 @@ export function ClinicSubscriptionView() {
   useEffect(() => {
     fetchDetails();
   }, [fetchDetails]);
+
+  // Handle Stripe Checkout return
+  useEffect(() => {
+    if (!sessionId || !isSuccess) return;
+
+    let ignore = false;
+    fetch(`/api/stripe/verify-session?sessionId=${encodeURIComponent(sessionId)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (!ignore) {
+          if (data.success) {
+            setStripeNotice(data.message || "Stripe payment confirmed! Your clinic subscription is active.");
+            fetchDetails();
+          } else {
+            setStripeNotice(data.message || "Could not confirm Stripe session.");
+          }
+        }
+      })
+      .catch(() => {
+        if (!ignore) setStripeNotice("Network error validating Stripe session.");
+      })
+      .finally(() => {
+        if (!ignore) setVerifyingSession(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [sessionId, isSuccess, fetchDetails]);
 
   const handleOpenUpgrade = (planId?: string) => {
     setTargetPlanId(planId || sub?.plan?.id || null);
@@ -113,6 +151,28 @@ export function ClinicSubscriptionView() {
 
   return (
     <div className="space-y-8">
+      {/* Stripe Session Return Banners */}
+      {verifyingSession && (
+        <div className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-xs font-semibold flex items-center gap-2.5 animate-pulse">
+          <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+          <span>Verifying your Stripe Checkout payment with Stripe API. Please wait...</span>
+        </div>
+      )}
+
+      {stripeNotice && (
+        <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2.5">
+          <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+          <span>{stripeNotice}</span>
+        </div>
+      )}
+
+      {isCanceled && !stripeNotice && (
+        <div className="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-[var(--border-subtle)] text-slate-700 dark:text-slate-300 text-xs font-medium flex items-center gap-2.5">
+          <AlertTriangle className="w-4 h-4 text-slate-400 shrink-0" />
+          <span>Stripe checkout was canceled. Your clinic remains on its current plan without charges.</span>
+        </div>
+      )}
+
       {/* Top Banner: Current Subscription Card */}
       <div className="p-6 sm:p-8 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-xs relative overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
