@@ -684,7 +684,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
       {/* Change Password Modal */}
       {changePasswordOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in">
-          <div className="w-full max-w-lg relative animate-in zoom-in-95">
+          <div className="w-full max-w-lg relative animate-in zoom-in-95 modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl">
             <button
               type="button"
               onClick={() => setChangePasswordOpen(false)}
@@ -693,7 +693,9 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             >
               ✕
             </button>
-            <ChangePasswordCard />
+            <div className="modal-body flex-1 overflow-y-auto">
+              <ChangePasswordCard />
+            </div>
           </div>
         </div>
       )}

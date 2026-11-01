@@ -295,123 +295,125 @@ export function SaasPricingManager() {
       {/* Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl p-6 sm:p-8 space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+            <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="font-bold text-slate-900 dark:text-white text-base">
                 {editingPlan ? `Edit Plan: ${editingPlan.name}` : "Create SaaS Pricing Plan"}
               </h3>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            {error && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 text-xs">
-                {error}
-              </div>
-            )}
+            <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4 text-xs">
+                {error && (
+                  <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 text-xs">
+                    {error}
+                  </div>
+                )}
 
-            <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-              <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      Plan Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Starter Clinic"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      Price (USD / mo) *
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      min={0}
+                      step={1}
+                      value={price}
+                      onChange={(e) => setPrice(Number(e.target.value))}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Plan Name *
+                    Short Description
                   </label>
                   <input
                     type="text"
-                    required
-                    placeholder="e.g. Starter Clinic"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
+                    placeholder="e.g. Essential tools for solo practitioners & private consultancies."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white"
                   />
                 </div>
 
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Price (USD / mo) *
+                    Feature Checklist (1 Feature per line) *
                   </label>
-                  <input
-                    type="number"
+                  <textarea
                     required
-                    min={0}
-                    step={1}
-                    value={price}
-                    onChange={(e) => setPrice(Number(e.target.value))}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
+                    rows={5}
+                    placeholder="Up to 5 Doctor Accounts&#10;Unlimited Prescriptions&#10;Live Chamber Queue&#10;QR Code Sharing&#10;24/7 Priority Support"
+                    value={featuresText}
+                    onChange={(e) => setFeaturesText(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white resize-none font-mono text-[11px]"
                   />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 p-3 rounded-2xl bg-[var(--bg-subtle)]">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isPopular}
+                      onChange={(e) => setIsPopular(e.target.checked)}
+                      className="w-4 h-4 accent-[var(--brand-primary)]"
+                    />
+                    <span className="font-bold text-slate-800 dark:text-slate-200">
+                      Badge as Popular
+                    </span>
+                  </label>
+
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isActive}
+                      onChange={(e) => setIsActive(e.target.checked)}
+                      className="w-4 h-4 accent-[var(--brand-primary)]"
+                    />
+                    <span className="font-bold text-slate-800 dark:text-slate-200">
+                      Live on Landing Page
+                    </span>
+                  </label>
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Short Description
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Essential tools for solo practitioners & private consultancies."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Feature Checklist (1 Feature per line) *
-                </label>
-                <textarea
-                  required
-                  rows={5}
-                  placeholder="Up to 5 Doctor Accounts&#10;Unlimited Prescriptions&#10;Live Chamber Queue&#10;QR Code Sharing&#10;24/7 Priority Support"
-                  value={featuresText}
-                  onChange={(e) => setFeaturesText(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white resize-none font-mono text-[11px]"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 p-3 rounded-2xl bg-[var(--bg-subtle)]">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isPopular}
-                    onChange={(e) => setIsPopular(e.target.checked)}
-                    className="w-4 h-4 accent-[var(--brand-primary)]"
-                  />
-                  <span className="font-bold text-slate-800 dark:text-slate-200">
-                    Badge as Popular
-                  </span>
-                </label>
-
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isActive}
-                    onChange={(e) => setIsActive(e.target.checked)}
-                    className="w-4 h-4 accent-[var(--brand-primary)]"
-                  />
-                  <span className="font-bold text-slate-800 dark:text-slate-200">
-                    Live on Landing Page
-                  </span>
-                </label>
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-2">
+              <div className="modal-footer shrink-0 flex items-center justify-end gap-2 px-6 py-4 border-t border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-[var(--border-default)]"
+                  className="px-4 py-2 rounded-xl border border-[var(--border-default)] text-slate-600 dark:text-slate-300 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold"
+                  className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold cursor-pointer hover:opacity-90 disabled:opacity-50 transition shadow-xs"
                 >
                   {submitting ? "Saving..." : "Save Plan"}
                 </button>

@@ -225,9 +225,9 @@ export function StripeUpgradeModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col">
+      <div className="relative w-full max-w-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-6 border-b border-[var(--border-subtle)] flex items-center justify-between shrink-0 bg-gradient-to-r from-[var(--brand-surface)]/60 to-transparent">
+        <div className="modal-header shrink-0 p-6 border-b border-[var(--border-subtle)] flex items-center justify-between bg-gradient-to-r from-[var(--brand-surface)]/60 to-transparent">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-[var(--brand-primary)] text-white flex items-center justify-center shadow-xs">
               <Sparkles className="w-5 h-5" />
@@ -252,7 +252,7 @@ export function StripeUpgradeModal({
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-6 flex-1">
+        <div className="modal-body flex-1 overflow-y-auto p-6 space-y-6">
           {success ? (
             <div className="py-12 text-center space-y-4">
               <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center animate-bounce">

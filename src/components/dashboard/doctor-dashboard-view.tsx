@@ -518,9 +518,9 @@ export function DoctorDashboardView({
       {/* Version History Modal */}
       {historyModalPrescription && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-2xl bg-[var(--bg-surface)] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-2xl bg-[var(--bg-surface)] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             {/* Modal Header */}
-            <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+            <div className="modal-header shrink-0 flex items-start justify-between gap-4 p-6 pb-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
                   Prescription History & Revisions
@@ -536,14 +536,14 @@ export function DoctorDashboardView({
               <button
                 type="button"
                 onClick={() => setHistoryModalPrescription(null)}
-                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            {/* Version Timeline */}
-            <div className="space-y-3">
+            {/* Version Timeline Body */}
+            <div className="modal-body flex-1 overflow-y-auto p-6 sm:p-8 space-y-3">
               {(historyModalPrescription.versions || []).map((ver, idx) => {
                 const isLatest = ver.versionNumber === historyModalPrescription.version;
                 const vMedCount = Array.isArray(ver.medicinesJson) ? ver.medicinesJson.length : 0;
@@ -612,7 +612,7 @@ export function DoctorDashboardView({
             </div>
 
             {/* Modal Footer */}
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div className="modal-footer shrink-0 p-4 sm:px-8 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => {

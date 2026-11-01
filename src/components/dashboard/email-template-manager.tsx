@@ -392,174 +392,181 @@ export function EmailTemplateManager() {
       {/* Create / Edit Template Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl p-6 sm:p-8 space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
+          <div className="w-full max-w-3xl rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+            <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 sm:px-8 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
                   <Mail className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-slate-900 dark:text-white text-base">
-                  {editingTemplate ? `Edit Template: ${editingTemplate.name}` : "Create Custom Email Template"}
-                </h3>
+                <div>
+                  <h3 className="font-bold text-slate-900 dark:text-white text-base">
+                    {editingTemplate ? `Edit Template: ${editingTemplate.name}` : "Create Custom Email Template"}
+                  </h3>
+                  <p className="text-[11px] text-slate-400">
+                    Configure subject, dynamic variable placeholders, and HTML markup
+                  </p>
+                </div>
               </div>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="w-8 h-8 rounded-full hover:bg-[var(--bg-subtle)] text-slate-400 hover:text-slate-600 flex items-center justify-center font-bold text-sm cursor-pointer"
+                className="w-8 h-8 rounded-xl hover:bg-[var(--bg-subtle)] text-slate-400 hover:text-slate-600 flex items-center justify-center font-bold text-sm cursor-pointer transition"
               >
                 ✕
               </button>
             </div>
 
-            {formError && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 text-xs font-semibold">
-                {formError}
-              </div>
-            )}
-            {formSuccess && (
-              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-xs font-semibold">
-                {formSuccess}
-              </div>
-            )}
+            <form onSubmit={handleSaveSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="modal-body flex-1 overflow-y-auto p-6 sm:p-8 space-y-4 text-xs">
+                {formError && (
+                  <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 text-xs font-semibold">
+                    {formError}
+                  </div>
+                )}
+                {formSuccess && (
+                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-xs font-semibold">
+                    {formSuccess}
+                  </div>
+                )}
 
-            <form onSubmit={handleSaveSubmit} className="space-y-4 text-xs">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Template Key Identifier *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    disabled={!!editingTemplate}
-                    placeholder="e.g. LAB_REPORT_READY"
-                    value={key}
-                    onChange={(e) => setKey(e.target.value.toUpperCase().replace(/\s+/g, "_"))}
-                    className={`${inputClasses} font-mono disabled:opacity-60 disabled:cursor-not-allowed`}
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      Template Key Identifier *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      disabled={!!editingTemplate}
+                      placeholder="e.g. LAB_REPORT_READY"
+                      value={key}
+                      onChange={(e) => setKey(e.target.value.toUpperCase().replace(/\s+/g, "_"))}
+                      className={`${inputClasses} font-mono disabled:opacity-60 disabled:cursor-not-allowed`}
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      Friendly Template Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Diagnostic Lab Results Notification"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className={inputClasses}
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-1">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Friendly Template Name *
+                    Email Subject Line *
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Diagnostic Lab Results Notification"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    placeholder="e.g. Your test report is available - {{appName}}"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
                     className={inputClasses}
                   />
                 </div>
-              </div>
 
-              <div className="space-y-1">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Email Subject Line *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Your test report is available - {{appName}}"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  className={inputClasses}
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Template Description (Optional)
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Dispatched to patient when test report status is marked NORMAL or ABNORMAL."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className={inputClasses}
-                />
-              </div>
-
-              {/* Supported Dynamic Variables Reference */}
-              <div className="p-3 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1.5">
-                <div className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300 text-[11px]">
-                  <Sparkles className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-                  <span>Available Placeholders (Click to insert into Subject / HTML):</span>
-                </div>
-                <div className="flex flex-wrap gap-1">
-                  {availableVars.map((v) => (
-                    <button
-                      key={v}
-                      type="button"
-                      onClick={() => {
-                        const token = `{{${v}}}`;
-                        setBodyHtml((prev) => prev + token);
-                      }}
-                      className="font-mono text-[10px] px-2 py-0.5 rounded bg-white dark:bg-slate-900 text-[var(--brand-primary)] border border-slate-200 dark:border-slate-700 hover:border-[var(--brand-primary)] cursor-pointer"
-                    >
-                      +{`{{${v}}}`}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* HTML Body with Live Preview Switch */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="space-y-1">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    HTML Email Body *
+                    Template Description (Optional)
                   </label>
-                  <button
-                    type="button"
-                    onClick={() => setPreviewMode(!previewMode)}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 cursor-pointer"
-                  >
-                    <Eye className="w-3 h-3" />
-                    <span>{previewMode ? "Show HTML Code" : "Render Live Preview"}</span>
-                  </button>
+                  <input
+                    type="text"
+                    placeholder="e.g. Dispatched to patient when test report status is marked NORMAL or ABNORMAL."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className={inputClasses}
+                  />
                 </div>
 
-                {previewMode ? (
-                  <div className="p-4 rounded-xl border border-[var(--border-default)] bg-white min-h-[300px] overflow-auto">
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: bodyHtml
-                          .replace(/\{\{userName\}\}/g, "Dr. Alice Morgan")
-                          .replace(/\{\{userEmail\}\}/g, "alice@example.com")
-                          .replace(/\{\{appName\}\}/g, "PPMS Health")
-                          .replace(/\{\{verifyUrl\}\}/g, "http://localhost:3000/auth/verify-email?token=SAMPLE_TOKEN")
-                          .replace(/\{\{resetUrl\}\}/g, "http://localhost:3000/auth/reset-password?token=SAMPLE_TOKEN")
-                          .replace(/\{\{clinicName\}\}/g, "Metropolitan Specialized Hospital"),
-                      }}
-                    />
+                {/* Supported Dynamic Variables Reference */}
+                <div className="p-3 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1.5">
+                  <div className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300 text-[11px]">
+                    <Sparkles className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
+                    <span>Available Placeholders (Click to insert into Subject / HTML):</span>
                   </div>
-                ) : (
+                  <div className="flex flex-wrap gap-1">
+                    {availableVars.map((v) => (
+                      <button
+                        key={v}
+                        type="button"
+                        onClick={() => {
+                          const token = `{{${v}}}`;
+                          setBodyHtml((prev) => prev + token);
+                        }}
+                        className="font-mono text-[10px] px-2 py-0.5 rounded bg-white dark:bg-slate-900 text-[var(--brand-primary)] border border-slate-200 dark:border-slate-700 hover:border-[var(--brand-primary)] cursor-pointer"
+                      >
+                        +{`{{${v}}}`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* HTML Body with Live Preview Switch */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      HTML Email Body *
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setPreviewMode(!previewMode)}
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 cursor-pointer"
+                    >
+                      <Eye className="w-3 h-3" />
+                      <span>{previewMode ? "Show HTML Code" : "Render Live Preview"}</span>
+                    </button>
+                  </div>
+
+                  {previewMode ? (
+                    <div className="p-4 rounded-xl border border-[var(--border-default)] bg-white min-h-[300px] overflow-auto">
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: bodyHtml
+                            .replace(/\{\{userName\}\}/g, "Dr. Alice Morgan")
+                            .replace(/\{\{userEmail\}\}/g, "alice@example.com")
+                            .replace(/\{\{appName\}\}/g, "PPMS Health")
+                            .replace(/\{\{verifyUrl\}\}/g, "http://localhost:3000/auth/verify-email?token=SAMPLE_TOKEN")
+                            .replace(/\{\{resetUrl\}\}/g, "http://localhost:3000/auth/reset-password?token=SAMPLE_TOKEN")
+                            .replace(/\{\{clinicName\}\}/g, "Metropolitan Specialized Hospital"),
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <textarea
+                      rows={12}
+                      required
+                      value={bodyHtml}
+                      onChange={(e) => setBodyHtml(e.target.value)}
+                      className={textareaClasses}
+                    />
+                  )}
+                </div>
+
+                {/* Plaintext Fallback */}
+                <div className="space-y-1">
+                  <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                    Plain Text Alternative (Optional)
+                  </label>
                   <textarea
-                    rows={12}
-                    required
-                    value={bodyHtml}
-                    onChange={(e) => setBodyHtml(e.target.value)}
+                    rows={3}
+                    value={bodyText}
+                    onChange={(e) => setBodyText(e.target.value)}
                     className={textareaClasses}
+                    placeholder="Plain text fallback for minimalist email clients..."
                   />
-                )}
+                </div>
               </div>
 
-              {/* Plaintext Fallback */}
-              <div className="space-y-1">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Plain Text Alternative (Optional)
-                </label>
-                <textarea
-                  rows={3}
-                  value={bodyText}
-                  onChange={(e) => setBodyText(e.target.value)}
-                  className={textareaClasses}
-                  placeholder="Plain text fallback for minimalist email clients..."
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[var(--border-subtle)]">
+              <div className="modal-footer shrink-0 flex items-center justify-end gap-3 px-6 py-4 sm:px-8 border-t border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
@@ -583,8 +590,8 @@ export function EmailTemplateManager() {
       {/* Test SMTP Email Modal */}
       {testModalOpen && testTargetTemplate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl p-6 sm:p-8 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+          <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+            <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
                   <Send className="w-4 h-4" />
@@ -601,44 +608,46 @@ export function EmailTemplateManager() {
               <button
                 type="button"
                 onClick={() => setTestModalOpen(false)}
-                className="w-8 h-8 rounded-full hover:bg-[var(--bg-subtle)] text-slate-400 flex items-center justify-center font-bold text-sm cursor-pointer"
+                className="w-8 h-8 rounded-xl hover:bg-[var(--bg-subtle)] text-slate-400 flex items-center justify-center font-bold text-sm cursor-pointer transition"
               >
                 ✕
               </button>
             </div>
 
-            <p className="text-xs text-slate-500 leading-relaxed">
-              This will send a live sample email rendered with mock test data to verify your SMTP configuration (<code className="font-mono text-[11px] bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">127.0.0.1:2525</code>).
-            </p>
+            <form onSubmit={handleSendTestEmail} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4 text-xs">
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  This will send a live sample email rendered with mock test data to verify your SMTP configuration (<code className="font-mono text-[11px] bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">127.0.0.1:2525</code>).
+                </p>
 
-            {testResult && (
-              <div
-                className={`p-3 rounded-xl border text-xs font-semibold ${
-                  testResult.success
-                    ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-700 dark:text-emerald-300"
-                    : "bg-rose-500/10 border-rose-500/20 text-rose-600"
-                }`}
-              >
-                {testResult.message}
+                {testResult && (
+                  <div
+                    className={`p-3 rounded-xl border text-xs font-semibold ${
+                      testResult.success
+                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-700 dark:text-emerald-300"
+                        : "bg-rose-500/10 border-rose-500/20 text-rose-600"
+                    }`}
+                  >
+                    {testResult.message}
+                  </div>
+                )}
+
+                <div className="space-y-1">
+                  <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                    Recipient Test Address *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="e.g. doctor.test@example.com"
+                    value={testRecipient}
+                    onChange={(e) => setTestRecipient(e.target.value)}
+                    className={inputClasses}
+                  />
+                </div>
               </div>
-            )}
 
-            <form onSubmit={handleSendTestEmail} className="space-y-4 text-xs">
-              <div className="space-y-1">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Recipient Test Address *
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="e.g. doctor.test@example.com"
-                  value={testRecipient}
-                  onChange={(e) => setTestRecipient(e.target.value)}
-                  className={inputClasses}
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-2">
+              <div className="modal-footer shrink-0 flex items-center justify-end gap-3 px-6 py-4 border-t border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
                 <button
                   type="button"
                   onClick={() => setTestModalOpen(false)}

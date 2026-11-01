@@ -510,13 +510,13 @@ export function ReceptionManager() {
                   </span>
 
                   <div className="relative">
-                    <Search className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-400" />
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                     <input
                       type="text"
                       placeholder="Type name, phone, or email to search..."
                       value={searchPatientQuery}
                       onChange={(e) => setSearchPatientQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
+                      className="w-full input-icon-left !pl-11 pr-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
                     />
                   </div>
 
@@ -774,13 +774,13 @@ export function ReceptionManager() {
               </div>
 
               <div className="relative">
-                <Search className="absolute left-2.5 top-2 w-3.5 h-3.5 text-slate-400" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Filter serial # or patient..."
                   value={queueSearch}
                   onChange={(e) => setQueueSearch(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs"
+                  className="!pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs"
                 />
               </div>
             </div>

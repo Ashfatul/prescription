@@ -331,7 +331,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
         <div className="flex items-center gap-2 flex-1 sm:max-w-md">
           <div className="relative flex-1">
             <svg
-              className="absolute left-3.5 top-3 h-4 w-4 text-slate-400"
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -343,7 +343,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={activeTab === "medicines" ? "Search by brand, strength, or use..." : "Search tests or preparation instructions..."}
-              className="w-full pl-10 pr-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
+              className="w-full input-icon-left !pl-11 pr-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
             />
           </div>
 
@@ -470,102 +470,104 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
       {/* Add / Edit Medicine Modal */}
       {showMedModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-lg p-6 rounded-3xl bg-[var(--bg-elevated)] border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-elevated)] border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+            <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 {editingMedId ? "Edit Pharmaceutical" : "Add New Pharmaceutical"}
               </h3>
               <button
                 type="button"
                 onClick={() => setShowMedModal(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            {medError && (
-              <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/30 text-xs text-red-600">
-                {medError}
-              </div>
-            )}
+            <form onSubmit={handleSaveMed} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4">
+                {medError && (
+                  <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/30 text-xs text-red-600">
+                    {medError}
+                  </div>
+                )}
 
-            <form onSubmit={handleSaveMed} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2 sm:col-span-1">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
+                      Brand Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={medName}
+                      onChange={(e) => setMedName(e.target.value)}
+                      placeholder="e.g. Maxpro, Napa Extra"
+                      className={inputClasses}
+                    />
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
+                      Formulation Type
+                    </label>
+                    <CustomSelect
+                      value={medType}
+                      onChange={(val) => setMedType(val)}
+                      options={[
+                        { value: "Tablet", label: "Tablet" },
+                        { value: "Capsule", label: "Capsule" },
+                        { value: "Syrup", label: "Syrup" },
+                        { value: "Suspension", label: "Suspension" },
+                        { value: "Injection", label: "Injection" },
+                        { value: "Inhaler", label: "Inhaler" },
+                        { value: "Eye Drops", label: "Eye Drops" },
+                        { value: "Ointment", label: "Ointment" },
+                      ]}
+                      searchable={false}
+                    />
+                  </div>
+                </div>
+
+                <div>
                   <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
-                    Brand Name *
+                    Strength / Dosage *
                   </label>
                   <input
                     type="text"
                     required
-                    value={medName}
-                    onChange={(e) => setMedName(e.target.value)}
-                    placeholder="e.g. Maxpro, Napa Extra"
+                    value={medDosage}
+                    onChange={(e) => setMedDosage(e.target.value)}
+                    placeholder="e.g. 20mg, 500mg + 65mg, 100ml"
                     className={inputClasses}
                   />
                 </div>
-                <div className="col-span-2 sm:col-span-1">
+
+                <div>
                   <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
-                    Formulation Type
+                    Default Intake Instructions
                   </label>
-                  <CustomSelect
-                    value={medType}
-                    onChange={(val) => setMedType(val)}
-                    options={[
-                      { value: "Tablet", label: "Tablet" },
-                      { value: "Capsule", label: "Capsule" },
-                      { value: "Syrup", label: "Syrup" },
-                      { value: "Suspension", label: "Suspension" },
-                      { value: "Injection", label: "Injection" },
-                      { value: "Inhaler", label: "Inhaler" },
-                      { value: "Eye Drops", label: "Eye Drops" },
-                      { value: "Ointment", label: "Ointment" },
-                    ]}
-                    searchable={false}
+                  <textarea
+                    rows={2}
+                    value={medInstructions}
+                    onChange={(e) => setMedInstructions(e.target.value)}
+                    placeholder="e.g. 1 capsule 30 minutes before breakfast & dinner"
+                    className={textareaClasses}
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
-                  Strength / Dosage *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={medDosage}
-                  onChange={(e) => setMedDosage(e.target.value)}
-                  placeholder="e.g. 20mg, 500mg + 65mg, 100ml"
-                  className={inputClasses}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
-                  Default Intake Instructions
-                </label>
-                <textarea
-                  rows={2}
-                  value={medInstructions}
-                  onChange={(e) => setMedInstructions(e.target.value)}
-                  placeholder="e.g. 1 capsule 30 minutes before breakfast & dinner"
-                  className={textareaClasses}
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="modal-footer shrink-0 flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
                 <button
                   type="button"
                   onClick={() => setShowMedModal(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-semibold hover:opacity-90 disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-semibold hover:opacity-90 disabled:opacity-50 cursor-pointer shadow-xs"
                 >
                   {isPending ? "Saving..." : editingMedId ? "Update Medicine" : "Save to Catalog"}
                 </button>
@@ -578,66 +580,68 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
       {/* Add / Edit Test Modal */}
       {showTestModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-lg p-6 rounded-3xl bg-[var(--bg-elevated)] border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-elevated)] border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+            <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 {editingTestId ? "Edit Diagnostic Test" : "Add New Diagnostic Test"}
               </h3>
               <button
                 type="button"
                 onClick={() => setShowTestModal(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            {testError && (
-              <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/30 text-xs text-red-600">
-                {testError}
-              </div>
-            )}
+            <form onSubmit={handleSaveTest} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4">
+                {testError && (
+                  <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/30 text-xs text-red-600">
+                    {testError}
+                  </div>
+                )}
 
-            <form onSubmit={handleSaveTest} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
-                  Investigation Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={testName}
-                  onChange={(e) => setTestName(e.target.value)}
-                  placeholder="e.g. CBC with ESR, Echocardiogram"
-                  className={inputClasses}
-                />
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
+                    Investigation Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={testName}
+                    onChange={(e) => setTestName(e.target.value)}
+                    placeholder="e.g. CBC with ESR, Echocardiogram"
+                    className={inputClasses}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
+                    Preparation Instructions
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={testInstructions}
+                    onChange={(e) => setTestInstructions(e.target.value)}
+                    placeholder="e.g. 10-12 hours overnight fasting mandatory, clean catch mid-stream urine"
+                    className={textareaClasses}
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
-                  Preparation Instructions
-                </label>
-                <textarea
-                  rows={2}
-                  value={testInstructions}
-                  onChange={(e) => setTestInstructions(e.target.value)}
-                  placeholder="e.g. 10-12 hours overnight fasting mandatory, clean catch mid-stream urine"
-                  className={textareaClasses}
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="modal-footer shrink-0 flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
                 <button
                   type="button"
                   onClick={() => setShowTestModal(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-semibold hover:opacity-90 disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-semibold hover:opacity-90 disabled:opacity-50 cursor-pointer shadow-xs"
                 >
                   {isPending ? "Saving..." : editingTestId ? "Update Test" : "Save Test"}
                 </button>

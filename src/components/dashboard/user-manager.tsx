@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition, useCallback } from "react";
+import { Search } from "lucide-react";
 import { useAuth } from "@/lib/auth/auth-context";
 import { CustomSelect } from "@/components/common/custom-select";
 
@@ -285,14 +286,14 @@ export function UserManager() {
       {/* Search and Filters Bar */}
       <div className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="relative w-full sm:w-80">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             placeholder="Search by name, email, phone..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 rounded-xl text-sm bg-[var(--bg-surface)] border border-[var(--border-default)] outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 text-slate-900 dark:text-slate-100 min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
+            className="w-full input-icon-left !pl-11 pr-4 rounded-xl text-sm bg-[var(--bg-surface)] border border-[var(--border-default)] outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 text-slate-900 dark:text-slate-100 min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
           />
-          <span className="absolute left-3 top-3.5 text-xs text-slate-400">🔍</span>
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
@@ -393,184 +394,186 @@ export function UserManager() {
       {/* Create User Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+            <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 Register New User Account
               </h3>
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="text-slate-400 hover:text-slate-600 text-base font-bold"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleCreateSubmit} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                  Full Legal Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Dr. Salma Begum"
-                  value={createName}
-                  onChange={(e) => setCreateName(e.target.value)}
-                  className={inputClasses}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="salma.begum@hospital.com"
-                  value={createEmail}
-                  onChange={(e) => setCreateEmail(e.target.value)}
-                  className={inputClasses}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+            <form onSubmit={handleCreateSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="modal-body flex-1 overflow-y-auto p-6 space-y-3.5">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                    Initial Password *
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    minLength={8}
-                    placeholder="Min 8 characters"
-                    value={createPassword}
-                    onChange={(e) => setCreatePassword(e.target.value)}
-                    className={inputClasses}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                    Contact Phone
+                    Full Legal Name *
                   </label>
                   <input
                     type="text"
-                    placeholder="+880 1711..."
-                    value={createPhone}
-                    onChange={(e) => setCreatePhone(e.target.value)}
+                    required
+                    placeholder="Dr. Salma Begum"
+                    value={createName}
+                    onChange={(e) => setCreateName(e.target.value)}
                     className={inputClasses}
                   />
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                  System Access Role *
-                </label>
-                <CustomSelect
-                  value={createRole}
-                  onChange={(val) => setCreateRole(val)}
-                  options={
-                    currentUser?.role === "SUPER_ADMIN"
-                      ? [
-                          { value: "DOCTOR", label: "DOCTOR (Physician & Chamber Practitioner)", badge: "Physician" },
-                          { value: "STAFF", label: "STAFF (Hospital Front Desk & Queue Operator)", badge: "Front Desk" },
-                          { value: "PATIENT", label: "PATIENT (Patient Portal Access)", badge: "Patient" },
-                          { value: "ADMIN", label: "ADMIN (Clinic Administrator)", badge: "Admin" },
-                          { value: "SUPER_ADMIN", label: "SUPER_ADMIN (Hospital Network Executive)", badge: "Executive" },
-                        ]
-                      : [
-                          { value: "DOCTOR", label: "DOCTOR (Physician & Chamber Practitioner)", badge: "Physician" },
-                          { value: "STAFF", label: "STAFF (Hospital Front Desk & Queue Operator)", badge: "Front Desk" },
-                          { value: "PATIENT", label: "PATIENT (Patient Portal Access)", badge: "Patient" },
-                          { value: "ADMIN", label: "ADMIN (Clinic Administrator)", badge: "Admin" },
-                        ]
-                  }
-                  searchable={false}
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="salma.begum@hospital.com"
+                    value={createEmail}
+                    onChange={(e) => setCreateEmail(e.target.value)}
+                    className={inputClasses}
+                  />
+                </div>
 
-              {createRole === "DOCTOR" && (
-                <div className="p-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--brand-text)] block">
-                    Physician Credentials & Chamber Roster
-                  </span>
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div>
-                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
-                        Specialization
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Cardiology"
-                        value={createSpecialization}
-                        onChange={(e) => setCreateSpecialization(e.target.value)}
-                        className={inputClasses}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
-                        Degrees / Qualifications
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. MBBS, FCPS, MD"
-                        value={createDegrees}
-                        onChange={(e) => setCreateDegrees(e.target.value)}
-                        className={inputClasses}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div>
-                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
-                        BMDC Reg No
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. BMDC-A-41285"
-                        value={createBmdcRegNo}
-                        onChange={(e) => setCreateBmdcRegNo(e.target.value)}
-                        className={inputClasses}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
-                        Visiting Hours
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="09:00 AM - 01:00 PM"
-                        value={createVisitingHours}
-                        onChange={(e) => setCreateVisitingHours(e.target.value)}
-                        className={inputClasses}
-                      />
-                    </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                      Initial Password *
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      minLength={8}
+                      placeholder="Min 8 characters"
+                      value={createPassword}
+                      onChange={(e) => setCreatePassword(e.target.value)}
+                      className={inputClasses}
+                    />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
-                      Chamber Address & Room
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                      Contact Phone
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. Room 301, 3rd Floor"
-                      value={createChamberAddress}
-                      onChange={(e) => setCreateChamberAddress(e.target.value)}
+                      placeholder="+880 1711..."
+                      value={createPhone}
+                      onChange={(e) => setCreatePhone(e.target.value)}
                       className={inputClasses}
                     />
                   </div>
                 </div>
-              )}
 
-              {createError && (
-                <p className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 text-red-600 dark:text-red-400 text-xs font-medium">
-                  {createError}
-                </p>
-              )}
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                    System Access Role *
+                  </label>
+                  <CustomSelect
+                    value={createRole}
+                    onChange={(val) => setCreateRole(val)}
+                    options={
+                      currentUser?.role === "SUPER_ADMIN"
+                        ? [
+                            { value: "DOCTOR", label: "DOCTOR (Physician & Chamber Practitioner)", badge: "Physician" },
+                            { value: "STAFF", label: "STAFF (Hospital Front Desk & Queue Operator)", badge: "Front Desk" },
+                            { value: "PATIENT", label: "PATIENT (Patient Portal Access)", badge: "Patient" },
+                            { value: "ADMIN", label: "ADMIN (Clinic Administrator)", badge: "Admin" },
+                            { value: "SUPER_ADMIN", label: "SUPER_ADMIN (Hospital Network Executive)", badge: "Executive" },
+                          ]
+                        : [
+                            { value: "DOCTOR", label: "DOCTOR (Physician & Chamber Practitioner)", badge: "Physician" },
+                            { value: "STAFF", label: "STAFF (Hospital Front Desk & Queue Operator)", badge: "Front Desk" },
+                            { value: "PATIENT", label: "PATIENT (Patient Portal Access)", badge: "Patient" },
+                            { value: "ADMIN", label: "ADMIN (Clinic Administrator)", badge: "Admin" },
+                          ]
+                    }
+                    searchable={false}
+                  />
+                </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2">
+                {createRole === "DOCTOR" && (
+                  <div className="p-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--brand-text)] block">
+                      Physician Credentials & Chamber Roster
+                    </span>
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
+                          Specialization
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Cardiology"
+                          value={createSpecialization}
+                          onChange={(e) => setCreateSpecialization(e.target.value)}
+                          className={inputClasses}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
+                          Degrees / Qualifications
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. MBBS, FCPS, MD"
+                          value={createDegrees}
+                          onChange={(e) => setCreateDegrees(e.target.value)}
+                          className={inputClasses}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
+                          BMDC Reg No
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. BMDC-A-41285"
+                          value={createBmdcRegNo}
+                          onChange={(e) => setCreateBmdcRegNo(e.target.value)}
+                          className={inputClasses}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
+                          Visiting Hours
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="09:00 AM - 01:00 PM"
+                          value={createVisitingHours}
+                          onChange={(e) => setCreateVisitingHours(e.target.value)}
+                          className={inputClasses}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
+                        Chamber Address & Room
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Room 301, 3rd Floor"
+                        value={createChamberAddress}
+                        onChange={(e) => setCreateChamberAddress(e.target.value)}
+                        className={inputClasses}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {createError && (
+                  <p className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 text-red-600 dark:text-red-400 text-xs font-medium">
+                    {createError}
+                  </p>
+                )}
+              </div>
+
+              <div className="modal-footer shrink-0 flex items-center justify-end gap-2 px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
@@ -594,107 +597,109 @@ export function UserManager() {
       {/* Edit User Modal */}
       {editingUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+            <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 Edit User Account
               </h3>
               <button
                 type="button"
                 onClick={() => setEditingUser(null)}
-                className="text-slate-400 hover:text-slate-600 text-base font-bold"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleEditSubmit} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                  Full Legal Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className={inputClasses}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={editEmail}
-                  onChange={(e) => setEditEmail(e.target.value)}
-                  className={inputClasses}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+            <form onSubmit={handleEditSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="modal-body flex-1 overflow-y-auto p-6 space-y-3.5">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                    Contact Phone
+                    Full Legal Name *
                   </label>
                   <input
                     type="text"
-                    value={editPhone}
-                    onChange={(e) => setEditPhone(e.target.value)}
+                    required
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
                     className={inputClasses}
                   />
                 </div>
+
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                    Change Password (Optional)
+                    Email Address *
                   </label>
                   <input
-                    type="password"
-                    placeholder="Leave blank to keep current"
-                    value={editPassword}
-                    onChange={(e) => setEditPassword(e.target.value)}
+                    type="email"
+                    required
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
                     className={inputClasses}
                   />
                 </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                      Contact Phone
+                    </label>
+                    <input
+                      type="text"
+                      value={editPhone}
+                      onChange={(e) => setEditPhone(e.target.value)}
+                      className={inputClasses}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                      Change Password (Optional)
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="Leave blank to keep current"
+                      value={editPassword}
+                      onChange={(e) => setEditPassword(e.target.value)}
+                      className={inputClasses}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                    System Access Role *
+                  </label>
+                  <CustomSelect
+                    value={editRole}
+                    onChange={(val) => setEditRole(val)}
+                    options={
+                      currentUser?.role === "SUPER_ADMIN"
+                        ? [
+                            { value: "DOCTOR", label: "DOCTOR", badge: "Physician" },
+                            { value: "STAFF", label: "STAFF", badge: "Front Desk" },
+                            { value: "PATIENT", label: "PATIENT", badge: "Patient" },
+                            { value: "ADMIN", label: "ADMIN", badge: "Admin" },
+                            { value: "SUPER_ADMIN", label: "SUPER_ADMIN", badge: "Executive" },
+                          ]
+                        : [
+                            { value: "DOCTOR", label: "DOCTOR", badge: "Physician" },
+                            { value: "STAFF", label: "STAFF", badge: "Front Desk" },
+                            { value: "PATIENT", label: "PATIENT", badge: "Patient" },
+                            { value: "ADMIN", label: "ADMIN", badge: "Admin" },
+                          ]
+                    }
+                    searchable={false}
+                  />
+                </div>
+
+                {editError && (
+                  <p className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 text-red-600 dark:text-red-400 text-xs font-medium">
+                    {editError}
+                  </p>
+                )}
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                  System Access Role *
-                </label>
-                <CustomSelect
-                  value={editRole}
-                  onChange={(val) => setEditRole(val)}
-                  options={
-                    currentUser?.role === "SUPER_ADMIN"
-                      ? [
-                          { value: "DOCTOR", label: "DOCTOR", badge: "Physician" },
-                          { value: "STAFF", label: "STAFF", badge: "Front Desk" },
-                          { value: "PATIENT", label: "PATIENT", badge: "Patient" },
-                          { value: "ADMIN", label: "ADMIN", badge: "Admin" },
-                          { value: "SUPER_ADMIN", label: "SUPER_ADMIN", badge: "Executive" },
-                        ]
-                      : [
-                          { value: "DOCTOR", label: "DOCTOR", badge: "Physician" },
-                          { value: "STAFF", label: "STAFF", badge: "Front Desk" },
-                          { value: "PATIENT", label: "PATIENT", badge: "Patient" },
-                          { value: "ADMIN", label: "ADMIN", badge: "Admin" },
-                        ]
-                  }
-                  searchable={false}
-                />
-              </div>
-
-              {editError && (
-                <p className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 text-red-600 dark:text-red-400 text-xs font-medium">
-                  {editError}
-                </p>
-              )}
-
-              <div className="flex items-center justify-end gap-2 pt-2">
+              <div className="modal-footer shrink-0 flex items-center justify-end gap-2 px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
                 <button
                   type="button"
                   onClick={() => setEditingUser(null)}

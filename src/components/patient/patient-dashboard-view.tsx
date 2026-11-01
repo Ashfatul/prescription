@@ -522,35 +522,50 @@ export function PatientDashboardView({
       {/* Appointment Slip Modal */}
       {selectedSlip && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-[var(--bg-surface)] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 space-y-4">
-            <div className="p-5 rounded-2xl bg-[var(--brand-surface)] border border-[var(--brand-border)] text-center space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
+          <div className="w-full max-w-md bg-[var(--bg-surface)] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+            <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+              <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
                 Patient Appointment Slip
               </span>
-              <div className="text-3xl font-black text-[var(--brand-primary)]">
-                #{selectedSlip.serialNumber}
-              </div>
-              <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                {selectedSlip.doctor.user.name} ({selectedSlip.doctor.specialization})
-              </p>
-              <p className="text-[11px] text-slate-500">
-                {new Date(selectedSlip.appointmentDate).toLocaleDateString(undefined, {
-                  weekday: "short",
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}
-              </p>
-              <p className="text-[11px] text-slate-400">
-                Chamber: {selectedSlip.doctor.chamberAddress || "Room 301, Consultation Wing"}
-              </p>
+              <button
+                type="button"
+                onClick={() => setSelectedSlip(null)}
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+              >
+                ✕
+              </button>
             </div>
 
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4">
+              <div className="p-5 rounded-2xl bg-[var(--brand-surface)] border border-[var(--brand-border)] text-center space-y-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
+                  Confirmed Queue Ticket
+                </span>
+                <div className="text-4xl font-black text-[var(--brand-primary)]">
+                  #{selectedSlip.serialNumber}
+                </div>
+                <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                  {selectedSlip.doctor.user.name} ({selectedSlip.doctor.specialization})
+                </p>
+                <p className="text-[11px] text-slate-500">
+                  {new Date(selectedSlip.appointmentDate).toLocaleDateString(undefined, {
+                    weekday: "short",
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </p>
+                <p className="text-[11px] text-slate-400">
+                  Chamber: {selectedSlip.doctor.chamberAddress || "Room 301, Consultation Wing"}
+                </p>
+              </div>
+            </div>
+
+            <div className="modal-footer shrink-0 px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center gap-1.5 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
               >
                 <Printer className="w-3.5 h-3.5" />
                 <span>Print</span>
@@ -558,7 +573,7 @@ export function PatientDashboardView({
               <button
                 type="button"
                 onClick={() => setSelectedSlip(null)}
-                className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold cursor-pointer"
+                className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold cursor-pointer hover:opacity-90 transition shadow-xs"
               >
                 Close
               </button>
@@ -570,8 +585,8 @@ export function PatientDashboardView({
       {/* Patient Prescription Version History Modal */}
       {selectedHistoryPrescription && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-xl bg-[var(--bg-surface)] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+          <div className="w-full max-w-xl bg-[var(--bg-surface)] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+            <div className="modal-header shrink-0 flex items-start justify-between gap-4 p-6 pb-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
                   Prescription Version Timeline
@@ -587,13 +602,13 @@ export function PatientDashboardView({
               <button
                 type="button"
                 onClick={() => setSelectedHistoryPrescription(null)}
-                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <div className="space-y-3">
+            <div className="modal-body flex-1 overflow-y-auto p-6 space-y-3">
               {(selectedHistoryPrescription.versions || []).map((ver) => {
                 const isLatest = ver.versionNumber === selectedHistoryPrescription.version;
                 const verDate = new Date(ver.createdAt).toLocaleString(undefined, {
@@ -653,7 +668,7 @@ export function PatientDashboardView({
               })}
             </div>
 
-            <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+            <div className="modal-footer shrink-0 px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex justify-end">
               <button
                 type="button"
                 onClick={() => setSelectedHistoryPrescription(null)}

@@ -448,7 +448,7 @@ export function RolePermissionManager() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search permissions by capability name, keyword, key (e.g. 'medicines:create'), or description..."
-              className="w-full min-h-[44px] rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-app)] py-2.5 pl-10 pr-10 text-xs font-medium text-[var(--text-primary)] placeholder-[var(--text-muted)] transition focus:border-[var(--brand-primary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20"
+              className="w-full min-h-[44px] rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-app)] py-2.5 input-icon-left !pl-11 pr-10 text-xs font-medium text-[var(--text-primary)] placeholder-[var(--text-muted)] transition focus:border-[var(--brand-primary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20"
             />
             {searchQuery && (
               <button

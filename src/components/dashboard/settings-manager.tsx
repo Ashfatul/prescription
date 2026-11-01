@@ -223,12 +223,12 @@ export function SettingsManager() {
                 Full Physical Address
               </label>
               <div className="relative">
-                <MapPin className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <MapPin className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 <input
                   type="text"
                   value={settings.hospitalAddress}
                   onChange={(e) => handleChange("hospitalAddress", e.target.value)}
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                  className="w-full input-icon-left !pl-11 pr-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                   placeholder="e.g. Diagnostic Block C, 3rd Floor, Metropolitan Hospital, Dhaka"
                 />
               </div>
@@ -303,13 +303,13 @@ export function SettingsManager() {
                 24/7 Emergency Hotline Number
               </label>
               <div className="relative">
-                <PhoneCall className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-rose-500" />
+                <PhoneCall className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-rose-500 pointer-events-none" />
                 <input
                   type="text"
                   value={settings.emergencyHotline}
                   onChange={(e) => handleChange("emergencyHotline", e.target.value)}
                   required
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs font-bold text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                  className="w-full input-icon-left !pl-11 pr-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs font-bold text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                   placeholder="e.g. 10678"
                 />
               </div>
@@ -320,12 +320,12 @@ export function SettingsManager() {
                 Chamber OPD Contact Phone
               </label>
               <div className="relative">
-                <PhoneCall className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <PhoneCall className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 <input
                   type="text"
                   value={settings.contactPhone}
                   onChange={(e) => handleChange("contactPhone", e.target.value)}
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                  className="w-full input-icon-left !pl-11 pr-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                   placeholder="e.g. +880 1711-234567"
                 />
               </div>
@@ -336,12 +336,12 @@ export function SettingsManager() {
                 Clinical Support Email
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 <input
                   type="email"
                   value={settings.supportEmail}
                   onChange={(e) => handleChange("supportEmail", e.target.value)}
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                  className="w-full input-icon-left !pl-11 pr-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                   placeholder="e.g. support@hospital.org"
                 />
               </div>

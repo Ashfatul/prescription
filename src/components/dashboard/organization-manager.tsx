@@ -347,149 +347,151 @@ export function OrganizationManager() {
       {/* Provision / Edit Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl p-6 sm:p-8 space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+            <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="font-bold text-slate-900 dark:text-white text-base">
                 {editingOrg ? `Manage Clinic: ${editingOrg.name}` : "Provision New Clinic Organization"}
               </h3>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            {error && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 text-xs">
-                {error}
-              </div>
-            )}
+            <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4 text-xs">
+                {error && (
+                  <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 text-xs">
+                    {error}
+                  </div>
+                )}
 
-            <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-              <div className="grid sm:grid-cols-2 gap-3">
+                <div className="grid sm:grid-cols-1 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      Clinic / Hospital Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Care Family Polyclinic"
+                      value={name}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        if (!editingOrg) {
+                          setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, "-"));
+                        }
+                      }}
+                      className={inputClasses}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      Tenant Slug Identifier *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. care-polyclinic"
+                      value={slug}
+                      onChange={(e) => setSlug(e.target.value)}
+                      className={`${inputClasses} font-mono`}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-1 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      SaaS Pricing Plan
+                    </label>
+                    <CustomSelect
+                      value={planId}
+                      onChange={(val) => setPlanId(val)}
+                      options={plans.map((p) => ({
+                        value: p.id,
+                        label: `${p.name} ($${p.price}/mo)`,
+                      }))}
+                      placeholder="Select pricing plan..."
+                      searchable={false}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      Tenant Status
+                    </label>
+                    <CustomSelect
+                      value={status}
+                      onChange={(val) => setStatus(val as "ACTIVE" | "TRIAL" | "SUSPENDED")}
+                      options={[
+                        { value: "ACTIVE", label: "ACTIVE", badge: "Live" },
+                        { value: "TRIAL", label: "TRIAL (14 Days)", badge: "Trial" },
+                        { value: "SUSPENDED", label: "SUSPENDED", badge: "Locked" },
+                      ]}
+                      searchable={false}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-1 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      Official Contact Email
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="admin@clinic.com"
+                      value={contactEmail}
+                      onChange={(e) => setContactEmail(e.target.value)}
+                      className={inputClasses}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      Chamber Phone
+                    </label>
+                    <input
+                      type="tel"
+                      placeholder="+880 1711-234567"
+                      value={contactPhone}
+                      onChange={(e) => setContactPhone(e.target.value)}
+                      className={inputClasses}
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Clinic / Hospital Name *
+                    Physical Address & Location
                   </label>
                   <input
                     type="text"
-                    required
-                    placeholder="e.g. Care Family Polyclinic"
-                    value={name}
-                    onChange={(e) => {
-                      setName(e.target.value);
-                      if (!editingOrg) {
-                        setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, "-"));
-                      }
-                    }}
-                    className={inputClasses}
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Tenant Slug Identifier *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. care-polyclinic"
-                    value={slug}
-                    onChange={(e) => setSlug(e.target.value)}
-                    className={`${inputClasses} font-mono`}
-                  />
-                </div>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    SaaS Pricing Plan
-                  </label>
-                  <CustomSelect
-                    value={planId}
-                    onChange={(val) => setPlanId(val)}
-                    options={plans.map((p) => ({
-                      value: p.id,
-                      label: `${p.name} ($${p.price}/mo)`,
-                    }))}
-                    placeholder="Select pricing plan..."
-                    searchable={false}
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Tenant Status
-                  </label>
-                  <CustomSelect
-                    value={status}
-                    onChange={(val) => setStatus(val as "ACTIVE" | "TRIAL" | "SUSPENDED")}
-                    options={[
-                      { value: "ACTIVE", label: "ACTIVE", badge: "Live" },
-                      { value: "TRIAL", label: "TRIAL (14 Days)", badge: "Trial" },
-                      { value: "SUSPENDED", label: "SUSPENDED", badge: "Locked" },
-                    ]}
-                    searchable={false}
-                  />
-                </div>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Official Contact Email
-                  </label>
-                  <input
-                    type="email"
-                    placeholder="admin@clinic.com"
-                    value={contactEmail}
-                    onChange={(e) => setContactEmail(e.target.value)}
-                    className={inputClasses}
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Chamber Phone
-                  </label>
-                  <input
-                    type="tel"
-                    placeholder="+880 1711-234567"
-                    value={contactPhone}
-                    onChange={(e) => setContactPhone(e.target.value)}
+                    placeholder="e.g. Sector 7, Uttara, Dhaka"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
                     className={inputClasses}
                   />
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Physical Address & Location
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Sector 7, Uttara, Dhaka"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  className={inputClasses}
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-2">
+              <div className="modal-footer shrink-0 flex items-center justify-end gap-2 px-6 py-4 border-t border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-[var(--border-default)]"
+                  className="px-4 py-2 rounded-xl border border-[var(--border-default)] text-slate-600 dark:text-slate-300 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold"
+                  className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold cursor-pointer hover:opacity-90 disabled:opacity-50 transition shadow-xs"
                 >
                   {submitting ? "Saving..." : editingOrg ? "Update Clinic" : "Create Organization"}
                 </button>

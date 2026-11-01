@@ -364,8 +364,8 @@ export function StaffSchedulingManager() {
       {/* Edit Doctor Schedule Modal */}
       {editingDoctor && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl p-6 sm:p-8 space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+          <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+            <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <div>
                 <h3 className="font-bold text-slate-900 dark:text-white text-base">
                   Edit Chamber Schedule
@@ -375,66 +375,68 @@ export function StaffSchedulingManager() {
               <button
                 type="button"
                 onClick={() => setEditingDoctor(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveSchedule} className="space-y-4 text-xs">
-              <div className="space-y-1.5">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Visiting Hours & Days
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Sat-Thu 09:00 AM - 01:00 PM"
-                  value={visitingHours}
-                  onChange={(e) => setVisitingHours(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white"
-                />
+            <form onSubmit={handleSaveSchedule} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4 text-xs">
+                <div className="space-y-1.5">
+                  <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                    Visiting Hours & Days
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Sat-Thu 09:00 AM - 01:00 PM"
+                    value={visitingHours}
+                    onChange={(e) => setVisitingHours(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                    Chamber Room & Location
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Room 301, 3rd Floor"
+                    value={chamberAddress}
+                    onChange={(e) => setChamberAddress(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                    Chamber Contact Phone
+                  </label>
+                  <input
+                    type="tel"
+                    placeholder="+880 1711-234567"
+                    value={contactNumber}
+                    onChange={(e) => setContactNumber(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white"
+                  />
+                </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Chamber Room & Location
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Room 301, 3rd Floor"
-                  value={chamberAddress}
-                  onChange={(e) => setChamberAddress(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Chamber Contact Phone
-                </label>
-                <input
-                  type="tel"
-                  placeholder="+880 1711-234567"
-                  value={contactNumber}
-                  onChange={(e) => setContactNumber(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white"
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-2">
+              <div className="modal-footer shrink-0 flex items-center justify-end gap-2 px-6 py-4 border-t border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
                 <button
                   type="button"
                   onClick={() => setEditingDoctor(null)}
-                  className="px-4 py-2 rounded-xl border border-[var(--border-default)]"
+                  className="px-4 py-2 rounded-xl border border-[var(--border-default)] text-slate-600 dark:text-slate-300 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold"
+                  className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold cursor-pointer hover:opacity-90 disabled:opacity-50 transition shadow-xs"
                 >
                   {saving ? "Saving..." : "Update Schedule"}
                 </button>

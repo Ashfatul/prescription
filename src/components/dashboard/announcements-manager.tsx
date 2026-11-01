@@ -279,13 +279,13 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
       <div className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col md:flex-row items-center gap-3">
         {/* Search Input */}
         <div className="relative flex-1 w-full min-w-[200px]">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             placeholder="Search by title, contents, or author..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
+            className="w-full input-icon-left !pl-11 pr-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
           />
         </div>
 
@@ -450,8 +450,8 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
       {/* Creation Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl p-6 sm:p-8 space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-5 sm:p-6 border-b border-[var(--border-subtle)] modal-header shrink-0">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
                   <Megaphone className="w-4 h-4" />
@@ -463,84 +463,86 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {error && (
-              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 text-xs font-semibold">
-                {error}
-              </div>
-            )}
+            <form onSubmit={handleCreate} className="flex-1 flex flex-col overflow-hidden">
+              <div className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-4 text-xs modal-body">
+                {error && (
+                  <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 text-xs font-semibold">
+                    {error}
+                  </div>
+                )}
 
-            <form onSubmit={handleCreate} className="space-y-4 text-xs">
-              <div className="space-y-1.5">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Broadcast Headline *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Scheduled Maintenance / New OPD Visiting Hours"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className={inputClasses}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Target Audience
+                    Broadcast Headline *
                   </label>
-                  <CustomSelect
-                    value={targetRole}
-                    onChange={(val) => setTargetRole(val)}
-                    options={[
-                      { value: "ALL", label: "All Users (Public)" },
-                      { value: "ADMIN", label: "Clinic Administrators Only" },
-                      { value: "DOCTOR", label: "Physicians & Doctors Only" },
-                      { value: "PATIENT", label: "Patients Only" },
-                      { value: "STAFF", label: "Front Desk & Staff Only" },
-                    ]}
-                    searchable={false}
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Scheduled Maintenance / New OPD Visiting Hours"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className={inputClasses}
                   />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      Target Audience
+                    </label>
+                    <CustomSelect
+                      value={targetRole}
+                      onChange={(val) => setTargetRole(val)}
+                      options={[
+                        { value: "ALL", label: "All Users (Public)" },
+                        { value: "ADMIN", label: "Clinic Administrators Only" },
+                        { value: "DOCTOR", label: "Physicians & Doctors Only" },
+                        { value: "PATIENT", label: "Patients Only" },
+                        { value: "STAFF", label: "Front Desk & Staff Only" },
+                      ]}
+                      searchable={false}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      Urgency Priority
+                    </label>
+                    <CustomSelect
+                      value={priority}
+                      onChange={(val) => setPriority(val)}
+                      options={[
+                        { value: "NORMAL", label: "Normal (Info)" },
+                        { value: "HIGH", label: "High Priority" },
+                        { value: "URGENT", label: "Urgent / Critical Action" },
+                      ]}
+                      searchable={false}
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Urgency Priority
+                    Announcement Details *
                   </label>
-                  <CustomSelect
-                    value={priority}
-                    onChange={(val) => setPriority(val)}
-                    options={[
-                      { value: "NORMAL", label: "Normal (Info)" },
-                      { value: "HIGH", label: "High Priority" },
-                      { value: "URGENT", label: "Urgent / Critical Action" },
-                    ]}
-                    searchable={false}
+                  <textarea
+                    required
+                    rows={4}
+                    placeholder="Write clear instructions or notice information..."
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    className={textareaClasses}
                   />
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Announcement Details *
-                </label>
-                <textarea
-                  required
-                  rows={4}
-                  placeholder="Write clear instructions or notice information..."
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  className={textareaClasses}
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-2 border-t border-[var(--border-subtle)]">
+              <div className="p-4 sm:p-5 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] flex items-center justify-end gap-2 modal-footer shrink-0">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}

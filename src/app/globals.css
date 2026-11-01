@@ -221,26 +221,48 @@ body {
 }
 
 /* Consistent & Ergonomic Clinical Form Controls (min-h-[46px] on mobile, min-h-[48px] on desktop)
- * Wrapped in :where() to give (0,0,0) specificity so utility classes (!pl-11, pl-10) and inline styles can override padding cleanly.
+ * Wrapped in @layer base so utility classes (pl-10, !pl-11, etc.) naturally override padding cleanly.
  */
-:where(
-  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="file"]):not([type="color"]),
-  select,
-  .form-input-consistent
-) {
-  min-height: 46px;
-  height: 46px;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  border-radius: 0.75rem; /* rounded-xl (12px) */
-  padding-left: 1rem;
-  padding-right: 1rem;
-  border-width: 1px;
-  border-color: var(--border-default);
-  background-color: var(--bg-surface);
-  color: var(--text-primary);
-  outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+@layer base {
+  :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="file"]):not([type="color"]),
+    select,
+    .form-input-consistent
+  ) {
+    min-height: 46px;
+    height: 46px;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    border-radius: 0.75rem; /* rounded-xl (12px) */
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-width: 1px;
+    border-color: var(--border-default);
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  @media (min-width: 640px) {
+    :where(
+      input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="file"]):not([type="color"]),
+      select,
+      .form-input-consistent
+    ) {
+      min-height: 48px;
+      height: 48px;
+    }
+  }
+
+  :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="file"]):not([type="color"]),
+    select,
+    .form-input-consistent
+  ):focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.2);
+  }
 }
 
 /* Explicit helper classes for icon inputs to prevent any text clipping behind icons */
@@ -254,24 +276,25 @@ input.input-icon-right {
   padding-right: 2.75rem !important; /* 44px */
 }
 
-@media (min-width: 640px) {
-  :where(
-    input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="file"]):not([type="color"]),
-    select,
-    .form-input-consistent
-  ) {
-    min-height: 48px;
-    height: 48px;
-  }
+/* Standard Responsive Modal System (max-h 100vh with safe margin & inner scroll) */
+.modal-container {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 2.5rem);
+  max-height: calc(100vh - 2.5rem);
+  overflow: hidden;
 }
 
-:where(
-  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="file"]):not([type="color"]),
-  select,
-  .form-input-consistent
-):focus {
-  border-color: var(--brand-primary);
-  box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.2);
+.modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.modal-header,
+.modal-footer {
+  flex-shrink: 0;
 }
 
 input::placeholder,

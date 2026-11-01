@@ -444,8 +444,8 @@ export function TestReportsManager({ role, patientId }: TestReportsManagerProps)
       {/* Upload Modal */}
       {uploadModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl p-6 sm:p-8 space-y-6">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+            <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <div className="flex items-center gap-2">
                 <Upload className="w-5 h-5 text-[var(--brand-primary)]" />
                 <h3 className="font-bold text-slate-900 dark:text-white text-base">
@@ -455,75 +455,77 @@ export function TestReportsManager({ role, patientId }: TestReportsManagerProps)
               <button
                 type="button"
                 onClick={() => setUploadModalOpen(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateReport} className="space-y-4 text-xs">
-              <div className="space-y-1.5">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Report Title *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Complete Blood Count (CBC) or Chest X-Ray"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+            <form onSubmit={handleCreateReport} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4 text-xs">
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Date of Test
+                    Report Title *
                   </label>
-                  <CustomDatePicker
-                    value={reportDate}
-                    onChange={(val) => setReportDate(val)}
-                    placeholder="Select test date"
-                    maxDate={new Date().toISOString().split("T")[0]}
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Complete Blood Count (CBC) or Chest X-Ray"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full px-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
                   />
                 </div>
 
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      Date of Test
+                    </label>
+                    <CustomDatePicker
+                      value={reportDate}
+                      onChange={(val) => setReportDate(val)}
+                      placeholder="Select test date"
+                      maxDate={new Date().toISOString().split("T")[0]}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      Report File (PDF / Image) *
+                    </label>
+                    <label className="w-full px-4 rounded-xl border border-dashed border-[var(--border-default)] bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] transition text-center cursor-pointer flex items-center justify-center gap-2 truncate min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px] text-sm">
+                      <Upload className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
+                      <span className="truncate">{uploadFile ? uploadFile.name : "Select Document"}</span>
+                      <input
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        onChange={handleFileUploadChange}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                </div>
+
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Report File (PDF / Image) *
+                    Clinical Summary / Findings (Optional)
                   </label>
-                  <label className="w-full px-4 rounded-xl border border-dashed border-[var(--border-default)] bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] transition text-center cursor-pointer flex items-center justify-center gap-2 truncate min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px] text-sm">
-                    <Upload className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-                    <span className="truncate">{uploadFile ? uploadFile.name : "Select Document"}</span>
-                    <input
-                      type="file"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={handleFileUploadChange}
-                      className="hidden"
-                    />
-                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder="e.g. Hemoglobin 14.2 g/dL, normal platelet count, clear lung fields"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all resize-none"
+                  />
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Clinical Summary / Findings (Optional)
-                </label>
-                <textarea
-                  rows={3}
-                  placeholder="e.g. Hemoglobin 14.2 g/dL, normal platelet count, clear lung fields"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all resize-none"
-                />
-              </div>
-
-              <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-end gap-2">
+              <div className="modal-footer shrink-0 flex items-center justify-end gap-2 px-6 py-4 border-t border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
                 <button
                   type="button"
                   onClick={() => setUploadModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl border border-[var(--border-default)] text-slate-600 dark:text-slate-300 font-semibold cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl border border-[var(--border-default)] text-slate-600 dark:text-slate-300 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
                   Cancel
                 </button>
@@ -544,21 +546,21 @@ export function TestReportsManager({ role, patientId }: TestReportsManagerProps)
       {/* Doctor Review Modal */}
       {selectedReport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl p-6 space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+          <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+            <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="font-bold text-slate-900 dark:text-white text-base">
                 Physician Clinical Review
               </h3>
               <button
                 type="button"
                 onClick={() => setSelectedReport(null)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="space-y-3 text-xs">
+            <div className="modal-body flex-1 overflow-y-auto p-6 space-y-3 text-xs">
               <div>
                 <span className="text-slate-400 block text-[11px]">Report:</span>
                 <strong className="text-slate-900 dark:text-white text-sm">
@@ -599,24 +601,24 @@ export function TestReportsManager({ role, patientId }: TestReportsManagerProps)
                   className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] resize-none"
                 />
               </div>
+            </div>
 
-              <div className="pt-2 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedReport(null)}
-                  className="px-4 py-2 rounded-xl border border-[var(--border-default)]"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSaveReview}
-                  disabled={savingReview}
-                  className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold"
-                >
-                  {savingReview ? "Saving..." : "Save Assessment"}
-                </button>
-              </div>
+            <div className="modal-footer shrink-0 flex items-center justify-end gap-2 px-6 py-4 border-t border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
+              <button
+                type="button"
+                onClick={() => setSelectedReport(null)}
+                className="px-4 py-2 rounded-xl border border-[var(--border-default)] text-slate-600 dark:text-slate-300 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveReview}
+                disabled={savingReview}
+                className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold cursor-pointer hover:opacity-90 disabled:opacity-50 transition shadow-xs"
+              >
+                {savingReview ? "Saving..." : "Save Assessment"}
+              </button>
             </div>
           </div>
         </div>

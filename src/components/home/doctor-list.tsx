@@ -200,7 +200,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT }: DoctorListP
         <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
           {/* Search Input */}
           <div className="relative flex-1 max-w-lg">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
@@ -209,7 +209,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT }: DoctorListP
                 setIsExpanded(true); // Auto-expand when searching
               }}
               placeholder="Search by physician name, department, or degree..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)] transition"
+              className="w-full input-icon-left !pl-11 pr-4 py-2.5 rounded-2xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)] transition"
             />
           </div>
 

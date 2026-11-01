@@ -267,8 +267,8 @@ export function NotificationBell() {
       {/* Notification Alert Settings Modal */}
       {settingsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl p-6 space-y-6">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+          <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+            <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <div className="flex items-center gap-2">
                 <Settings className="w-5 h-5 text-[var(--brand-primary)]" />
                 <h3 className="font-bold text-slate-900 dark:text-white text-base">
@@ -278,13 +278,13 @@ export function NotificationBell() {
               <button
                 type="button"
                 onClick={() => setSettingsOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="space-y-4 text-xs">
+            <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4 text-xs">
               <p className="text-slate-500">
                 Choose how you wish to receive prescription updates, chamber schedule alerts, and hospital broadcasts.
               </p>
@@ -371,11 +371,11 @@ export function NotificationBell() {
               </div>
             </div>
 
-            <div className="pt-2">
+            <div className="modal-footer shrink-0 px-6 py-4 border-t border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <button
                 type="button"
                 onClick={() => setSettingsOpen(false)}
-                className="w-full py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white font-bold text-xs shadow-xs hover:opacity-95 transition"
+                className="w-full py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white font-bold text-xs shadow-xs hover:opacity-95 transition cursor-pointer"
               >
                 {savingPrefs ? "Saving..." : "Done"}
               </button>

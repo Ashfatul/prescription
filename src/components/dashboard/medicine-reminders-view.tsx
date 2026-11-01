@@ -271,106 +271,108 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
       {/* Add Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl p-6 sm:p-8 space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+          <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+            <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="font-bold text-slate-900 dark:text-white text-base">
                 New Medicine Reminder
               </h3>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreate} className="space-y-4 text-xs">
-              <div className="space-y-1.5">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Medicine Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Napa Extra or Maxpro"
-                  value={medicineName}
-                  onChange={(e) => setMedicineName(e.target.value)}
-                  className={inputClasses}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+            <form onSubmit={handleCreate} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4 text-xs">
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Strength / Dosage
+                    Medicine Name *
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. 500mg or 20mg"
-                    value={dosage}
-                    onChange={(e) => setDosage(e.target.value)}
+                    required
+                    placeholder="e.g. Napa Extra or Maxpro"
+                    value={medicineName}
+                    onChange={(e) => setMedicineName(e.target.value)}
+                    className={inputClasses}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      Strength / Dosage
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 500mg or 20mg"
+                      value={dosage}
+                      onChange={(e) => setDosage(e.target.value)}
+                      className={inputClasses}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      Frequency
+                    </label>
+                    <CustomSelect
+                      value={frequency}
+                      onChange={(val) => setFrequency(val)}
+                      options={[
+                        { value: "1+0+1", label: "1+0+1 (Twice Daily)" },
+                        { value: "1+1+1", label: "1+1+1 (Thrice Daily)" },
+                        { value: "1+0+0", label: "1+0+0 (Morning Only)" },
+                        { value: "0+0+1", label: "0+0+1 (Bedtime)" },
+                        { value: "As Needed", label: "As Needed (PRN)" },
+                      ]}
+                      searchable={false}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                    Timing Instructions
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 30 mins before breakfast & dinner"
+                    value={timeOfDay}
+                    onChange={(e) => setTimeOfDay(e.target.value)}
                     className={inputClasses}
                   />
                 </div>
 
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Frequency
+                    Notes / Instructions
                   </label>
-                  <CustomSelect
-                    value={frequency}
-                    onChange={(val) => setFrequency(val)}
-                    options={[
-                      { value: "1+0+1", label: "1+0+1 (Twice Daily)" },
-                      { value: "1+1+1", label: "1+1+1 (Thrice Daily)" },
-                      { value: "1+0+0", label: "1+0+0 (Morning Only)" },
-                      { value: "0+0+1", label: "0+0+1 (Bedtime)" },
-                      { value: "As Needed", label: "As Needed (PRN)" },
-                    ]}
-                    searchable={false}
+                  <input
+                    type="text"
+                    placeholder="e.g. Drink plenty of water"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    className={inputClasses}
                   />
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Timing Instructions
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. 30 mins before breakfast & dinner"
-                  value={timeOfDay}
-                  onChange={(e) => setTimeOfDay(e.target.value)}
-                  className={inputClasses}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                  Notes / Instructions
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Drink plenty of water"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  className={inputClasses}
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-2">
+              <div className="modal-footer shrink-0 flex items-center justify-end gap-2 px-6 py-4 border-t border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-[var(--border-default)]"
+                  className="px-4 py-2 rounded-xl border border-[var(--border-default)] text-slate-600 dark:text-slate-300 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold"
+                  className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold cursor-pointer hover:opacity-90 disabled:opacity-50 transition shadow-xs"
                 >
                   {submitting ? "Saving..." : "Create Reminder"}
                 </button>
