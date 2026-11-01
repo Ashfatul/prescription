@@ -174,6 +174,95 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         ]
       : []),
 
+    ...(role === RoleName.ADMIN
+      ? [
+          {
+            section: "Front Desk & Triage",
+            label: "Reception Desk",
+            href: "/dashboard/staff",
+            tabKey: "reception",
+            icon: <ClipboardList className="w-4 h-4" />,
+          },
+          {
+            section: "Clinic Overview",
+            label: "Clinic Analytics",
+            href: "/dashboard/admin",
+            tabKey: "main",
+            icon: <BarChart3 className="w-4 h-4" />,
+          },
+          {
+            section: "Subscription & Billing",
+            label: "Subscription & Billing",
+            href: "/dashboard/admin?tab=billing",
+            tabKey: "billing",
+            icon: <Sparkles className="w-4 h-4" />,
+          },
+          {
+            section: "Accounts & Security",
+            label: "Doctors & Staff Accounts",
+            href: "/dashboard/admin?tab=users",
+            tabKey: "users",
+            icon: <Users className="w-4 h-4" />,
+          },
+          {
+            section: "Accounts & Security",
+            label: "Role & Permissions",
+            href: "/dashboard/admin?tab=roles",
+            tabKey: "roles",
+            icon: <Shield className="w-4 h-4" />,
+          },
+          {
+            section: "Governance & Audit",
+            label: "Clinic Broadcasts",
+            href: "/dashboard/admin?tab=announcements",
+            tabKey: "announcements",
+            icon: <Megaphone className="w-4 h-4" />,
+          },
+          {
+            section: "Governance & Audit",
+            label: "Activity Audit Logs",
+            href: "/dashboard/admin?tab=activity",
+            tabKey: "activity",
+            icon: <ShieldAlert className="w-4 h-4" />,
+          },
+          {
+            section: "Collaboration",
+            label: "Clinical Chat Hub",
+            href: "/dashboard/admin?tab=chat",
+            tabKey: "chat",
+            icon: <MessageSquare className="w-4 h-4" />,
+          },
+          {
+            section: "Medical Formulary",
+            label: "Pharmaceutical Drugs",
+            href: "/dashboard/admin?tab=catalog",
+            tabKey: "catalog",
+            icon: <Pill className="w-4 h-4" />,
+          },
+          {
+            section: "Medical Formulary",
+            label: "Diagnostic Lab Tests",
+            href: "/dashboard/admin?tab=tests",
+            tabKey: "tests",
+            icon: <FlaskConical className="w-4 h-4" />,
+          },
+          {
+            section: "Prescription Pad",
+            label: "Prescription Designer",
+            href: "/dashboard/admin?tab=templates",
+            tabKey: "templates",
+            icon: <FileCode2 className="w-4 h-4" />,
+          },
+          {
+            section: "Configuration",
+            label: "Clinic Settings",
+            href: "/dashboard/admin?tab=settings",
+            tabKey: "settings",
+            icon: <Building2 className="w-4 h-4" />,
+          },
+        ]
+      : []),
+
     ...(role === RoleName.STAFF
       ? [
           {
@@ -196,6 +285,13 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             href: "/dashboard/staff?tab=chat",
             tabKey: "chat",
             icon: <MessageSquare className="w-4 h-4" />,
+          },
+          {
+            section: "Hospital Communications",
+            label: "Hospital Bulletins",
+            href: "/dashboard/staff?tab=announcements",
+            tabKey: "announcements",
+            icon: <Megaphone className="w-4 h-4" />,
           },
         ]
       : []),
@@ -265,6 +361,13 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             tabKey: "profile",
             icon: <UserCog className="w-4 h-4" />,
           },
+          {
+            section: "Hospital Communications",
+            label: "Hospital Bulletins",
+            href: "/dashboard/doctor?tab=announcements",
+            tabKey: "announcements",
+            icon: <Megaphone className="w-4 h-4" />,
+          },
         ]
       : []),
 
@@ -298,6 +401,13 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             tabKey: "chat",
             icon: <MessageSquare className="w-4 h-4" />,
           },
+          {
+            section: "Hospital Communications",
+            label: "Clinic Notices",
+            href: "/dashboard/patient?tab=announcements",
+            tabKey: "announcements",
+            icon: <Megaphone className="w-4 h-4" />,
+          },
         ]
       : []),
 
@@ -321,6 +431,8 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
     switch (roleName) {
       case RoleName.SUPER_ADMIN:
         return "bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300";
+      case RoleName.ADMIN:
+        return "bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300";
       case RoleName.DOCTOR:
         return "bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300";
       case RoleName.STAFF:
@@ -333,7 +445,9 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
   const getRoleTitle = (roleName: RoleName) => {
     switch (roleName) {
       case RoleName.SUPER_ADMIN:
-        return "Super Admin";
+        return "Super Admin (Platform)";
+      case RoleName.ADMIN:
+        return "Clinic Administrator";
       case RoleName.DOCTOR:
         return "Attending Physician";
       case RoleName.STAFF:
@@ -347,19 +461,24 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
     <div className="flex flex-col h-full justify-between p-4 bg-[var(--bg-sidebar)] border-r border-slate-200/80 dark:border-slate-800/80">
       {/* Brand & Organization Header */}
       <div className="flex flex-col flex-1 min-h-0">
-        <div className="flex items-center gap-3 px-3 py-3 mb-4 shrink-0">
-          <div className="w-10 h-10 rounded-2xl bg-[var(--brand-primary)] text-white flex items-center justify-center font-black text-lg shadow-md shadow-[var(--brand-primary)]/20">
+        <Link
+          href="/"
+          onClick={() => setMobileMenuOpen(false)}
+          className="flex items-center gap-3 px-3 py-2.5 mb-4 shrink-0 rounded-2xl hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition-all group cursor-pointer"
+          title="Return to Home Page"
+        >
+          <div className="w-10 h-10 rounded-2xl bg-[var(--brand-primary)] text-white flex items-center justify-center font-black text-lg shadow-md shadow-[var(--brand-primary)]/20 group-hover:scale-105 transition-transform">
             Rx
           </div>
           <div>
-            <h1 className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+            <h1 className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight group-hover:text-[var(--brand-text)] transition-colors">
               PPMS Clinical
             </h1>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
               Medical Suite v2.0
             </p>
           </div>
-        </div>
+        </Link>
 
         {/* Navigation Sections (Scrollable) */}
         <nav className="flex-1 overflow-y-auto pr-1 -mr-1 space-y-5">

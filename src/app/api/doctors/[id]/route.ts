@@ -24,13 +24,30 @@ export async function GET(req: NextRequest, context: { params: Promise<{ id: str
 
 export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   return withErrorHandling(req, async () => {
-    const auth = await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.STAFF, RoleName.DOCTOR]);
+    const auth = await requireUser(req, [
+      RoleName.SUPER_ADMIN,
+      RoleName.ADMIN,
+      RoleName.STAFF,
+      RoleName.DOCTOR,
+    ]);
     const { id } = await context.params;
 
     if (auth.role === RoleName.DOCTOR) {
       const existing = await db.doctor.findUnique({ where: { id } });
       if (!existing || existing.userId !== auth.sub) {
         throw new AppError("Forbidden: cannot modify another doctor's profile", 403);
+      }
+    } else if (auth.role !== RoleName.SUPER_ADMIN && auth.organizationId) {
+      const existing = await db.doctor.findUnique({
+        where: { id },
+        include: { user: true },
+      });
+      if (
+        existing &&
+        existing.organizationId !== auth.organizationId &&
+        existing.user.organizationId !== auth.organizationId
+      ) {
+        throw new AppError("Forbidden: cannot modify a doctor from another clinic", 403);
       }
     }
 
@@ -40,8 +57,23 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
 
 export async function DELETE(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   return withErrorHandling(req, async () => {
-    await requireUser(req, [RoleName.SUPER_ADMIN]);
+    const auth = await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.ADMIN]);
     const { id } = await context.params;
+
+    if (auth.role !== RoleName.SUPER_ADMIN && auth.organizationId) {
+      const existing = await db.doctor.findUnique({
+        where: { id },
+        include: { user: true },
+      });
+      if (
+        existing &&
+        existing.organizationId !== auth.organizationId &&
+        existing.user.organizationId !== auth.organizationId
+      ) {
+        throw new AppError("Forbidden: cannot delete a doctor from another clinic", 403);
+      }
+    }
+
     return ok(await deleteDoctor(id));
   });
 }

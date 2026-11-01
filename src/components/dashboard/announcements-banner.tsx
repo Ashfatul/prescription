@@ -13,9 +13,19 @@ type AnnouncementItem = {
   createdAt: string;
 };
 
+const DISMISSED_STORAGE_KEY = "ppms_dismissed_announcements";
+
 export function AnnouncementsBanner() {
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
-  const [dismissed, setDismissed] = useState<string[]>([]);
+  const [dismissed, setDismissed] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const stored = localStorage.getItem(DISMISSED_STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
 
   useEffect(() => {
     fetch("/api/announcements")
@@ -27,6 +37,18 @@ export function AnnouncementsBanner() {
       })
       .catch(() => {});
   }, []);
+
+  const handleDismiss = (id: string) => {
+    setDismissed((prev) => {
+      const updated = Array.from(new Set([...prev, id]));
+      try {
+        localStorage.setItem(DISMISSED_STORAGE_KEY, JSON.stringify(updated));
+      } catch {
+        // ignore
+      }
+      return updated;
+    });
+  };
 
   const visible = announcements.filter((a) => !dismissed.includes(a.id));
   if (visible.length === 0) return null;
@@ -94,7 +116,7 @@ export function AnnouncementsBanner() {
 
       <button
         type="button"
-        onClick={() => setDismissed((prev) => [...prev, current.id])}
+        onClick={() => handleDismiss(current.id)}
         className="p-1 rounded-lg opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 cursor-pointer"
         title="Dismiss announcement"
       >

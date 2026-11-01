@@ -13,7 +13,7 @@ export async function PATCH(
   context: { params: Promise<{ id: string }> }
 ) {
   return withErrorHandling(req, async () => {
-    await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.STAFF]);
+    await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.ADMIN, RoleName.STAFF]);
     const { id } = await context.params;
     const body = await req.json();
 
@@ -27,7 +27,7 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> }
 ) {
   return withErrorHandling(req, async () => {
-    await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.STAFF]);
+    await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.ADMIN, RoleName.STAFF]);
     const { id } = await context.params;
 
     await deleteAnnouncement(id);

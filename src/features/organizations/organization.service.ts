@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import { OrganizationStatus } from "@prisma/client";
 import { logActivity } from "@/features/activity-log/activity-log.service";
+import { medicineService, testService } from "@/features/catalog/catalog.service";
 
 export type CreateOrgParams = {
   name: string;
@@ -78,6 +79,11 @@ export async function createOrganization(params: CreateOrgParams, creatorUserId?
     },
     include: { plan: true },
   });
+
+  await Promise.all([
+    medicineService.cloneDefaultsForOrganization(org.id),
+    testService.cloneDefaultsForOrganization(org.id),
+  ]);
 
   await logActivity({
     organizationId: org.id,

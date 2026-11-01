@@ -19,7 +19,7 @@ const updateRolePermissionsSchema = z.object({
 
 export async function GET(req: NextRequest) {
   return withErrorHandling(req, async () => {
-    await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.STAFF]);
+    await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.ADMIN, RoleName.STAFF]);
 
     // Ensure all 4 standard roles exist in DB
     const existingRoles = await db.role.findMany({
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   return withErrorHandling(req, async () => {
-    await requireUser(req, [RoleName.SUPER_ADMIN]);
+    await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.ADMIN]);
     const body = updateRolePermissionsSchema.parse(await req.json());
 
     if (body.batch) {

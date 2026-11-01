@@ -39,7 +39,13 @@ const ROLE_METADATA: Record<
     label: "Super Admin",
     icon: Shield,
     color: "text-amber-600 bg-amber-500/10 border-amber-500/30 dark:text-amber-400",
-    desc: "Full hospital control & administrative oversight",
+    desc: "Full platform oversight & multi-clinic SaaS administration",
+  },
+  ADMIN: {
+    label: "Clinic Administrator",
+    icon: Shield,
+    color: "text-purple-600 bg-purple-500/10 border-purple-500/30 dark:text-purple-400",
+    desc: "Clinic administration, doctor management, formulary & staff",
   },
   DOCTOR: {
     label: "Physician / Doctor",
@@ -63,6 +69,7 @@ const ROLE_METADATA: Record<
 
 const ALL_ROLES = [
   RoleName.SUPER_ADMIN,
+  RoleName.ADMIN,
   RoleName.DOCTOR,
   RoleName.STAFF,
   RoleName.PATIENT,

@@ -53,6 +53,7 @@ export async function createUser(input: unknown, creatorUserId?: string) {
     await db.doctor.create({
       data: {
         userId: user.id,
+        organizationId: orgId || undefined,
         specialization: data.specialization || "General Medicine",
         degrees: data.degrees,
         designation: data.designation,
@@ -97,6 +98,7 @@ export async function createUser(input: unknown, creatorUserId?: string) {
     await db.patient.create({
       data: {
         userId: user.id,
+        organizationId: orgId || undefined,
         gender: data.gender,
         dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
         medicalHistory: data.medicalHistory,

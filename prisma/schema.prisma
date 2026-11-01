@@ -9,6 +9,7 @@ datasource db {
 
 enum RoleName {
   SUPER_ADMIN
+  ADMIN
   DOCTOR
   PATIENT
   STAFF
@@ -83,7 +84,12 @@ model Organization {
   subscriptionStatus    String?            @default("trialing")
   subscriptionEndsAt    DateTime?
   users                 User[]
-  appointments      Appointment[]
+  doctors               Doctor[]
+  patients              Patient[]
+  medicines             Medicine[]
+  tests                 DiagnosticTest[]
+  templates             Template[]
+  appointments          Appointment[]
   prescriptions     Prescription[]
   testReports       TestReport[]
   activityLogs      ActivityLog[]
@@ -133,6 +139,8 @@ model Doctor {
   id              String         @id @default(cuid())
   userId          String         @unique
   user            User           @relation(fields: [userId], references: [id])
+  organizationId  String?
+  organization    Organization?  @relation(fields: [organizationId], references: [id])
   specialization  String
   degrees         String?
   designation     String?
@@ -153,12 +161,16 @@ model Doctor {
   testReports     TestReport[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+
+  @@index([organizationId])
 }
 
 model Patient {
   id                String             @id @default(cuid())
   userId            String             @unique
   user              User               @relation(fields: [userId], references: [id])
+  organizationId    String?
+  organization      Organization?      @relation(fields: [organizationId], references: [id])
   dateOfBirth       DateTime?
   gender            String?
   medicalHistory    String?
@@ -168,6 +180,8 @@ model Patient {
   medicineReminders MedicineReminder[]
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
+
+  @@index([organizationId])
 }
 
 model Appointment {
@@ -295,21 +309,29 @@ model MedicineReminder {
 }
 
 model Medicine {
-  id           String   @id @default(cuid())
-  name         String
-  type         String
-  dosage       String
-  instructions String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             String        @id @default(cuid())
+  name           String
+  type           String
+  dosage         String
+  instructions   String?
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([organizationId])
 }
 
 model DiagnosticTest {
-  id           String   @id @default(cuid())
-  name         String
-  instructions String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             String        @id @default(cuid())
+  name           String
+  instructions   String?
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([organizationId])
 }
 
 model File {
@@ -325,16 +347,20 @@ model File {
 }
 
 model Template {
-  id            String         @id @default(cuid())
-  name          String
-  contentJson   Json?
-  imageUrl      String?
-  isDefault     Boolean        @default(false)
-  createdById   String
-  createdBy     User           @relation(fields: [createdById], references: [id])
-  prescriptions Prescription[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id             String         @id @default(cuid())
+  name           String
+  contentJson    Json?
+  imageUrl       String?
+  isDefault      Boolean        @default(false)
+  createdById    String
+  createdBy      User           @relation(fields: [createdById], references: [id])
+  organizationId String?
+  organization   Organization?  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  prescriptions  Prescription[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([organizationId])
 }
 
 model PrescriptionAttachment {

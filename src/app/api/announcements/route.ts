@@ -14,11 +14,20 @@ export async function GET(req: NextRequest) {
     const user = await requireUser(req);
     const { searchParams } = new URL(req.url);
     const includeInactive = searchParams.get("includeInactive") === "true";
+    const targetRole = searchParams.get("targetRole") || undefined;
+    const priority = searchParams.get("priority") || undefined;
+    const search = searchParams.get("search") || undefined;
 
     const announcements = await listAnnouncements({
-      targetRole: user.role,
+      userRole: user.role,
+      targetRole,
+      priority,
+      search,
       organizationId: user.organizationId,
-      includeInactive: user.role === RoleName.SUPER_ADMIN || user.role === RoleName.STAFF ? includeInactive : false,
+      includeInactive:
+        user.role === RoleName.SUPER_ADMIN || user.role === RoleName.ADMIN || user.role === RoleName.STAFF
+          ? includeInactive
+          : false,
     });
 
     return ok(announcements);
@@ -27,7 +36,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   return withErrorHandling(req, async () => {
-    const user = await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.STAFF]);
+    const user = await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.ADMIN, RoleName.STAFF]);
     const body = await req.json();
 
     if (!body.title || !body.content) {
@@ -40,7 +49,10 @@ export async function POST(req: NextRequest) {
       targetRole: body.targetRole || "ALL",
       priority: body.priority || "NORMAL",
       authorId: user.sub,
-      authorName: user.role === RoleName.SUPER_ADMIN ? "Hospital Administration" : "Staff Desk",
+      authorName:
+        user.role === RoleName.SUPER_ADMIN || user.role === RoleName.ADMIN
+          ? "Hospital Administration"
+          : "Staff Desk",
       organizationId: user.organizationId,
       expiresAt: body.expiresAt ? new Date(body.expiresAt) : undefined,
     });

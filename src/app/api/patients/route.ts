@@ -7,14 +7,30 @@ import { createPatient, listPatients } from "@/features/patients/patient.service
 
 export async function GET(req: NextRequest) {
   return withErrorHandling(req, async () => {
-    await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.STAFF, RoleName.DOCTOR]);
-    return ok(await listPatients());
+    const user = await requireUser(req, [
+      RoleName.SUPER_ADMIN,
+      RoleName.ADMIN,
+      RoleName.STAFF,
+      RoleName.DOCTOR,
+    ]);
+
+    const { searchParams } = new URL(req.url);
+    const queryOrgId = searchParams.get("organizationId");
+
+    let orgId: string | undefined = user.organizationId || undefined;
+    if (user.role === RoleName.SUPER_ADMIN && !user.organizationId) {
+      orgId = queryOrgId || undefined;
+    }
+
+    return ok(await listPatients(orgId));
   });
 }
 
 export async function POST(req: NextRequest) {
   return withErrorHandling(req, async () => {
-    await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.STAFF]);
-    return ok(await createPatient(await req.json()), 201);
+    const user = await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.ADMIN, RoleName.STAFF]);
+    const body = await req.json();
+    const orgId = user.organizationId || body.organizationId || undefined;
+    return ok(await createPatient(body, orgId), 201);
   });
 }

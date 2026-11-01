@@ -7,7 +7,10 @@ import { requireUser } from "@/lib/auth/session";
 export async function GET(req: NextRequest) {
   return withErrorHandling(req, async () => {
     const auth = await requireUser(req);
-    return ok(await listAppointments({ role: auth.role, userId: auth.sub }));
+    const { searchParams } = new URL(req.url);
+    const queryOrgId = searchParams.get("organizationId");
+    const orgId = auth.organizationId || (auth.role === "SUPER_ADMIN" ? queryOrgId : undefined);
+    return ok(await listAppointments({ role: auth.role, userId: auth.sub, organizationId: orgId }));
   });
 }
 
@@ -18,6 +21,7 @@ export async function POST(req: NextRequest) {
       await createAppointment(await req.json(), {
         role: auth.role,
         userId: auth.sub,
+        organizationId: auth.organizationId,
       }),
       201
     );

@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
     const user = await db.user.findUnique({
       where: { id: auth.sub },
-      include: { role: true, doctor: true, patient: true },
+      include: { role: true, doctor: true, patient: true, organization: true },
     });
 
     if (!user) {

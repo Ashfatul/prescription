@@ -111,15 +111,21 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
           <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-1.5">
               <span className="px-2.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-primary)] text-xs font-bold">
-                Administration Center
+                {currentUser?.role === "SUPER_ADMIN" ? "Platform HQ Executive" : "Clinic Administration Center"}
               </span>
-              <span className="text-xs text-[var(--text-muted)] font-medium">• Clinical Care Network HQ</span>
+              <span className="text-xs text-[var(--text-muted)] font-medium">
+                • {currentUser?.organizationName || "Care Network"}
+              </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
-              System Administration & Analytics
+              {currentUser?.role === "SUPER_ADMIN"
+                ? "System Administration & Multi-Clinic Analytics"
+                : `${currentUser?.organizationName || "Clinic"} Dashboard & Analytics`}
             </h1>
             <p className="text-xs text-[var(--text-secondary)] mt-1">
-              Real-time hospital network performance metrics, registered clinicians, patient volumes, and master health catalog.
+              {currentUser?.role === "SUPER_ADMIN"
+                ? "Platform-wide health network performance, cross-clinic volume, and SaaS configuration."
+                : "Real-time clinic performance metrics, attending physicians, registered patients, and dedicated formulary catalog."}
             </p>
           </div>
 
@@ -409,10 +415,32 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
       {activeTab === "settings" && <SettingsManager />}
 
       {/* Multi-Clinic SaaS Organizations Tab */}
-      {activeTab === "organizations" && <OrganizationManager />}
+      {activeTab === "organizations" && (
+        currentUser?.role === "SUPER_ADMIN" ? (
+          <OrganizationManager />
+        ) : (
+          <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-2">
+            <p className="text-base font-bold text-[var(--text-primary)]">Restricted Access</p>
+            <p className="text-xs text-[var(--text-secondary)]">
+              Multi-clinic SaaS organization directory is only accessible by platform Super Administrators.
+            </p>
+          </div>
+        )
+      )}
 
       {/* SaaS Product Pricing Plans Tab */}
-      {activeTab === "pricing" && <SaasPricingManager />}
+      {activeTab === "pricing" && (
+        currentUser?.role === "SUPER_ADMIN" ? (
+          <SaasPricingManager />
+        ) : (
+          <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-2">
+            <p className="text-base font-bold text-[var(--text-primary)]">Restricted Access</p>
+            <p className="text-xs text-[var(--text-secondary)]">
+              SaaS Pricing tier configuration is reserved for platform Super Administrators.
+            </p>
+          </div>
+        )
+      )}
 
       {/* Clinic SaaS Subscription & Billing Tab */}
       {activeTab === "billing" && <ClinicSubscriptionView />}
@@ -421,7 +449,9 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
       {activeTab === "activity" && <ActivityLogViewer />}
 
       {/* Broadcast Announcements Tab */}
-      {activeTab === "announcements" && <AnnouncementsManager />}
+      {activeTab === "announcements" && (
+        <AnnouncementsManager canManage={true} userRole={currentUser?.role || "ADMIN"} />
+      )}
 
       {/* Clinical Chat Tab */}
       {activeTab === "chat" && currentUser && (

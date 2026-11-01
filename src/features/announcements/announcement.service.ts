@@ -14,36 +14,71 @@ export type CreateAnnouncementParams = {
   expiresAt?: Date;
 };
 
-export async function listAnnouncements(options: {
+export type ListAnnouncementsOptions = {
+  userRole?: string;
   targetRole?: string;
+  priority?: string;
+  search?: string;
   organizationId?: string | null;
   includeInactive?: boolean;
-}) {
-  const where: Prisma.AnnouncementWhereInput = {};
+};
+
+export async function listAnnouncements(options: ListAnnouncementsOptions = {}) {
+  const andConditions: Prisma.AnnouncementWhereInput[] = [];
 
   if (!options.includeInactive) {
-    where.isActive = true;
+    andConditions.push({ isActive: true });
   }
 
-  if (options.targetRole && options.targetRole !== "ALL") {
-    where.OR = [
-      { targetRole: "ALL" },
-      { targetRole: options.targetRole },
-    ];
-  }
-
+  // 1. Organization boundary (Hospital tenant isolation or global announcements)
   if (options.organizationId) {
-    where.OR = [
-      ...(where.OR || []),
-      { organizationId: null }, // Global system announcements
-      { organizationId: options.organizationId },
-    ];
+    andConditions.push({
+      OR: [
+        { organizationId: null },
+        { organizationId: options.organizationId },
+      ],
+    });
   }
+
+  // 2. Role permission boundary (What this user's role is allowed to view)
+  if (options.userRole && options.userRole !== "SUPER_ADMIN") {
+    andConditions.push({
+      OR: [
+        { targetRole: "ALL" },
+        { targetRole: options.userRole },
+      ],
+    });
+  }
+
+  // 3. User-selected target role filter
+  if (options.targetRole && options.targetRole !== "ALL") {
+    andConditions.push({ targetRole: options.targetRole });
+  }
+
+  // 4. User-selected priority filter
+  if (options.priority && options.priority !== "ALL") {
+    andConditions.push({ priority: options.priority });
+  }
+
+  // 5. Search query (matches title or content)
+  if (options.search && options.search.trim()) {
+    const q = options.search.trim();
+    andConditions.push({
+      OR: [
+        { title: { contains: q, mode: "insensitive" } },
+        { content: { contains: q, mode: "insensitive" } },
+        { authorName: { contains: q, mode: "insensitive" } },
+      ],
+    });
+  }
+
+  const where: Prisma.AnnouncementWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {};
 
   return db.announcement.findMany({
     where,
     orderBy: { createdAt: "desc" },
-    take: 20,
+    take: 50,
   });
 }
 

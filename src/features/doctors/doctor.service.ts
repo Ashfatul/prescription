@@ -4,18 +4,30 @@ import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import { doctorSchema, doctorUpdateSchema } from "@/features/doctors/doctor.schema";
 
-export async function listDoctors() {
+export async function listDoctors(organizationId?: string) {
   return db.doctor.findMany({
+    where: organizationId
+      ? {
+          OR: [{ organizationId }, { user: { organizationId } }],
+        }
+      : undefined,
     include: { user: true },
     orderBy: { createdAt: "desc" },
   });
 }
 
-export async function createDoctor(input: unknown) {
+export async function createDoctor(input: unknown, organizationId?: string) {
   const data = doctorSchema.parse(input);
+  let orgId = organizationId;
+  if (!orgId && data.userId) {
+    const u = await db.user.findUnique({ where: { id: data.userId }, select: { organizationId: true } });
+    if (u?.organizationId) orgId = u.organizationId;
+  }
+
   return db.doctor.create({
     data: {
       userId: data.userId,
+      organizationId: orgId || undefined,
       specialization: data.specialization,
       degrees: data.degrees,
       designation: data.designation,

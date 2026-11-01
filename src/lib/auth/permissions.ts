@@ -252,6 +252,8 @@ export type PermissionKey = (typeof AVAILABLE_PERMISSIONS)[number]["id"];
 export const DEFAULT_ROLE_PERMISSIONS: Record<RoleName, string[]> = {
   SUPER_ADMIN: AVAILABLE_PERMISSIONS.map((p) => p.id),
 
+  ADMIN: AVAILABLE_PERMISSIONS.map((p) => p.id),
+
   DOCTOR: [
     "medicines:view",
     "medicines:create",

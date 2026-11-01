@@ -13,6 +13,7 @@ import { generateRemindersFromPrescription } from "@/features/medicine-reminders
 type ListOptions = {
   role: RoleName;
   userId: string;
+  organizationId?: string | null;
 };
 
 const prescriptionInclude = {
@@ -44,6 +45,14 @@ export async function listPrescriptions(options: ListOptions) {
   if (options.role === RoleName.PATIENT) {
     return db.prescription.findMany({
       where: { patient: { userId: options.userId } },
+      include: prescriptionInclude,
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  if (options.organizationId) {
+    return db.prescription.findMany({
+      where: { organizationId: options.organizationId },
       include: prescriptionInclude,
       orderBy: { createdAt: "desc" },
     });

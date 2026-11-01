@@ -19,6 +19,7 @@ import { MedicineRemindersView } from "@/components/dashboard/medicine-reminders
 import { ClinicalChat } from "@/components/dashboard/clinical-chat";
 import { PrescriptionShareModal } from "@/components/dashboard/prescription-share-modal";
 import { AnnouncementsBanner } from "@/components/dashboard/announcements-banner";
+import { AnnouncementsManager } from "@/components/dashboard/announcements-manager";
 import { createGoogleCalendarAppointmentUrl } from "@/lib/calendar";
 import { useAuth } from "@/lib/auth/auth-context";
 
@@ -145,11 +146,44 @@ export function PatientDashboardView({
         </div>
       )}
 
+      {/* Horizontal Dashboard Navigation Bar */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+        {[
+          { id: "overview", label: "📋 Medical Overview" },
+          { id: "reports", label: "🧪 Test Reports & Scans" },
+          { id: "reminders", label: "⏰ Medicine Reminders" },
+          { id: "chat", label: "💬 Doctor Chat" },
+          { id: "announcements", label: "📢 Clinic Notices" },
+        ].map((t) => {
+          const isActive =
+            t.id === "overview"
+              ? activeTab === "overview" || activeTab === "main"
+              : activeTab === t.id;
+          return (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => router.replace(`/dashboard/patient?tab=${t.id}`)}
+              className={`shrink-0 rounded-2xl px-4 py-2.5 text-xs font-bold transition cursor-pointer ${
+                isActive
+                  ? "bg-[var(--brand-primary)] text-white shadow-sm"
+                  : "bg-[var(--bg-surface)] text-[var(--text-secondary)] border border-[var(--border-subtle)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)]"
+              }`}
+            >
+              {t.label}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Render Sub Tabs */}
       {activeTab === "reports" && <TestReportsManager role="PATIENT" />}
       {activeTab === "reminders" && <MedicineRemindersView />}
       {activeTab === "chat" && currentUser && (
         <ClinicalChat currentUserId={currentUser.id} />
+      )}
+      {activeTab === "announcements" && (
+        <AnnouncementsManager canManage={false} userRole="PATIENT" />
       )}
 
       {/* Default Overview */}

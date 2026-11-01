@@ -583,25 +583,28 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     </div>
                   </Link>
 
-                  {/* Clean Hotline Card (No OPD & Chamber 24/7 Active) */}
-                  <div className="p-4 rounded-2xl bg-gradient-to-br from-rose-500/10 via-amber-500/5 to-transparent border border-rose-500/20 space-y-3 shadow-2xs">
-                    <div className="flex items-center gap-2">
-                      <PhoneCall className="w-4 h-4 text-rose-500" />
-                      <span className="text-xs font-bold text-slate-900 dark:text-white">
-                        Hospital Emergency Hotline
-                      </span>
+                  {/* Clean Hotline Link matching other cards in height, with urgent red emergency styling */}
+                  <a
+                    href={`tel:${settings.emergencyHotline}`}
+                    className="p-4 rounded-2xl bg-rose-50/60 dark:bg-rose-950/20 hover:bg-rose-100/70 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 transition-all group flex items-start gap-3.5 shadow-2xs block"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <PhoneCall className="w-4 h-4" />
                     </div>
-                    <p className="text-xs text-slate-500">
-                      Immediate assistance for emergency and outpatient guidance
-                    </p>
-                    <a
-                      href={`tel:${settings.emergencyHotline}`}
-                      className="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <PhoneCall className="w-3.5 h-3.5" />
-                      <span>Call Hotline: {settings.emergencyHotline}</span>
-                    </a>
-                  </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
+                          Hospital Emergency Hotline
+                        </span>
+                        <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-600 text-white shrink-0 shadow-2xs">
+                          {settings.emergencyHotline}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        Immediate assistance for emergency and outpatient guidance
+                      </p>
+                    </div>
+                  </a>
                 </div>
               </div>
 

@@ -12,6 +12,7 @@ import { TestReportsManager } from "@/components/dashboard/test-reports-manager"
 import { ClinicalChat } from "@/components/dashboard/clinical-chat";
 import { PrescriptionShareModal } from "@/components/dashboard/prescription-share-modal";
 import { AnnouncementsBanner } from "@/components/dashboard/announcements-banner";
+import { AnnouncementsManager } from "@/components/dashboard/announcements-manager";
 import { useAuth } from "@/lib/auth/auth-context";
 import { Share2 } from "lucide-react";
 
@@ -116,7 +117,8 @@ export type DoctorTabType =
   | "profile"
   | "history"
   | "reports"
-  | "chat";
+  | "chat"
+  | "announcements";
 
 export function DoctorDashboardView({
   doctor: initialDoctor,
@@ -155,6 +157,8 @@ export function DoctorDashboardView({
       ? "reports"
       : urlTab === "chat"
       ? "chat"
+      : urlTab === "announcements"
+      ? "announcements"
       : "prescription";
 
   const handleTabChange = (tab: DoctorTabType) => {
@@ -242,6 +246,7 @@ export function DoctorDashboardView({
           { id: "templates", label: "📑 Templates" },
           { id: "history", label: "📜 History & Archive" },
           { id: "profile", label: "👨‍⚕️ Profile & Signature" },
+          { id: "announcements", label: "📢 Hospital Notices" },
         ].map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -355,6 +360,11 @@ export function DoctorDashboardView({
       {/* Tab: Doctor-Patient Clinical Chat */}
       {activeTab === "chat" && currentUser && (
         <ClinicalChat currentUserId={currentUser.id} />
+      )}
+
+      {/* Tab: Hospital Bulletins & Announcements */}
+      {activeTab === "announcements" && (
+        <AnnouncementsManager canManage={false} userRole="DOCTOR" />
       )}
 
       {/* Tab 6: Prescription History & Archive */}

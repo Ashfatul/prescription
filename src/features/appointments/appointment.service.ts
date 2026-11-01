@@ -10,6 +10,7 @@ import {
 type ListOptions = {
   role: RoleName;
   userId: string;
+  organizationId?: string | null;
 };
 
 export async function listAppointments(options: ListOptions) {
@@ -35,6 +36,17 @@ export async function listAppointments(options: ListOptions) {
     });
   }
 
+  if (options.organizationId) {
+    return db.appointment.findMany({
+      where: { organizationId: options.organizationId },
+      include: {
+        doctor: { include: { user: true } },
+        patient: { include: { user: true } },
+      },
+      orderBy: [{ appointmentDate: "desc" }, { serialNumber: "asc" }],
+    });
+  }
+
   return db.appointment.findMany({
     include: {
       doctor: { include: { user: true } },
@@ -46,7 +58,7 @@ export async function listAppointments(options: ListOptions) {
 
 export async function createAppointment(
   input: unknown,
-  authUser?: { role: RoleName; userId: string }
+  authUser?: { role: RoleName; userId: string; organizationId?: string | null }
 ) {
   const data = appointmentSchema.parse(input);
   const appointmentDate = new Date(data.appointmentDate);
@@ -63,7 +75,10 @@ export async function createAppointment(
     });
     if (!patient && authUser.role === RoleName.PATIENT) {
       patient = await db.patient.create({
-        data: { userId: authUser.userId },
+        data: {
+          userId: authUser.userId,
+          organizationId: authUser.organizationId || undefined,
+        },
       });
     }
     finalPatientId = patient?.id;
@@ -72,6 +87,12 @@ export async function createAppointment(
   if (!finalPatientId) {
     throw new AppError("Patient identification is required to book an appointment", 400);
   }
+
+  const doctorRec = await db.doctor.findUnique({
+    where: { id: data.doctorId },
+    select: { organizationId: true, user: { select: { organizationId: true } } },
+  });
+  const orgId = authUser?.organizationId || doctorRec?.organizationId || doctorRec?.user?.organizationId || undefined;
 
   const maxToday = await db.appointment.findFirst({
     where: {
@@ -93,6 +114,7 @@ export async function createAppointment(
     data: {
       doctorId: data.doctorId,
       patientId: finalPatientId,
+      organizationId: orgId,
       appointmentDate,
       serialNumber: serial,
       notes: data.notes,

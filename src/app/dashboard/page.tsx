@@ -9,7 +9,7 @@ export default async function DashboardPage() {
     redirect("/dashboard/staff");
   }
 
-  if (user.role.name === RoleName.SUPER_ADMIN) {
+  if (user.role.name === RoleName.SUPER_ADMIN || user.role.name === RoleName.ADMIN) {
     redirect("/dashboard/admin");
   }
 

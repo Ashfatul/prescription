@@ -7,7 +7,11 @@ import { ok } from "@/lib/http";
 
 export async function GET(req: NextRequest) {
   return withErrorHandling(req, async () => {
-    const user = await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.STAFF]);
+    const user = await requireUser(req, [
+      RoleName.SUPER_ADMIN,
+      RoleName.ADMIN,
+      RoleName.STAFF,
+    ]);
 
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search") || undefined;
@@ -23,7 +27,7 @@ export async function GET(req: NextRequest) {
       role,
       action,
       entityType,
-      organizationId: user.role === RoleName.SUPER_ADMIN ? organizationId : undefined,
+      organizationId: user.role === RoleName.SUPER_ADMIN ? organizationId : (user.organizationId || undefined),
       limit,
       offset,
     });

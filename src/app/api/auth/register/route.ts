@@ -10,6 +10,7 @@ import { hashPassword } from "@/lib/auth/password";
 import { signToken } from "@/lib/auth/jwt";
 import { AUTH_COOKIE } from "@/lib/auth/constants";
 import { logActivity } from "@/features/activity-log/activity-log.service";
+import { medicineService, testService } from "@/features/catalog/catalog.service";
 
 export async function POST(req: NextRequest) {
   return withErrorHandling(req, async () => {
@@ -98,14 +99,14 @@ export async function POST(req: NextRequest) {
         include: { plan: true },
       });
 
-      // Find Super Admin role
+      // Find or create Clinic Administrator role
       let adminRole = await db.role.findUnique({
-        where: { name: RoleName.SUPER_ADMIN },
+        where: { name: RoleName.ADMIN },
       });
       if (!adminRole) {
         adminRole = await db.role.create({
           data: {
-            name: RoleName.SUPER_ADMIN,
+            name: RoleName.ADMIN,
             permissions: ["*"],
           },
         });
@@ -124,12 +125,18 @@ export async function POST(req: NextRequest) {
         include: { role: true, organization: true },
       });
 
+      // Clone default medicines and diagnostic tests for the new clinic so they have their own independent catalog
+      await Promise.all([
+        medicineService.cloneDefaultsForOrganization(organization.id),
+        testService.cloneDefaultsForOrganization(organization.id),
+      ]);
+
       // Log activities
       await logActivity({
         organizationId: organization.id,
         userId: user.id,
         userName: user.name,
-        userRole: "SUPER_ADMIN",
+        userRole: "ADMIN",
         action: "ORGANIZATION_CREATED",
         entityType: "Organization",
         entityId: organization.id,
@@ -145,7 +152,7 @@ export async function POST(req: NextRequest) {
         organizationId: organization.id,
         userId: user.id,
         userName: user.name,
-        userRole: "SUPER_ADMIN",
+        userRole: "ADMIN",
         action: "TRIAL_STARTED",
         entityType: "Subscription",
         entityId: organization.id,
@@ -201,8 +208,8 @@ export async function POST(req: NextRequest) {
     // First user can be registered as SUPER_ADMIN without restrictions
     if (userCount > 0 && !isPatientRegistration) {
       const auth = await getAuthFromRequest(req);
-      if (!auth || (auth.role !== RoleName.SUPER_ADMIN && auth.role !== RoleName.STAFF)) {
-        throw new AppError("Only super admin or staff can register doctors and staff accounts", 403);
+      if (!auth || (auth.role !== RoleName.SUPER_ADMIN && auth.role !== RoleName.ADMIN && auth.role !== RoleName.STAFF)) {
+        throw new AppError("Only hospital administrators or staff can register doctors and staff accounts", 403);
       }
     }
 

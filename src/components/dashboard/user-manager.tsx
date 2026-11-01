@@ -208,6 +208,8 @@ export function UserManager() {
     switch (roleName) {
       case "SUPER_ADMIN":
         return "bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border-purple-200 dark:border-purple-800";
+      case "ADMIN":
+        return "bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800";
       case "DOCTOR":
         return "bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border-teal-200 dark:border-teal-800";
       case "STAFF":
@@ -222,7 +224,7 @@ export function UserManager() {
     doctors: users.filter((u) => u.role.name === "DOCTOR").length,
     staff: users.filter((u) => u.role.name === "STAFF").length,
     patients: users.filter((u) => u.role.name === "PATIENT").length,
-    admins: users.filter((u) => u.role.name === "SUPER_ADMIN").length,
+    admins: users.filter((u) => u.role.name === "SUPER_ADMIN" || u.role.name === "ADMIN").length,
   };
 
   return (
@@ -294,7 +296,7 @@ export function UserManager() {
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
-          {["ALL", "SUPER_ADMIN", "DOCTOR", "STAFF", "PATIENT"].map((role) => (
+          {["ALL", "ADMIN", "DOCTOR", "STAFF", "PATIENT", ...(currentUser?.role === "SUPER_ADMIN" ? ["SUPER_ADMIN"] : [])].map((role) => (
             <button
               key={role}
               type="button"
@@ -470,12 +472,22 @@ export function UserManager() {
                 <CustomSelect
                   value={createRole}
                   onChange={(val) => setCreateRole(val)}
-                  options={[
-                    { value: "DOCTOR", label: "DOCTOR (Physician & Chamber Practitioner)", badge: "Physician" },
-                    { value: "STAFF", label: "STAFF (Hospital Front Desk & Queue Operator)", badge: "Front Desk" },
-                    { value: "PATIENT", label: "PATIENT (Patient Portal Access)", badge: "Patient" },
-                    { value: "SUPER_ADMIN", label: "SUPER_ADMIN (Hospital Network Executive)", badge: "Executive" },
-                  ]}
+                  options={
+                    currentUser?.role === "SUPER_ADMIN"
+                      ? [
+                          { value: "DOCTOR", label: "DOCTOR (Physician & Chamber Practitioner)", badge: "Physician" },
+                          { value: "STAFF", label: "STAFF (Hospital Front Desk & Queue Operator)", badge: "Front Desk" },
+                          { value: "PATIENT", label: "PATIENT (Patient Portal Access)", badge: "Patient" },
+                          { value: "ADMIN", label: "ADMIN (Clinic Administrator)", badge: "Admin" },
+                          { value: "SUPER_ADMIN", label: "SUPER_ADMIN (Hospital Network Executive)", badge: "Executive" },
+                        ]
+                      : [
+                          { value: "DOCTOR", label: "DOCTOR (Physician & Chamber Practitioner)", badge: "Physician" },
+                          { value: "STAFF", label: "STAFF (Hospital Front Desk & Queue Operator)", badge: "Front Desk" },
+                          { value: "PATIENT", label: "PATIENT (Patient Portal Access)", badge: "Patient" },
+                          { value: "ADMIN", label: "ADMIN (Clinic Administrator)", badge: "Admin" },
+                        ]
+                  }
                   searchable={false}
                 />
               </div>
@@ -656,12 +668,22 @@ export function UserManager() {
                 <CustomSelect
                   value={editRole}
                   onChange={(val) => setEditRole(val)}
-                  options={[
-                    { value: "DOCTOR", label: "DOCTOR", badge: "Physician" },
-                    { value: "STAFF", label: "STAFF", badge: "Front Desk" },
-                    { value: "PATIENT", label: "PATIENT", badge: "Patient" },
-                    { value: "SUPER_ADMIN", label: "SUPER_ADMIN", badge: "Executive" },
-                  ]}
+                  options={
+                    currentUser?.role === "SUPER_ADMIN"
+                      ? [
+                          { value: "DOCTOR", label: "DOCTOR", badge: "Physician" },
+                          { value: "STAFF", label: "STAFF", badge: "Front Desk" },
+                          { value: "PATIENT", label: "PATIENT", badge: "Patient" },
+                          { value: "ADMIN", label: "ADMIN", badge: "Admin" },
+                          { value: "SUPER_ADMIN", label: "SUPER_ADMIN", badge: "Executive" },
+                        ]
+                      : [
+                          { value: "DOCTOR", label: "DOCTOR", badge: "Physician" },
+                          { value: "STAFF", label: "STAFF", badge: "Front Desk" },
+                          { value: "PATIENT", label: "PATIENT", badge: "Patient" },
+                          { value: "ADMIN", label: "ADMIN", badge: "Admin" },
+                        ]
+                  }
                   searchable={false}
                 />
               </div>

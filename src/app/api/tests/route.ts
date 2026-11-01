@@ -7,14 +7,29 @@ import { testService } from "@/features/catalog/catalog.service";
 
 export async function GET(req: NextRequest) {
   return withErrorHandling(req, async () => {
-    await requireUser(req);
-    return ok(await testService.list());
+    const user = await requireUser(req);
+    const { searchParams } = new URL(req.url);
+    const queryOrgId = searchParams.get("organizationId");
+
+    let orgId: string | undefined = user.organizationId || undefined;
+    if (user.role === RoleName.SUPER_ADMIN && !user.organizationId) {
+      orgId = queryOrgId || undefined;
+    }
+
+    return ok(await testService.list(orgId));
   });
 }
 
 export async function POST(req: NextRequest) {
   return withErrorHandling(req, async () => {
-    await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.STAFF, RoleName.DOCTOR]);
-    return ok(await testService.create(await req.json()), 201);
+    const user = await requireUser(req, [
+      RoleName.SUPER_ADMIN,
+      RoleName.ADMIN,
+      RoleName.STAFF,
+      RoleName.DOCTOR,
+    ]);
+    const body = await req.json();
+    const orgId = user.organizationId || body.organizationId || undefined;
+    return ok(await testService.create(body, orgId), 201);
   });
 }

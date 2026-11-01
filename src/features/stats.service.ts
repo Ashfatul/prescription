@@ -6,15 +6,24 @@ export interface TopStatItem {
   percentage: number;
 }
 
-export async function getDashboardStats() {
+export async function getDashboardStats(organizationId?: string) {
+  const orgFilter = organizationId ? { organizationId } : undefined;
+  const doctorOrgFilter = organizationId
+    ? { OR: [{ organizationId }, { user: { organizationId } }] }
+    : undefined;
+  const patientOrgFilter = organizationId
+    ? { OR: [{ organizationId }, { user: { organizationId } }] }
+    : undefined;
+
   const [users, doctors, patients, appointments, prescriptions, recentPrescriptions] =
     await Promise.all([
-      db.user.count(),
-      db.doctor.count(),
-      db.patient.count(),
-      db.appointment.count(),
-      db.prescription.count(),
+      db.user.count({ where: orgFilter }),
+      db.doctor.count({ where: doctorOrgFilter }),
+      db.patient.count({ where: patientOrgFilter }),
+      db.appointment.count({ where: orgFilter }),
+      db.prescription.count({ where: orgFilter }),
       db.prescription.findMany({
+        where: orgFilter,
         select: {
           medicinesJson: true,
           clinicalInfoJson: true,

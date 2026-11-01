@@ -17,6 +17,8 @@ export interface AuthUser {
   role: string;
   theme: string;
   accent: string;
+  organizationId?: string | null;
+  organizationName?: string | null;
   doctor?: { id: string; specialization?: string | null } | null;
   patient?: { id: string } | null;
 }
@@ -49,6 +51,18 @@ function normalizeUser(raw: unknown): AuthUser | null {
 
   const doctorVal = obj.doctor as Record<string, unknown> | null | undefined;
   const patientVal = obj.patient as Record<string, unknown> | null | undefined;
+  const orgVal = obj.organization as Record<string, unknown> | null | undefined;
+
+  const organizationName = obj.organizationName
+    ? String(obj.organizationName)
+    : orgVal?.name
+    ? String(orgVal.name)
+    : null;
+  const organizationId = obj.organizationId
+    ? String(obj.organizationId)
+    : orgVal?.id
+    ? String(orgVal.id)
+    : null;
 
   return {
     id: String(obj.id || ""),
@@ -58,6 +72,8 @@ function normalizeUser(raw: unknown): AuthUser | null {
     role: roleName,
     theme: obj.theme ? String(obj.theme) : "system",
     accent: obj.accent ? String(obj.accent) : "teal",
+    organizationId,
+    organizationName,
     doctor: doctorVal
       ? {
           id: String(doctorVal.id),
