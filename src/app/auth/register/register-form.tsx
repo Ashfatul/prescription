@@ -172,6 +172,11 @@ export function RegisterForm() {
 
         setSuccess(true);
 
+        if (data.requireVerification) {
+          router.push(`/auth/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}`);
+          return;
+        }
+
         // Auto login administrator
         const loginRes = await login(email.trim().toLowerCase(), password);
         if (loginRes.success) {
@@ -208,6 +213,11 @@ export function RegisterForm() {
         }
 
         setSuccess(true);
+
+        if (data.requireVerification) {
+          router.push(`/auth/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}`);
+          return;
+        }
 
         const loginRes = await login(email.trim().toLowerCase(), password);
         if (loginRes.success) {

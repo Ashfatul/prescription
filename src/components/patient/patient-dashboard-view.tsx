@@ -20,6 +20,7 @@ import { ClinicalChat } from "@/components/dashboard/clinical-chat";
 import { PrescriptionShareModal } from "@/components/dashboard/prescription-share-modal";
 import { AnnouncementsBanner } from "@/components/dashboard/announcements-banner";
 import { AnnouncementsManager } from "@/components/dashboard/announcements-manager";
+import { ChangePasswordCard } from "@/components/common/change-password-card";
 import { createGoogleCalendarAppointmentUrl } from "@/lib/calendar";
 import { useAuth } from "@/lib/auth/auth-context";
 
@@ -154,6 +155,7 @@ export function PatientDashboardView({
           { id: "reminders", label: "⏰ Medicine Reminders" },
           { id: "chat", label: "💬 Doctor Chat" },
           { id: "announcements", label: "📢 Clinic Notices" },
+          { id: "security", label: "🔒 Security & Password" },
         ].map((t) => {
           const isActive =
             t.id === "overview"
@@ -185,6 +187,7 @@ export function PatientDashboardView({
       {activeTab === "announcements" && (
         <AnnouncementsManager canManage={false} userRole="PATIENT" />
       )}
+      {activeTab === "security" && <ChangePasswordCard />}
 
       {/* Default Overview */}
       {(activeTab === "overview" || activeTab === "main") && (

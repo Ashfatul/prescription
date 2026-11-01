@@ -66,6 +66,10 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
     setLoading(false);
 
     if (!res.success) {
+      if (res.requireVerification) {
+        router.push(`/auth/verify-email?email=${encodeURIComponent(res.email || loginEmail)}`);
+        return;
+      }
       setError(res.error || "Login failed");
       return;
     }
@@ -120,9 +124,17 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Password
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Password
+              </label>
+              <Link
+                href="/auth/forgot-password"
+                className="text-xs font-semibold text-[var(--brand-primary)] hover:underline cursor-pointer"
+              >
+                Forgot Password?
+              </Link>
+            </div>
             <input
               className="w-full px-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
               value={password}

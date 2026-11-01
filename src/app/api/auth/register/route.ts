@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { RoleName, OrganizationStatus } from "@prisma/client";
 import { withErrorHandling } from "@/lib/api-handler";
@@ -11,6 +12,8 @@ import { signToken } from "@/lib/auth/jwt";
 import { AUTH_COOKIE } from "@/lib/auth/constants";
 import { logActivity } from "@/features/activity-log/activity-log.service";
 import { medicineService, testService } from "@/features/catalog/catalog.service";
+import { isEmailVerificationRequired } from "@/features/settings/settings.service";
+import { sendTemplatedEmail } from "@/features/email-templates/email-template.service";
 
 export async function POST(req: NextRequest) {
   return withErrorHandling(req, async () => {
@@ -112,6 +115,10 @@ export async function POST(req: NextRequest) {
         });
       }
 
+      const requireVerification = await isEmailVerificationRequired();
+      const verificationToken = requireVerification ? crypto.randomBytes(32).toString("hex") : null;
+      const verificationExpiresAt = requireVerification ? new Date(Date.now() + 24 * 60 * 60 * 1000) : null;
+
       // Create Admin User
       const user = await db.user.create({
         data: {
@@ -121,6 +128,9 @@ export async function POST(req: NextRequest) {
           phone: phone || null,
           roleId: adminRole.id,
           organizationId: organization.id,
+          emailVerified: requireVerification ? null : new Date(),
+          emailVerificationToken: verificationToken,
+          emailVerificationTokenExpiresAt: verificationExpiresAt,
         },
         include: { role: true, organization: true },
       });
@@ -163,7 +173,49 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      // Generate JWT session token
+      // If email verification is required, dispatch verification email and do not issue session token yet
+      if (requireVerification && verificationToken) {
+        const host = req.headers.get("host") || "localhost:3000";
+        const protocol = req.headers.get("x-forwarded-proto") || "http";
+        const verifyUrl = `${protocol}://${host}/auth/verify-email?token=${verificationToken}`;
+
+        await sendTemplatedEmail({
+          key: "EMAIL_VERIFICATION",
+          to: user.email,
+          variables: {
+            userName: user.name,
+            userEmail: user.email,
+            verifyUrl,
+            token: verificationToken,
+            appName: process.env.NEXT_PUBLIC_APP_NAME || "PPMS",
+          },
+          organizationId: organization.id,
+        });
+
+        return NextResponse.json(
+          {
+            success: true,
+            requireVerification: true,
+            email: user.email,
+            message: "Clinic registered successfully! A verification email has been dispatched. Please verify your email before logging in.",
+            data: {
+              user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role.name,
+                organizationId: user.organizationId,
+                organizationName: organization.name,
+                status: organization.status,
+              },
+              organization,
+            },
+          },
+          { status: 201 }
+        );
+      }
+
+      // Generate JWT session token (if email verification disabled)
       const token = await signToken({
         sub: user.id,
         role: user.role.name,
@@ -215,6 +267,38 @@ export async function POST(req: NextRequest) {
 
     const auth = await getAuthFromRequest(req);
     const user = await createUser(body, auth?.sub);
+
+    // If verification is required and user has a pending verification token, dispatch verification email
+    if (user && !user.emailVerified && user.emailVerificationToken) {
+      const host = req.headers.get("host") || "localhost:3000";
+      const protocol = req.headers.get("x-forwarded-proto") || "http";
+      const verifyUrl = `${protocol}://${host}/auth/verify-email?token=${user.emailVerificationToken}`;
+
+      await sendTemplatedEmail({
+        key: "EMAIL_VERIFICATION",
+        to: user.email,
+        variables: {
+          userName: user.name,
+          userEmail: user.email,
+          verifyUrl,
+          token: user.emailVerificationToken,
+          appName: process.env.NEXT_PUBLIC_APP_NAME || "PPMS",
+        },
+        organizationId: user.organizationId,
+      });
+
+      return NextResponse.json(
+        {
+          success: true,
+          requireVerification: true,
+          email: user.email,
+          message: "Registration successful! A verification link has been sent to your email. Please verify before logging in.",
+          data: user,
+        },
+        { status: 201 }
+      );
+    }
+
     return ok(user, 201);
     } catch (err: unknown) {
       const errorObj = err as Error;

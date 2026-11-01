@@ -2,6 +2,7 @@
 
 import { FormEvent, useRef, useState } from "react";
 import Image from "next/image";
+import { ChangePasswordCard } from "@/components/common/change-password-card";
 
 export type DoctorProfile = {
   id: string;
@@ -626,6 +627,11 @@ export function DoctorProfileEditor({
           </button>
         </div>
       </form>
+
+      {/* Account Security & Password Change */}
+      <div className="mt-8">
+        <ChangePasswordCard />
+      </div>
     </div>
   );
 }

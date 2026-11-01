@@ -7,6 +7,7 @@ import { RoleName } from "@prisma/client";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
 import { LanguageToggle } from "@/components/common/language-toggle";
 import { NotificationBell } from "@/components/layout/notification-bell";
+import { ChangePasswordCard } from "@/components/common/change-password-card";
 import { useAuth } from "@/lib/auth/auth-context";
 import {
   BarChart3,
@@ -32,6 +33,8 @@ import {
   Calendar,
   PanelLeft,
   PanelLeftClose,
+  Mail,
+  KeyRound,
 } from "lucide-react";
 
 interface DashboardShellProps {
@@ -57,6 +60,7 @@ interface NavItem {
 export function DashboardShell({ user, children }: DashboardShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = useState(false);
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeTab = searchParams.get("tab") || "main";
@@ -135,6 +139,13 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             href: "/dashboard/admin?tab=activity",
             tabKey: "activity",
             icon: <ShieldAlert className="w-4 h-4" />,
+          },
+          {
+            section: "Communications & Mail",
+            label: "Email Templates & SMTP",
+            href: "/dashboard/admin?tab=email-templates",
+            tabKey: "email-templates",
+            icon: <Mail className="w-4 h-4" />,
           },
           {
             section: "Collaboration",
@@ -548,7 +559,15 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           </div>
 
           <div className="flex items-center justify-between pt-2 border-t border-slate-200/60 dark:border-slate-800/60">
-            <span className="text-[10px] text-slate-400">Verified Session</span>
+            <button
+              type="button"
+              onClick={() => setChangePasswordOpen(true)}
+              className="text-[10px] font-semibold text-slate-500 hover:text-[var(--brand-primary)] flex items-center gap-1 cursor-pointer"
+              title="Change Account Password"
+            >
+              <KeyRound className="w-3 h-3" />
+              <span>Password</span>
+            </button>
             <button
               type="button"
               onClick={onLogout}
@@ -661,6 +680,23 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           {children}
         </main>
       </div>
+
+      {/* Change Password Modal */}
+      {changePasswordOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in">
+          <div className="w-full max-w-lg relative animate-in zoom-in-95">
+            <button
+              type="button"
+              onClick={() => setChangePasswordOpen(false)}
+              className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-center text-xs font-bold transition cursor-pointer"
+              title="Close modal"
+            >
+              ✕
+            </button>
+            <ChangePasswordCard />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

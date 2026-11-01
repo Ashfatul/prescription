@@ -89,6 +89,7 @@ model Organization {
   medicines             Medicine[]
   tests                 DiagnosticTest[]
   templates             Template[]
+  emailTemplates        EmailTemplate[]
   appointments          Appointment[]
   prescriptions     Prescription[]
   testReports       TestReport[]
@@ -117,6 +118,11 @@ model User {
   signatureUrl            String?
   theme                   String           @default("system")
   accent                  String           @default("teal")
+  emailVerified                   DateTime?
+  emailVerificationToken          String?
+  emailVerificationTokenExpiresAt DateTime?
+  passwordResetToken              String?
+  passwordResetTokenExpiresAt     DateTime?
   notificationPreferences Json?            @default("{\"emailPrescriptionAlerts\":true,\"systemPrescriptionAlerts\":true,\"emailAppointmentReminders\":true,\"systemAppointmentReminders\":true,\"emailMedicineReminders\":true,\"announcements\":true}")
   roleId                  String
   role                    Role             @relation(fields: [roleId], references: [id])
@@ -465,4 +471,24 @@ model ChatMessage {
   createdAt        DateTime       @default(now())
 
   @@index([chatConnectionId, createdAt])
+}
+
+model EmailTemplate {
+  id             String        @id @default(cuid())
+  key            String        @unique
+  name           String
+  subject        String
+  bodyHtml       String        @db.Text
+  bodyText       String?       @db.Text
+  description    String?
+  availableVars  Json?         @default("[]")
+  isSystem       Boolean       @default(false)
+  isActive       Boolean       @default(true)
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([organizationId])
+  @@index([key])
 }

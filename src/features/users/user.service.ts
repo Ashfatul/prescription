@@ -1,9 +1,11 @@
+import crypto from "crypto";
 import { RoleName } from "@prisma/client";
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import { hashPassword } from "@/lib/auth/password";
 import { createUserSchema, userPreferencesSchema, updateUserSchema } from "@/features/users/user.schema";
 import { logActivity } from "@/features/activity-log/activity-log.service";
+import { isEmailVerificationRequired } from "@/features/settings/settings.service";
 
 export async function listUsers(organizationId?: string) {
   return db.user.findMany({
@@ -35,6 +37,11 @@ export async function createUser(input: unknown, creatorUserId?: string) {
     if (defaultOrg) orgId = defaultOrg.id;
   }
 
+  const requireVerification = await isEmailVerificationRequired();
+  const shouldRequireVerification = requireVerification && !creatorUserId;
+  const verificationToken = shouldRequireVerification ? crypto.randomBytes(32).toString("hex") : null;
+  const verificationExpiresAt = shouldRequireVerification ? new Date(Date.now() + 24 * 60 * 60 * 1000) : null;
+
   const user = await db.user.create({
     data: {
       name: data.name,
@@ -45,6 +52,9 @@ export async function createUser(input: unknown, creatorUserId?: string) {
       signatureUrl: data.signatureUrl,
       roleId: role.id,
       organizationId: orgId,
+      emailVerified: shouldRequireVerification ? null : new Date(),
+      emailVerificationToken: verificationToken,
+      emailVerificationTokenExpiresAt: verificationExpiresAt,
     },
     include: { role: true, organization: true },
   });

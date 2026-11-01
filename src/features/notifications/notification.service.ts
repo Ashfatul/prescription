@@ -1,6 +1,7 @@
 import { NotificationType, Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { logActivity } from "@/features/activity-log/activity-log.service";
+import { sendTemplatedEmail } from "@/features/email-templates/email-template.service";
 
 export type NotificationPreferences = {
   emailPrescriptionAlerts: boolean;
@@ -125,11 +126,23 @@ export async function sendPrescriptionAlert(params: {
     });
   }
 
-  // 2. Email Notification (Simulated & Logged)
+  // 2. Email Notification Dispatch
   if (prefs.emailPrescriptionAlerts && params.patientEmail) {
-    console.log(
-      `[EMAIL DISPATCH] Sent prescription alert to ${params.patientEmail} for prescription #${params.prescriptionId}`
-    );
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const viewUrl = `${appUrl}/prescriptions/${params.prescriptionId}/print`;
+
+    await sendTemplatedEmail({
+      key: "PRESCRIPTION_ALERT",
+      to: params.patientEmail,
+      variables: {
+        userName: params.patientName,
+        doctorName: params.doctorName,
+        rxId: params.prescriptionId.slice(-6).toUpperCase(),
+        viewUrl,
+        appName: process.env.NEXT_PUBLIC_APP_NAME || "PPMS",
+      },
+      organizationId: params.organizationId,
+    });
 
     await logActivity({
       organizationId: params.organizationId,

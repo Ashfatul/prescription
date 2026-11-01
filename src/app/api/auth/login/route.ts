@@ -7,6 +7,7 @@ import { AUTH_COOKIE } from "@/lib/auth/constants";
 import { withErrorHandling } from "@/lib/api-handler";
 import { AppError } from "@/lib/errors";
 import { logActivity } from "@/features/activity-log/activity-log.service";
+import { isEmailVerificationRequired } from "@/features/settings/settings.service";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -29,6 +30,19 @@ export async function POST(req: NextRequest) {
     const valid = await verifyPassword(body.password, user.passwordHash);
     if (!valid) {
       throw new AppError("Invalid credentials", 401);
+    }
+
+    const requireVerification = await isEmailVerificationRequired();
+    if (requireVerification && !user.emailVerified) {
+      return NextResponse.json(
+        {
+          success: false,
+          requireVerification: true,
+          email: user.email,
+          message: "Please verify your email address to continue. Check your inbox for the verification link.",
+        },
+        { status: 403 }
+      );
     }
 
     const token = await signToken({

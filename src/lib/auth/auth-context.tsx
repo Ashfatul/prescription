@@ -29,7 +29,7 @@ export interface AuthContextType {
   login: (
     email: string,
     password: string
-  ) => Promise<{ success: boolean; error?: string; user?: AuthUser }>;
+  ) => Promise<{ success: boolean; error?: string; user?: AuthUser; requireVerification?: boolean; email?: string }>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<AuthUser | null>;
   updatePreferences: (prefs: { theme?: string; accent?: string }) => Promise<void>;
@@ -300,7 +300,7 @@ export function AuthProvider({
     async (
       email: string,
       password: string
-    ): Promise<{ success: boolean; error?: string; user?: AuthUser }> => {
+    ): Promise<{ success: boolean; error?: string; user?: AuthUser; requireVerification?: boolean; email?: string }> => {
       setLoading(true);
       try {
         const res = await fetch("/api/auth/login", {
@@ -311,7 +311,12 @@ export function AuthProvider({
         const data = await res.json();
         if (!res.ok || !data.success) {
           setLoading(false);
-          return { success: false, error: data.message || "Login failed" };
+          return {
+            success: false,
+            error: data.message || "Login failed",
+            requireVerification: Boolean(data.requireVerification),
+            email: data.email || email,
+          };
         }
 
         // Fetch complete profile details (doctor/patient record linkage)

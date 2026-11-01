@@ -11,12 +11,14 @@ import {
   Save, 
   CheckCircle2, 
   RefreshCw,
-  Sparkles
+  Sparkles,
+  ShieldCheck
 } from "lucide-react";
 import { 
   HospitalSettings, 
   DEFAULT_HOSPITAL_SETTINGS 
 } from "@/features/settings/settings.service";
+import { ChangePasswordCard } from "@/components/common/change-password-card";
 
 export function SettingsManager() {
   const [settings, setSettings] = useState<HospitalSettings>(DEFAULT_HOSPITAL_SETTINGS);
@@ -121,6 +123,63 @@ export function SettingsManager() {
             <span>{errorMsg}</span>
           </div>
         )}
+
+        {/* Section 0: Authentication & Security */}
+        <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
+          <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
+            <ShieldCheck className="w-5 h-5 text-[var(--brand-primary)]" />
+            <div>
+              <h2 className="text-base font-bold text-[var(--text-primary)]">
+                Authentication & Security Governance
+              </h2>
+              <p className="text-xs text-[var(--text-muted)]">
+                Control access requirements, email confirmation gates, and account onboarding rules.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
+            <div className="space-y-1">
+              <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <span>Require Email Verification for All Registrations</span>
+                {settings.requireEmailVerification ? (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                    Mandatory
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-500">
+                    Disabled
+                  </span>
+                )}
+              </span>
+              <p className="text-xs text-slate-500 leading-relaxed max-w-xl">
+                When enabled, every registered physician, staff member, clinic admin, and patient must confirm their email address before they can continue to dashboard or log in. Unverified users will be gated at the verification screen.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSettings((prev) => ({
+                  ...prev,
+                  requireEmailVerification: !prev.requireEmailVerification,
+                }));
+                setSaveSuccess(false);
+              }}
+              className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                settings.requireEmailVerification
+                  ? "bg-[var(--brand-primary)]"
+                  : "bg-slate-300 dark:bg-slate-700"
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                  settings.requireEmailVerification ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+            </button>
+          </div>
+        </div>
 
         {/* Section 1: Hospital Identity */}
         <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
@@ -354,6 +413,11 @@ export function SettingsManager() {
           </button>
         </div>
       </form>
+
+      {/* Account Security & Password Management */}
+      <div className="pt-4 border-t border-[var(--border-subtle)]">
+        <ChangePasswordCard />
+      </div>
     </div>
   );
 }

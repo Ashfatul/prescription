@@ -46,6 +46,11 @@ export async function middleware(req: NextRequest) {
       pathname === "/api/auth/login" ||
       pathname === "/api/auth/logout" ||
       pathname === "/api/auth/register" ||
+      pathname === "/api/auth/verify-email" ||
+      pathname === "/api/auth/resend-verification" ||
+      pathname === "/api/auth/change-email" ||
+      pathname === "/api/auth/forgot-password" ||
+      pathname === "/api/auth/reset-password" ||
       pathname === "/api/public/doctors" ||
       pathname === "/api/pricing-plans" ||
       pathname.startsWith("/api/public/");

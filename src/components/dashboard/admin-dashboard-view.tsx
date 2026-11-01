@@ -15,6 +15,7 @@ import { AnnouncementsBanner } from "@/components/dashboard/announcements-banner
 import { ClinicalChat } from "@/components/dashboard/clinical-chat";
 import { TrialCountdownBanner } from "@/components/dashboard/trial-countdown-banner";
 import { ClinicSubscriptionView } from "@/components/dashboard/clinic-subscription-view";
+import { EmailTemplateManager } from "@/components/dashboard/email-template-manager";
 import { useAuth } from "@/lib/auth/auth-context";
 import {
   Users,
@@ -62,6 +63,7 @@ type TabKey =
   | "billing"
   | "activity"
   | "announcements"
+  | "email-templates"
   | "chat";
 
 export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
@@ -92,6 +94,8 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
       ? "activity"
       : urlTab === "announcements"
       ? "announcements"
+      : urlTab === "email-templates"
+      ? "email-templates"
       : urlTab === "chat"
       ? "chat"
       : "overview";
@@ -451,6 +455,20 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
       {/* Broadcast Announcements Tab */}
       {activeTab === "announcements" && (
         <AnnouncementsManager canManage={true} userRole={currentUser?.role || "ADMIN"} />
+      )}
+
+      {/* Communications & Email Templates Tab */}
+      {activeTab === "email-templates" && (
+        currentUser?.role === "SUPER_ADMIN" ? (
+          <EmailTemplateManager />
+        ) : (
+          <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-2">
+            <p className="text-base font-bold text-[var(--text-primary)]">Restricted Access</p>
+            <p className="text-xs text-[var(--text-secondary)]">
+              Global email template authoring is reserved for platform Super Administrators.
+            </p>
+          </div>
+        )
       )}
 
       {/* Clinical Chat Tab */}
