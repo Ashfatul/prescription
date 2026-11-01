@@ -12,14 +12,18 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const userCount = await db.user.count();
 
-    if (userCount > 0) {
+    const isPatientRegistration = body.role === RoleName.PATIENT;
+
+    // First user can be registered as SUPER_ADMIN without restrictions
+    if (userCount > 0 && !isPatientRegistration) {
       const auth = await getAuthFromRequest(req);
-      if (!auth || auth.role !== RoleName.SUPER_ADMIN) {
-        throw new AppError("Only super admin can register new users", 403);
+      if (!auth || (auth.role !== RoleName.SUPER_ADMIN && auth.role !== RoleName.STAFF)) {
+        throw new AppError("Only super admin or staff can register doctors and staff accounts", 403);
       }
     }
 
-    const user = await createUser(body);
+    const auth = await getAuthFromRequest(req);
+    const user = await createUser(body, auth?.sub);
     return ok(user, 201);
   });
 }

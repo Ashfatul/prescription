@@ -3,12 +3,28 @@ import { z } from "zod";
 
 export const createUserSchema = z.object({
   name: z.string().min(2),
-  email: z.email(),
+  email: z.string().email(),
   password: z.string().min(8),
-  phone: z.string().optional(),
+  phone: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   signatureUrl: z.string().optional().nullable(),
-  role: z.enum(RoleName),
+  role: z.nativeEnum(RoleName),
+  organizationId: z.string().optional().nullable(),
+
+  // Doctor optional fields
+  specialization: z.string().optional(),
+  degrees: z.string().optional(),
+  designation: z.string().optional(),
+  hospital: z.string().optional(),
+  bmdcRegNo: z.string().optional(),
+  chamberAddress: z.string().optional(),
+  contactNumber: z.string().optional(),
+  visitingHours: z.string().optional(),
+
+  // Patient optional fields
+  gender: z.string().optional(),
+  dateOfBirth: z.string().optional().nullable(),
+  medicalHistory: z.string().optional(),
 });
 
 export const updateUserSchema = createUserSchema.partial().omit({ password: true }).extend({

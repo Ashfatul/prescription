@@ -15,6 +15,7 @@ import {
   HeartPulse,
 } from "lucide-react";
 import { PublicDoctorItem } from "@/components/appointments/appointment-booking-modal";
+import { CustomSelect } from "@/components/common/custom-select";
 
 interface PatientRecord {
   id: string;
@@ -443,15 +444,16 @@ export function ReceptionManager() {
                       <label className="block text-[11px] font-bold text-slate-500 uppercase mb-1">
                         Gender
                       </label>
-                      <select
+                      <CustomSelect
                         value={walkinGender}
-                        onChange={(e) => setWalkinGender(e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
-                      >
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                      </select>
+                        onChange={(val) => setWalkinGender(val)}
+                        options={[
+                          { value: "Male", label: "Male" },
+                          { value: "Female", label: "Female" },
+                          { value: "Other", label: "Other" },
+                        ]}
+                        searchable={false}
+                      />
                     </div>
 
                     <div>
@@ -753,18 +755,20 @@ export function ReceptionManager() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <select
-                value={doctorFilter}
-                onChange={(e) => setDoctorFilter(e.target.value)}
-                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold"
-              >
-                <option value="all">All Doctors</option>
-                {doctors.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name} ({d.specialization})
-                  </option>
-                ))}
-              </select>
+              <div className="w-56">
+                <CustomSelect
+                  value={doctorFilter}
+                  onChange={(val) => setDoctorFilter(val)}
+                  options={[
+                    { value: "all", label: "All Doctors" },
+                    ...doctors.map((d) => ({
+                      value: d.id,
+                      label: `${d.name} (${d.specialization})`,
+                    })),
+                  ]}
+                  placeholder="Filter by doctor..."
+                />
+              </div>
 
               <div className="relative">
                 <Search className="absolute left-2.5 top-2 w-3.5 h-3.5 text-slate-400" />

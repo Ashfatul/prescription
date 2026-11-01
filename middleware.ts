@@ -12,8 +12,8 @@ export async function middleware(req: NextRequest) {
 
   const payload = token ? await verifyToken(token) : null;
 
-  // If user is already authenticated and visits /auth/login, redirect to /dashboard
-  if (pathname === "/auth/login") {
+  // If user is already authenticated and visits /auth/login or /auth/register, redirect to /dashboard
+  if (pathname === "/auth/login" || pathname === "/auth/register") {
     if (payload) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
@@ -32,7 +32,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Prescription print / view routes require auth
+  // Prescription print / view routes require auth (except public share route /p/:token)
   if (pathname.startsWith("/prescriptions")) {
     if (!payload) {
       return NextResponse.redirect(new URL("/auth/login", req.url));
@@ -47,6 +47,7 @@ export async function middleware(req: NextRequest) {
       pathname === "/api/auth/logout" ||
       pathname === "/api/auth/register" ||
       pathname === "/api/public/doctors" ||
+      pathname === "/api/pricing-plans" ||
       pathname.startsWith("/api/public/");
 
     if (!isPublicApi && !payload) {
@@ -64,6 +65,7 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     "/auth/login",
+    "/auth/register",
     "/dashboard/:path*",
     "/api/:path*",
     "/prescriptions/:path*",

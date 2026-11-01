@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition, useCallback } from "react";
 import { useAuth } from "@/lib/auth/auth-context";
+import { CustomSelect } from "@/components/common/custom-select";
 
 interface UserRecord {
   id: string;
@@ -34,6 +35,11 @@ export function UserManager() {
   const [createPassword, setCreatePassword] = useState("");
   const [createPhone, setCreatePhone] = useState("");
   const [createRole, setCreateRole] = useState("DOCTOR");
+  const [createSpecialization, setCreateSpecialization] = useState("General Medicine");
+  const [createDegrees, setCreateDegrees] = useState("MBBS");
+  const [createBmdcRegNo, setCreateBmdcRegNo] = useState("");
+  const [createChamberAddress, setCreateChamberAddress] = useState("Room 301, 3rd Floor");
+  const [createVisitingHours, setCreateVisitingHours] = useState("09:00 AM - 01:00 PM");
   const [createError, setCreateError] = useState("");
 
   // Edit Modal State
@@ -94,6 +100,11 @@ export function UserManager() {
             password: createPassword,
             phone: createPhone.trim() || undefined,
             role: createRole,
+            specialization: createRole === "DOCTOR" ? createSpecialization : undefined,
+            degrees: createRole === "DOCTOR" ? createDegrees : undefined,
+            bmdcRegNo: createRole === "DOCTOR" ? createBmdcRegNo : undefined,
+            chamberAddress: createRole === "DOCTOR" ? createChamberAddress : undefined,
+            visitingHours: createRole === "DOCTOR" ? createVisitingHours : undefined,
           }),
         });
 
@@ -453,17 +464,90 @@ export function UserManager() {
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
                   System Access Role *
                 </label>
-                <select
+                <CustomSelect
                   value={createRole}
-                  onChange={(e) => setCreateRole(e.target.value)}
-                  className="w-full p-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:border-[var(--brand-primary)]"
-                >
-                  <option value="DOCTOR">DOCTOR (Physician & Chamber Practitioner)</option>
-                  <option value="STAFF">STAFF (Hospital Front Desk & Queue Operator)</option>
-                  <option value="PATIENT">PATIENT (Patient Portal Access)</option>
-                  <option value="SUPER_ADMIN">SUPER_ADMIN (Hospital Network Executive)</option>
-                </select>
+                  onChange={(val) => setCreateRole(val)}
+                  options={[
+                    { value: "DOCTOR", label: "DOCTOR (Physician & Chamber Practitioner)", badge: "Physician" },
+                    { value: "STAFF", label: "STAFF (Hospital Front Desk & Queue Operator)", badge: "Front Desk" },
+                    { value: "PATIENT", label: "PATIENT (Patient Portal Access)", badge: "Patient" },
+                    { value: "SUPER_ADMIN", label: "SUPER_ADMIN (Hospital Network Executive)", badge: "Executive" },
+                  ]}
+                  searchable={false}
+                />
               </div>
+
+              {createRole === "DOCTOR" && (
+                <div className="p-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--brand-text)] block">
+                    Physician Credentials & Chamber Roster
+                  </span>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
+                        Specialization
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Cardiology"
+                        value={createSpecialization}
+                        onChange={(e) => setCreateSpecialization(e.target.value)}
+                        className="w-full p-2 rounded-lg text-xs bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
+                        Degrees / Qualifications
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. MBBS, FCPS, MD"
+                        value={createDegrees}
+                        onChange={(e) => setCreateDegrees(e.target.value)}
+                        className="w-full p-2 rounded-lg text-xs bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
+                        BMDC Reg No
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. BMDC-A-41285"
+                        value={createBmdcRegNo}
+                        onChange={(e) => setCreateBmdcRegNo(e.target.value)}
+                        className="w-full p-2 rounded-lg text-xs bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
+                        Visiting Hours
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="09:00 AM - 01:00 PM"
+                        value={createVisitingHours}
+                        onChange={(e) => setCreateVisitingHours(e.target.value)}
+                        className="w-full p-2 rounded-lg text-xs bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
+                      Chamber Address & Room
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Room 301, 3rd Floor"
+                      value={createChamberAddress}
+                      onChange={(e) => setCreateChamberAddress(e.target.value)}
+                      className="w-full p-2 rounded-lg text-xs bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800"
+                    />
+                  </div>
+                </div>
+              )}
 
               {createError && (
                 <p className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 text-red-600 dark:text-red-400 text-xs font-medium">
@@ -566,16 +650,17 @@ export function UserManager() {
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
                   System Access Role *
                 </label>
-                <select
+                <CustomSelect
                   value={editRole}
-                  onChange={(e) => setEditRole(e.target.value)}
-                  className="w-full p-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:border-[var(--brand-primary)]"
-                >
-                  <option value="DOCTOR">DOCTOR</option>
-                  <option value="STAFF">STAFF</option>
-                  <option value="PATIENT">PATIENT</option>
-                  <option value="SUPER_ADMIN">SUPER_ADMIN</option>
-                </select>
+                  onChange={(val) => setEditRole(val)}
+                  options={[
+                    { value: "DOCTOR", label: "DOCTOR", badge: "Physician" },
+                    { value: "STAFF", label: "STAFF", badge: "Front Desk" },
+                    { value: "PATIENT", label: "PATIENT", badge: "Patient" },
+                    { value: "SUPER_ADMIN", label: "SUPER_ADMIN", badge: "Executive" },
+                  ]}
+                  searchable={false}
+                />
               </div>
 
               {editError && (

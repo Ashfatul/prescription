@@ -7,6 +7,13 @@ import { CatalogManager } from "@/components/dashboard/catalog-manager";
 import { UserManager } from "@/components/dashboard/user-manager";
 import { RolePermissionManager } from "@/components/dashboard/role-permission-manager";
 import { SettingsManager } from "@/components/dashboard/settings-manager";
+import { OrganizationManager } from "@/components/dashboard/organization-manager";
+import { SaasPricingManager } from "@/components/dashboard/saas-pricing-manager";
+import { ActivityLogViewer } from "@/components/dashboard/activity-log-viewer";
+import { AnnouncementsManager } from "@/components/dashboard/announcements-manager";
+import { AnnouncementsBanner } from "@/components/dashboard/announcements-banner";
+import { ClinicalChat } from "@/components/dashboard/clinical-chat";
+import { useAuth } from "@/lib/auth/auth-context";
 import {
   Users,
   Pill,
@@ -40,9 +47,22 @@ interface AdminDashboardViewProps {
   }>;
 }
 
-type TabKey = "overview" | "users" | "catalog" | "tests" | "templates" | "roles" | "settings";
+type TabKey =
+  | "overview"
+  | "users"
+  | "catalog"
+  | "tests"
+  | "templates"
+  | "roles"
+  | "settings"
+  | "organizations"
+  | "pricing"
+  | "activity"
+  | "announcements"
+  | "chat";
 
 export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
+  const { user: currentUser } = useAuth();
   const searchParams = useSearchParams();
   const urlTab = searchParams.get("tab");
 
@@ -59,6 +79,16 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
       ? "roles"
       : urlTab === "settings"
       ? "settings"
+      : urlTab === "organizations"
+      ? "organizations"
+      : urlTab === "pricing"
+      ? "pricing"
+      : urlTab === "activity"
+      ? "activity"
+      : urlTab === "announcements"
+      ? "announcements"
+      : urlTab === "chat"
+      ? "chat"
       : "overview";
 
   return (
@@ -66,6 +96,9 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
       {/* Overview View */}
       {activeTab === "overview" && (
         <div className="space-y-6">
+          {/* Active Broadcast Announcements Banner */}
+          <AnnouncementsBanner />
+
           {/* Top Banner */}
           <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-1.5">
@@ -366,6 +399,23 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
 
       {/* Hospital & Chamber Settings Tab Content */}
       {activeTab === "settings" && <SettingsManager />}
+
+      {/* Multi-Clinic SaaS Organizations Tab */}
+      {activeTab === "organizations" && <OrganizationManager />}
+
+      {/* SaaS Product Pricing Plans Tab */}
+      {activeTab === "pricing" && <SaasPricingManager />}
+
+      {/* System Activity Audit Log Tab */}
+      {activeTab === "activity" && <ActivityLogViewer />}
+
+      {/* Broadcast Announcements Tab */}
+      {activeTab === "announcements" && <AnnouncementsManager />}
+
+      {/* Clinical Chat Tab */}
+      {activeTab === "chat" && currentUser && (
+        <ClinicalChat currentUserId={currentUser.id} />
+      )}
     </div>
   );
 }

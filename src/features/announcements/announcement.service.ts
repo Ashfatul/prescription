@@ -1,0 +1,111 @@
+import { db } from "@/lib/db";
+import { AppError } from "@/lib/errors";
+import { Prisma } from "@prisma/client";
+import { logActivity } from "@/features/activity-log/activity-log.service";
+
+export type CreateAnnouncementParams = {
+  title: string;
+  content: string;
+  targetRole?: string; // "ALL" | "DOCTOR" | "PATIENT" | "STAFF"
+  priority?: string; // "NORMAL" | "HIGH" | "URGENT"
+  authorId: string;
+  authorName: string;
+  organizationId?: string | null;
+  expiresAt?: Date;
+};
+
+export async function listAnnouncements(options: {
+  targetRole?: string;
+  organizationId?: string | null;
+  includeInactive?: boolean;
+}) {
+  const where: Prisma.AnnouncementWhereInput = {};
+
+  if (!options.includeInactive) {
+    where.isActive = true;
+  }
+
+  if (options.targetRole && options.targetRole !== "ALL") {
+    where.OR = [
+      { targetRole: "ALL" },
+      { targetRole: options.targetRole },
+    ];
+  }
+
+  if (options.organizationId) {
+    where.OR = [
+      ...(where.OR || []),
+      { organizationId: null }, // Global system announcements
+      { organizationId: options.organizationId },
+    ];
+  }
+
+  return db.announcement.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
+    take: 20,
+  });
+}
+
+export async function createAnnouncement(params: CreateAnnouncementParams) {
+  const announcement = await db.announcement.create({
+    data: {
+      title: params.title,
+      content: params.content,
+      targetRole: params.targetRole || "ALL",
+      priority: params.priority || "NORMAL",
+      authorId: params.authorId,
+      authorName: params.authorName,
+      organizationId: params.organizationId,
+      expiresAt: params.expiresAt,
+      isActive: true,
+    },
+  });
+
+  await logActivity({
+    organizationId: params.organizationId,
+    userId: params.authorId,
+    userName: params.authorName,
+    userRole: "SUPER_ADMIN",
+    action: "ANNOUNCEMENT_CREATED",
+    entityType: "Announcement",
+    entityId: announcement.id,
+    detailsJson: {
+      title: announcement.title,
+      targetRole: announcement.targetRole,
+      priority: announcement.priority,
+    },
+  });
+
+  return announcement;
+}
+
+export async function updateAnnouncement(
+  id: string,
+  data: {
+    title?: string;
+    content?: string;
+    targetRole?: string;
+    priority?: string;
+    isActive?: boolean;
+  }
+) {
+  const existing = await db.announcement.findUnique({ where: { id } });
+  if (!existing) {
+    throw new AppError("Announcement not found", 404);
+  }
+
+  return db.announcement.update({
+    where: { id },
+    data,
+  });
+}
+
+export async function deleteAnnouncement(id: string) {
+  const existing = await db.announcement.findUnique({ where: { id } });
+  if (!existing) {
+    throw new AppError("Announcement not found", 404);
+  }
+
+  return db.announcement.delete({ where: { id } });
+}

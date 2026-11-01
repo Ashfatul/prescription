@@ -34,7 +34,7 @@ export async function getCurrentUserFromCookie() {
 
     return await db.user.findUnique({
       where: { id: payload.sub },
-      include: { role: true, doctor: true, patient: true },
+      include: { role: true, doctor: true, patient: true, organization: true },
     });
   } catch {
     return null;

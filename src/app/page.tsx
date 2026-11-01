@@ -21,15 +21,28 @@ import {
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { DoctorList } from "@/components/home/doctor-list";
+import { PricingSection } from "@/components/home/pricing-section";
 import { getCurrentUserFromCookie } from "@/lib/auth/session";
 import { getHospitalSettings } from "@/features/settings/settings.service";
+import { listPricingPlans } from "@/features/pricing/pricing.service";
 
 export default async function Home() {
-  const [user, settings] = await Promise.all([
+  const [user, settings, rawPlans] = await Promise.all([
     getCurrentUserFromCookie(),
     getHospitalSettings(),
+    listPricingPlans(true),
   ]);
   const isLoggedIn = !!user;
+
+  const pricingPlans = rawPlans.map((p) => ({
+    id: p.id,
+    name: p.name,
+    price: p.price,
+    billingCycle: p.billingCycle,
+    description: p.description,
+    features: Array.isArray(p.features) ? (p.features as string[]) : [],
+    isPopular: p.isPopular,
+  }));
 
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] selection:bg-[var(--brand-primary)] selection:text-white flex flex-col">
@@ -345,7 +358,7 @@ export default async function Home() {
         {/* ========================================================= */}
         {/* FEATURES SHOWCASE SECTION                                 */}
         {/* ========================================================= */}
-        <section id="features" className="w-full py-16 sm:py-24 bg-[var(--bg-app)]">
+        <section id="features" className="w-full py-16 sm:py-24 bg-[var(--bg-app)] scroll-mt-20">
           <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
             
             {/* Section Header */}
@@ -491,7 +504,7 @@ export default async function Home() {
         {/* ========================================================= */}
         {/* HOW TO USE / CLINICAL WORKFLOW SECTION                    */}
         {/* ========================================================= */}
-        <section id="how-it-works" className="w-full py-16 sm:py-24 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+        <section id="how-it-works" className="w-full py-16 sm:py-24 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] scroll-mt-20">
           <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
             
             {/* Section Header */}
@@ -589,7 +602,7 @@ export default async function Home() {
         {/* ========================================================= */}
         {/* CONSULTING PHYSICIANS & SPECIALISTS (LARGE LIST WITH SEE ALL) */}
         {/* ========================================================= */}
-        <section id="doctors" className="w-full py-16 sm:py-24 bg-[var(--bg-app)]">
+        <section id="doctors" className="w-full py-16 sm:py-24 bg-[var(--bg-app)] scroll-mt-20">
           <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             
             {/* Section Header */}
@@ -627,6 +640,11 @@ export default async function Home() {
 
           </div>
         </section>
+
+        {/* ========================================================= */}
+        {/* SAAS PRODUCT PRICING TIERS SECTION                        */}
+        {/* ========================================================= */}
+        <PricingSection initialPlans={pricingPlans} />
 
         {/* ========================================================= */}
         {/* EMERGENCY & HOSPITAL HOTLINE BANNER                       */}

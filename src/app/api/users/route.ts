@@ -7,15 +7,16 @@ import { createUser, listUsers } from "@/features/users/user.service";
 
 export async function GET(req: NextRequest) {
   return withErrorHandling(req, async () => {
-    await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.STAFF]);
-    return ok(await listUsers());
+    const user = await requireUser(req);
+    const orgId = user.role === RoleName.SUPER_ADMIN ? undefined : user.organizationId || undefined;
+    return ok(await listUsers(orgId));
   });
 }
 
 export async function POST(req: NextRequest) {
   return withErrorHandling(req, async () => {
-    await requireUser(req, [RoleName.SUPER_ADMIN]);
+    const user = await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.STAFF]);
     const body = await req.json();
-    return ok(await createUser(body), 201);
+    return ok(await createUser(body, user.sub), 201);
   });
 }

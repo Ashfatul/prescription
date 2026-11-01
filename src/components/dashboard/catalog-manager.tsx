@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { CustomSelect } from "@/components/common/custom-select";
 
 interface MedicineItem {
   id: string;
@@ -342,18 +343,17 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
           </div>
 
           {activeTab === "medicines" && (
-            <select
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-              aria-label="Filter medicines by formulation type"
-              className="px-3 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-[var(--bg-surface)] text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-[var(--brand-primary)]"
-            >
-              {medicineTypes.map((t) => (
-                <option key={t} value={t}>
-                  {t === "ALL" ? "All Forms" : t}
-                </option>
-              ))}
-            </select>
+            <div className="w-40 shrink-0">
+              <CustomSelect
+                value={selectedType}
+                onChange={(val) => setSelectedType(val)}
+                options={medicineTypes.map((t) => ({
+                  value: t,
+                  label: t === "ALL" ? "All Forms" : t,
+                }))}
+                searchable={false}
+              />
+            </div>
           )}
         </div>
       </div>
@@ -504,20 +504,21 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                   <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
                     Formulation Type
                   </label>
-                  <select
+                  <CustomSelect
                     value={medType}
-                    onChange={(e) => setMedType(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-sm focus:border-[var(--brand-primary)] focus:outline-none"
-                  >
-                    <option value="Tablet">Tablet</option>
-                    <option value="Capsule">Capsule</option>
-                    <option value="Syrup">Syrup</option>
-                    <option value="Suspension">Suspension</option>
-                    <option value="Injection">Injection</option>
-                    <option value="Inhaler">Inhaler</option>
-                    <option value="Eye Drops">Eye Drops</option>
-                    <option value="Ointment">Ointment</option>
-                  </select>
+                    onChange={(val) => setMedType(val)}
+                    options={[
+                      { value: "Tablet", label: "Tablet" },
+                      { value: "Capsule", label: "Capsule" },
+                      { value: "Syrup", label: "Syrup" },
+                      { value: "Suspension", label: "Suspension" },
+                      { value: "Injection", label: "Injection" },
+                      { value: "Inhaler", label: "Inhaler" },
+                      { value: "Eye Drops", label: "Eye Drops" },
+                      { value: "Ointment", label: "Ointment" },
+                    ]}
+                    searchable={false}
+                  />
                 </div>
               </div>
 

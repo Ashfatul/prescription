@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { Prisma, RoleName } from "@prisma/client";
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
@@ -5,6 +6,9 @@ import {
   prescriptionSchema,
   prescriptionUpdateSchema,
 } from "@/features/prescriptions/prescription.schema";
+import { sendPrescriptionAlert } from "@/features/notifications/notification.service";
+import { logActivity } from "@/features/activity-log/activity-log.service";
+import { generateRemindersFromPrescription } from "@/features/medicine-reminders/medicine-reminder.service";
 
 type ListOptions = {
   role: RoleName;
@@ -54,12 +58,22 @@ export async function listPrescriptions(options: ListOptions) {
 export async function createPrescription(input: unknown) {
   const data = prescriptionSchema.parse(input);
 
-  return db.$transaction(async (tx) => {
+  const doc = await db.doctor.findUnique({
+    where: { id: data.doctorId },
+    include: { user: true },
+  });
+  const orgId = doc?.user?.organizationId || null;
+  const shareToken = `rx-${crypto.randomBytes(8).toString("hex")}`;
+
+  const created = await db.$transaction(async (tx) => {
     const prescription = await tx.prescription.create({
       data: {
         doctorId: data.doctorId,
         patientId: data.patientId,
+        organizationId: orgId,
         appointmentId: data.appointmentId,
+        shareToken,
+        isPublicShareEnabled: false,
         version: 1,
         notes: data.notes,
         medicinesJson: data.medicines,
@@ -118,6 +132,39 @@ export async function createPrescription(input: unknown) {
       },
     });
   });
+
+  if (created && created.patient?.user && created.doctor?.user) {
+    // 1. Send Prescription System Notification & Email Notification (respecting on/off preferences)
+    await sendPrescriptionAlert({
+      prescriptionId: created.id,
+      patientUserId: created.patient.userId,
+      doctorName: created.doctor.user.name,
+      patientName: created.patient.user.name,
+      patientEmail: created.patient.user.email,
+      organizationId: created.organizationId,
+    }).catch(() => null);
+
+    // 2. Log immutable activity audit event
+    await logActivity({
+      organizationId: created.organizationId,
+      userId: created.doctor.userId,
+      userName: created.doctor.user.name,
+      userRole: "DOCTOR",
+      action: "PRESCRIPTION_CREATED",
+      entityType: "Prescription",
+      entityId: created.id,
+      detailsJson: {
+        patientName: created.patient.user.name,
+        medicinesCount: (data.medicines as unknown as unknown[]).length,
+        testsCount: (data.tests as unknown as unknown[]).length,
+      },
+    }).catch(() => null);
+
+    // 3. Automatically schedule medicine dosage reminders for patient
+    await generateRemindersFromPrescription(created.id).catch(() => null);
+  }
+
+  return created;
 }
 
 export async function getPrescription(id: string, versionNumber?: number) {

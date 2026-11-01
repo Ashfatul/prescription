@@ -20,6 +20,75 @@ enum AppointmentStatus {
   CANCELLED
 }
 
+enum OrganizationStatus {
+  ACTIVE
+  TRIAL
+  SUSPENDED
+}
+
+enum TestReportStatus {
+  PENDING
+  REVIEWED
+  NORMAL
+  ABNORMAL
+}
+
+enum ChatStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  BLOCKED
+}
+
+enum NotificationType {
+  PRESCRIPTION_CREATED
+  APPOINTMENT_BOOKED
+  APPOINTMENT_REMINDER
+  TEST_REPORT_ADDED
+  CHAT_REQUEST
+  CHAT_MESSAGE
+  ANNOUNCEMENT
+  SYSTEM
+}
+
+model PricingPlan {
+  id            String         @id @default(cuid())
+  name          String         @unique
+  price         Float
+  billingCycle  String         @default("monthly")
+  description   String?
+  features      Json
+  isPopular     Boolean        @default(false)
+  isActive      Boolean        @default(true)
+  organizations Organization[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Organization {
+  id                String             @id @default(cuid())
+  name              String
+  slug              String             @unique
+  status            OrganizationStatus @default(ACTIVE)
+  planId            String?
+  plan              PricingPlan?       @relation(fields: [planId], references: [id])
+  contactEmail      String?
+  contactPhone      String?
+  address           String?
+  logoUrl           String?
+  settingsJson      Json?
+  users             User[]
+  appointments      Appointment[]
+  prescriptions     Prescription[]
+  testReports       TestReport[]
+  activityLogs      ActivityLog[]
+  announcements     Announcement[]
+  chatConnections   ChatConnection[]
+  medicineReminders MedicineReminder[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+}
+
 model Role {
   id          String   @id @default(cuid())
   name        RoleName @unique
@@ -28,23 +97,31 @@ model Role {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  phone        String?
-  imageUrl     String?
-  signatureUrl String?
-  theme        String   @default("system")
-  accent       String   @default("teal")
-  roleId       String
-  role         Role     @relation(fields: [roleId], references: [id])
-  doctor       Doctor?
-  patient      Patient?
-  files        File[]   @relation("UserFiles")
-  templates    Template[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                      String           @id @default(cuid())
+  name                    String
+  email                   String           @unique
+  passwordHash            String
+  phone                   String?
+  imageUrl                String?
+  signatureUrl            String?
+  theme                   String           @default("system")
+  accent                  String           @default("teal")
+  notificationPreferences Json?            @default("{\"emailPrescriptionAlerts\":true,\"systemPrescriptionAlerts\":true,\"emailAppointmentReminders\":true,\"systemAppointmentReminders\":true,\"emailMedicineReminders\":true,\"announcements\":true}")
+  roleId                  String
+  role                    Role             @relation(fields: [roleId], references: [id])
+  organizationId          String?
+  organization            Organization?    @relation(fields: [organizationId], references: [id])
+  doctor                  Doctor?
+  patient                 Patient?
+  files                   File[]           @relation("UserFiles")
+  templates               Template[]
+  testReportsUploaded     TestReport[]     @relation("UserTestReports")
+  notifications           Notification[]
+  sentChatRequests        ChatConnection[] @relation("ChatRequester")
+  receivedChatRequests    ChatConnection[] @relation("ChatRecipient")
+  chatMessages            ChatMessage[]
+  createdAt               DateTime         @default(now())
+  updatedAt               DateTime         @updatedAt
 }
 
 model Doctor {
@@ -68,62 +145,78 @@ model Doctor {
   queueStart      Int            @default(1)
   appointments    Appointment[]
   prescriptions   Prescription[]
+  testReports     TestReport[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 }
 
 model Patient {
-  id            String         @id @default(cuid())
-  userId        String         @unique
-  user          User           @relation(fields: [userId], references: [id])
-  dateOfBirth   DateTime?
-  gender        String?
-  medicalHistory String?
-  appointments  Appointment[]
-  prescriptions Prescription[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id                String             @id @default(cuid())
+  userId            String             @unique
+  user              User               @relation(fields: [userId], references: [id])
+  dateOfBirth       DateTime?
+  gender            String?
+  medicalHistory    String?
+  appointments      Appointment[]
+  prescriptions     Prescription[]
+  testReports       TestReport[]
+  medicineReminders MedicineReminder[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 }
 
 model Appointment {
   id              String            @id @default(cuid())
-  doctorId         String
-  doctor           Doctor            @relation(fields: [doctorId], references: [id])
-  patientId        String
-  patient          Patient           @relation(fields: [patientId], references: [id])
-  appointmentDate  DateTime
-  serialNumber     Int
-  status           AppointmentStatus @default(BOOKED)
-  notes            String?
-  prescription     Prescription?
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  doctorId        String
+  doctor          Doctor            @relation(fields: [doctorId], references: [id])
+  patientId       String
+  patient         Patient           @relation(fields: [patientId], references: [id])
+  organizationId  String?
+  organization    Organization?     @relation(fields: [organizationId], references: [id])
+  appointmentDate DateTime
+  serialNumber    Int
+  status          AppointmentStatus @default(BOOKED)
+  notes           String?
+  prescription    Prescription?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
 
   @@unique([doctorId, appointmentDate, serialNumber])
   @@index([doctorId, appointmentDate])
+  @@index([organizationId])
 }
 
 model Prescription {
-  id                 String                 @id @default(cuid())
-  doctorId           String
-  doctor             Doctor                 @relation(fields: [doctorId], references: [id])
-  patientId          String
-  patient            Patient                @relation(fields: [patientId], references: [id])
-  appointmentId      String?                @unique
-  appointment        Appointment?           @relation(fields: [appointmentId], references: [id])
-  version            Int                    @default(1)
-  medicinesJson      Json
-  testsJson          Json
-  vitalsJson         Json?
-  clinicalInfoJson   Json?
-  doctorOverrideJson Json?
-  notes              String?
-  templateId         String?
-  template           Template?              @relation(fields: [templateId], references: [id])
-  attachments        PrescriptionAttachment[]
-  versions           PrescriptionVersion[]
-  createdAt          DateTime               @default(now())
-  updatedAt          DateTime               @updatedAt
+  id                   String                   @id @default(cuid())
+  doctorId             String
+  doctor               Doctor                   @relation(fields: [doctorId], references: [id])
+  patientId            String
+  patient              Patient                  @relation(fields: [patientId], references: [id])
+  organizationId       String?
+  organization         Organization?            @relation(fields: [organizationId], references: [id])
+  appointmentId        String?                  @unique
+  appointment          Appointment?             @relation(fields: [appointmentId], references: [id])
+  version              Int                      @default(1)
+  medicinesJson        Json
+  testsJson            Json
+  vitalsJson           Json?
+  clinicalInfoJson     Json?
+  doctorOverrideJson   Json?
+  notes                String?
+  templateId           String?
+  template             Template?                @relation(fields: [templateId], references: [id])
+  isPublicShareEnabled Boolean                  @default(false)
+  shareToken           String?                  @unique
+  attachments          PrescriptionAttachment[]
+  versions             PrescriptionVersion[]
+  testReports          TestReport[]
+  medicineReminders    MedicineReminder[]
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+
+  @@index([organizationId])
+  @@index([doctorId])
+  @@index([patientId])
 }
 
 model PrescriptionVersion {
@@ -145,6 +238,57 @@ model PrescriptionVersion {
   @@index([prescriptionId])
 }
 
+model TestReport {
+  id             String           @id @default(cuid())
+  title          String
+  description    String?
+  reportDate     DateTime         @default(now())
+  fileUrl        String
+  fileType       String           @default("application/pdf")
+  originalName   String
+  patientId      String
+  patient        Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId       String?
+  doctor         Doctor?          @relation(fields: [doctorId], references: [id])
+  prescriptionId String?
+  prescription   Prescription?    @relation(fields: [prescriptionId], references: [id])
+  uploadedById   String
+  uploadedBy     User             @relation("UserTestReports", fields: [uploadedById], references: [id])
+  status         TestReportStatus @default(PENDING)
+  notes          String?
+  organizationId String?
+  organization   Organization?    @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([organizationId])
+}
+
+model MedicineReminder {
+  id             String        @id @default(cuid())
+  patientId      String
+  patient        Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  prescriptionId String?
+  prescription   Prescription? @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  medicineName   String
+  dosage         String
+  frequency      String
+  timeOfDay      String
+  startDate      DateTime      @default(now())
+  endDate        DateTime?
+  notes          String?
+  isActive       Boolean       @default(true)
+  googleCalUrl   String?
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([patientId])
+}
+
 model Medicine {
   id           String   @id @default(cuid())
   name         String
@@ -164,15 +308,15 @@ model DiagnosticTest {
 }
 
 model File {
-  id                 String                   @id @default(cuid())
-  url                String
-  publicId           String
-  fileType           String
-  originalName       String
-  uploadedById       String
-  uploadedBy         User                     @relation("UserFiles", fields: [uploadedById], references: [id])
-  prescriptionLinks  PrescriptionAttachment[]
-  createdAt          DateTime                 @default(now())
+  id                String                   @id @default(cuid())
+  url               String
+  publicId          String
+  fileType          String
+  originalName      String
+  uploadedById      String
+  uploadedBy        User                     @relation("UserFiles", fields: [uploadedById], references: [id])
+  prescriptionLinks PrescriptionAttachment[]
+  createdAt         DateTime                 @default(now())
 }
 
 model Template {
@@ -205,4 +349,89 @@ model SystemSetting {
   category  String   @default("general")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ActivityLog {
+  id             String        @id @default(cuid())
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  userId         String?
+  userName       String?
+  userRole       String?
+  action         String
+  entityType     String
+  entityId       String?
+  detailsJson    Json?
+  ipAddress      String?
+  createdAt      DateTime      @default(now())
+
+  @@index([createdAt])
+  @@index([action])
+  @@index([organizationId])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      NotificationType @default(SYSTEM)
+  link      String?
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  @@index([userId, read])
+}
+
+model Announcement {
+  id             String        @id @default(cuid())
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  title          String
+  content        String
+  targetRole     String        @default("ALL")
+  priority       String        @default("NORMAL")
+  authorId       String
+  authorName     String
+  expiresAt      DateTime?
+  isActive       Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([targetRole, isActive])
+  @@index([organizationId])
+}
+
+model ChatConnection {
+  id             String        @id @default(cuid())
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  requesterId    String
+  requester      User          @relation("ChatRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  recipientId    String
+  recipient      User          @relation("ChatRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  status         ChatStatus    @default(PENDING)
+  requestNote    String?
+  messages       ChatMessage[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@unique([requesterId, recipientId])
+  @@index([requesterId])
+  @@index([recipientId])
+}
+
+model ChatMessage {
+  id               String         @id @default(cuid())
+  chatConnectionId String
+  chatConnection   ChatConnection @relation(fields: [chatConnectionId], references: [id], onDelete: Cascade)
+  senderId         String
+  sender           User           @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  message          String
+  attachmentUrl    String?
+  read             Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+
+  @@index([chatConnectionId, createdAt])
 }

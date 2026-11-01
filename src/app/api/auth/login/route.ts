@@ -6,6 +6,7 @@ import { signToken } from "@/lib/auth/jwt";
 import { AUTH_COOKIE } from "@/lib/auth/constants";
 import { withErrorHandling } from "@/lib/api-handler";
 import { AppError } from "@/lib/errors";
+import { logActivity } from "@/features/activity-log/activity-log.service";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest) {
 
     const user = await db.user.findUnique({
       where: { email: body.email },
-      include: { role: true },
+      include: { role: true, organization: true },
     });
 
     if (!user) {
@@ -33,6 +34,19 @@ export async function POST(req: NextRequest) {
     const token = await signToken({
       sub: user.id,
       role: user.role.name,
+      organizationId: user.organizationId,
+    });
+
+    // Log login activity
+    await logActivity({
+      organizationId: user.organizationId,
+      userId: user.id,
+      userName: user.name,
+      userRole: user.role.name,
+      action: "USER_LOGIN",
+      entityType: "User",
+      entityId: user.id,
+      detailsJson: { email: user.email },
     });
 
     const res = NextResponse.json({
@@ -42,6 +56,8 @@ export async function POST(req: NextRequest) {
         name: user.name,
         email: user.email,
         role: user.role.name,
+        organizationId: user.organizationId,
+        organizationName: user.organization?.name || null,
         theme: user.theme || "system",
         accent: user.accent || "teal",
       },

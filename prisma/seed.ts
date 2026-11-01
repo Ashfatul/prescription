@@ -1,4 +1,4 @@
-import { AppointmentStatus, PrismaClient, RoleName } from "@prisma/client";
+import { AppointmentStatus, PrismaClient, RoleName, TestReportStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -17,36 +17,201 @@ async function main() {
   const roleByName = Object.fromEntries(roleRecords.map((r) => [r.name, r.id]));
   const passwordHash = await bcrypt.hash("Pass1234!", 10);
 
+  // 1. Seed SaaS Pricing Plans
+  const starterPlan = await prisma.pricingPlan.upsert({
+    where: { name: "Starter Clinic" },
+    update: {
+      price: 49,
+      billingCycle: "monthly",
+      description: "Essential prescribing & patient management for solo practitioners.",
+      features: [
+        "Up to 2 Doctor Accounts",
+        "500 Prescriptions / month",
+        "Drug & Test Formulary Access",
+        "A4 Standard Printouts",
+        "Patient Records & History",
+        "Email Support",
+      ],
+      isPopular: false,
+      isActive: true,
+    },
+    create: {
+      name: "Starter Clinic",
+      price: 49,
+      billingCycle: "monthly",
+      description: "Essential prescribing & patient management for solo practitioners.",
+      features: [
+        "Up to 2 Doctor Accounts",
+        "500 Prescriptions / month",
+        "Drug & Test Formulary Access",
+        "A4 Standard Printouts",
+        "Patient Records & History",
+        "Email Support",
+      ],
+      isPopular: false,
+      isActive: true,
+    },
+  });
+
+  const proPlan = await prisma.pricingPlan.upsert({
+    where: { name: "Professional Polyclinic" },
+    update: {
+      price: 149,
+      billingCycle: "monthly",
+      description: "Complete clinical OS for multi-doctor chambers and medical centers.",
+      features: [
+        "Up to 15 Doctor Accounts",
+        "Unlimited Prescriptions",
+        "Live Chamber Queue Dispenser",
+        "QR Code & Public Link Prescription Sharing",
+        "Test Report Uploads (Doctor & Patient)",
+        "Google Calendar & Medicine Reminders",
+        "Staff & Receptionist Triage Portal",
+        "Patient-Doctor Approved Chat System",
+        "24/7 Priority Clinical Support",
+      ],
+      isPopular: true,
+      isActive: true,
+    },
+    create: {
+      name: "Professional Polyclinic",
+      price: 149,
+      billingCycle: "monthly",
+      description: "Complete clinical OS for multi-doctor chambers and medical centers.",
+      features: [
+        "Up to 15 Doctor Accounts",
+        "Unlimited Prescriptions",
+        "Live Chamber Queue Dispenser",
+        "QR Code & Public Link Prescription Sharing",
+        "Test Report Uploads (Doctor & Patient)",
+        "Google Calendar & Medicine Reminders",
+        "Staff & Receptionist Triage Portal",
+        "Patient-Doctor Approved Chat System",
+        "24/7 Priority Clinical Support",
+      ],
+      isPopular: true,
+      isActive: true,
+    },
+  });
+
+  await prisma.pricingPlan.upsert({
+    where: { name: "Hospital Enterprise" },
+    update: {
+      price: 399,
+      billingCycle: "monthly",
+      description: "Comprehensive multi-specialty hospital infrastructure with custom integrations.",
+      features: [
+        "Unlimited Doctor & Staff Seats",
+        "Multi-Branch SaaS Clinic Partitioning",
+        "Custom Letterhead & Insignia Watermarking",
+        "Full Audit & System Activity Logging",
+        "Role-Based Admin Broadcast Announcements",
+        "Dedicated Database & SLA Guarantee",
+        "Automated Email & System Alerts",
+        "Dedicated Account Executive",
+      ],
+      isPopular: false,
+      isActive: true,
+    },
+    create: {
+      name: "Hospital Enterprise",
+      price: 399,
+      billingCycle: "monthly",
+      description: "Comprehensive multi-specialty hospital infrastructure with custom integrations.",
+      features: [
+        "Unlimited Doctor & Staff Seats",
+        "Multi-Branch SaaS Clinic Partitioning",
+        "Custom Letterhead & Insignia Watermarking",
+        "Full Audit & System Activity Logging",
+        "Role-Based Admin Broadcast Announcements",
+        "Dedicated Database & SLA Guarantee",
+        "Automated Email & System Alerts",
+        "Dedicated Account Executive",
+      ],
+      isPopular: false,
+      isActive: true,
+    },
+  });
+
+  // 2. Seed Default Organization
+  const defaultOrg = await prisma.organization.upsert({
+    where: { slug: "metro-hospital" },
+    update: {
+      name: "Metropolitan Specialized Hospital",
+      planId: proPlan.id,
+      contactEmail: "info@metropolitanhospital.com",
+      contactPhone: "+880 2-8901234",
+      address: "Plot 12, Road 4, Sector 7, Uttara, Dhaka-1230",
+    },
+    create: {
+      name: "Metropolitan Specialized Hospital",
+      slug: "metro-hospital",
+      planId: proPlan.id,
+      contactEmail: "info@metropolitanhospital.com",
+      contactPhone: "+880 2-8901234",
+      address: "Plot 12, Road 4, Sector 7, Uttara, Dhaka-1230",
+    },
+  });
+
+  const secondaryOrg = await prisma.organization.upsert({
+    where: { slug: "care-polyclinic" },
+    update: {
+      name: "Care Family Polyclinic",
+      planId: starterPlan.id,
+      contactEmail: "care@carepolyclinic.com",
+      contactPhone: "+880 1819-998877",
+      address: "Mirpur 10 Circle, Dhaka",
+    },
+    create: {
+      name: "Care Family Polyclinic",
+      slug: "care-polyclinic",
+      planId: starterPlan.id,
+      contactEmail: "care@carepolyclinic.com",
+      contactPhone: "+880 1819-998877",
+      address: "Mirpur 10 Circle, Dhaka",
+    },
+  });
+
+  // 3. Seed Users
   const admin = await prisma.user.upsert({
     where: { email: "admin@ppms.local" },
-    update: {},
+    update: {
+      organizationId: defaultOrg.id,
+    },
     create: {
       name: "Super Admin",
       email: "admin@ppms.local",
       passwordHash,
       roleId: roleByName.SUPER_ADMIN,
+      organizationId: defaultOrg.id,
     },
   });
 
   const patientUser = await prisma.user.upsert({
     where: { email: "patient@ppms.local" },
-    update: {},
+    update: {
+      organizationId: defaultOrg.id,
+    },
     create: {
       name: "Nusrat Jahan",
       email: "patient@ppms.local",
       passwordHash,
       roleId: roleByName.PATIENT,
+      organizationId: defaultOrg.id,
     },
   });
 
   const staffUser = await prisma.user.upsert({
     where: { email: "staff@ppms.local" },
-    update: {},
+    update: {
+      organizationId: defaultOrg.id,
+    },
     create: {
       name: "Front Desk Staff",
       email: "staff@ppms.local",
       passwordHash,
       roleId: roleByName.STAFF,
+      organizationId: defaultOrg.id,
     },
   });
 
@@ -56,7 +221,7 @@ async function main() {
     create: {
       userId: patientUser.id,
       gender: "Female",
-      medicalHistory: "Mild seasonal allergy",
+      medicalHistory: "Mild seasonal allergy, History of Dyspepsia",
     },
   });
 
@@ -186,6 +351,8 @@ async function main() {
   const now = new Date();
   const todayAtTen = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0, 0);
 
+  let primaryDoctorId = "";
+
   for (let i = 0; i < doctorsData.length; i++) {
     const item = doctorsData[i];
 
@@ -194,6 +361,7 @@ async function main() {
       update: {
         name: item.name,
         imageUrl: item.imageUrl,
+        organizationId: defaultOrg.id,
       },
       create: {
         name: item.name,
@@ -201,6 +369,7 @@ async function main() {
         passwordHash,
         roleId: roleByName.DOCTOR,
         imageUrl: item.imageUrl,
+        organizationId: defaultOrg.id,
       },
     });
 
@@ -231,6 +400,8 @@ async function main() {
       },
     });
 
+    if (i === 0) primaryDoctorId = doc.id;
+
     if (item.available) {
       await prisma.appointment.upsert({
         where: {
@@ -240,10 +411,13 @@ async function main() {
             serialNumber: i + 1,
           },
         },
-        update: {},
+        update: {
+          organizationId: defaultOrg.id,
+        },
         create: {
           doctorId: doc.id,
           patientId: patient.id,
+          organizationId: defaultOrg.id,
           appointmentDate: todayAtTen,
           serialNumber: i + 1,
           status: AppointmentStatus.BOOKED,
@@ -259,7 +433,6 @@ async function main() {
 
   await prisma.medicine.createMany({
     data: [
-      // Analgesics & Antipyretics
       {
         name: "Napa Extra",
         type: "Tablet",
@@ -284,7 +457,6 @@ async function main() {
         dosage: "100mg",
         instructions: "1 tablet once daily after dinner with PPI",
       },
-      // PPIs & Antacids
       {
         name: "Maxpro",
         type: "Capsule",
@@ -315,7 +487,6 @@ async function main() {
         dosage: "200ml",
         instructions: "2 teaspoons 1 hour after meals and at bedtime",
       },
-      // Antibiotics
       {
         name: "Azithrocin",
         type: "Tablet",
@@ -346,7 +517,6 @@ async function main() {
         dosage: "500mg",
         instructions: "1 tablet once daily after meals for 7 days",
       },
-      // Antihistamines & Respiratory
       {
         name: "Monas",
         type: "Tablet",
@@ -383,7 +553,6 @@ async function main() {
         dosage: "25/125mcg",
         instructions: "2 puffs twice daily followed by mouth rinse with water",
       },
-      // Cardiovascular & Antihypertensives
       {
         name: "Osartil",
         type: "Tablet",
@@ -414,7 +583,6 @@ async function main() {
         dosage: "75mg",
         instructions: "1 tablet once daily after meals",
       },
-      // Antidiabetics
       {
         name: "Comet",
         type: "Tablet",
@@ -433,7 +601,6 @@ async function main() {
         dosage: "50/500mg",
         instructions: "1 tablet twice daily with meals",
       },
-      // Supplements
       {
         name: "D-Rise",
         type: "Capsule",
@@ -564,8 +731,162 @@ async function main() {
     },
   });
 
-  console.log("Seed completed successfully with 6 doctors and professional template.");
+  // 4. Seed a sample prescription with share token and medicine reminder
+  const sampleRx = await prisma.prescription.create({
+    data: {
+      doctorId: primaryDoctorId,
+      patientId: patient.id,
+      organizationId: defaultOrg.id,
+      isPublicShareEnabled: true,
+      shareToken: "rx-metro-sample-82910",
+      notes: "Take complete rest and drink plenty of warm fluids. Follow up after 7 days.",
+      medicinesJson: [
+        {
+          name: "Napa Extra",
+          type: "Tablet",
+          dosage: "500mg + 65mg",
+          dose: "1+0+1",
+          timing: "After meal",
+          duration: "5 days",
+          instructions: "Take when fever or pain is prominent",
+        },
+        {
+          name: "Maxpro",
+          type: "Capsule",
+          dosage: "20mg",
+          dose: "1+0+1",
+          timing: "30 mins before meal",
+          duration: "14 days",
+          instructions: "Take 30 minutes prior to breakfast and dinner",
+        },
+      ],
+      testsJson: [
+        {
+          name: "CBC with ESR (Complete Blood Count)",
+          instructions: "Clean blood sample. Fasting not required.",
+        },
+        {
+          name: "Fasting Blood Sugar (FBS)",
+          instructions: "8-10 hours overnight fasting.",
+        },
+      ],
+      vitalsJson: {
+        bp: "120/80",
+        pulse: "74",
+        temp: "98.4",
+        spo2: "99",
+        weight: "68",
+      },
+      clinicalInfoJson: {
+        complaints: ["Mild fever x 3 days", "Dry cough", "Throat irritation"],
+        diagnosis: ["Acute Upper Respiratory Tract Infection", "Mild Gastritis"],
+        advice: ["Drink warm water", "Avoid oily/cold foods", "Take adequate rest"],
+      },
+    },
+  });
+
+  // Seed sample test report uploaded by patient
+  await prisma.testReport.create({
+    data: {
+      title: "CBC & Blood Sugar Profile",
+      description: "Routine annual health checkup blood report",
+      fileUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+      fileType: "application/pdf",
+      originalName: "CBC_FBS_Report_Oct2026.pdf",
+      patientId: patient.id,
+      doctorId: primaryDoctorId,
+      prescriptionId: sampleRx.id,
+      uploadedById: patientUser.id,
+      status: TestReportStatus.REVIEWED,
+      organizationId: defaultOrg.id,
+      notes: "Hemoglobin 13.8 g/dL (Normal). Fasting blood sugar 98 mg/dL (Normal).",
+    },
+  });
+
+  // Seed sample medicine reminder
+  await prisma.medicineReminder.create({
+    data: {
+      patientId: patient.id,
+      prescriptionId: sampleRx.id,
+      organizationId: defaultOrg.id,
+      medicineName: "Maxpro 20mg",
+      dosage: "20mg",
+      frequency: "1+0+1",
+      timeOfDay: "07:30 AM, 08:00 PM",
+      notes: "30 mins before breakfast and dinner",
+    },
+  });
+
+  // Seed sample announcements
+  await prisma.announcement.createMany({
+    data: [
+      {
+        title: "Annual Infection Control Protocol Update",
+        content: "All clinical and front-desk staff are reminded to follow updated sterilization guidelines and hygiene checks in OPD consulting chambers.",
+        targetRole: "ALL",
+        priority: "HIGH",
+        authorId: admin.id,
+        authorName: "Super Admin",
+        organizationId: defaultOrg.id,
+      },
+      {
+        title: "OPD Holiday Schedule - Upcoming Public Holiday",
+        content: "OPD chambers will operate from 9:00 AM to 1:00 PM on the upcoming holiday. Emergency admissions remain operational 24/7.",
+        targetRole: "PATIENT",
+        priority: "NORMAL",
+        authorId: admin.id,
+        authorName: "Medical Administration",
+        organizationId: defaultOrg.id,
+      },
+    ],
+  });
+
+  // Seed sample activity logs
+  await prisma.activityLog.createMany({
+    data: [
+      {
+        action: "ORGANIZATION_INITIALIZED",
+        entityType: "Organization",
+        entityId: defaultOrg.id,
+        userName: "System Setup",
+        userRole: "SUPER_ADMIN",
+        organizationId: defaultOrg.id,
+        detailsJson: { name: defaultOrg.name, plan: "Professional Polyclinic" },
+      },
+      {
+        action: "PRESCRIPTION_CREATED",
+        entityType: "Prescription",
+        entityId: sampleRx.id,
+        userName: "Dr. Fahim Rahman",
+        userRole: "DOCTOR",
+        organizationId: defaultOrg.id,
+        detailsJson: { patient: "Nusrat Jahan", medicinesCount: 2, testsCount: 2 },
+      },
+      {
+        action: "TEST_REPORT_UPLOADED",
+        entityType: "TestReport",
+        userName: "Nusrat Jahan",
+        userRole: "PATIENT",
+        organizationId: defaultOrg.id,
+        detailsJson: { title: "CBC & Blood Sugar Profile" },
+      },
+    ],
+  });
+
+  // Seed notification for patient
+  await prisma.notification.create({
+    data: {
+      userId: patientUser.id,
+      title: "New Digital Prescription Issued",
+      message: "Dr. Fahim Rahman has issued a new digital prescription for your consultation. You can view, download, or share it.",
+      type: "PRESCRIPTION_CREATED",
+      link: `/prescriptions/${sampleRx.id}/print`,
+    },
+  });
+
+  console.log("Seed completed successfully with multi-tenant SaaS organizations, pricing plans, prescription sharing, reports, and activity logs.");
   void staffUser;
+  void secondaryOrg;
 }
 
 main()

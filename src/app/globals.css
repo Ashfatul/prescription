@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
   /* Surface Tokens */
   --bg-app: #f8fafc;
@@ -214,6 +218,29 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--border-strong);
+}
+
+/* Consistent & Ergonomic Clinical Form Controls (min-h-[46px] on mobile, min-h-[48px] on desktop) */
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="file"]):not([type="color"]),
+select,
+.form-input-consistent {
+  min-height: 46px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="file"]):not([type="color"]),
+  select,
+  .form-input-consistent {
+    min-height: 48px;
+  }
+}
+
+textarea {
+  min-height: 84px;
+  font-size: 0.875rem;
+  line-height: 1.35rem;
 }
 
 /* Multi-page printable prescription styling */

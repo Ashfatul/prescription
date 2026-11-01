@@ -8,6 +8,12 @@ import { DoctorProfileEditor } from "@/components/dashboard/doctor-profile-edito
 import { PrescriptionEditor } from "@/components/dashboard/prescription-editor";
 import { CatalogManager } from "@/components/dashboard/catalog-manager";
 import { TemplateManager } from "@/components/dashboard/template-manager";
+import { TestReportsManager } from "@/components/dashboard/test-reports-manager";
+import { ClinicalChat } from "@/components/dashboard/clinical-chat";
+import { PrescriptionShareModal } from "@/components/dashboard/prescription-share-modal";
+import { AnnouncementsBanner } from "@/components/dashboard/announcements-banner";
+import { useAuth } from "@/lib/auth/auth-context";
+import { Share2 } from "lucide-react";
 
 type DoctorData = {
   id: string;
@@ -101,7 +107,16 @@ type PrescriptionSummary = {
   }>;
 };
 
-export type DoctorTabType = "prescription" | "queue" | "catalog" | "tests" | "templates" | "profile" | "history";
+export type DoctorTabType =
+  | "prescription"
+  | "queue"
+  | "catalog"
+  | "tests"
+  | "templates"
+  | "profile"
+  | "history"
+  | "reports"
+  | "chat";
 
 export function DoctorDashboardView({
   doctor: initialDoctor,
@@ -114,9 +129,11 @@ export function DoctorDashboardView({
   patients: PatientData[];
   recentPrescriptions: PrescriptionSummary[];
 }) {
+  const { user: currentUser } = useAuth();
   const [doctor, setDoctor] = useState<DoctorData>(initialDoctor);
   const [prescriptionToRevise, setPrescriptionToRevise] = useState<PrescriptionSummary | null>(null);
   const [historyModalPrescription, setHistoryModalPrescription] = useState<PrescriptionSummary | null>(null);
+  const [sharingPrescriptionId, setSharingPrescriptionId] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -134,6 +151,10 @@ export function DoctorDashboardView({
       ? "queue"
       : urlTab === "history"
       ? "history"
+      : urlTab === "reports"
+      ? "reports"
+      : urlTab === "chat"
+      ? "chat"
       : "prescription";
 
   const handleTabChange = (tab: DoctorTabType) => {
@@ -149,6 +170,9 @@ export function DoctorDashboardView({
 
   return (
     <div className="space-y-6">
+      {/* Broadcast Announcements Banner */}
+      <AnnouncementsBanner />
+
       {/* Top Clinical Header Banner */}
       <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 dark:border-slate-800/90 bg-[var(--bg-surface)] p-6 shadow-sm">
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
@@ -325,6 +349,14 @@ export function DoctorDashboardView({
         <DoctorProfileEditor doctor={doctor} onSaved={handleProfileUpdated} />
       )}
 
+      {/* Tab: Diagnostic Test Reports */}
+      {activeTab === "reports" && <TestReportsManager role="DOCTOR" />}
+
+      {/* Tab: Doctor-Patient Clinical Chat */}
+      {activeTab === "chat" && currentUser && (
+        <ClinicalChat currentUserId={currentUser.id} />
+      )}
+
       {/* Tab 6: Prescription History & Archive */}
       {activeTab === "history" && (
         <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
@@ -440,6 +472,16 @@ export function DoctorDashboardView({
                             >
                               <span>🖨️ Print</span>
                             </Link>
+
+                            <button
+                              type="button"
+                              onClick={() => setSharingPrescriptionId(p.id)}
+                              title="Share Prescription via Public Link, QR Code, or Email"
+                              className="inline-flex items-center gap-1 rounded-xl bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-300 border border-[var(--border-subtle)] px-2.5 py-1.5 text-xs font-bold hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition cursor-pointer"
+                            >
+                              <Share2 className="w-3.5 h-3.5" />
+                              <span>Share</span>
+                            </button>
 
                             {versionCount > 1 && (
                               <button
@@ -584,6 +626,15 @@ export function DoctorDashboardView({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Prescription Share Modal (Public Link, QR Code, Email) */}
+      {sharingPrescriptionId && (
+        <PrescriptionShareModal
+          prescriptionId={sharingPrescriptionId}
+          isOpen={!!sharingPrescriptionId}
+          onClose={() => setSharingPrescriptionId(null)}
+        />
       )}
     </div>
   );

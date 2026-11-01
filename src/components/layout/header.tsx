@@ -2,19 +2,25 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { 
-  Activity, 
   Calendar, 
   Menu, 
   X, 
   PhoneCall, 
   LayoutDashboard, 
   LogOut, 
-  Sparkles,
-  Stethoscope,
-  HelpCircle,
-  LogIn
+  Sparkles, 
+  Stethoscope, 
+  HelpCircle, 
+  LogIn, 
+  ChevronDown, 
+  ClipboardList, 
+  CreditCard, 
+  UserPlus, 
+  ArrowRight, 
+  ShieldCheck, 
 } from "lucide-react";
 import { LanguageToggle } from "@/components/common/language-toggle";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
@@ -23,18 +29,27 @@ import { useAuth } from "@/lib/auth/auth-context";
 
 interface SimpleSettings {
   emergencyHotline?: string;
-  emergencyStatus?: string;
   hospitalName?: string;
 }
+
+const emptySubscribe = () => () => {};
 
 export function Header({ loggedIn }: { loggedIn?: boolean }) {
   const pathname = usePathname();
   const { t } = useLanguage();
   const { user, logout, loading } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+  
   const [settings, setSettings] = useState<SimpleSettings>({
     emergencyHotline: "10678",
-    emergencyStatus: "OPD 24/7 Active",
     hospitalName: "PPMS Clinical",
   });
 
@@ -47,7 +62,6 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
         if (data?.success && data?.data) {
           setSettings({
             emergencyHotline: data.data.emergencyHotline || "10678",
-            emergencyStatus: data.data.emergencyStatus || "OPD 24/7 Active",
             hospitalName: data.data.hospitalName || "PPMS Clinical",
           });
         }
@@ -57,225 +71,607 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
       });
   }, []);
 
+  // Smooth Menu Controllers
+  const closeMenu = (callback?: () => void) => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setMenuOpen(false);
+      setIsClosing(false);
+      callback?.();
+    }, 200); // 200ms smooth fade/scale transition
+  };
+
+  const openMenu = () => {
+    setIsClosing(false);
+    setMenuOpen(true);
+  };
+
+  const toggleMenu = () => {
+    if (menuOpen) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  };
+
+  // Close menu automatically on route change
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setMenuOpen(false);
+    setIsClosing(false);
+  }
+
+  // Smooth In-Page & Inter-Page Navigation Handler
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith("/#") || href.startsWith("#")) {
+      const targetId = href.replace(/^\/?#/, "");
+      if (pathname === "/") {
+        e.preventDefault();
+        closeMenu(() => {
+          const element = document.getElementById(targetId);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "start" });
+            window.history.pushState(null, "", `#${targetId}`);
+          }
+        });
+        return;
+      }
+    }
+    closeMenu();
+  };
+
+  // Handle hash scrolling on page mount or route change
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash) {
+      const id = window.location.hash.replace("#", "");
+      const elem = document.getElementById(id);
+      if (elem) {
+        setTimeout(() => {
+          elem.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 120);
+      }
+    }
+  }, [pathname]);
+
+  // Handle escape key and lock body scroll when full-screen menu is open
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && menuOpen && !isClosing) {
+        closeMenu();
+      }
+    };
+    if (menuOpen && !isClosing) {
+      document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handleKeyDown);
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [menuOpen, isClosing]);
+
   const onLogout = async () => {
     await logout();
   };
 
-  const navLinks = [
-    { label: "Doctors", href: "/doctors", icon: Stethoscope },
-    { label: "Features", href: "/#features", icon: Sparkles },
-    { label: "How It Works", href: "/#how-it-works", icon: HelpCircle },
-  ];
-
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/90 backdrop-blur-md transition-all shadow-2xs">
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-18 gap-2 sm:gap-4 flex-nowrap min-w-0">
-          
-          {/* Left: Brand Identity */}
-          <div className="flex items-center gap-3 shrink-0">
-            <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-              <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-[var(--brand-primary)] to-[var(--brand-hover)] text-white flex items-center justify-center font-black text-sm sm:text-base shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all shrink-0">
-                <span>Rx</span>
-                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-white dark:ring-slate-900 animate-pulse" />
-              </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-extrabold tracking-tight text-slate-900 dark:text-white text-base sm:text-lg whitespace-nowrap">
-                    PPMS
-                  </span>
-                  <span className="px-1.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] font-bold text-[9px] sm:text-[10px] tracking-wider uppercase border border-[var(--brand-border)]/60">
-                    Clinical
-                  </span>
-                </div>
-                <span className="hidden xl:inline-block text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate max-w-[160px]">
-                  Prescription Suite
-                </span>
-              </div>
-            </Link>
-
-            {/* Dynamic Active Chamber Pill (Visible on 2xl) */}
-            <div className="hidden 2xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold whitespace-nowrap">
-              <Activity className="w-3 h-3 animate-pulse shrink-0" />
-              <span>{settings.emergencyStatus}</span>
-            </div>
-          </div>
-
-          {/* Center: Streamlined Desktop Navigation (Only 3 concise links) */}
-          <nav className="hidden md:flex items-center gap-1 lg:gap-2 shrink-0">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const active = pathname === link.href;
-              return (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                    active
-                      ? "bg-[var(--brand-surface)] text-[var(--brand-text)] font-bold"
-                      : "text-slate-600 dark:text-slate-300 hover:text-[var(--brand-text)] hover:bg-[var(--brand-surface)]"
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5 opacity-70 shrink-0" />
-                  <span>{link.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Right: Controls & User State (No overflow or wrapping) */}
-          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+    <>
+      <header className="sticky top-0 z-40 w-full border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/95 backdrop-blur-md transition-all shadow-2xs">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 sm:h-18 gap-3 flex-nowrap min-w-0">
             
-            {/* Dynamic Emergency Hotline (Visible on xl+) */}
-            <a
-              href={`tel:${settings.emergencyHotline}`}
-              className="hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs font-semibold text-slate-700 dark:text-slate-300 hover:border-[var(--brand-border)] transition-all shrink-0"
-              title="Hospital Emergency Hotline"
-            >
-              <PhoneCall className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-              <span className="whitespace-nowrap">Hotline: <strong>{settings.emergencyHotline}</strong></span>
-            </a>
-
-            {/* Compact Customizers */}
-            <div className="flex items-center gap-1 shrink-0">
-              <ThemeCustomizer compact />
-              <LanguageToggle />
-            </div>
-
-            {/* Authenticated User Pill */}
-            {user && (
-              <div className="hidden lg:flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs shrink-0 max-w-[150px]">
-                <span className="w-2 h-2 rounded-full bg-[var(--brand-primary)] animate-pulse shrink-0" />
-                <span className="font-bold text-slate-800 dark:text-slate-200 truncate">
-                  {user.name.split(" ")[0]}
-                </span>
-                <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[var(--brand-surface)] text-[var(--brand-text)] shrink-0">
-                  {user.role}
-                </span>
-              </div>
-            )}
-
-            {/* Actions: Logged In vs Logged Out */}
-            {isLoggedIn ? (
-              <div className="flex items-center gap-1.5 shrink-0">
-                <Link
-                  className="flex items-center gap-1.5 rounded-xl bg-[var(--brand-primary)] px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-white shadow-xs hover:opacity-90 transition-all cursor-pointer whitespace-nowrap"
-                  href="/dashboard"
-                >
-                  <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />
-                  <span className="hidden sm:inline">{t.dashboard}</span>
-                </Link>
-                <button
-                  className="rounded-xl border border-[var(--border-subtle)] p-1.5 sm:p-2 text-slate-600 dark:text-slate-400 hover:bg-[var(--bg-subtle)] hover:text-rose-500 transition-all cursor-pointer shrink-0"
-                  onClick={onLogout}
-                  type="button"
-                  title={t.logout}
-                >
-                  <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                </button>
-              </div>
-            ) : (
-              !loading && pathname !== "/auth/login" && (
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <Link
-                    className="flex items-center gap-1 rounded-xl border border-[var(--border-default)] px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-[var(--bg-subtle)] transition-all cursor-pointer whitespace-nowrap"
-                    href="/auth/login"
-                  >
-                    <LogIn className="w-3.5 h-3.5 sm:hidden" />
-                    <span className="hidden sm:inline">{t.login}</span>
-                  </Link>
-                  <Link
-                    href="/doctors"
-                    className="flex items-center gap-1.5 rounded-xl bg-[var(--brand-primary)] px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-white shadow-xs hover:opacity-90 transition-all cursor-pointer whitespace-nowrap"
-                  >
-                    <Calendar className="w-3.5 h-3.5 shrink-0" />
-                    <span className="hidden sm:inline">Book Consultation</span>
-                    <span className="sm:hidden">Doctors</span>
-                  </Link>
+            {/* Left: Brand Identity */}
+            <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+              <Link href="/" className="flex items-center gap-2.5 group shrink-0">
+                <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-[var(--brand-primary)] to-[var(--brand-hover)] text-white flex items-center justify-center font-black text-sm sm:text-base shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all shrink-0">
+                  <span>Rx</span>
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-white dark:ring-slate-900 animate-pulse" />
                 </div>
-              )
-            )}
-
-            {/* Mobile Drawer Toggle Button */}
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-1.5 sm:p-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-slate-700 dark:text-slate-300 hover:bg-[var(--bg-subtle)] transition-all shrink-0"
-              aria-label="Toggle navigation menu"
-            >
-              {mobileMenuOpen ? <X className="w-4 h-4 sm:w-5 sm:h-5" /> : <Menu className="w-4 h-4 sm:w-5 sm:h-5" />}
-            </button>
-          </div>
-
-        </div>
-      </div>
-
-      {/* Mobile Drawer Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 pt-3 pb-6 space-y-3 animate-in slide-in-from-top-2 duration-200">
-          <div className="grid gap-1">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const active = pathname === link.href;
-              return (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                    active
-                      ? "bg-[var(--brand-surface)] text-[var(--brand-text)] font-bold"
-                      : "text-slate-700 dark:text-slate-200 hover:bg-[var(--bg-subtle)]"
-                  }`}
-                >
-                  <Icon className="w-4 h-4 opacity-70" />
-                  <span>{link.label}</span>
-                </Link>
-              );
-            })}
-            <Link
-              href="/dashboard/staff"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-[var(--bg-subtle)] transition-all"
-            >
-              <span>Reception & Triage Desk</span>
-            </Link>
-          </div>
-
-          <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs">
-            <a
-              href={`tel:${settings.emergencyHotline}`}
-              className="flex items-center gap-1.5 font-bold text-rose-600 dark:text-rose-400"
-            >
-              <PhoneCall className="w-3.5 h-3.5" />
-              <span>Hotline: {settings.emergencyHotline}</span>
-            </a>
-            <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold text-[11px]">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>{settings.emergencyStatus}</span>
-            </div>
-          </div>
-
-          {!isLoggedIn && (
-            <div className="pt-2 flex flex-col gap-2">
-              <Link
-                href="/auth/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-2.5 text-center text-xs font-bold rounded-xl border border-[var(--border-default)] text-slate-800 dark:text-slate-200"
-              >
-                {t.login}
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-extrabold tracking-tight text-slate-900 dark:text-white text-base sm:text-lg whitespace-nowrap">
+                      PPMS
+                    </span>
+                    <span className="px-1.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] font-bold text-[9px] sm:text-[10px] tracking-wider uppercase border border-[var(--brand-border)]/60">
+                      Clinical
+                    </span>
+                  </div>
+                  <span className="hidden sm:inline-block text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate max-w-[160px]">
+                    Prescription Suite
+                  </span>
+                </div>
               </Link>
+            </div>
+
+            {/* Center: Streamlined Reduced Menu Trigger Button & Fast Doctor Link */}
+            <div className="flex items-center gap-2">
+              {/* Quick Primary Shortcut: Find Doctors */}
               <Link
                 href="/doctors"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-2.5 text-center text-xs font-bold rounded-xl bg-[var(--brand-primary)] text-white shadow-xs"
+                className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
+                  pathname === "/doctors"
+                    ? "bg-[var(--brand-surface)] text-[var(--brand-text)] border-[var(--brand-border)] font-bold shadow-2xs"
+                    : "bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-200 border-[var(--border-subtle)] hover:border-[var(--brand-border)] hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)]"
+                }`}
               >
-                Browse All Doctors & Chambers
+                <Stethoscope className="w-3.5 h-3.5 text-[var(--brand-primary)] shrink-0" />
+                <span>Find Doctors</span>
               </Link>
+
+              {/* Modern "Menu" Button with Icon - Triggers Full-Screen Menu */}
+              <button
+                type="button"
+                onClick={toggleMenu}
+                className={`flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl text-xs font-bold transition-all border shadow-2xs cursor-pointer group ${
+                  menuOpen && !isClosing
+                    ? "bg-[var(--brand-primary)] text-white border-[var(--brand-primary)] shadow-sm"
+                    : "bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] text-slate-800 dark:text-slate-200 hover:text-[var(--brand-text)] border-[var(--border-subtle)] hover:border-[var(--brand-border)]"
+                }`}
+                aria-label="Toggle navigation directory menu"
+                aria-expanded={menuOpen && !isClosing}
+              >
+                <div className={`w-5 h-5 rounded-lg flex items-center justify-center transition-transform duration-200 group-hover:scale-110 ${
+                  menuOpen && !isClosing ? "bg-white/20 text-white" : "bg-[var(--brand-surface)] text-[var(--brand-text)]"
+                }`}>
+                  {menuOpen && !isClosing ? <X className="w-3.5 h-3.5" /> : <Menu className="w-3.5 h-3.5" />}
+                </div>
+                <span className="tracking-tight">Menu</span>
+                <ChevronDown className={`w-3.5 h-3.5 opacity-60 transition-transform duration-200 ${menuOpen && !isClosing ? "rotate-180" : ""}`} />
+              </button>
             </div>
-          )}
+
+            {/* Right: Controls & User Authentication */}
+            <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+              {/* Customizers: Theme & Language */}
+              <div className="hidden sm:flex items-center gap-1 shrink-0">
+                <ThemeCustomizer compact />
+                <LanguageToggle />
+              </div>
+
+              {/* Authenticated User Status */}
+              {user && (
+                <div className="hidden lg:flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs shrink-0 max-w-[150px]">
+                  <span className="w-2 h-2 rounded-full bg-[var(--brand-primary)] animate-pulse shrink-0" />
+                  <span className="font-bold text-slate-800 dark:text-slate-200 truncate">
+                    {user.name.split(" ")[0]}
+                  </span>
+                  <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[var(--brand-surface)] text-[var(--brand-text)] shrink-0">
+                    {user.role}
+                  </span>
+                </div>
+              )}
+
+              {/* Actions: Logged In vs Logged Out */}
+              {isLoggedIn ? (
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <Link
+                    className="flex items-center gap-1.5 rounded-xl bg-[var(--brand-primary)] px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-white shadow-xs hover:opacity-90 transition-all cursor-pointer whitespace-nowrap"
+                    href="/dashboard"
+                  >
+                    <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />
+                    <span className="hidden sm:inline">{t.dashboard}</span>
+                  </Link>
+                  <button
+                    className="rounded-xl border border-[var(--border-subtle)] p-1.5 sm:p-2 text-slate-600 dark:text-slate-400 hover:bg-[var(--bg-subtle)] hover:text-rose-500 transition-all cursor-pointer shrink-0"
+                    onClick={onLogout}
+                    type="button"
+                    title={t.logout}
+                  >
+                    <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  </button>
+                </div>
+              ) : (
+                !loading && pathname !== "/auth/login" && (
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <Link
+                      className="flex items-center gap-1 rounded-xl border border-[var(--border-default)] px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-[var(--bg-subtle)] transition-all cursor-pointer whitespace-nowrap"
+                      href="/auth/login"
+                    >
+                      <LogIn className="w-3.5 h-3.5 sm:hidden" />
+                      <span className="hidden sm:inline">{t.login}</span>
+                    </Link>
+                    <Link
+                      href="/doctors"
+                      className="flex items-center gap-1.5 rounded-xl bg-[var(--brand-primary)] px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-white shadow-xs hover:opacity-90 transition-all cursor-pointer whitespace-nowrap"
+                    >
+                      <Calendar className="w-3.5 h-3.5 shrink-0" />
+                      <span className="hidden sm:inline">Book Consultation</span>
+                      <span className="sm:hidden">Book</span>
+                    </Link>
+                  </div>
+                )
+              )}
+            </div>
+
+          </div>
         </div>
+      </header>
+
+      {/* ========================================================================= */}
+      {/* MODERN FULL-SCREEN MENU TAKEOVER (Rendered directly via React Portal)     */}
+      {/* ========================================================================= */}
+      {mounted && menuOpen && createPortal(
+        <div 
+          className={`fixed inset-0 z-[99999] w-screen h-screen bg-[var(--bg-app)]/98 backdrop-blur-2xl flex flex-col justify-between overflow-y-auto transition-all duration-200 ease-out ${
+            isClosing 
+              ? "opacity-0 scale-[0.98] pointer-events-none" 
+              : "opacity-100 scale-100 animate-in fade-in duration-200"
+          }`}
+          style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
+        >
+          {/* Subtle Ambient Radial Glow */}
+          <div className={`pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-15%,rgba(15,118,110,0.15),transparent)] dark:bg-[radial-gradient(ellipse_80%_60%_at_50%_-15%,rgba(20,184,166,0.18),transparent)] transition-opacity duration-200 ${
+            isClosing ? "opacity-0" : "opacity-100"
+          }`} />
+
+          {/* Full-Screen Menu Topbar */}
+          <div className="w-full border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/90 backdrop-blur-md sticky top-0 z-10 shrink-0">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between gap-4">
+              
+              {/* Brand Logo */}
+              <Link 
+                href="/" 
+                onClick={(e) => handleNavClick(e, "/")}
+                className="flex items-center gap-2.5 group cursor-pointer"
+              >
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[var(--brand-primary)] to-[var(--brand-hover)] text-white flex items-center justify-center font-black text-base shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all">
+                  Rx
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-black tracking-tight text-slate-900 dark:text-white text-lg">
+                    PPMS Clinical
+                  </span>
+                  <span className="text-[11px] text-slate-500 font-medium">
+                    Navigation Directory
+                  </span>
+                </div>
+              </Link>
+
+              {/* Close Button with Keyboard Shortcut Badge */}
+              <div className="flex items-center gap-3">
+                <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-mono text-slate-400 bg-[var(--bg-subtle)] px-2.5 py-1 rounded-lg border border-[var(--border-subtle)]">
+                  <span>Press</span>
+                  <kbd className="font-bold text-slate-700 dark:text-slate-300">ESC</kbd>
+                  <span>to close</span>
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => closeMenu()}
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] text-slate-700 dark:text-slate-200 hover:text-[var(--brand-text)] border border-[var(--border-subtle)] hover:border-[var(--brand-border)] font-bold text-xs transition cursor-pointer shadow-xs"
+                  aria-label="Close menu"
+                >
+                  <X className="w-4 h-4" />
+                  <span className="hidden sm:inline">Close</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Full-Screen Menu Body: Modern 3-Column Structured Layout */}
+          <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-1 relative z-1">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              
+              {/* Column 1: Clinical Practice & Chambers */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2.5 pb-2 border-b border-[var(--border-subtle)]">
+                  <div className="w-8 h-8 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center">
+                    <Stethoscope className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-sm text-slate-900 dark:text-white tracking-tight">
+                      Clinical Chambers & Care
+                    </h4>
+                    <p className="text-[11px] text-slate-500">
+                      Physicians, consultations & triage
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2.5">
+                  <Link
+                    href="/doctors"
+                    onClick={(e) => handleNavClick(e, "/doctors")}
+                    className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <Stethoscope className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
+                          Find Doctors & Chambers
+                        </span>
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Browse verified doctors, BMDC credentials, degrees & visiting hours
+                      </p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/doctors"
+                    onClick={(e) => handleNavClick(e, "/doctors")}
+                    className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <Calendar className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
+                          Book Appointment & Serial
+                        </span>
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Schedule a consultation slot with instant OPD serial confirmation
+                      </p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/dashboard/staff"
+                    onClick={(e) => handleNavClick(e, "/dashboard/staff")}
+                    className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <ClipboardList className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
+                          Reception & Triage Desk
+                        </span>
+                        <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
+                          Staff
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Patient queue management, check-in, triage & doctor availability
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Column 2: SaaS Platform & Prescribing Suite */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2.5 pb-2 border-b border-[var(--border-subtle)]">
+                  <div className="w-8 h-8 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-sm text-slate-900 dark:text-white tracking-tight">
+                      SaaS Platform & Engine
+                    </h4>
+                    <p className="text-[11px] text-slate-500">
+                      Prescription architecture & subscription tiers
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2.5">
+                  <Link
+                    href="/#features"
+                    onClick={(e) => handleNavClick(e, "/#features")}
+                    className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block cursor-pointer"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
+                          Prescription Capabilities
+                        </span>
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Drug formulary auto-fill, multi-page printing, QR verification & audit logs
+                      </p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/#pricing"
+                    onClick={(e) => handleNavClick(e, "/#pricing")}
+                    className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block cursor-pointer"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <CreditCard className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
+                          SaaS Pricing Plans
+                        </span>
+                        <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          Plans
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Transparent monthly and yearly tiers for solo chambers & hospitals
+                      </p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/#how-it-works"
+                    onClick={(e) => handleNavClick(e, "/#how-it-works")}
+                    className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block cursor-pointer"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <HelpCircle className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
+                          Step-by-Step Prescribing
+                        </span>
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Zero redundancy clinical workflow from complaint triage to medicine dispensing
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Column 3: Portals, Accounts & Direct Hotline */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2.5 pb-2 border-b border-[var(--border-subtle)]">
+                  <div className="w-8 h-8 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-sm text-slate-900 dark:text-white tracking-tight">
+                      Portals, Access & Support
+                    </h4>
+                    <p className="text-[11px] text-slate-500">
+                      Patient medical accounts & clinical login
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2.5">
+                  <Link
+                    href="/auth/register"
+                    onClick={(e) => handleNavClick(e, "/auth/register")}
+                    className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <UserPlus className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
+                          Patient Self-Registration
+                        </span>
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Create a free patient medical account with instant clinic assignment
+                      </p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/auth/login"
+                    onClick={(e) => handleNavClick(e, "/auth/login")}
+                    className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <LogIn className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
+                          Clinical Portal Sign In
+                        </span>
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Secure authorization for doctors, hospital staff & administrators
+                      </p>
+                    </div>
+                  </Link>
+
+                  {/* Clean Hotline Card (No OPD & Chamber 24/7 Active) */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-br from-rose-500/10 via-amber-500/5 to-transparent border border-rose-500/20 space-y-3 shadow-2xs">
+                    <div className="flex items-center gap-2">
+                      <PhoneCall className="w-4 h-4 text-rose-500" />
+                      <span className="text-xs font-bold text-slate-900 dark:text-white">
+                        Hospital Emergency Hotline
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500">
+                      Immediate assistance for emergency and outpatient guidance
+                    </p>
+                    <a
+                      href={`tel:${settings.emergencyHotline}`}
+                      className="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <PhoneCall className="w-3.5 h-3.5" />
+                      <span>Call Hotline: {settings.emergencyHotline}</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Full-Screen Menu Bottom Bar */}
+          <div className="w-full border-t border-[var(--border-subtle)] bg-[var(--bg-surface)]/90 backdrop-blur-md shrink-0 relative z-10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+              
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-bold text-slate-500">System Preferences:</span>
+                <ThemeCustomizer compact />
+                <LanguageToggle />
+              </div>
+
+              <div className="flex items-center gap-4 text-xs text-slate-500">
+                <Link 
+                  href="/terms" 
+                  onClick={(e) => handleNavClick(e, "/terms")}
+                  className="hover:text-[var(--brand-text)] transition"
+                >
+                  Terms of Service
+                </Link>
+                <span>•</span>
+                <Link 
+                  href="/privacy" 
+                  onClick={(e) => handleNavClick(e, "/privacy")}
+                  className="hover:text-[var(--brand-text)] transition"
+                >
+                  Privacy Policy
+                </Link>
+                <span>•</span>
+                <Link 
+                  href="/disclaimer" 
+                  onClick={(e) => handleNavClick(e, "/disclaimer")}
+                  className="hover:text-[var(--brand-text)] transition"
+                >
+                  Medical Disclaimer
+                </Link>
+              </div>
+
+              <div>
+                {isLoggedIn ? (
+                  <Link
+                    href="/dashboard"
+                    onClick={(e) => handleNavClick(e, "/dashboard")}
+                    className="px-5 py-2.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition inline-flex items-center gap-1.5"
+                  >
+                    <LayoutDashboard className="w-3.5 h-3.5" />
+                    <span>Go to {t.dashboard}</span>
+                  </Link>
+                ) : (
+                  <Link
+                    href="/auth/login"
+                    onClick={(e) => handleNavClick(e, "/auth/login")}
+                    className="px-5 py-2.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition inline-flex items-center gap-1.5"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span>Sign In to EMR</span>
+                  </Link>
+                )}
+              </div>
+
+            </div>
+          </div>
+
+        </div>,
+        document.body
       )}
-    </header>
+    </>
   );
 }

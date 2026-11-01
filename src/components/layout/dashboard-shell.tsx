@@ -6,6 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { RoleName } from "@prisma/client";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
 import { LanguageToggle } from "@/components/common/language-toggle";
+import { NotificationBell } from "@/components/layout/notification-bell";
 import { useAuth } from "@/lib/auth/auth-context";
 import {
   BarChart3,
@@ -22,6 +23,14 @@ import {
   Compass,
   ClipboardList,
   Building2,
+  Megaphone,
+  CreditCard,
+  ShieldAlert,
+  Microscope,
+  MessageSquare,
+  Calendar,
+  PanelLeft,
+  PanelLeftClose,
 } from "lucide-react";
 
 interface DashboardShellProps {
@@ -46,6 +55,7 @@ interface NavItem {
 
 export function DashboardShell({ user, children }: DashboardShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeTab = searchParams.get("tab") || "main";
@@ -60,7 +70,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
 
   // Build navigation items grouped by semantic section
   const navItems: NavItem[] = [
-    ...(role === RoleName.SUPER_ADMIN || role === RoleName.STAFF
+    ...(role === RoleName.SUPER_ADMIN
       ? [
           {
             section: "Front Desk & Triage",
@@ -77,6 +87,20 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             icon: <BarChart3 className="w-4 h-4" />,
           },
           {
+            section: "Multi-Clinic SaaS",
+            label: "Clinics & Organizations",
+            href: "/dashboard/admin?tab=organizations",
+            tabKey: "organizations",
+            icon: <Building2 className="w-4 h-4" />,
+          },
+          {
+            section: "Multi-Clinic SaaS",
+            label: "SaaS Pricing Plans",
+            href: "/dashboard/admin?tab=pricing",
+            tabKey: "pricing",
+            icon: <CreditCard className="w-4 h-4" />,
+          },
+          {
             section: "Accounts & Security",
             label: "User Accounts",
             href: "/dashboard/admin?tab=users",
@@ -89,6 +113,27 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             href: "/dashboard/admin?tab=roles",
             tabKey: "roles",
             icon: <Shield className="w-4 h-4" />,
+          },
+          {
+            section: "Governance & Audit",
+            label: "Hospital Broadcasts",
+            href: "/dashboard/admin?tab=announcements",
+            tabKey: "announcements",
+            icon: <Megaphone className="w-4 h-4" />,
+          },
+          {
+            section: "Governance & Audit",
+            label: "Activity Audit Logs",
+            href: "/dashboard/admin?tab=activity",
+            tabKey: "activity",
+            icon: <ShieldAlert className="w-4 h-4" />,
+          },
+          {
+            section: "Collaboration",
+            label: "Clinical Chat Hub",
+            href: "/dashboard/admin?tab=chat",
+            tabKey: "chat",
+            icon: <MessageSquare className="w-4 h-4" />,
           },
           {
             section: "Medical Formulary",
@@ -113,10 +158,36 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           },
           {
             section: "Configuration",
-            label: "Hospital & Chamber Settings",
+            label: "Hospital Settings",
             href: "/dashboard/admin?tab=settings",
             tabKey: "settings",
             icon: <Building2 className="w-4 h-4" />,
+          },
+        ]
+      : []),
+
+    ...(role === RoleName.STAFF
+      ? [
+          {
+            section: "Front Desk & Triage",
+            label: "Reception & Queue",
+            href: "/dashboard/staff",
+            tabKey: "reception",
+            icon: <ClipboardList className="w-4 h-4" />,
+          },
+          {
+            section: "Doctor Rosters",
+            label: "Visiting Schedules",
+            href: "/dashboard/staff?tab=schedules",
+            tabKey: "schedules",
+            icon: <Calendar className="w-4 h-4" />,
+          },
+          {
+            section: "Collaboration",
+            label: "Clinical Chat",
+            href: "/dashboard/staff?tab=chat",
+            tabKey: "chat",
+            icon: <MessageSquare className="w-4 h-4" />,
           },
         ]
       : []),
@@ -143,6 +214,20 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             href: "/dashboard/doctor?tab=history",
             tabKey: "history",
             icon: <History className="w-4 h-4" />,
+          },
+          {
+            section: "Clinical Practice",
+            label: "Diagnostic Test Reports",
+            href: "/dashboard/doctor?tab=reports",
+            tabKey: "reports",
+            icon: <Microscope className="w-4 h-4" />,
+          },
+          {
+            section: "Collaboration",
+            label: "Clinical Chat",
+            href: "/dashboard/doctor?tab=chat",
+            tabKey: "chat",
+            icon: <MessageSquare className="w-4 h-4" />,
           },
           {
             section: "Medical Formulary",
@@ -183,6 +268,27 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             href: "/dashboard/patient",
             tabKey: "main",
             icon: <FileText className="w-4 h-4" />,
+          },
+          {
+            section: "Healthcare Portal",
+            label: "Test Reports & Scans",
+            href: "/dashboard/patient?tab=reports",
+            tabKey: "reports",
+            icon: <Microscope className="w-4 h-4" />,
+          },
+          {
+            section: "Healthcare Portal",
+            label: "Medicine Reminders",
+            href: "/dashboard/patient?tab=reminders",
+            tabKey: "reminders",
+            icon: <Clock className="w-4 h-4" />,
+          },
+          {
+            section: "Collaboration",
+            label: "Chat with Doctor",
+            href: "/dashboard/patient?tab=chat",
+            tabKey: "chat",
+            icon: <MessageSquare className="w-4 h-4" />,
           },
         ]
       : []),
@@ -339,8 +445,14 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
 
   return (
     <div className="min-h-screen bg-[var(--bg-app)] flex">
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:block w-72 shrink-0 h-screen sticky top-0 z-30">
+      {/* Desktop Sidebar (Collapsible with Toggle Button) */}
+      <aside
+        className={`hidden lg:block shrink-0 h-screen sticky top-0 z-30 transition-all duration-300 ease-in-out ${
+          desktopSidebarCollapsed
+            ? "w-0 overflow-hidden opacity-0 pointer-events-none"
+            : "w-72 opacity-100"
+        }`}
+      >
         {sidebarElement}
       </aside>
 
@@ -366,14 +478,31 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         {/* Top Navbar */}
         <header className="sticky top-0 z-20 h-16 border-b border-slate-200/80 dark:border-slate-800/80 bg-[var(--bg-surface)]/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
+            {/* Mobile Drawer Button */}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
               className="lg:hidden p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+              title="Open Navigation Menu"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
+            </button>
+
+            {/* Desktop Sidebar Toggle Icon Button */}
+            <button
+              type="button"
+              onClick={() => setDesktopSidebarCollapsed(!desktopSidebarCollapsed)}
+              className="hidden lg:flex items-center gap-1.5 p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+              title={desktopSidebarCollapsed ? "Show Sidebar Menu" : "Hide Sidebar Menu"}
+              aria-label="Toggle sidebar menu"
+            >
+              {desktopSidebarCollapsed ? (
+                <PanelLeft className="w-5 h-5 text-[var(--brand-primary)]" />
+              ) : (
+                <PanelLeftClose className="w-5 h-5" />
+              )}
             </button>
 
             <div className="flex items-center gap-2">
@@ -385,6 +514,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           </div>
 
           <div className="flex items-center gap-3">
+            <NotificationBell />
             <LanguageToggle />
             <ThemeCustomizer compact />
             <div className="w-px h-6 bg-slate-200 dark:bg-slate-800" />

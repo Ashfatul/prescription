@@ -16,6 +16,7 @@ import {
   ChevronRight,
   User,
 } from "lucide-react";
+import { CustomDatePicker } from "@/components/common/custom-date-picker";
 
 export interface PublicDoctorItem {
   id: string;
@@ -452,13 +453,12 @@ export function AppointmentBookingModal({
                   2. Consultation Date
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
-                  <input
-                    type="date"
-                    min={todayStr}
+                  <CustomDatePicker
+                    minDate={todayStr}
                     value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold text-xs cursor-pointer shadow-xs"
-                    required
+                    onChange={(val) => setSelectedDate(val)}
+                    placeholder="Select consultation date"
+                    quickPresets={true}
                   />
 
                   {visitingDayStatus && (

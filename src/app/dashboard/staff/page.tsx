@@ -1,9 +1,9 @@
 import { RoleName } from "@prisma/client";
 import { requirePageUser } from "@/lib/auth/page-auth";
-import { ReceptionManager } from "@/components/dashboard/reception-manager";
+import { StaffDashboardView } from "@/components/dashboard/staff-dashboard-view";
 
 export default async function StaffDashboardPage() {
-  await requirePageUser([RoleName.STAFF, RoleName.SUPER_ADMIN]);
+  const user = await requirePageUser([RoleName.STAFF, RoleName.SUPER_ADMIN]);
 
-  return <ReceptionManager />;
+  return <StaffDashboardView userId={user.id} />;
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Calendar,
   Clock,
@@ -11,8 +11,16 @@ import {
   FileText,
   AlertCircle,
   Plus,
+  Share2,
 } from "lucide-react";
 import { AppointmentBookingModal } from "@/components/appointments/appointment-booking-modal";
+import { TestReportsManager } from "@/components/dashboard/test-reports-manager";
+import { MedicineRemindersView } from "@/components/dashboard/medicine-reminders-view";
+import { ClinicalChat } from "@/components/dashboard/clinical-chat";
+import { PrescriptionShareModal } from "@/components/dashboard/prescription-share-modal";
+import { AnnouncementsBanner } from "@/components/dashboard/announcements-banner";
+import { createGoogleCalendarAppointmentUrl } from "@/lib/calendar";
+import { useAuth } from "@/lib/auth/auth-context";
 
 interface AppointmentItem {
   id: string;
@@ -61,11 +69,39 @@ export function PatientDashboardView({
   prescriptions,
 }: PatientDashboardViewProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user: currentUser } = useAuth();
+  const activeTab = searchParams.get("tab") || "overview";
+
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedSlip, setSelectedSlip] = useState<AppointmentItem | null>(null);
   const [selectedHistoryPrescription, setSelectedHistoryPrescription] = useState<PrescriptionItem | null>(null);
+  const [sharingPrescriptionId, setSharingPrescriptionId] = useState<string | null>(null);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [generatingRemindersId, setGeneratingRemindersId] = useState<string | null>(null);
+  const [reminderMessage, setReminderMessage] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+
+  const handleGenerateReminders = async (rxId: string) => {
+    setGeneratingRemindersId(rxId);
+    setReminderMessage(null);
+    try {
+      const res = await fetch("/api/medicine-reminders/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prescriptionId: rxId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setReminderMessage("Medicine dosage reminders added to your schedule!");
+        setTimeout(() => setReminderMessage(null), 4000);
+      }
+    } catch {
+      // Ignore
+    } finally {
+      setGeneratingRemindersId(null);
+    }
+  };
 
   const handleBookingSuccess = () => {
     router.refresh();
@@ -100,7 +136,26 @@ export function PatientDashboardView({
 
   return (
     <div className="space-y-6">
-      {/* Patient Welcome Banner */}
+      {/* Broadcast Announcements Banner */}
+      <AnnouncementsBanner />
+
+      {reminderMessage && (
+        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold animate-in fade-in">
+          ✓ {reminderMessage}
+        </div>
+      )}
+
+      {/* Render Sub Tabs */}
+      {activeTab === "reports" && <TestReportsManager role="PATIENT" />}
+      {activeTab === "reminders" && <MedicineRemindersView />}
+      {activeTab === "chat" && currentUser && (
+        <ClinicalChat currentUserId={currentUser.id} />
+      )}
+
+      {/* Default Overview */}
+      {(activeTab === "overview" || activeTab === "main") && (
+        <>
+          {/* Patient Welcome Banner */}
       <div className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-5">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 text-xs font-bold">
@@ -239,14 +294,32 @@ export function PatientDashboardView({
 
                           <div className="flex items-center gap-1">
                             {!isCancelled && (
-                              <button
-                                type="button"
-                                onClick={() => setSelectedSlip(item)}
-                                title="View Appointment Slip"
-                                className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition cursor-pointer text-xs"
-                              >
-                                <Printer className="w-3.5 h-3.5" />
-                              </button>
+                              <>
+                                <a
+                                  href={createGoogleCalendarAppointmentUrl({
+                                    doctorName: item.doctor.user.name,
+                                    patientName,
+                                    appointmentDate: new Date(item.appointmentDate),
+                                    serialNumber: item.serialNumber,
+                                    chamberAddress: item.doctor.chamberAddress || undefined,
+                                  })}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  title="Add to Google Calendar"
+                                  className="p-1.5 rounded-lg border border-amber-200 dark:border-amber-900/50 hover:bg-amber-50 text-amber-600 dark:text-amber-400 transition cursor-pointer text-xs"
+                                >
+                                  <Calendar className="w-3.5 h-3.5" />
+                                </a>
+
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedSlip(item)}
+                                  title="View Appointment Slip"
+                                  className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition cursor-pointer text-xs"
+                                >
+                                  <Printer className="w-3.5 h-3.5" />
+                                </button>
+                              </>
                             )}
 
                             {!isCancelled && !isCompleted && (
@@ -368,6 +441,29 @@ export function PatientDashboardView({
                         <Printer className="w-3.5 h-3.5" />
                         <span>View & Print</span>
                       </Link>
+
+                      <button
+                        type="button"
+                        onClick={() => setSharingPrescriptionId(item.id)}
+                        title="Share Prescription via Public Link, QR Code, or Email"
+                        className="flex items-center gap-1 px-3 py-2 rounded-xl border border-[var(--border-default)] text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-[var(--bg-subtle)] transition cursor-pointer"
+                      >
+                        <Share2 className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Share</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleGenerateReminders(item.id)}
+                        disabled={generatingRemindersId === item.id}
+                        title="Generate Daily Medicine Reminders"
+                        className="flex items-center gap-1 px-3 py-2 rounded-xl bg-teal-500/10 text-teal-700 dark:text-teal-300 text-xs font-semibold hover:bg-teal-500/20 transition cursor-pointer disabled:opacity-50"
+                      >
+                        <Clock className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">
+                          {generatingRemindersId === item.id ? "Setting..." : "Reminders"}
+                        </span>
+                      </button>
                     </div>
                   </div>
                 );
@@ -376,6 +472,8 @@ export function PatientDashboardView({
           </div>
         </div>
       </div>
+      </>
+      )}
 
       {/* Appointment Booking Modal */}
       <AppointmentBookingModal
@@ -529,6 +627,15 @@ export function PatientDashboardView({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Prescription Share Modal (Public Link, QR Code, Email) */}
+      {sharingPrescriptionId && (
+        <PrescriptionShareModal
+          prescriptionId={sharingPrescriptionId}
+          isOpen={!!sharingPrescriptionId}
+          onClose={() => setSharingPrescriptionId(null)}
+        />
       )}
     </div>
   );
