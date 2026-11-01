@@ -17,6 +17,9 @@ import {
 import { PublicDoctorItem } from "@/components/appointments/appointment-booking-modal";
 import { CustomSelect } from "@/components/common/custom-select";
 
+const inputClasses =
+  "w-full px-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]";
+
 interface PatientRecord {
   id: string;
   userId: string;
@@ -421,7 +424,7 @@ export function ReceptionManager() {
                         placeholder="e.g. Nusrat Jahan"
                         value={walkinName}
                         onChange={(e) => setWalkinName(e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white font-semibold"
+                        className={inputClasses}
                       />
                     </div>
 
@@ -434,7 +437,7 @@ export function ReceptionManager() {
                         placeholder="e.g. +880 1711-000000"
                         value={walkinPhone}
                         onChange={(e) => setWalkinPhone(e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
+                        className={inputClasses}
                       />
                     </div>
                   </div>
@@ -465,7 +468,7 @@ export function ReceptionManager() {
                         placeholder="e.g. 34"
                         value={walkinAge}
                         onChange={(e) => setWalkinAge(e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
+                        className={inputClasses}
                       />
                     </div>
 
@@ -478,7 +481,7 @@ export function ReceptionManager() {
                         placeholder="e.g. Diabetic, HTN, Penicillin allergy"
                         value={walkinHistory}
                         onChange={(e) => setWalkinHistory(e.target.value)}
-                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
+                        className={inputClasses}
                       />
                       <div className="flex flex-wrap gap-1 pt-1.5">
                         {["Diabetic", "HTN", "Asthma", "Heart Disease", "NKDA"].map((chip) => (
@@ -507,13 +510,13 @@ export function ReceptionManager() {
                   </span>
 
                   <div className="relative">
-                    <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+                    <Search className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-400" />
                     <input
                       type="text"
                       placeholder="Type name, phone, or email to search..."
                       value={searchPatientQuery}
                       onChange={(e) => setSearchPatientQuery(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
+                      className="w-full pl-10 pr-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
                     />
                   </div>
 
@@ -609,7 +612,7 @@ export function ReceptionManager() {
                       value={bp}
                       onChange={(e) => setBp(e.target.value)}
                       placeholder="120/80"
-                      className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold"
+                      className={inputClasses}
                     />
                   </div>
 
@@ -622,7 +625,7 @@ export function ReceptionManager() {
                       value={pulse}
                       onChange={(e) => setPulse(e.target.value)}
                       placeholder="76"
-                      className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold"
+                      className={inputClasses}
                     />
                   </div>
 
@@ -635,7 +638,7 @@ export function ReceptionManager() {
                       value={temp}
                       onChange={(e) => setTemp(e.target.value)}
                       placeholder="98.6"
-                      className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold"
+                      className={inputClasses}
                     />
                   </div>
 
@@ -648,7 +651,7 @@ export function ReceptionManager() {
                       value={weight}
                       onChange={(e) => setWeight(e.target.value)}
                       placeholder="65"
-                      className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold"
+                      className={inputClasses}
                     />
                   </div>
                 </div>
@@ -662,7 +665,7 @@ export function ReceptionManager() {
                     value={complaint}
                     onChange={(e) => setComplaint(e.target.value)}
                     placeholder="e.g. High fever for 2 days with sore throat and dry cough..."
-                    className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs"
+                    className={inputClasses}
                   />
                 </div>
               </div>

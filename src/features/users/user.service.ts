@@ -29,7 +29,7 @@ export async function createUser(input: unknown, creatorUserId?: string) {
   let orgId = data.organizationId;
   if (!orgId) {
     const defaultOrg = await db.organization.findFirst({
-      where: { status: "ACTIVE" },
+      where: { status: { in: ["ACTIVE", "TRIAL"] } },
       orderBy: { createdAt: "asc" },
     });
     if (defaultOrg) orgId = defaultOrg.id;

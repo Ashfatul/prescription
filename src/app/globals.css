@@ -225,8 +225,18 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type=
 select,
 .form-input-consistent {
   min-height: 46px;
+  height: 46px;
   font-size: 0.875rem;
   line-height: 1.25rem;
+  border-radius: 0.75rem; /* rounded-xl (12px) */
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-width: 1px;
+  border-color: var(--border-default);
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 @media (min-width: 640px) {
@@ -234,7 +244,21 @@ select,
   select,
   .form-input-consistent {
     min-height: 48px;
+    height: 48px;
   }
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="file"]):not([type="color"]):focus,
+select:focus,
+.form-input-consistent:focus {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.2);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.75;
 }
 
 textarea {

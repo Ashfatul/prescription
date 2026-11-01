@@ -151,7 +151,7 @@ export function SearchableSelect({
         tabIndex={disabled ? -1 : 0}
         onClick={() => !disabled && (isOpen ? setIsOpen(false) : openDropdown())}
         onKeyDown={handleKeyDown}
-        className={`w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-2xl border transition-all text-sm outline-none cursor-pointer select-none min-h-[46px] sm:min-h-[48px] ${
+        className={`w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl border transition-all text-sm outline-none cursor-pointer select-none min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px] ${
           disabled
             ? "opacity-60 cursor-not-allowed bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800"
             : isOpen

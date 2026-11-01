@@ -614,7 +614,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
               
               <div className="flex items-center gap-3">
                 <span className="text-xs font-bold text-slate-500">System Preferences:</span>
-                <ThemeCustomizer compact />
+                <ThemeCustomizer compact direction="up" align="left" />
                 <LanguageToggle />
               </div>
 

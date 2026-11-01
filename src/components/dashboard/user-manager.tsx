@@ -20,6 +20,9 @@ interface UserRecord {
   createdAt: string;
 }
 
+const inputClasses =
+  "w-full px-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]";
+
 export function UserManager() {
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<UserRecord[]>([]);
@@ -285,9 +288,9 @@ export function UserManager() {
             placeholder="Search by name, email, phone..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-3.5 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none focus:border-[var(--brand-primary)] text-slate-900 dark:text-white"
+            className="w-full pl-9 pr-4 rounded-xl text-sm bg-[var(--bg-surface)] border border-[var(--border-default)] outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 text-slate-900 dark:text-slate-100 min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
           />
-          <span className="absolute left-3 top-2.5 text-xs text-slate-400">🔍</span>
+          <span className="absolute left-3 top-3.5 text-xs text-slate-400">🔍</span>
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
@@ -413,7 +416,7 @@ export function UserManager() {
                   placeholder="Dr. Salma Begum"
                   value={createName}
                   onChange={(e) => setCreateName(e.target.value)}
-                  className="w-full p-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:border-[var(--brand-primary)]"
+                  className={inputClasses}
                 />
               </div>
 
@@ -427,7 +430,7 @@ export function UserManager() {
                   placeholder="salma.begum@hospital.com"
                   value={createEmail}
                   onChange={(e) => setCreateEmail(e.target.value)}
-                  className="w-full p-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:border-[var(--brand-primary)]"
+                  className={inputClasses}
                 />
               </div>
 
@@ -443,7 +446,7 @@ export function UserManager() {
                     placeholder="Min 8 characters"
                     value={createPassword}
                     onChange={(e) => setCreatePassword(e.target.value)}
-                    className="w-full p-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:border-[var(--brand-primary)]"
+                    className={inputClasses}
                   />
                 </div>
                 <div>
@@ -455,7 +458,7 @@ export function UserManager() {
                     placeholder="+880 1711..."
                     value={createPhone}
                     onChange={(e) => setCreatePhone(e.target.value)}
-                    className="w-full p-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:border-[var(--brand-primary)]"
+                    className={inputClasses}
                   />
                 </div>
               </div>
@@ -492,7 +495,7 @@ export function UserManager() {
                         placeholder="e.g. Cardiology"
                         value={createSpecialization}
                         onChange={(e) => setCreateSpecialization(e.target.value)}
-                        className="w-full p-2 rounded-lg text-xs bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800"
+                        className={inputClasses}
                       />
                     </div>
                     <div>
@@ -504,7 +507,7 @@ export function UserManager() {
                         placeholder="e.g. MBBS, FCPS, MD"
                         value={createDegrees}
                         onChange={(e) => setCreateDegrees(e.target.value)}
-                        className="w-full p-2 rounded-lg text-xs bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800"
+                        className={inputClasses}
                       />
                     </div>
                   </div>
@@ -518,7 +521,7 @@ export function UserManager() {
                         placeholder="e.g. BMDC-A-41285"
                         value={createBmdcRegNo}
                         onChange={(e) => setCreateBmdcRegNo(e.target.value)}
-                        className="w-full p-2 rounded-lg text-xs bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800"
+                        className={inputClasses}
                       />
                     </div>
                     <div>
@@ -530,7 +533,7 @@ export function UserManager() {
                         placeholder="09:00 AM - 01:00 PM"
                         value={createVisitingHours}
                         onChange={(e) => setCreateVisitingHours(e.target.value)}
-                        className="w-full p-2 rounded-lg text-xs bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800"
+                        className={inputClasses}
                       />
                     </div>
                   </div>
@@ -543,7 +546,7 @@ export function UserManager() {
                       placeholder="e.g. Room 301, 3rd Floor"
                       value={createChamberAddress}
                       onChange={(e) => setCreateChamberAddress(e.target.value)}
-                      className="w-full p-2 rounded-lg text-xs bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800"
+                      className={inputClasses}
                     />
                   </div>
                 </div>
@@ -603,7 +606,7 @@ export function UserManager() {
                   required
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full p-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:border-[var(--brand-primary)]"
+                  className={inputClasses}
                 />
               </div>
 
@@ -616,7 +619,7 @@ export function UserManager() {
                   required
                   value={editEmail}
                   onChange={(e) => setEditEmail(e.target.value)}
-                  className="w-full p-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:border-[var(--brand-primary)]"
+                  className={inputClasses}
                 />
               </div>
 
@@ -629,7 +632,7 @@ export function UserManager() {
                     type="text"
                     value={editPhone}
                     onChange={(e) => setEditPhone(e.target.value)}
-                    className="w-full p-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:border-[var(--brand-primary)]"
+                    className={inputClasses}
                   />
                 </div>
                 <div>
@@ -641,7 +644,7 @@ export function UserManager() {
                     placeholder="Leave blank to keep current"
                     value={editPassword}
                     onChange={(e) => setEditPassword(e.target.value)}
-                    className="w-full p-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:border-[var(--brand-primary)]"
+                    className={inputClasses}
                   />
                 </div>
               </div>

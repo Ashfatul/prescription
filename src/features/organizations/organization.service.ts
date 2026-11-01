@@ -69,7 +69,7 @@ export async function createOrganization(params: CreateOrgParams, creatorUserId?
     data: {
       name: params.name,
       slug: params.slug.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
-      planId: params.planId,
+      plan: params.planId ? { connect: { id: params.planId } } : undefined,
       contactEmail: params.contactEmail,
       contactPhone: params.contactPhone,
       address: params.address,
@@ -106,7 +106,7 @@ export async function updateOrganization(
     where: { id },
     data: {
       name: data.name,
-      planId: data.planId,
+      plan: data.planId ? { connect: { id: data.planId } } : undefined,
       contactEmail: data.contactEmail,
       contactPhone: data.contactPhone,
       address: data.address,

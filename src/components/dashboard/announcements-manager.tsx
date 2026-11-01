@@ -10,6 +10,11 @@ import {
 } from "lucide-react";
 import { CustomSelect } from "@/components/common/custom-select";
 
+const inputClasses =
+  "w-full px-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]";
+const textareaClasses =
+  "w-full px-4 py-3 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all resize-none";
+
 type AnnouncementItem = {
   id: string;
   title: string;
@@ -275,7 +280,7 @@ export function AnnouncementsManager() {
                   placeholder="e.g. Scheduled Maintenance / New OPD Visiting Hours"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
+                  className={inputClasses}
                 />
               </div>
 
@@ -324,7 +329,7 @@ export function AnnouncementsManager() {
                   placeholder="Write clear instructions or notice information..."
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] resize-none"
+                  className={textareaClasses}
                 />
               </div>
 

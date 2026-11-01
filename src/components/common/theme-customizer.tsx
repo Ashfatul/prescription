@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/lib/auth/auth-context";
 
@@ -31,7 +31,17 @@ function updateAccentDom(newAccent: AccentColor) {
   }
 }
 
-export function ThemeCustomizer({ compact = false }: { compact?: boolean }) {
+export interface ThemeCustomizerProps {
+  compact?: boolean;
+  direction?: "up" | "down" | "auto";
+  align?: "left" | "right" | "auto";
+}
+
+export function ThemeCustomizer({
+  compact = false,
+  direction = "auto",
+  align = "auto",
+}: ThemeCustomizerProps) {
   const { theme, setTheme } = useTheme();
   const { user, updatePreferences } = useAuth();
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
@@ -46,6 +56,68 @@ export function ThemeCustomizer({ compact = false }: { compact?: boolean }) {
   });
   const [prevUserAccent, setPrevUserAccent] = useState(user?.accent);
   const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const [resolvedDir, setResolvedDir] = useState<"up" | "down">(
+    direction === "up" ? "up" : "down"
+  );
+  const [resolvedAlign, setResolvedAlign] = useState<"left" | "right">(
+    align === "left" ? "left" : "right"
+  );
+
+  const activeDir = direction !== "auto" ? direction : resolvedDir;
+  const activeAlign = align !== "auto" ? align : resolvedAlign;
+
+  const calculatePosition = () => {
+    if (direction === "auto" && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      setResolvedDir(spaceBelow < 280 ? "up" : "down");
+    }
+    if (align === "auto" && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const spaceRight = window.innerWidth - rect.left;
+      setResolvedAlign(spaceRight < 270 ? "right" : "left");
+    }
+  };
+
+  const handleToggle = () => {
+    if (!isOpen) {
+      calculatePosition();
+    }
+    setIsOpen((prev) => !prev);
+  };
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
+  // Click outside listener (desktop mousedown and mobile touchstart)
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside, { passive: true });
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isOpen]);
 
   // Sync if user preferences change from auth context without effect setState
   if (user?.accent && user.accent !== prevUserAccent) {
@@ -93,10 +165,10 @@ export function ThemeCustomizer({ compact = false }: { compact?: boolean }) {
 
   if (compact) {
     return (
-      <div className="relative">
+      <div className="relative" ref={containerRef}>
         <button
           type="button"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={handleToggle}
           title="Theme & Accent Settings"
           className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shadow-xs cursor-pointer"
         >
@@ -105,18 +177,28 @@ export function ThemeCustomizer({ compact = false }: { compact?: boolean }) {
             style={{ backgroundColor: ACCENTS.find((a) => a.id === accent)?.color || "#0f766e" }}
           />
           <span className="capitalize hidden sm:inline">{theme === "system" ? "System" : theme}</span>
-          <svg className="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg
+            className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${
+              activeDir === "up"
+                ? isOpen ? "rotate-0" : "rotate-180"
+                : isOpen ? "rotate-180" : "rotate-0"
+            }`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
 
         {isOpen && (
-          <>
-            <div
-              className="fixed inset-0 z-40"
-              onClick={() => setIsOpen(false)}
-            />
-            <div className="absolute right-0 mt-2 w-64 p-3 z-50 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl space-y-3">
+          <div
+            className={`absolute z-50 w-64 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl space-y-3 ${
+              activeDir === "up" ? "bottom-full mb-2" : "top-full mt-2"
+            } ${
+              activeAlign === "left" ? "left-0" : "right-0"
+            }`}
+          >
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5">
                   Appearance Mode
@@ -165,7 +247,6 @@ export function ThemeCustomizer({ compact = false }: { compact?: boolean }) {
                 </div>
               </div>
             </div>
-          </>
         )}
       </div>
     );

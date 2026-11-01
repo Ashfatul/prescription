@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/auth-context";
+import { Building2, HeartPulse, ArrowRight } from "lucide-react";
 
 const DEMO_ACCOUNTS = [
   {
@@ -110,7 +111,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
               Email Address
             </label>
             <input
-              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:border-[var(--brand-primary)] focus:ring-1 focus:ring-[var(--brand-primary)]"
+              className="w-full px-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="doctor@ppms.local"
@@ -123,7 +124,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
               Password
             </label>
             <input
-              className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:border-[var(--brand-primary)] focus:ring-1 focus:ring-[var(--brand-primary)]"
+              className="w-full px-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
@@ -146,6 +147,55 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
             {loading ? "Authenticating..." : "Sign in to Dashboard"}
           </button>
         </form>
+
+        {/* Account Registration Links */}
+        <div className="mt-6 pt-5 border-t border-slate-200/90 dark:border-slate-800/90 space-y-2.5">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
+            New to PPMS? Create an Account:
+          </span>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <Link
+              href="/auth/register?type=clinic"
+              className="flex items-center gap-3 p-3 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-[var(--bg-subtle)] hover:border-[var(--brand-primary)] hover:bg-[var(--brand-surface)]/30 transition group cursor-pointer"
+            >
+              <div className="w-8 h-8 rounded-xl bg-teal-500/10 text-[var(--brand-primary)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <Building2 className="w-4 h-4" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[var(--brand-text)] transition truncate">
+                    Register Clinic / Org
+                  </span>
+                  <ArrowRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0 ml-1" />
+                </div>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                  14-Day Free Trial • No Card
+                </p>
+              </div>
+            </Link>
+
+            <Link
+              href="/auth/register?type=patient"
+              className="flex items-center gap-3 p-3 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-[var(--bg-subtle)] hover:border-rose-500/50 hover:bg-rose-500/5 transition group cursor-pointer"
+            >
+              <div className="w-8 h-8 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <HeartPulse className="w-4 h-4" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-rose-500 transition truncate">
+                    Patient Registration
+                  </span>
+                  <ArrowRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0 ml-1" />
+                </div>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                  Book doctors & view Rx
+                </p>
+              </div>
+            </Link>
+          </div>
+        </div>
 
         {isDemoMode && (
           <div className="mt-6 border-t border-slate-100 pt-5 dark:border-slate-800">

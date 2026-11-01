@@ -508,7 +508,7 @@ export function AppointmentBookingModal({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Describe your symptoms or reason for consulting the doctor..."
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs"
+                  className="w-full px-4 py-3 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all resize-none"
                 />
               </div>
 

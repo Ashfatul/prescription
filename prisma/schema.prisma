@@ -76,8 +76,13 @@ model Organization {
   contactPhone      String?
   address           String?
   logoUrl           String?
-  settingsJson      Json?
-  users             User[]
+  settingsJson          Json?
+  trialEndsAt           DateTime?
+  stripeCustomerId      String?
+  stripeSubscriptionId  String?
+  subscriptionStatus    String?            @default("trialing")
+  subscriptionEndsAt    DateTime?
+  users                 User[]
   appointments      Appointment[]
   prescriptions     Prescription[]
   testReports       TestReport[]

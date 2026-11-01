@@ -203,7 +203,7 @@ export function CustomDatePicker({
         role="button"
         tabIndex={disabled ? -1 : 0}
         onClick={() => !disabled && setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-2xl border transition-all text-sm outline-none cursor-pointer select-none min-h-[46px] sm:min-h-[48px] ${
+        className={`w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl border transition-all text-sm outline-none cursor-pointer select-none min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px] ${
           disabled
             ? "opacity-60 cursor-not-allowed bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800"
             : isOpen
@@ -213,16 +213,13 @@ export function CustomDatePicker({
             : "border-[var(--border-default)] bg-[var(--bg-surface)] hover:border-[var(--brand-border)]"
         }`}
       >
-        <div className="flex items-center gap-2.5 truncate">
-          <div className="w-6 h-6 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center shrink-0">
-            <CalendarIcon className="w-3.5 h-3.5" />
-          </div>
+        <div className="flex items-center gap-2 truncate flex-1 min-w-0">
           {value ? (
             <span className="font-medium text-slate-900 dark:text-slate-100 truncate">
               {formatDisplayDate(value)}
             </span>
           ) : (
-            <span className="text-slate-400 dark:text-slate-500">{placeholder}</span>
+            <span className="text-slate-400 dark:text-slate-500 truncate">{placeholder}</span>
           )}
         </div>
 
@@ -240,6 +237,7 @@ export function CustomDatePicker({
               <X className="w-3.5 h-3.5" />
             </button>
           )}
+          <CalendarIcon className="w-4 h-4 text-slate-400" />
         </div>
       </div>
 

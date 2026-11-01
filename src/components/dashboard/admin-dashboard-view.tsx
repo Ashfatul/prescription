@@ -13,6 +13,8 @@ import { ActivityLogViewer } from "@/components/dashboard/activity-log-viewer";
 import { AnnouncementsManager } from "@/components/dashboard/announcements-manager";
 import { AnnouncementsBanner } from "@/components/dashboard/announcements-banner";
 import { ClinicalChat } from "@/components/dashboard/clinical-chat";
+import { TrialCountdownBanner } from "@/components/dashboard/trial-countdown-banner";
+import { ClinicSubscriptionView } from "@/components/dashboard/clinic-subscription-view";
 import { useAuth } from "@/lib/auth/auth-context";
 import {
   Users,
@@ -57,6 +59,7 @@ type TabKey =
   | "settings"
   | "organizations"
   | "pricing"
+  | "billing"
   | "activity"
   | "announcements"
   | "chat";
@@ -83,6 +86,8 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
       ? "organizations"
       : urlTab === "pricing"
       ? "pricing"
+      : urlTab === "billing"
+      ? "billing"
       : urlTab === "activity"
       ? "activity"
       : urlTab === "announcements"
@@ -93,6 +98,9 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
 
   return (
     <div className="space-y-6">
+      {/* Live Free Trial Countdown Banner */}
+      <TrialCountdownBanner />
+
       {/* Overview View */}
       {activeTab === "overview" && (
         <div className="space-y-6">
@@ -405,6 +413,9 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
 
       {/* SaaS Product Pricing Plans Tab */}
       {activeTab === "pricing" && <SaasPricingManager />}
+
+      {/* Clinic SaaS Subscription & Billing Tab */}
+      {activeTab === "billing" && <ClinicSubscriptionView />}
 
       {/* System Activity Audit Log Tab */}
       {activeTab === "activity" && <ActivityLogViewer />}

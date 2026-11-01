@@ -145,7 +145,7 @@ export function PricingSection({ initialPlans }: { initialPlans: PricingPlanProp
 
                 <div className="pt-4 border-t border-[var(--border-subtle)] space-y-2">
                   <Link
-                    href="/auth/register"
+                    href={`/auth/register?type=clinic&plan=${plan.id}`}
                     className={`w-full py-3.5 px-4 rounded-2xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer ${
                       plan.isPopular
                         ? "bg-[var(--brand-primary)] text-white hover:opacity-95 shadow-md"

@@ -3,6 +3,11 @@
 import { useEffect, useState, useTransition } from "react";
 import { CustomSelect } from "@/components/common/custom-select";
 
+const inputClasses =
+  "w-full px-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]";
+const textareaClasses =
+  "w-full px-4 py-3 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all resize-none";
+
 interface MedicineItem {
   id: string;
   name: string;
@@ -338,7 +343,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={activeTab === "medicines" ? "Search by brand, strength, or use..." : "Search tests or preparation instructions..."}
-              className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[var(--brand-primary)]"
+              className="w-full pl-10 pr-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
             />
           </div>
 
@@ -497,7 +502,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                     value={medName}
                     onChange={(e) => setMedName(e.target.value)}
                     placeholder="e.g. Maxpro, Napa Extra"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-sm focus:border-[var(--brand-primary)] focus:outline-none"
+                    className={inputClasses}
                   />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
@@ -532,7 +537,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                   value={medDosage}
                   onChange={(e) => setMedDosage(e.target.value)}
                   placeholder="e.g. 20mg, 500mg + 65mg, 100ml"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-sm focus:border-[var(--brand-primary)] focus:outline-none"
+                  className={inputClasses}
                 />
               </div>
 
@@ -545,7 +550,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                   value={medInstructions}
                   onChange={(e) => setMedInstructions(e.target.value)}
                   placeholder="e.g. 1 capsule 30 minutes before breakfast & dinner"
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs focus:border-[var(--brand-primary)] focus:outline-none"
+                  className={textareaClasses}
                 />
               </div>
 
@@ -604,7 +609,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                   value={testName}
                   onChange={(e) => setTestName(e.target.value)}
                   placeholder="e.g. CBC with ESR, Echocardiogram"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-sm focus:border-[var(--brand-primary)] focus:outline-none"
+                  className={inputClasses}
                 />
               </div>
 
@@ -617,7 +622,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                   value={testInstructions}
                   onChange={(e) => setTestInstructions(e.target.value)}
                   placeholder="e.g. 10-12 hours overnight fasting mandatory, clean catch mid-stream urine"
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs focus:border-[var(--brand-primary)] focus:outline-none"
+                  className={textareaClasses}
                 />
               </div>
 

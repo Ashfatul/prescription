@@ -25,6 +25,7 @@ import {
   Building2,
   Megaphone,
   CreditCard,
+  Sparkles,
   ShieldAlert,
   Microscope,
   MessageSquare,
@@ -85,6 +86,13 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             href: "/dashboard/admin",
             tabKey: "main",
             icon: <BarChart3 className="w-4 h-4" />,
+          },
+          {
+            section: "Multi-Clinic SaaS",
+            label: "Subscription & Billing",
+            href: "/dashboard/admin?tab=billing",
+            tabKey: "billing",
+            icon: <Sparkles className="w-4 h-4" />,
           },
           {
             section: "Multi-Clinic SaaS",
@@ -399,7 +407,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
             Appearance
           </span>
-          <ThemeCustomizer compact />
+          <ThemeCustomizer compact direction="up" align="right" />
         </div>
 
         {/* User Card */}
@@ -516,7 +524,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           <div className="flex items-center gap-3">
             <NotificationBell />
             <LanguageToggle />
-            <ThemeCustomizer compact />
+            <ThemeCustomizer compact direction="down" align="right" />
             <div className="w-px h-6 bg-slate-200 dark:bg-slate-800" />
             <div className="flex items-center gap-2.5 pl-1">
               <div className="w-8 h-8 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] font-bold text-xs flex items-center justify-center">
