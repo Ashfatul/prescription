@@ -3,7 +3,9 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { Calendar } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { AppointmentBookingModal } from "@/components/appointments/appointment-booking-modal";
 
 type ScheduleData = {
   days?: string[] | string;
@@ -58,6 +60,8 @@ function formatSchedule(schedule: ScheduleData | null | undefined): string | nul
 
 export function DoctorList() {
   const [doctors, setDoctors] = useState<PublicDoctor[]>([]);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [selectedDoctorForBooking, setSelectedDoctorForBooking] = useState<string | undefined>(undefined);
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -176,9 +180,27 @@ export function DoctorList() {
                 Queue Active
               </span>
             </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedDoctorForBooking(doctor.id);
+                setIsBookingModalOpen(true);
+              }}
+              className="w-full mt-3 py-2 px-3 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-90 transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              <span>Book Consultation</span>
+            </button>
           </motion.div>
         );
       })}
+
+      <AppointmentBookingModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+        initialDoctorId={selectedDoctorForBooking}
+      />
     </div>
   );
 }

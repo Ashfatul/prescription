@@ -3,8 +3,8 @@ import { z } from "zod";
 
 export const appointmentSchema = z.object({
   doctorId: z.string().min(1),
-  patientId: z.string().min(1),
-  appointmentDate: z.string().datetime(),
+  patientId: z.string().min(1).optional(),
+  appointmentDate: z.string().min(1),
   notes: z.string().optional(),
 });
 

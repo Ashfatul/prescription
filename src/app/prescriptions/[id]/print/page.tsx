@@ -106,6 +106,7 @@ export default async function PrintablePrescriptionPage({
       patient: { include: { user: true } },
       template: true,
       appointment: true,
+      attachments: { include: { file: true } },
     },
   });
 
@@ -519,6 +520,29 @@ export default async function PrintablePrescriptionPage({
                     <span className="rounded bg-teal-50 px-2 py-0.5 text-teal-800 print:bg-transparent print:p-0">
                       {clinicalInfo.followUp}
                     </span>
+                  </div>
+                )}
+
+                {/* Attached Lab Reports & Documents */}
+                {prescription.attachments && prescription.attachments.length > 0 && (
+                  <div className="mt-6 rounded-xl border border-zinc-200/80 bg-zinc-50/70 p-3.5 print:bg-transparent print:border-zinc-300">
+                    <h4 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
+                      📎 Attached Diagnostic Reports & Records ({prescription.attachments.length})
+                    </h4>
+                    <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                      {prescription.attachments.map((att) => (
+                        <a
+                          key={att.id}
+                          href={att.file.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-300 bg-white font-medium hover:border-zinc-400 text-zinc-800"
+                        >
+                          <span>📄 {att.file.originalName}</span>
+                          <span className="text-[10px] text-zinc-400 font-mono">↗</span>
+                        </a>
+                      ))}
+                    </div>
                   </div>
                 )}
               </section>

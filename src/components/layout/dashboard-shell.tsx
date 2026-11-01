@@ -20,6 +20,7 @@ import {
   UserCog,
   FileText,
   Compass,
+  ClipboardList,
 } from "lucide-react";
 
 interface DashboardShellProps {
@@ -60,6 +61,13 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
   const navItems: NavItem[] = [
     ...(role === RoleName.SUPER_ADMIN || role === RoleName.STAFF
       ? [
+          {
+            section: "Front Desk & Triage",
+            label: "Reception Desk",
+            href: "/dashboard/staff",
+            tabKey: "reception",
+            icon: <ClipboardList className="w-4 h-4" />,
+          },
           {
             section: "System Overview",
             label: "System Analytics",
@@ -241,11 +249,10 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
               <div className="space-y-0.5">
                 {items.map((item) => {
                   const isBaseMatch = pathname === item.href.split("?")[0];
-                  const isTabMatch =
-                    item.tabKey === "main"
-                      ? activeTab === "main" && isBaseMatch
-                      : activeTab === item.tabKey;
-                  const isActive = isBaseMatch && isTabMatch;
+                  const hasQuery = item.href.includes("?");
+                  const isActive = hasQuery
+                    ? isBaseMatch && activeTab === item.tabKey
+                    : isBaseMatch;
 
                   return (
                     <Link

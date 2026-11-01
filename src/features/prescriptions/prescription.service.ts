@@ -19,6 +19,7 @@ export async function listPrescriptions(options: ListOptions) {
         doctor: { include: { user: true } },
         patient: { include: { user: true } },
         template: true,
+        attachments: { include: { file: true } },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -31,6 +32,7 @@ export async function listPrescriptions(options: ListOptions) {
         doctor: { include: { user: true } },
         patient: { include: { user: true } },
         template: true,
+        attachments: { include: { file: true } },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -41,6 +43,7 @@ export async function listPrescriptions(options: ListOptions) {
       doctor: { include: { user: true } },
       patient: { include: { user: true } },
       template: true,
+      attachments: { include: { file: true } },
     },
     orderBy: { createdAt: "desc" },
   });

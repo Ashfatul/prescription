@@ -44,9 +44,34 @@ export async function listAppointments(options: ListOptions) {
   });
 }
 
-export async function createAppointment(input: unknown) {
+export async function createAppointment(
+  input: unknown,
+  authUser?: { role: RoleName; userId: string }
+) {
   const data = appointmentSchema.parse(input);
   const appointmentDate = new Date(data.appointmentDate);
+
+  if (isNaN(appointmentDate.getTime())) {
+    throw new AppError("Invalid appointment date", 400);
+  }
+
+  let finalPatientId = data.patientId;
+
+  if (!finalPatientId && authUser) {
+    let patient = await db.patient.findUnique({
+      where: { userId: authUser.userId },
+    });
+    if (!patient && authUser.role === RoleName.PATIENT) {
+      patient = await db.patient.create({
+        data: { userId: authUser.userId },
+      });
+    }
+    finalPatientId = patient?.id;
+  }
+
+  if (!finalPatientId) {
+    throw new AppError("Patient identification is required to book an appointment", 400);
+  }
 
   const maxToday = await db.appointment.findFirst({
     where: {
@@ -67,7 +92,7 @@ export async function createAppointment(input: unknown) {
   return db.appointment.create({
     data: {
       doctorId: data.doctorId,
-      patientId: data.patientId,
+      patientId: finalPatientId,
       appointmentDate,
       serialNumber: serial,
       notes: data.notes,

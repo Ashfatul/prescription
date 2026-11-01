@@ -13,7 +13,13 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   return withErrorHandling(req, async () => {
-    await requireUser(req);
-    return ok(await createAppointment(await req.json()), 201);
+    const auth = await requireUser(req);
+    return ok(
+      await createAppointment(await req.json(), {
+        role: auth.role,
+        userId: auth.sub,
+      }),
+      201
+    );
   });
 }

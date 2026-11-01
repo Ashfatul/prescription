@@ -5,7 +5,11 @@ import { requirePageUser } from "@/lib/auth/page-auth";
 export default async function DashboardPage() {
   const user = await requirePageUser();
 
-  if (user.role.name === RoleName.SUPER_ADMIN || user.role.name === RoleName.STAFF) {
+  if (user.role.name === RoleName.STAFF) {
+    redirect("/dashboard/staff");
+  }
+
+  if (user.role.name === RoleName.SUPER_ADMIN) {
     redirect("/dashboard/admin");
   }
 

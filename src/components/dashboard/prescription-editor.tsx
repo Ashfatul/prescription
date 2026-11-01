@@ -2,6 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import {
+  Paperclip,
+  Upload,
+  Trash2,
+  FileText,
+  AlertCircle,
+  ExternalLink,
+} from "lucide-react";
 import { SearchableSelect, SelectOption } from "@/components/common/searchable-select";
 import { PrescriptionPreviewModal } from "@/components/dashboard/prescription-preview-modal";
 
@@ -173,6 +181,52 @@ export function PrescriptionEditor({
   );
   const [followUp, setFollowUp] = useState("After 7 days with investigation reports");
   const [notes, setNotes] = useState("");
+
+  // Attachments
+  const [attachments, setAttachments] = useState<
+    { id: string; name: string; url: string; fileType: string }[]
+  >([]);
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
+  const [attachmentError, setAttachmentError] = useState<string | null>(null);
+
+  const handleUploadAttachment = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingAttachment(true);
+    setAttachmentError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/files/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to upload attachment");
+      }
+
+      setAttachments((prev) => [
+        ...prev,
+        {
+          id: data.data.id,
+          name: data.data.originalName || file.name,
+          url: data.data.url,
+          fileType: data.data.fileType,
+        },
+      ]);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to upload file";
+      setAttachmentError(msg);
+    } finally {
+      setUploadingAttachment(false);
+      e.target.value = "";
+    }
+  };
 
   // State
   const [submitting, setSubmitting] = useState(false);
@@ -389,6 +443,7 @@ export function PrescriptionEditor({
         contactNumber: docContact,
       },
       notes,
+      attachmentIds: attachments.map((a) => a.id),
     };
 
     try {
@@ -430,6 +485,7 @@ export function PrescriptionEditor({
     setComplaints("");
     setDiagnosis("");
     setNotes("");
+    setAttachments([]);
   };
 
   return (
@@ -1081,6 +1137,73 @@ export function PrescriptionEditor({
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Section 7: Diagnostic Lab Reports & Document Attachments */}
+        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-xs space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)] flex items-center gap-1.5">
+              <Paperclip className="w-3.5 h-3.5" />
+              <span>7. Diagnostic Lab Reports & Medical Attachments</span>
+            </span>
+            <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold cursor-pointer transition shadow-xs">
+              <Upload className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
+              <span>{uploadingAttachment ? "Uploading..." : "Upload Document / Scan"}</span>
+              <input
+                type="file"
+                accept="image/*,.pdf,.doc,.docx"
+                onChange={handleUploadAttachment}
+                disabled={uploadingAttachment}
+                className="hidden"
+              />
+            </label>
+          </div>
+
+          {attachmentError && (
+            <div className="p-3 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{attachmentError}</span>
+            </div>
+          )}
+
+          {attachments.length === 0 ? (
+            <p className="text-xs text-slate-400 py-3 text-center bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+              No diagnostic files attached. You can attach patient lab reports, X-Rays, or clinical summaries (PDF, Images up to 5MB).
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {attachments.map((att, idx) => (
+                <div
+                  key={att.id}
+                  className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 text-xs"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <FileText className="w-4 h-4 text-[var(--brand-primary)] shrink-0" />
+                    <span className="font-semibold text-slate-800 dark:text-slate-200 truncate">
+                      {att.name}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <a
+                      href={att.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="p-1 rounded-lg text-slate-400 hover:text-[var(--brand-primary)] cursor-pointer"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setAttachments((prev) => prev.filter((_, i) => i !== idx))}
+                      className="p-1 rounded-lg text-red-400 hover:text-red-600 cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Submit Bar */}

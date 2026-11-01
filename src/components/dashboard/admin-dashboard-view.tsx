@@ -6,7 +6,17 @@ import { TemplateManager } from "@/components/dashboard/template-manager";
 import { CatalogManager } from "@/components/dashboard/catalog-manager";
 import { UserManager } from "@/components/dashboard/user-manager";
 import { RolePermissionManager } from "@/components/dashboard/role-permission-manager";
-import { Users, Pill, FileCode2, Shield, ArrowRight, UserPlus } from "lucide-react";
+import {
+  Users,
+  Pill,
+  FileCode2,
+  Shield,
+  ArrowRight,
+  UserPlus,
+  Activity,
+  TrendingUp,
+  Stethoscope,
+} from "lucide-react";
 
 interface AdminDashboardViewProps {
   stats: {
@@ -15,6 +25,9 @@ interface AdminDashboardViewProps {
     patients: number;
     appointments: number;
     prescriptions: number;
+    topMedicines?: Array<{ name: string; count: number; percentage: number }>;
+    topDiagnoses?: Array<{ name: string; count: number; percentage: number }>;
+    sampleSize?: number;
   };
   users: Array<{
     id: string;
@@ -95,6 +108,121 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Clinical Intelligence: Top Prescribed Drugs & Prevalent Diagnoses */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Top Prescribed Medications */}
+            <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+                    <TrendingUp className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-[var(--text-primary)]">
+                      Top Prescribed Drugs
+                    </h3>
+                    <p className="text-[11px] text-[var(--text-muted)]">
+                      Most frequent medications issued across all clinical chambers
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--brand-surface)] text-[var(--brand-text)]">
+                  Formulary Insights
+                </span>
+              </div>
+
+              {stats.topMedicines && stats.topMedicines.length > 0 ? (
+                <div className="space-y-3">
+                  {stats.topMedicines.map((item, idx) => (
+                    <div key={item.name} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-[var(--text-primary)] flex items-center gap-1.5">
+                          <span className="text-[10px] text-[var(--text-muted)] font-mono">{idx + 1}.</span>
+                          <span>{item.name}</span>
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[11px] font-bold text-[var(--brand-text)]">
+                            {item.count} prescriptions
+                          </span>
+                          <span className="text-[10px] font-semibold text-[var(--text-muted)]">
+                            ({item.percentage}%)
+                          </span>
+                        </div>
+                      </div>
+                      <div className="w-full h-2 rounded-full bg-[var(--bg-subtle)] overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-[var(--brand-primary)] transition-all duration-500"
+                          style={{ width: `${Math.max(item.percentage, 8)}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-8 text-center text-xs text-[var(--text-muted)]">
+                  <Activity className="w-6 h-6 mx-auto mb-1 opacity-40" />
+                  <span>No prescription medication data recorded yet.</span>
+                </div>
+              )}
+            </div>
+
+            {/* Prevalent Clinical Diagnoses */}
+            <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                    <Stethoscope className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-[var(--text-primary)]">
+                      Prevalent Diagnoses
+                    </h3>
+                    <p className="text-[11px] text-[var(--text-muted)]">
+                      Primary clinical conditions recorded by physicians
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
+                  Epidemiology
+                </span>
+              </div>
+
+              {stats.topDiagnoses && stats.topDiagnoses.length > 0 ? (
+                <div className="space-y-3">
+                  {stats.topDiagnoses.map((item, idx) => (
+                    <div key={item.name} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-[var(--text-primary)] flex items-center gap-1.5 truncate max-w-[220px]">
+                          <span className="text-[10px] text-[var(--text-muted)] font-mono">{idx + 1}.</span>
+                          <span className="truncate">{item.name}</span>
+                        </span>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400">
+                            {item.count} cases
+                          </span>
+                          <span className="text-[10px] font-semibold text-[var(--text-muted)]">
+                            ({item.percentage}%)
+                          </span>
+                        </div>
+                      </div>
+                      <div className="w-full h-2 rounded-full bg-[var(--bg-subtle)] overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-blue-500 transition-all duration-500"
+                          style={{ width: `${Math.max(item.percentage, 8)}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-8 text-center text-xs text-[var(--text-muted)]">
+                  <Activity className="w-6 h-6 mx-auto mb-1 opacity-40" />
+                  <span>No clinical diagnoses recorded yet.</span>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Quick Management Hub Cards */}
