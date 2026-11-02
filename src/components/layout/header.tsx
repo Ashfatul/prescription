@@ -188,31 +188,31 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                   </span>
                 </div>
               </Link>
+              {/* Center: Streamlined Menu Button - Triggers Directory Takeover */}
+              <div className="flex items-center">
+                {/* Modern "Menu" Button with Icon - Triggers Full-Screen Menu */}
+                <button
+                  type="button"
+                  onClick={toggleMenu}
+                  className={`flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl text-xs font-bold transition-all border shadow-2xs cursor-pointer group ${
+                    menuOpen && !isClosing
+                      ? "bg-[var(--brand-primary)] text-white border-[var(--brand-primary)] shadow-sm"
+                      : "bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] text-slate-800 dark:text-slate-200 hover:text-[var(--brand-text)] border-[var(--border-subtle)] hover:border-[var(--brand-border)]"
+                  }`}
+                  aria-label="Toggle navigation directory menu"
+                  aria-expanded={menuOpen && !isClosing}
+                >
+                  <div className={`w-5 h-5 rounded-lg flex items-center justify-center transition-transform duration-200 group-hover:scale-110 ${
+                    menuOpen && !isClosing ? "bg-white/20 text-white" : "bg-[var(--brand-surface)] text-[var(--brand-text)]"
+                  }`}>
+                    {menuOpen && !isClosing ? <X className="w-3.5 h-3.5" /> : <Menu className="w-3.5 h-3.5" />}
+                  </div>
+                  <span className="tracking-tight">Menu</span>
+                  <ChevronDown className={`w-3.5 h-3.5 opacity-60 transition-transform duration-200 ${menuOpen && !isClosing ? "rotate-180" : ""}`} />
+                </button>
+              </div>
             </div>
 
-            {/* Center: Streamlined Menu Button - Triggers Directory Takeover */}
-            <div className="flex items-center">
-              {/* Modern "Menu" Button with Icon - Triggers Full-Screen Menu */}
-              <button
-                type="button"
-                onClick={toggleMenu}
-                className={`flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl text-xs font-bold transition-all border shadow-2xs cursor-pointer group ${
-                  menuOpen && !isClosing
-                    ? "bg-[var(--brand-primary)] text-white border-[var(--brand-primary)] shadow-sm"
-                    : "bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] text-slate-800 dark:text-slate-200 hover:text-[var(--brand-text)] border-[var(--border-subtle)] hover:border-[var(--brand-border)]"
-                }`}
-                aria-label="Toggle navigation directory menu"
-                aria-expanded={menuOpen && !isClosing}
-              >
-                <div className={`w-5 h-5 rounded-lg flex items-center justify-center transition-transform duration-200 group-hover:scale-110 ${
-                  menuOpen && !isClosing ? "bg-white/20 text-white" : "bg-[var(--brand-surface)] text-[var(--brand-text)]"
-                }`}>
-                  {menuOpen && !isClosing ? <X className="w-3.5 h-3.5" /> : <Menu className="w-3.5 h-3.5" />}
-                </div>
-                <span className="tracking-tight">Menu</span>
-                <ChevronDown className={`w-3.5 h-3.5 opacity-60 transition-transform duration-200 ${menuOpen && !isClosing ? "rotate-180" : ""}`} />
-              </button>
-            </div>
 
             {/* Right: Controls & User Authentication */}
             <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">

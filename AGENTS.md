@@ -39,6 +39,49 @@ Welcome to the **Patient Prescription Management System (PPMS)** codebase. This 
   5. `slate` (clean monochrome slate)
 - Always use `var(--brand-primary)`, `var(--brand-surface)`, and `var(--brand-text)` when styling active tabs, submit buttons, badges, and focus rings so user customizations reflect universally.
 
+### 1.4 Strict Standard: Common Selector Everywhere (Zero Native `<select>` Rule)
+- **STRICT PROHIBITION**: Never use raw, unstyled native HTML `<select>` elements anywhere in the application.
+- **Rule**: All select dropdowns, directory filters, sort controls, modal dropdowns, and form inputs MUST use `CustomSelect` (or `SearchableSelect`) imported from `@/components/common/custom-select`.
+- **Sizes**:
+  - `size="md"` (default): For standard form fields and modal inputs (`min-h-[46px] sm:min-h-[48px]`, `text-sm`).
+  - `size="sm"`: For toolbar strips, directory search bars, and compact filter bars (`min-h-[38px] h-[38px]`, `text-xs`).
+- **Options & Clearing**:
+  - Mandatory / Sort selections: pass `allowClear={false}` so selections cannot be accidentally cleared to an empty string.
+  - Search toggle: set `searchable={false}` for short lists (<= 5 items); set `searchable={true}` for large rosters.
+- **Standard Usage Pattern**:
+  ```tsx
+  import { CustomSelect } from "@/components/common/custom-select";
+
+  // In a form row:
+  <CustomSelect
+    label="Follow-up Validity"
+    value={validityDays}
+    onChange={(val) => setValidityDays(val)}
+    options={[
+      { value: "30", label: "30 Days (1 Month)" },
+      { value: "60", label: "60 Days (2 Months)" },
+      { value: "90", label: "90 Days (3 Months)" },
+    ]}
+    allowClear={false}
+    searchable={false}
+  />
+
+  // In a toolbar / filter strip:
+  <div className="w-48">
+    <CustomSelect
+      size="sm"
+      value={sortBy}
+      onChange={(val) => setSortBy(val)}
+      options={[
+        { value: "recent", label: "Recently Added" },
+        { value: "alpha", label: "Alphabetical (A - Z)" },
+      ]}
+      allowClear={false}
+      searchable={false}
+    />
+  </div>
+  ```
+
 ---
 
 ## 2. Doctor Ergonomics & Fast Prescribing Principles
@@ -80,6 +123,7 @@ Doctors operate under intense time constraints. The prescription writing process
 ## 4. Technical Stack & Conventions
 
 - **Framework**: Next.js 16.2.4 (App Router) + React 19 + TypeScript.
+- **PWA & Mobile**: Progressive Web App with `manifest.ts` (`/manifest.webmanifest`), `public/sw.js` offline caching, and complete favicon suite (`public/icons/`).
 - **Styling**: Tailwind CSS v4 (`@import "tailwindcss"; @theme inline;`).
 - **Database**: PostgreSQL with Prisma ORM (`prisma/schema.prisma`).
 - **Authentication**: JWT cookies (`ppms_session`), role-based authorization (`SUPER_ADMIN`, `DOCTOR`, `PATIENT`, `STAFF`).
@@ -95,5 +139,6 @@ Doctors operate under intense time constraints. The prescription writing process
 Before completing any task modifying UI or backend:
 1. `npx tsc --noEmit` must pass with 0 errors.
 2. `npm run lint` must pass with 0 errors.
-3. Test both **Light Mode** and **Dark Mode** to ensure no illegible text, unstyled borders, or jarring white/black patches.
-4. Confirm responsive behavior across mobile, tablet, and desktop viewports.
+3. Confirm zero native `<select>` tags (`git grep "<select"` must return 0 results). Always use `CustomSelect`.
+4. Test both **Light Mode** and **Dark Mode** to ensure no illegible text, unstyled borders, or jarring white/black patches.
+5. Confirm responsive behavior across mobile, tablet, and desktop viewports.

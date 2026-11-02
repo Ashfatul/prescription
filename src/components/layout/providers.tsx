@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { ThemeProvider } from "next-themes";
 import { LanguageProvider } from "@/lib/i18n/language-context";
 import { AuthProvider, AuthUser } from "@/lib/auth/auth-context";
+import { PwaRegister } from "@/components/common/pwa-register";
 
 // Suppress React 19 false-positive warning for theme scripts
 if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
@@ -56,6 +57,7 @@ export function Providers({
       <LanguageProvider>
         <AuthProvider initialUser={initialUser}>
           <AccentSync initialAccent={initialAccent} />
+          <PwaRegister />
           {children}
         </AuthProvider>
       </LanguageProvider>
