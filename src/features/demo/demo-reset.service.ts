@@ -6,6 +6,16 @@ export const DEMO_CLINIC_SLUG = "ppms-clinic";
 export const DEMO_CLINIC_NAME = "PPMS Clinic";
 export const DEMO_RESET_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
 
+export const DEMO_ACCOUNT_EMAILS = [
+  "admin@ppms.local",
+  "clinic.admin@ppms.local",
+  "doctor@ppms.local",
+  "staff@ppms.local",
+  "patient@ppms.local",
+  "kamal.demo@ppms.local",
+  "sadia.demo@ppms.local",
+];
+
 export function isDemoModeActive(): boolean {
   return process.env.NEXT_PUBLIC_DEMO_MODE === "true" || process.env.DEMO_MODE === "true";
 }
@@ -105,9 +115,14 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
     where: { email: "admin@ppms.local" },
     update: {
       name: "Super Admin",
+      passwordHash,
       organizationId: demoOrg.id,
       isDemo: true,
       emailVerified: now,
+      isApproved: true,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: [],
     },
     create: {
       name: "Super Admin",
@@ -117,6 +132,10 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
       organizationId: demoOrg.id,
       isDemo: true,
       emailVerified: now,
+      isApproved: true,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: [],
     },
   });
 
@@ -125,9 +144,14 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
     where: { email: "clinic.admin@ppms.local" },
     update: {
       name: "PPMS Clinic Admin",
+      passwordHash,
       organizationId: demoOrg.id,
       isDemo: true,
       emailVerified: now,
+      isApproved: true,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: [],
     },
     create: {
       name: "PPMS Clinic Admin",
@@ -137,6 +161,10 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
       organizationId: demoOrg.id,
       isDemo: true,
       emailVerified: now,
+      isApproved: true,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: [],
     },
   });
 
@@ -145,9 +173,14 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
     where: { email: "staff@ppms.local" },
     update: {
       name: "PPMS Front Desk Staff",
+      passwordHash,
       organizationId: demoOrg.id,
       isDemo: true,
       emailVerified: now,
+      isApproved: true,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: [],
     },
     create: {
       name: "PPMS Front Desk Staff",
@@ -157,6 +190,10 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
       organizationId: demoOrg.id,
       isDemo: true,
       emailVerified: now,
+      isApproved: true,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: [],
     },
   });
 
@@ -165,10 +202,15 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
     where: { email: "doctor@ppms.local" },
     update: {
       name: "Dr. Fahim Rahman",
+      passwordHash,
       imageUrl: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80",
       organizationId: demoOrg.id,
       isDemo: true,
       emailVerified: now,
+      isApproved: true,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: [],
     },
     create: {
       name: "Dr. Fahim Rahman",
@@ -179,6 +221,10 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
       organizationId: demoOrg.id,
       isDemo: true,
       emailVerified: now,
+      isApproved: true,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: [],
     },
   });
 
@@ -231,8 +277,14 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
     where: { email: "patient@ppms.local" },
     update: {
       name: "Nusrat Jahan",
+      passwordHash,
       organizationId: demoOrg.id,
       isDemo: true,
+      emailVerified: now,
+      isApproved: true,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: [],
       phone: "+880 1712-345678",
     },
     create: {
@@ -242,6 +294,11 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
       roleId: roleByName.PATIENT,
       organizationId: demoOrg.id,
       isDemo: true,
+      emailVerified: now,
+      isApproved: true,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: [],
       phone: "+880 1712-345678",
     },
   });
@@ -268,8 +325,14 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
     where: { email: "kamal.demo@ppms.local" },
     update: {
       name: "Kamal Hossain",
+      passwordHash,
       organizationId: demoOrg.id,
       isDemo: true,
+      emailVerified: now,
+      isApproved: true,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: [],
       phone: "+880 1819-112233",
     },
     create: {
@@ -279,6 +342,11 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
       roleId: roleByName.PATIENT,
       organizationId: demoOrg.id,
       isDemo: true,
+      emailVerified: now,
+      isApproved: true,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: [],
       phone: "+880 1819-112233",
     },
   });
@@ -305,8 +373,14 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
     where: { email: "sadia.demo@ppms.local" },
     update: {
       name: "Sadia Akhter",
+      passwordHash,
       organizationId: demoOrg.id,
       isDemo: true,
+      emailVerified: now,
+      isApproved: true,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: [],
       phone: "+880 1913-778899",
     },
     create: {
@@ -316,6 +390,11 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
       roleId: roleByName.PATIENT,
       organizationId: demoOrg.id,
       isDemo: true,
+      emailVerified: now,
+      isApproved: true,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: [],
       phone: "+880 1913-778899",
     },
   });

@@ -9,6 +9,11 @@ import { withErrorHandling } from "@/lib/api-handler";
 import { AppError } from "@/lib/errors";
 import { logActivity } from "@/features/activity-log/activity-log.service";
 import { isEmailVerificationRequired } from "@/features/settings/settings.service";
+import {
+  isDemoModeActive,
+  DEMO_ACCOUNT_EMAILS,
+  seedOrResetDemoClinic,
+} from "@/features/demo/demo-reset.service";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -19,10 +24,19 @@ export async function POST(req: NextRequest) {
   return withErrorHandling(req, async () => {
     const body = loginSchema.parse(await req.json());
 
-    const user = await db.user.findUnique({
+    let user = await db.user.findUnique({
       where: { email: body.email },
       include: { role: true, organization: true },
     });
+
+    // Auto-heal demo clinic baseline if demo mode is enabled and a demo user is missing
+    if (!user && isDemoModeActive() && DEMO_ACCOUNT_EMAILS.includes(body.email)) {
+      await seedOrResetDemoClinic(db);
+      user = await db.user.findUnique({
+        where: { email: body.email },
+        include: { role: true, organization: true },
+      });
+    }
 
     if (!user) {
       throw new AppError("Invalid credentials", 401);
