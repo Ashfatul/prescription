@@ -11,7 +11,6 @@ import {
   CheckCircle2,
   ShieldCheck,
   Award,
-  DollarSign,
   Building2,
   Activity,
   Tv,
@@ -26,6 +25,8 @@ import { Footer } from "@/components/layout/footer";
 import { getCurrentUserFromCookie } from "@/lib/auth/session";
 import { getDoctorQueue } from "@/features/doctors/doctor.service";
 import { DoctorBookingButton } from "./doctor-booking-button";
+import { DoctorScheduleDisplay } from "@/components/doctors/doctor-schedule-display";
+import { ScheduleData } from "@/lib/doctor-schedule";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -340,14 +341,13 @@ export default async function DoctorDetailPage({ params }: Props) {
             </div>
 
             <div className="space-y-3 text-xs">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
-                  Chamber Days & Time:
-                </span>
-                <p className="font-semibold text-slate-800 dark:text-slate-200">
-                  {doctor.visitingHours || "Sat - Thu: 5:00 PM - 9:00 PM (Weekly)"}
-                </p>
-              </div>
+              <DoctorScheduleDisplay
+                schedule={doctor.scheduleJson as ScheduleData | null}
+                visitingHours={doctor.visitingHours}
+                chamber={doctor.chamberAddress}
+                compact={false}
+                showEmergencyNotice={true}
+              />
 
               {doctor.chamberAddress && (
                 <div>
@@ -361,17 +361,47 @@ export default async function DoctorDetailPage({ params }: Props) {
                 </div>
               )}
 
-              {doctor.consultationFee && (
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
-                    Consultation Fee:
-                  </span>
-                  <p className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                    <DollarSign className="w-3.5 h-3.5" />
-                    <span>{doctor.consultationFee}</span>
-                  </p>
+              {/* Multi-Tier Consultation Fee & Visiting Policy */}
+              <div className="pt-2 border-t border-[var(--border-subtle)] space-y-2.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                  Consultation Fees & Policy:
+                </span>
+                
+                <div className="space-y-1.5 rounded-2xl bg-[var(--bg-subtle)] p-3 border border-[var(--border-subtle)]">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-slate-600 dark:text-slate-400">First Visit / New:</span>
+                    <span className="font-extrabold text-slate-900 dark:text-white font-mono">
+                      ${doctor.newPatientFee ?? 50}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-slate-600 dark:text-slate-400">Follow-up:</span>
+                    <span className="font-bold text-[var(--brand-text)] font-mono">
+                      ${doctor.followupFee ?? 30}{" "}
+                      <span className="text-[10px] text-slate-400 font-normal">
+                        ({doctor.followupValidityDays ?? 90}d validity)
+                      </span>
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-200/50 dark:border-slate-800/50">
+                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">Report Review:</span>
+                    <span className="font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
+                      FREE (${0}){" "}
+                      <span className="text-[10px] opacity-80 font-normal">
+                        (within {doctor.reportFreeDays ?? 2}d)
+                      </span>
+                    </span>
+                  </div>
                 </div>
-              )}
+
+                {doctor.consultationFee && (
+                  <p className="text-[11px] text-slate-500 italic">
+                    Chamber note: {doctor.consultationFee}
+                  </p>
+                )}
+              </div>
 
               {doctor.contactNumber && (
                 <div>

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Calendar,
@@ -12,6 +13,10 @@ import {
   AlertCircle,
   Plus,
   Share2,
+  Stethoscope,
+  CreditCard,
+  Loader2,
+  CheckCircle2,
 } from "lucide-react";
 import { AppointmentBookingModal } from "@/components/appointments/appointment-booking-modal";
 import { TestReportsManager } from "@/components/dashboard/test-reports-manager";
@@ -23,6 +28,31 @@ import { AnnouncementsManager } from "@/components/dashboard/announcements-manag
 import { ChangePasswordCard } from "@/components/common/change-password-card";
 import { createGoogleCalendarAppointmentUrl } from "@/lib/calendar";
 import { useAuth } from "@/lib/auth/auth-context";
+import { DoctorScheduleDisplay } from "@/components/doctors/doctor-schedule-display";
+
+export interface PatientDoctorItem {
+  id: string;
+  name: string;
+  imageUrl?: string | null;
+  specialization: string;
+  degrees?: string | null;
+  designation?: string | null;
+  hospital?: string | null;
+  chamberAddress?: string | null;
+  visitingHours?: string | null;
+  consultationFee?: string | null;
+  newPatientFee: number;
+  followupFee: number;
+  followupValidityDays: number;
+  reportFreeDays: number;
+  schedule?: {
+    days?: string[] | string;
+    startTime?: string;
+    endTime?: string;
+    hours?: string;
+    chamber?: string;
+  } | null;
+}
 
 interface AppointmentItem {
   id: string;
@@ -30,12 +60,30 @@ interface AppointmentItem {
   appointmentDate: Date | string;
   status: string;
   notes?: string | null;
+  visitType?: string | null;
+  fee?: number | null;
+  paymentStatus?: string | null;
+  paymentMethod?: string | null;
+  refundStatus?: string | null;
+  refundAmount?: number | null;
+  refundReason?: string | null;
+  cancellationReason?: string | null;
+  cancelledAt?: string | null;
+  cancelledByRole?: string | null;
+  verifiedAt?: string | null;
+  verifiedBy?: string | null;
+  verificationNotes?: string | null;
   doctor: {
+    id?: string;
     specialization: string;
     chamberAddress?: string | null;
     user: {
       name: string;
     };
+    newPatientFee?: number;
+    followupFee?: number;
+    reportFreeDays?: number;
+    cancellationWindowHours?: number;
   };
 }
 
@@ -63,12 +111,14 @@ interface PatientDashboardViewProps {
   patientName: string;
   initialAppointments: AppointmentItem[];
   prescriptions: PrescriptionItem[];
+  doctors?: PatientDoctorItem[];
 }
 
 export function PatientDashboardView({
   patientName,
   initialAppointments,
   prescriptions,
+  doctors = [],
 }: PatientDashboardViewProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -76,13 +126,119 @@ export function PatientDashboardView({
   const activeTab = searchParams.get("tab") || "overview";
 
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [bookingDoctorId, setBookingDoctorId] = useState<string | undefined>(undefined);
   const [selectedSlip, setSelectedSlip] = useState<AppointmentItem | null>(null);
   const [selectedHistoryPrescription, setSelectedHistoryPrescription] = useState<PrescriptionItem | null>(null);
   const [sharingPrescriptionId, setSharingPrescriptionId] = useState<string | null>(null);
-  const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [nowTimestamp] = useState(() => Date.now());
+  const [cancellationTarget, setCancellationTarget] = useState<AppointmentItem | null>(null);
+  const [cancellationReason, setCancellationReason] = useState("");
+  const [cancellationSubmitting, setCancellationSubmitting] = useState(false);
+  const [cancellationError, setCancellationError] = useState<string | null>(null);
   const [generatingRemindersId, setGeneratingRemindersId] = useState<string | null>(null);
   const [reminderMessage, setReminderMessage] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [payingAppointmentId, setPayingAppointmentId] = useState<string | null>(null);
+  const [paymentBanner, setPaymentBanner] = useState<{
+    type: "success" | "canceled" | "error" | "verifying";
+    message: string;
+  } | null>(null);
+
+  const isStripePaidReturn = searchParams.get("paid") === "true" && Boolean(searchParams.get("appointment_id"));
+  const isStripeCanceledReturn = searchParams.get("canceled") === "true";
+
+  // Active banner combines dynamic state or query param feedback
+  const activeBanner =
+    paymentBanner ||
+    (isStripePaidReturn
+      ? {
+          type: "verifying" as const,
+          message: "Verifying your consultation fee with Stripe...",
+        }
+      : isStripeCanceledReturn
+      ? {
+          type: "canceled" as const,
+          message:
+            "Stripe checkout was canceled. You can pay your consultation fee anytime from your appointments list below.",
+        }
+      : null);
+
+  // Capture Stripe Checkout Redirect (paid=true) and auto-verify
+  useEffect(() => {
+    const paidParam = searchParams.get("paid");
+    const apptId = searchParams.get("appointment_id");
+    const sessionId = searchParams.get("session_id");
+
+    if (paidParam !== "true" || !apptId) return;
+
+    let isMounted = true;
+
+    fetch(`/api/appointments/${apptId}/verify-payment`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId: sessionId || undefined }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!isMounted) return;
+        if (data.success) {
+          setPaymentBanner({
+            type: "success",
+            message: "Payment successfully verified via Stripe! Your appointment serial ticket is officially locked.",
+          });
+          router.refresh();
+        } else {
+          setPaymentBanner({
+            type: "error",
+            message: data.message || "Failed to verify Stripe payment.",
+          });
+        }
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setPaymentBanner({
+          type: "error",
+          message: "Network error communicating with payment verification server.",
+        });
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [searchParams, router]);
+
+  const handlePayWithStripe = async (appointmentId: string) => {
+    setPayingAppointmentId(appointmentId);
+    setActionError(null);
+
+    try {
+      const res = await fetch(`/api/appointments/${appointmentId}/checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success || !data.data?.url) {
+        throw new Error(data.message || "Failed to initiate Stripe checkout");
+      }
+
+      window.location.assign(data.data.url);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to initiate Stripe checkout";
+      setActionError(msg);
+      setPayingAppointmentId(null);
+    }
+  };
+
+  const openBooking = (doctorId?: string) => {
+    setBookingDoctorId(doctorId);
+    setIsBookingOpen(true);
+  };
+
+  const closeBooking = () => {
+    setIsBookingOpen(false);
+    setBookingDoctorId(undefined);
+  };
 
   const handleGenerateReminders = async (rxId: string) => {
     setGeneratingRemindersId(rxId);
@@ -109,17 +265,25 @@ export function PatientDashboardView({
     router.refresh();
   };
 
-  const handleCancelAppointment = async (id: string) => {
-    if (!confirm("Are you sure you want to cancel this appointment serial?")) return;
+  const handleOpenCancellationModal = (item: AppointmentItem) => {
+    setCancellationTarget(item);
+    setCancellationReason("");
+    setCancellationError(null);
+  };
 
-    setCancellingId(id);
-    setActionError(null);
+  const handleConfirmCancellation = async () => {
+    if (!cancellationTarget) return;
+
+    setCancellationSubmitting(true);
+    setCancellationError(null);
 
     try {
-      const res = await fetch(`/api/appointments/${id}`, {
-        method: "PATCH",
+      const res = await fetch(`/api/appointments/${cancellationTarget.id}/cancel`, {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "CANCELLED" }),
+        body: JSON.stringify({
+          reason: cancellationReason.trim() || undefined,
+        }),
       });
 
       const data = await res.json();
@@ -127,12 +291,21 @@ export function PatientDashboardView({
         throw new Error(data.message || "Failed to cancel appointment");
       }
 
+      setCancellationTarget(null);
+      setPaymentBanner({
+        type: "success",
+        message: `Appointment #${cancellationTarget.serialNumber} successfully cancelled.${
+          data.data?.refundStatus === "REFUNDED"
+            ? ` Full refund of $${data.data?.refundAmount ?? cancellationTarget.fee} has been credited to your payment method.`
+            : ""
+        }`,
+      });
       router.refresh();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Error cancelling appointment";
-      setActionError(msg);
+      setCancellationError(msg);
     } finally {
-      setCancellingId(null);
+      setCancellationSubmitting(false);
     }
   };
 
@@ -140,6 +313,51 @@ export function PatientDashboardView({
     <div className="space-y-6">
       {/* Broadcast Announcements Banner */}
       <AnnouncementsBanner />
+
+      {activeBanner && (
+        <div
+          className={`p-4 rounded-2xl border text-xs font-semibold flex items-center justify-between gap-3 animate-in fade-in ${
+            activeBanner.type === "success"
+              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-800 dark:text-emerald-200"
+              : activeBanner.type === "verifying"
+              ? "bg-blue-500/10 border-blue-500/20 text-blue-800 dark:text-blue-200"
+              : activeBanner.type === "canceled"
+              ? "bg-amber-500/10 border-amber-500/20 text-amber-800 dark:text-amber-200"
+              : "bg-rose-500/10 border-rose-500/20 text-rose-800 dark:text-rose-200"
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            {activeBanner.type === "verifying" ? (
+              <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+            ) : activeBanner.type === "success" ? (
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            ) : (
+              <AlertCircle className="w-4 h-4" />
+            )}
+            <span>{activeBanner.message}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setPaymentBanner(null)}
+            className="text-xs opacity-60 hover:opacity-100 cursor-pointer"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {actionError && (
+        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-800 dark:text-rose-200 text-xs font-semibold flex items-center justify-between gap-2">
+          <span>⚠️ {actionError}</span>
+          <button
+            type="button"
+            onClick={() => setActionError(null)}
+            className="text-xs opacity-60 hover:opacity-100 cursor-pointer"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {reminderMessage && (
         <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold animate-in fade-in">
@@ -209,7 +427,7 @@ export function PatientDashboardView({
 
         <button
           type="button"
-          onClick={() => setIsBookingOpen(true)}
+          onClick={() => openBooking()}
           className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-90 transition-all shadow-md self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
@@ -221,6 +439,119 @@ export function PatientDashboardView({
         <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{actionError}</span>
+        </div>
+      )}
+
+      {/* Available Consulting Physicians & Consultation Rates */}
+      {doctors && doctors.length > 0 && (
+        <div className="p-6 sm:p-7 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 gap-2">
+            <div className="flex items-center gap-2.5">
+              <span className="w-8 h-8 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center">
+                <Stethoscope className="w-4 h-4" />
+              </span>
+              <div>
+                <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                  Consulting Specialists & Visiting Charges
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Doctor visiting rates, follow-up discount policies, and direct appointment queue reservations
+                </p>
+              </div>
+            </div>
+
+            <Link
+              href="/doctors"
+              className="text-xs font-bold text-[var(--brand-primary)] hover:underline self-start sm:self-auto"
+            >
+              All Doctors Directory →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
+            {doctors.map((doc) => (
+              <div
+                key={doc.id}
+                className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 flex flex-col justify-between gap-3 hover:border-[var(--brand-border)] transition-all shadow-2xs"
+              >
+                <div>
+                  <div className="flex items-start gap-3">
+                    <div className="relative w-11 h-11 rounded-2xl bg-slate-200 dark:bg-slate-800 shrink-0 overflow-hidden border border-slate-300/60 dark:border-slate-700/60">
+                      {doc.imageUrl ? (
+                        <Image src={doc.imageUrl} alt={doc.name} fill className="object-cover" />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-xs font-bold text-slate-500">
+                          Dr.
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                        {doc.name}
+                      </h3>
+                      <p className="text-[11px] font-semibold text-[var(--brand-text)] truncate">
+                        {doc.specialization}
+                      </p>
+                      <p className="text-[10px] text-slate-400 truncate mt-0.5">
+                        {doc.chamberAddress || doc.hospital || "Chamber Open"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Visual Weekly Schedule Strip */}
+                  <div className="mt-3">
+                    <DoctorScheduleDisplay
+                      schedule={doc.schedule}
+                      visitingHours={doc.visitingHours}
+                      chamber={doc.chamberAddress || doc.hospital}
+                      compact={true}
+                      showEmergencyNotice={false}
+                    />
+                  </div>
+
+                  {/* Consultation Pricing Schedule */}
+                  <div className="mt-2.5 pt-2 border-t border-slate-200/70 dark:border-slate-800/70 space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-500 text-[11px]">First Visit Rate:</span>
+                      <span className="font-extrabold text-blue-700 dark:text-blue-300 font-mono">
+                        ${doc.newPatientFee}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-500 text-[11px]">
+                        Follow-up ({doc.followupValidityDays}d):
+                      </span>
+                      <span className="font-extrabold text-teal-700 dark:text-teal-300 font-mono">
+                        ${doc.followupFee}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-500 text-[11px]">
+                        Report Review:
+                      </span>
+                      <span className="font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
+                        Free ({doc.reportFreeDays}d)
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 flex items-center justify-between gap-2 border-t border-slate-200/60 dark:border-slate-800/60">
+                  <span className="text-[10px] text-slate-400 italic truncate" title="Schedule may adjust for clinical emergencies">
+                    Schedule may adjust in emergencies
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => openBooking(doc.id)}
+                    className="shrink-0 px-3.5 py-1.5 rounded-xl bg-[var(--brand-primary)] text-white text-[11px] font-bold hover:opacity-90 transition cursor-pointer flex items-center gap-1 shadow-xs"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>Book Serial</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -263,7 +594,7 @@ export function PatientDashboardView({
                   </div>
                   <button
                     type="button"
-                    onClick={() => setIsBookingOpen(true)}
+                    onClick={() => openBooking()}
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-xs font-bold hover:bg-[var(--brand-primary)] hover:text-white transition cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
@@ -309,6 +640,41 @@ export function PatientDashboardView({
                             </span>
                           </div>
 
+                          {/* Visit Type & Payment Badges */}
+                          <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                            <span
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                item.visitType === "REPORT_REVIEW"
+                                  ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20"
+                                  : item.visitType === "FOLLOWUP"
+                                  ? "bg-teal-500/10 text-teal-700 dark:text-teal-300 border border-teal-500/20"
+                                  : "bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20"
+                              }`}
+                            >
+                              {item.visitType === "REPORT_REVIEW"
+                                ? "Free Report Review ($0)"
+                                : item.visitType === "FOLLOWUP"
+                                ? `Follow-up ($${item.fee ?? 30})`
+                                : `First Visit ($${item.fee ?? 50})`}
+                            </span>
+
+                            <span
+                              className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
+                                item.paymentStatus === "PAID"
+                                  ? "bg-emerald-600 text-white"
+                                  : item.paymentStatus === "WAIVED"
+                                  ? "bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300"
+                                  : "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
+                              }`}
+                            >
+                              {item.paymentStatus === "PAID"
+                                ? `PAID (${item.paymentMethod || "Stripe"})`
+                                : item.paymentStatus === "WAIVED"
+                                ? "FEE WAIVED"
+                                : "PAYMENT PENDING"}
+                            </span>
+                          </div>
+
                           {item.notes && (
                             <p className="text-[11px] text-slate-500 mt-1 italic">
                               ↳ &quot;{item.notes}&quot;
@@ -317,62 +683,154 @@ export function PatientDashboardView({
                         </div>
 
                         <div className="flex flex-col items-end gap-2">
-                          <span
-                            className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
-                              isCompleted
-                                ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
-                                : isCancelled
-                                ? "bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-400"
-                                : "bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300"
-                            }`}
-                          >
-                            {item.status}
-                          </span>
+                          {(() => {
+                            const isPending = item.status === "PENDING";
+                            const isConfirmed = item.status === "CONFIRMED" || item.status === "BOOKED";
+                            const cutoffHours = item.doctor.cancellationWindowHours ?? 24;
+                            const apptDateObj = new Date(item.appointmentDate);
+                            const hoursRemaining = (apptDateObj.getTime() - nowTimestamp) / (1000 * 60 * 60);
+                            const canCancel = hoursRemaining >= cutoffHours;
 
-                          <div className="flex items-center gap-1">
-                            {!isCancelled && (
+                            return (
                               <>
-                                <a
-                                  href={createGoogleCalendarAppointmentUrl({
-                                    doctorName: item.doctor.user.name,
-                                    patientName,
-                                    appointmentDate: new Date(item.appointmentDate),
-                                    serialNumber: item.serialNumber,
-                                    chamberAddress: item.doctor.chamberAddress || undefined,
-                                  })}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  title="Add to Google Calendar"
-                                  className="p-1.5 rounded-lg border border-amber-200 dark:border-amber-900/50 hover:bg-amber-50 text-amber-600 dark:text-amber-400 transition cursor-pointer text-xs"
+                                <span
+                                  className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
+                                    isCompleted
+                                      ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+                                      : isCancelled
+                                      ? "bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300"
+                                      : isPending
+                                      ? "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 animate-pulse"
+                                      : "bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300"
+                                  }`}
                                 >
-                                  <Calendar className="w-3.5 h-3.5" />
-                                </a>
+                                  {isPending
+                                    ? "Pending Verification"
+                                    : isConfirmed
+                                    ? "Confirmed"
+                                    : item.status}
+                                </span>
 
-                                <button
-                                  type="button"
-                                  onClick={() => setSelectedSlip(item)}
-                                  title="View Appointment Slip"
-                                  className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition cursor-pointer text-xs"
-                                >
-                                  <Printer className="w-3.5 h-3.5" />
-                                </button>
+                                <div className="flex items-center gap-1">
+                                  {!isCancelled && (
+                                    <>
+                                      <a
+                                        href={createGoogleCalendarAppointmentUrl({
+                                          doctorName: item.doctor.user.name,
+                                          patientName,
+                                          appointmentDate: new Date(item.appointmentDate),
+                                          serialNumber: item.serialNumber,
+                                          chamberAddress: item.doctor.chamberAddress || undefined,
+                                        })}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        title="Add to Google Calendar"
+                                        className="p-1.5 rounded-lg border border-amber-200 dark:border-amber-900/50 hover:bg-amber-50 text-amber-600 dark:text-amber-400 transition cursor-pointer text-xs"
+                                      >
+                                        <Calendar className="w-3.5 h-3.5" />
+                                      </a>
+
+                                      <button
+                                        type="button"
+                                        onClick={() => setSelectedSlip(item)}
+                                        title="View Appointment Slip"
+                                        className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition cursor-pointer text-xs"
+                                      >
+                                        <Printer className="w-3.5 h-3.5" />
+                                      </button>
+                                    </>
+                                  )}
+
+                                  {!isCancelled && !isCompleted && (
+                                    <button
+                                      type="button"
+                                      onClick={() => handleOpenCancellationModal(item)}
+                                      title={
+                                        canCancel
+                                          ? `Cancel Appointment & Get Full Refund (> ${cutoffHours}h before consultation)`
+                                          : `Cancellation Window Closed (< ${cutoffHours}h remaining)`
+                                      }
+                                      className={`p-1.5 rounded-lg border text-xs transition cursor-pointer ${
+                                        canCancel
+                                          ? "border-red-200 dark:border-red-900/50 hover:bg-red-50 text-red-600 dark:text-red-400"
+                                          : "border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                      }`}
+                                    >
+                                      <XCircle className="w-3.5 h-3.5" />
+                                    </button>
+                                  )}
+                                </div>
                               </>
-                            )}
-
-                            {!isCancelled && !isCompleted && (
-                              <button
-                                type="button"
-                                onClick={() => handleCancelAppointment(item.id)}
-                                disabled={cancellingId === item.id}
-                                title="Cancel Appointment"
-                                className="p-1.5 rounded-lg border border-red-200 dark:border-red-900/50 hover:bg-red-50 text-red-600 dark:text-red-400 transition cursor-pointer text-xs disabled:opacity-40"
-                              >
-                                <XCircle className="w-3.5 h-3.5" />
-                              </button>
-                            )}
-                          </div>
+                            );
+                          })()}
                         </div>
                       </div>
+
+                      {/* Verification Status Details */}
+                      {item.status === "PENDING" && (
+                        <div className="mt-2.5 p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs flex items-center justify-between text-amber-700 dark:text-amber-300">
+                          <span className="flex items-center gap-1.5 font-medium">
+                            <Clock className="w-3.5 h-3.5 text-amber-500" />
+                            Awaiting Clinic Front-Desk Verification & Confirmation
+                          </span>
+                          <span className="text-[11px] opacity-80">
+                            Serial #{item.serialNumber} reserved
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Cancellation & Refund Notice */}
+                      {isCancelled && (
+                        <div className="mt-2.5 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-800 dark:text-rose-200 space-y-1">
+                          <div className="flex items-center justify-between font-semibold">
+                            <span>Appointment Cancelled</span>
+                            {item.refundStatus === "REFUNDED" ? (
+                              <span className="px-2 py-0.5 rounded-md bg-emerald-600 text-white text-[10px] font-black uppercase">
+                                ✓ Refund Issued: ${item.refundAmount || item.fee}
+                              </span>
+                            ) : item.refundStatus === "REFUND_PENDING" ? (
+                              <span className="px-2 py-0.5 rounded-md bg-amber-500 text-white text-[10px] font-black uppercase">
+                                ⏳ Refund Processing: ${item.refundAmount || item.fee}
+                              </span>
+                            ) : null}
+                          </div>
+                          {item.cancellationReason && (
+                            <p className="text-[11px] opacity-85 italic">
+                              Reason: {item.cancellationReason}
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Stripe Payment CTA for pending appointments */}
+                      {!isCancelled && item.paymentStatus === "PENDING" && (item.fee ?? 0) > 0 && (
+                        <div className="mt-3 pt-2.5 border-t border-slate-200/70 dark:border-slate-800/70 flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5 text-xs">
+                            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                            <span className="text-slate-600 dark:text-slate-400">
+                              Payment Due: <strong className="font-mono text-slate-900 dark:text-white">${item.fee}</strong>
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            disabled={payingAppointmentId === item.id}
+                            onClick={() => handlePayWithStripe(item.id)}
+                            className="px-3.5 py-1.5 rounded-xl bg-[var(--brand-primary)] hover:opacity-95 text-white text-[11px] font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
+                          >
+                            {payingAppointmentId === item.id ? (
+                              <>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                <span>Opening Stripe...</span>
+                              </>
+                            ) : (
+                              <>
+                                <CreditCard className="w-3.5 h-3.5" />
+                                <span>Pay ${item.fee} via Stripe</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })
@@ -515,7 +973,8 @@ export function PatientDashboardView({
       {/* Appointment Booking Modal */}
       <AppointmentBookingModal
         isOpen={isBookingOpen}
-        onClose={() => setIsBookingOpen(false)}
+        onClose={closeBooking}
+        initialDoctorId={bookingDoctorId}
         onSuccess={handleBookingSuccess}
       />
 
@@ -558,6 +1017,34 @@ export function PatientDashboardView({
                 <p className="text-[11px] text-slate-400">
                   Chamber: {selectedSlip.doctor.chamberAddress || "Room 301, Consultation Wing"}
                 </p>
+
+                {/* Consultation Fee & Visit Type */}
+                <div className="pt-3 border-t border-[var(--brand-primary)]/20 grid grid-cols-2 gap-2 text-left text-xs">
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Visit Type:</span>
+                    <span className="font-bold text-slate-900 dark:text-white">
+                      {selectedSlip.visitType === "REPORT_REVIEW"
+                        ? "Free Report Review"
+                        : selectedSlip.visitType === "FOLLOWUP"
+                        ? "Follow-up Visit"
+                        : "First Visit"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Fee & Payment:</span>
+                    <span className="font-bold text-slate-900 dark:text-white">
+                      {selectedSlip.visitType === "REPORT_REVIEW" || selectedSlip.fee === 0
+                        ? "Free ($0.00)"
+                        : `$${selectedSlip.fee} • ${
+                            selectedSlip.paymentStatus === "PAID"
+                              ? "Paid"
+                              : selectedSlip.paymentStatus === "WAIVED"
+                              ? "Waived"
+                              : "Pending"
+                          }`}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -689,6 +1176,202 @@ export function PatientDashboardView({
           onClose={() => setSharingPrescriptionId(null)}
         />
       )}
+
+      {/* Patient Appointment Cancellation & Refund Modal */}
+      {cancellationTarget && (() => {
+        const cutoff = cancellationTarget.doctor.cancellationWindowHours ?? 24;
+        const apptTime = new Date(cancellationTarget.appointmentDate).getTime();
+        const hoursUntil = (apptTime - nowTimestamp) / (1000 * 60 * 60);
+        const isAllowed = hoursUntil >= cutoff;
+        const wasPaid = (cancellationTarget.fee ?? 0) > 0 && cancellationTarget.paymentStatus === "PAID";
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
+            <div className="relative w-full max-w-lg bg-[var(--bg-surface)] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-5 animate-in fade-in zoom-in-95 duration-150">
+              {/* Modal Header */}
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
+                      isAllowed
+                        ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20"
+                        : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                    }`}
+                  >
+                    {isAllowed ? (
+                      <XCircle className="w-6 h-6" />
+                    ) : (
+                      <AlertCircle className="w-6 h-6" />
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white">
+                      {isAllowed ? "Cancel Appointment" : "Cancellation Window Closed"}
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Serial #{cancellationTarget.serialNumber} • Dr. {cancellationTarget.doctor.user.name}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setCancellationTarget(null)}
+                  className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                >
+                  <XCircle className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Policy Body */}
+              {!isAllowed ? (
+                <div className="space-y-4">
+                  <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200 space-y-2">
+                    <p className="font-bold flex items-center gap-1.5">
+                      <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                      Clinic Cancellation Policy Notice
+                    </p>
+                    <p className="leading-relaxed">
+                      Appointments and consultation fee refunds can only be cancelled at least{" "}
+                      <strong>{cutoff} hours</strong> before the scheduled chamber time.
+                    </p>
+                    <p className="text-[11px] opacity-85">
+                      Currently:{" "}
+                      <strong>
+                        {hoursUntil > 0
+                          ? `${Math.max(1, Math.round(hoursUntil))} hour(s) remaining`
+                          : "Scheduled time has passed"}
+                      </strong>
+                      . Online cancellation is closed to protect physician consultation slots.
+                    </p>
+                  </div>
+
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    If you have an urgent medical emergency or need to reschedule your serial, please contact the front desk at{" "}
+                    <strong>{cancellationTarget.doctor.chamberAddress || "clinic reception"}</strong>.
+                  </p>
+
+                  <div className="pt-2 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setCancellationTarget(null)}
+                      className="px-6 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 transition cursor-pointer"
+                    >
+                      Understood
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Eligible Notice */}
+                  <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-900 dark:text-emerald-200 space-y-1">
+                    <div className="flex items-center gap-2 font-bold">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                      <span>Eligible for 100% Full Refund</span>
+                    </div>
+                    <p className="text-[11px] opacity-85">
+                      You are cancelling {Math.round(hoursUntil)} hours in advance (threshold is {cutoff}h).
+                    </p>
+                  </div>
+
+                  {/* Refund Details */}
+                  {wasPaid && (
+                    <div className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 space-y-2">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                        Refund Calculation
+                      </span>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-600 dark:text-slate-400">Paid Consultation Fee</span>
+                        <span className="font-mono font-bold text-slate-900 dark:text-white">
+                          ${cancellationTarget.fee}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-200/80 dark:border-slate-800/80 font-bold">
+                        <span className="text-emerald-600 dark:text-emerald-400">Refund Credited</span>
+                        <span className="font-mono text-emerald-600 dark:text-emerald-400">
+                          ${cancellationTarget.fee} (100%)
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 pt-1">
+                        Refund will be credited back to your original payment method.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Reason Selection */}
+                  <div className="space-y-2">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      Reason for Cancellation (Optional)
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[
+                        "Schedule conflict",
+                        "Symptoms improved",
+                        "Booked wrong doctor/date",
+                        "Emergency",
+                      ].map((preset) => (
+                        <button
+                          key={preset}
+                          type="button"
+                          onClick={() => setCancellationReason(preset)}
+                          className={`px-3 py-1 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                            cancellationReason === preset
+                              ? "bg-[var(--brand-primary)] text-white"
+                              : "bg-[var(--bg-app)] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800"
+                          }`}
+                        >
+                          {preset}
+                        </button>
+                      ))}
+                    </div>
+                    <textarea
+                      rows={2}
+                      value={cancellationReason}
+                      onChange={(e) => setCancellationReason(e.target.value)}
+                      placeholder="Add any additional details for clinic staff..."
+                      className="w-full mt-1.5 p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[var(--brand-primary)]"
+                    />
+                  </div>
+
+                  {cancellationError && (
+                    <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 shrink-0" />
+                      <span>{cancellationError}</span>
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="pt-2 flex items-center justify-end gap-3">
+                    <button
+                      type="button"
+                      disabled={cancellationSubmitting}
+                      onClick={() => setCancellationTarget(null)}
+                      className="px-5 py-2.5 rounded-2xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition cursor-pointer disabled:opacity-50"
+                    >
+                      Keep Appointment
+                    </button>
+                    <button
+                      type="button"
+                      disabled={cancellationSubmitting}
+                      onClick={handleConfirmCancellation}
+                      className="px-6 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md transition cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                    >
+                      {cancellationSubmitting ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>Cancelling...</span>
+                        </>
+                      ) : (
+                        <span>Confirm Cancellation & Refund</span>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

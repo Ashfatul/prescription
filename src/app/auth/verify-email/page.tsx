@@ -29,6 +29,7 @@ function VerifyEmailInner() {
   const [email, setEmail] = useState(emailParam || "");
   const [verifying, setVerifying] = useState(Boolean(token));
   const [verified, setVerified] = useState(false);
+  const [pendingApproval, setPendingApproval] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
@@ -59,6 +60,7 @@ function VerifyEmailInner() {
 
         if (res.ok && data.success) {
           setVerified(true);
+          setPendingApproval(Boolean(data.pendingApproval));
           setSuccessMsg(data.message || "Email verified successfully!");
         } else {
           setError(data.message || "Verification link is invalid or has expired.");
@@ -181,12 +183,22 @@ function VerifyEmailInner() {
         {/* State B: Successfully Verified */}
         {!verifying && verified && (
           <div className="text-center py-6 space-y-4">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
-              <CheckCircle2 className="w-9 h-9" />
+            <div
+              className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto shadow-inner ${
+                pendingApproval
+                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                  : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+              }`}
+            >
+              {pendingApproval ? (
+                <ShieldCheck className="w-9 h-9" />
+              ) : (
+                <CheckCircle2 className="w-9 h-9" />
+              )}
             </div>
             <div>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                Email Confirmed & Verified!
+                {pendingApproval ? "Email Confirmed • Pending Approval" : "Email Confirmed & Verified!"}
               </h2>
               <p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 max-w-sm mx-auto leading-relaxed">
                 {successMsg ||
@@ -195,17 +207,27 @@ function VerifyEmailInner() {
             </div>
 
             <div className="pt-4">
-              <button
-                type="button"
-                onClick={() => {
-                  router.push("/dashboard");
-                  router.refresh();
-                }}
-                className="w-full min-h-[46px] rounded-xl bg-[var(--brand-primary)] hover:opacity-95 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
-              >
-                Continue to Dashboard
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              {pendingApproval ? (
+                <Link
+                  href="/auth/login"
+                  className="w-full min-h-[46px] rounded-xl bg-[var(--brand-primary)] hover:opacity-95 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Return to Sign In
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    router.push("/dashboard");
+                    router.refresh();
+                  }}
+                  className="w-full min-h-[46px] rounded-xl bg-[var(--brand-primary)] hover:opacity-95 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
+                >
+                  Continue to Dashboard
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
         )}

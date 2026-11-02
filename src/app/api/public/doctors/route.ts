@@ -32,7 +32,9 @@ export async function GET(req: NextRequest) {
                 gte: startOfDay(today),
                 lte: endOfDay(today),
               },
-              status: AppointmentStatus.BOOKED,
+              status: {
+                in: [AppointmentStatus.CONFIRMED, AppointmentStatus.BOOKED],
+              },
             },
             select: {
               doctorId: true,
@@ -63,6 +65,10 @@ export async function GET(req: NextRequest) {
       bio: doctor.bio,
       visitingHours: doctor.visitingHours,
       consultationFee: doctor.consultationFee,
+      newPatientFee: doctor.newPatientFee ?? 50,
+      followupFee: doctor.followupFee ?? 30,
+      followupValidityDays: doctor.followupValidityDays ?? 90,
+      reportFreeDays: doctor.reportFreeDays ?? 2,
       experienceYears: doctor.experienceYears,
       signatureUrl: doctor.signatureUrl,
       available: doctor.available,

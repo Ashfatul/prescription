@@ -83,7 +83,9 @@ export async function GET(req: NextRequest) {
       const docAppts = apptsByDoctor.get(doctor.id) || [];
 
       const completed = docAppts.filter((a) => a.status === AppointmentStatus.COMPLETED);
-      const booked = docAppts.filter((a) => a.status === AppointmentStatus.BOOKED);
+      const booked = docAppts.filter(
+        (a) => a.status === AppointmentStatus.CONFIRMED || a.status === AppointmentStatus.BOOKED
+      );
       const cancelled = docAppts.filter((a) => a.status === AppointmentStatus.CANCELLED);
 
       const currentAppt = booked.length > 0 ? booked[0] : null;

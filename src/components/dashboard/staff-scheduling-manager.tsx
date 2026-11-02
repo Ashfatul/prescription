@@ -308,14 +308,39 @@ export function StaffSchedulingManager() {
                                   <Calendar className="w-3.5 h-3.5" />
                                 </a>
 
-                                {apt.status === "BOOKED" && (
+                                {apt.status === "PENDING" && (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        handleUpdateAppointmentStatus(apt.id, "CONFIRMED")
+                                      }
+                                      className="p-1 rounded-lg text-amber-500 hover:text-emerald-500 transition cursor-pointer"
+                                      title="Verify and Confirm appointment"
+                                    >
+                                      <CheckCircle2 className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        handleUpdateAppointmentStatus(apt.id, "CANCELLED")
+                                      }
+                                      className="p-1 rounded-lg text-slate-400 hover:text-rose-500 transition cursor-pointer"
+                                      title="Reject / Cancel request"
+                                    >
+                                      <XCircle className="w-3.5 h-3.5" />
+                                    </button>
+                                  </>
+                                )}
+
+                                {(apt.status === "CONFIRMED" || apt.status === "BOOKED") && (
                                   <>
                                     <button
                                       type="button"
                                       onClick={() =>
                                         handleUpdateAppointmentStatus(apt.id, "COMPLETED")
                                       }
-                                      className="p-1 rounded-lg text-slate-400 hover:text-emerald-500 transition"
+                                      className="p-1 rounded-lg text-slate-400 hover:text-emerald-500 transition cursor-pointer"
                                       title="Mark completed"
                                     >
                                       <CheckCircle2 className="w-3.5 h-3.5" />
@@ -325,7 +350,7 @@ export function StaffSchedulingManager() {
                                       onClick={() =>
                                         handleUpdateAppointmentStatus(apt.id, "CANCELLED")
                                       }
-                                      className="p-1 rounded-lg text-slate-400 hover:text-rose-500 transition"
+                                      className="p-1 rounded-lg text-slate-400 hover:text-rose-500 transition cursor-pointer"
                                       title="Cancel appointment"
                                     >
                                       <XCircle className="w-3.5 h-3.5" />

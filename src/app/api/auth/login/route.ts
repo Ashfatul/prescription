@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { RoleName, OrganizationStatus } from "@prisma/client";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { verifyPassword } from "@/lib/auth/password";
@@ -40,6 +41,50 @@ export async function POST(req: NextRequest) {
           requireVerification: true,
           email: user.email,
           message: "Please verify your email address to continue. Check your inbox for the verification link.",
+        },
+        { status: 403 }
+      );
+    }
+
+    // Organization approval check: unapproved clinics cannot log in
+    if (
+      user.role.name !== RoleName.SUPER_ADMIN &&
+      user.organization &&
+      (user.organization.status === OrganizationStatus.PENDING_APPROVAL ||
+        user.organization.isApproved === false)
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          pendingOrgApproval: true,
+          message:
+            "Your clinic registration is currently pending review and confirmation by the Super Administrator. You will receive an email once approved.",
+        },
+        { status: 403 }
+      );
+    }
+
+    // Patient verification check: unverified patients cannot log in
+    if (user.role.name === RoleName.PATIENT && user.isApproved === false) {
+      return NextResponse.json(
+        {
+          success: false,
+          pendingPatientVerification: true,
+          message:
+            "Your patient account is pending verification and activation by clinic administration or front desk staff. You will receive an email once verified.",
+        },
+        { status: 403 }
+      );
+    }
+
+    // Generic unapproved check (e.g. staff/admin accounts pending review)
+    if (user.role.name !== RoleName.SUPER_ADMIN && user.isApproved === false) {
+      return NextResponse.json(
+        {
+          success: false,
+          pendingApproval: true,
+          message:
+            "Your account is currently awaiting administrative approval before you can log in.",
         },
         { status: 403 }
       );

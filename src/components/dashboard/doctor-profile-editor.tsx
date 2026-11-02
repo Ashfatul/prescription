@@ -17,6 +17,10 @@ export type DoctorProfile = {
   bio?: string | null;
   visitingHours?: string | null;
   consultationFee?: string | null;
+  newPatientFee?: number | null;
+  followupFee?: number | null;
+  followupValidityDays?: number | null;
+  reportFreeDays?: number | null;
   experienceYears?: string | null;
   signatureUrl?: string | null;
   user: {
@@ -44,6 +48,10 @@ export function DoctorProfileEditor({
   const [bio, setBio] = useState(doctor.bio || "");
   const [visitingHours, setVisitingHours] = useState(doctor.visitingHours || "");
   const [consultationFee, setConsultationFee] = useState(doctor.consultationFee || "");
+  const [newPatientFee, setNewPatientFee] = useState<number>(doctor.newPatientFee ?? 50);
+  const [followupFee, setFollowupFee] = useState<number>(doctor.followupFee ?? 30);
+  const [followupValidityDays, setFollowupValidityDays] = useState<number>(doctor.followupValidityDays ?? 90);
+  const [reportFreeDays, setReportFreeDays] = useState<number>(doctor.reportFreeDays ?? 2);
   const [experienceYears, setExperienceYears] = useState(doctor.experienceYears || "");
   const [signatureUrl, setSignatureUrl] = useState(doctor.signatureUrl || doctor.user.signatureUrl || "");
   const [available, setAvailable] = useState(doctor.available);
@@ -184,6 +192,10 @@ export function DoctorProfileEditor({
           bio,
           visitingHours,
           consultationFee,
+          newPatientFee: Number(newPatientFee) || 50,
+          followupFee: Number(followupFee) || 30,
+          followupValidityDays: Number(followupValidityDays) || 90,
+          reportFreeDays: Number(reportFreeDays) ?? 2,
           experienceYears,
           signatureUrl,
           available,
@@ -214,6 +226,10 @@ export function DoctorProfileEditor({
         bio,
         visitingHours,
         consultationFee,
+        newPatientFee: Number(newPatientFee) || 50,
+        followupFee: Number(followupFee) || 30,
+        followupValidityDays: Number(followupValidityDays) || 90,
+        reportFreeDays: Number(reportFreeDays) ?? 2,
         experienceYears,
         signatureUrl,
         available,
@@ -448,6 +464,18 @@ export function DoctorProfileEditor({
 
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Chamber Practice Notes / Display Banner
+            </label>
+            <input
+              value={consultationFee}
+              onChange={(e) => setConsultationFee(e.target.value)}
+              placeholder="e.g. $50 First Visit / $30 Follow-up (Free report review in 2 days)"
+              className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
               Doctor Biography & Clinical Focus (Public Profile)
             </label>
             <textarea
@@ -460,11 +488,111 @@ export function DoctorProfileEditor({
           </div>
         </div>
 
-        {/* Section 3: Digital Signature & Prescription Authentication */}
+        {/* Section 3: Consultation Fees & Visiting Policy */}
+        <div className="space-y-4 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)]/50 p-5">
+          <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2.5">
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                3. Multi-Tier Consultation Fees & Visiting Policy
+              </h4>
+              <p className="text-[11px] text-slate-500">
+                Configure patient charges, returning follow-up rates, and free report review periods.
+              </p>
+            </div>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              Live Dynamic Calculation
+            </span>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                New Patient Fee ($) *
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                required
+                value={newPatientFee}
+                onChange={(e) => setNewPatientFee(Number(e.target.value))}
+                placeholder="50"
+                className="w-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-3.5 py-2.5 text-xs font-mono font-bold outline-none focus:border-[var(--brand-primary)]"
+              />
+              <span className="mt-1 block text-[10px] text-slate-400">First-time consultation charge</span>
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                Follow-up Fee ($) *
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                required
+                value={followupFee}
+                onChange={(e) => setFollowupFee(Number(e.target.value))}
+                placeholder="30"
+                className="w-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-3.5 py-2.5 text-xs font-mono font-bold outline-none focus:border-[var(--brand-primary)]"
+              />
+              <span className="mt-1 block text-[10px] text-slate-400">Returning patient rate</span>
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                Follow-up Validity (Days)
+              </label>
+              <select
+                value={followupValidityDays}
+                onChange={(e) => setFollowupValidityDays(Number(e.target.value))}
+                className="w-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-3.5 py-2.5 text-xs font-semibold outline-none focus:border-[var(--brand-primary)]"
+              >
+                <option value={30}>30 Days (1 Month)</option>
+                <option value={60}>60 Days (2 Months)</option>
+                <option value={90}>90 Days (3 Months - Recommended)</option>
+                <option value={180}>180 Days (6 Months)</option>
+              </select>
+              <span className="mt-1 block text-[10px] text-slate-400">Requires previous prescription</span>
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                Free Report Review (Days)
+              </label>
+              <select
+                value={reportFreeDays}
+                onChange={(e) => setReportFreeDays(Number(e.target.value))}
+                className="w-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-3.5 py-2.5 text-xs font-semibold outline-none focus:border-[var(--brand-primary)]"
+              >
+                <option value={0}>No free window (Charge immediate follow-up)</option>
+                <option value={2}>2 Days after visit ($0 Free - Recommended)</option>
+                <option value={3}>3 Days after visit ($0 Free)</option>
+                <option value={5}>5 Days after visit ($0 Free)</option>
+                <option value={7}>7 Days after visit ($0 Free)</option>
+              </select>
+              <span className="mt-1 block text-[10px] text-slate-400">Diagnostic report check window</span>
+            </div>
+          </div>
+
+          {/* Visual Policy Explanation Strip */}
+          <div className="rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-3 text-xs text-[var(--brand-text)] flex flex-wrap items-center justify-between gap-3">
+            <div className="space-y-0.5">
+              <span className="font-bold block">Summary of Chamber Consultation Policy:</span>
+              <p className="text-[11px] leading-relaxed opacity-90">
+                • <strong>New Patients:</strong> Charged <strong>${newPatientFee}</strong> for first consultation.<br />
+                • <strong>Diagnostic Report Showing:</strong> Free (<strong>$0.00</strong>) within <strong>{reportFreeDays} days</strong> of initial visit.<br />
+                • <strong>Follow-up Visits:</strong> Charged <strong>${followupFee}</strong> if presenting within <strong>{followupValidityDays} days</strong> with verified previous prescription.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 4: Digital Signature & Prescription Authentication */}
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              3. Digital Signature for Official Prescriptions
+              4. Digital Signature for Official Prescriptions
             </h4>
             <span className="text-[11px] text-slate-500">
               Appears on live prescription previews, downloads, and official prints

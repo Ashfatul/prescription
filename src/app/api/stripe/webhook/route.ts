@@ -32,6 +32,30 @@ export async function POST(req: NextRequest) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+
+        // 1. Handle Doctor Consultation Appointment Fee Payment
+        if (session.metadata?.type === "APPOINTMENT_FEE" || session.metadata?.appointmentId) {
+          const appointmentId = session.metadata?.appointmentId;
+          if (appointmentId) {
+            const paymentIntentId =
+              typeof session.payment_intent === "string"
+                ? session.payment_intent
+                : session.payment_intent?.id || null;
+
+            await db.appointment.update({
+              where: { id: appointmentId },
+              data: {
+                paymentStatus: "PAID",
+                paymentMethod: "STRIPE",
+                stripeSessionId: session.id,
+                stripePaymentIntentId: paymentIntentId,
+              },
+            });
+          }
+          break;
+        }
+
+        // 2. Handle Clinic Organization Subscription
         const organizationId = session.metadata?.organizationId || session.client_reference_id;
         const planId = session.metadata?.planId;
 

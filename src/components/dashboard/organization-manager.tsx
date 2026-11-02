@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import {
   Building2,
+  CheckCircle2,
+  Clock,
   DollarSign,
   Edit,
   Layers,
@@ -20,7 +22,10 @@ type OrgItem = {
   id: string;
   name: string;
   slug: string;
-  status: "ACTIVE" | "TRIAL" | "SUSPENDED";
+  status: "ACTIVE" | "TRIAL" | "SUSPENDED" | "PENDING_APPROVAL";
+  isApproved?: boolean;
+  approvedAt?: string | null;
+  approvedBy?: string | null;
   contactEmail?: string | null;
   contactPhone?: string | null;
   address?: string | null;
@@ -72,7 +77,37 @@ export function OrganizationManager() {
   const [contactEmail, setContactEmail] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [status, setStatus] = useState<"ACTIVE" | "TRIAL" | "SUSPENDED">("ACTIVE");
+  const [status, setStatus] = useState<"ACTIVE" | "TRIAL" | "SUSPENDED" | "PENDING_APPROVAL">("ACTIVE");
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "PENDING_APPROVAL" | "ACTIVE" | "TRIAL" | "SUSPENDED">("ALL");
+  const [approvingId, setApprovingId] = useState<string | null>(null);
+  const [approvalSuccess, setApprovalSuccess] = useState<string | null>(null);
+
+  const handleApprove = async (orgId: string, orgName: string) => {
+    setApprovingId(orgId);
+    setApprovalSuccess(null);
+    try {
+      const res = await fetch(`/api/organizations/${orgId}/approve`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setOrgs((prev) =>
+          prev.map((o) =>
+            o.id === orgId
+              ? { ...o, status: "ACTIVE" as const, isApproved: true }
+              : o
+          )
+        );
+        setApprovalSuccess(`Clinic "${orgName}" approved & activated successfully! A confirmation email has been dispatched.`);
+      } else {
+        alert(data.message || "Failed to approve clinic");
+      }
+    } catch {
+      alert("Network error approving clinic");
+    } finally {
+      setApprovingId(null);
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -243,7 +278,7 @@ export function OrganizationManager() {
             </h2>
           </div>
           <p className="text-xs text-slate-500">
-            Super Administrator console to provision, partition, and monitor hospital branches and independent clinics.
+            Super Administrator console to provision, partition, review pending registrations, and monitor clinics.
           </p>
         </div>
 
@@ -254,6 +289,92 @@ export function OrganizationManager() {
         >
           <Plus className="w-4 h-4" />
           <span>Provision New Clinic</span>
+        </button>
+      </div>
+
+      {/* Success Notification */}
+      {approvalSuccess && (
+        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between gap-2 animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>{approvalSuccess}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setApprovalSuccess(null)}
+            className="text-emerald-600 hover:text-emerald-800 dark:hover:text-emerald-200 cursor-pointer text-xs"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Filter Tabs */}
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setStatusFilter("ALL")}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+            statusFilter === "ALL"
+              ? "bg-[var(--brand-primary)] text-white shadow-xs"
+              : "bg-[var(--bg-surface)] border border-[var(--border-default)] text-slate-600 dark:text-slate-300 hover:bg-[var(--bg-subtle)]"
+          }`}
+        >
+          All Clinics ({orgs.length})
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setStatusFilter("PENDING_APPROVAL")}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+            statusFilter === "PENDING_APPROVAL"
+              ? "bg-amber-600 text-white shadow-xs"
+              : "bg-[var(--bg-surface)] border border-[var(--border-default)] text-slate-600 dark:text-slate-300 hover:bg-[var(--bg-subtle)]"
+          }`}
+        >
+          <Clock className="w-3.5 h-3.5 text-amber-500" />
+          <span>Pending Approval</span>
+          {orgs.filter((o) => o.status === "PENDING_APPROVAL" || o.isApproved === false).length > 0 && (
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] font-black bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+              {orgs.filter((o) => o.status === "PENDING_APPROVAL" || o.isApproved === false).length}
+            </span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setStatusFilter("ACTIVE")}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+            statusFilter === "ACTIVE"
+              ? "bg-emerald-600 text-white shadow-xs"
+              : "bg-[var(--bg-surface)] border border-[var(--border-default)] text-slate-600 dark:text-slate-300 hover:bg-[var(--bg-subtle)]"
+          }`}
+        >
+          Active ({orgs.filter((o) => o.status === "ACTIVE" && o.isApproved !== false).length})
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setStatusFilter("TRIAL")}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+            statusFilter === "TRIAL"
+              ? "bg-sky-600 text-white shadow-xs"
+              : "bg-[var(--bg-surface)] border border-[var(--border-default)] text-slate-600 dark:text-slate-300 hover:bg-[var(--bg-subtle)]"
+          }`}
+        >
+          Free Trial ({orgs.filter((o) => o.status === "TRIAL").length})
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setStatusFilter("SUSPENDED")}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+            statusFilter === "SUSPENDED"
+              ? "bg-rose-600 text-white shadow-xs"
+              : "bg-[var(--bg-surface)] border border-[var(--border-default)] text-slate-600 dark:text-slate-300 hover:bg-[var(--bg-subtle)]"
+          }`}
+        >
+          Suspended ({orgs.filter((o) => o.status === "SUSPENDED").length})
         </button>
       </div>
 
@@ -283,7 +404,15 @@ export function OrganizationManager() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border-subtle)]">
-                {orgs.map((org) => (
+                {orgs
+                  .filter((org) => {
+                    if (statusFilter === "ALL") return true;
+                    if (statusFilter === "PENDING_APPROVAL") {
+                      return org.status === "PENDING_APPROVAL" || org.isApproved === false;
+                    }
+                    return org.status === statusFilter;
+                  })
+                  .map((org) => (
                   <tr key={org.id} className="hover:bg-[var(--bg-subtle)]/40 transition">
                     <td className="py-3.5 px-4 sm:px-6 whitespace-nowrap">
                       <div>
@@ -308,17 +437,24 @@ export function OrganizationManager() {
                       )}
                     </td>
                     <td className="py-3.5 px-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
-                          org.status === "ACTIVE"
-                            ? "bg-emerald-500/10 text-emerald-600"
-                            : org.status === "TRIAL"
-                            ? "bg-amber-500/10 text-amber-600"
-                            : "bg-rose-500/10 text-rose-600"
-                        }`}
-                      >
-                        {org.status}
-                      </span>
+                      {org.status === "PENDING_APPROVAL" || org.isApproved === false ? (
+                        <span className="px-2.5 py-1 rounded-full font-bold text-[10px] bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1.5 w-fit">
+                          <Clock className="w-3 h-3 text-amber-500 shrink-0" />
+                          <span>Pending Approval</span>
+                        </span>
+                      ) : (
+                        <span
+                          className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
+                            org.status === "ACTIVE"
+                              ? "bg-emerald-500/10 text-emerald-600"
+                              : org.status === "TRIAL"
+                              ? "bg-sky-500/10 text-sky-600"
+                              : "bg-rose-500/10 text-rose-600"
+                          }`}
+                        >
+                          {org.status}
+                        </span>
+                      )}
                     </td>
                     <td className="py-3.5 px-4 whitespace-nowrap text-slate-700 dark:text-slate-300">
                       <strong>{org._count.users}</strong> members
@@ -327,14 +463,31 @@ export function OrganizationManager() {
                       <strong>{org._count.prescriptions}</strong> generated
                     </td>
                     <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                      <button
-                        type="button"
-                        onClick={() => openEditModal(org)}
-                        className="px-3 py-1.5 rounded-xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-300 font-semibold text-xs transition inline-flex items-center gap-1 cursor-pointer"
-                      >
-                        <Edit className="w-3.5 h-3.5" />
-                        <span>Manage</span>
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        {(org.status === "PENDING_APPROVAL" || org.isApproved === false) && (
+                          <button
+                            type="button"
+                            disabled={approvingId === org.id}
+                            onClick={() => handleApprove(org.id, org.name)}
+                            className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition inline-flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                          >
+                            {approvingId === org.id ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                            )}
+                            <span>Approve & Activate</span>
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => openEditModal(org)}
+                          className="px-3 py-1.5 rounded-xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-300 font-semibold text-xs transition inline-flex items-center gap-1 cursor-pointer"
+                        >
+                          <Edit className="w-3.5 h-3.5" />
+                          <span>Manage</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -427,10 +580,11 @@ export function OrganizationManager() {
                     </label>
                     <CustomSelect
                       value={status}
-                      onChange={(val) => setStatus(val as "ACTIVE" | "TRIAL" | "SUSPENDED")}
+                      onChange={(val) => setStatus(val as "ACTIVE" | "TRIAL" | "SUSPENDED" | "PENDING_APPROVAL")}
                       options={[
                         { value: "ACTIVE", label: "ACTIVE", badge: "Live" },
                         { value: "TRIAL", label: "TRIAL (14 Days)", badge: "Trial" },
+                        { value: "PENDING_APPROVAL", label: "PENDING_APPROVAL", badge: "Review" },
                         { value: "SUSPENDED", label: "SUSPENDED", badge: "Locked" },
                       ]}
                       searchable={false}

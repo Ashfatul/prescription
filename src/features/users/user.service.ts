@@ -5,7 +5,7 @@ import { AppError } from "@/lib/errors";
 import { hashPassword } from "@/lib/auth/password";
 import { createUserSchema, userPreferencesSchema, updateUserSchema } from "@/features/users/user.schema";
 import { logActivity } from "@/features/activity-log/activity-log.service";
-import { isEmailVerificationRequired } from "@/features/settings/settings.service";
+import { isEmailVerificationRequired, isPatientVerificationRequired } from "@/features/settings/settings.service";
 
 export async function listUsers(organizationId?: string) {
   return db.user.findMany({
@@ -42,6 +42,10 @@ export async function createUser(input: unknown, creatorUserId?: string) {
   const verificationToken = shouldRequireVerification ? crypto.randomBytes(32).toString("hex") : null;
   const verificationExpiresAt = shouldRequireVerification ? new Date(Date.now() + 24 * 60 * 60 * 1000) : null;
 
+  const isPatient = data.role === RoleName.PATIENT;
+  const isSelfRegistration = !creatorUserId;
+  const requirePatientVerification = isPatient && isSelfRegistration ? await isPatientVerificationRequired(orgId || undefined) : false;
+
   const user = await db.user.create({
     data: {
       name: data.name,
@@ -52,6 +56,9 @@ export async function createUser(input: unknown, creatorUserId?: string) {
       signatureUrl: data.signatureUrl,
       roleId: role.id,
       organizationId: orgId,
+      isApproved: !requirePatientVerification,
+      approvedAt: !requirePatientVerification ? new Date() : null,
+      approvedBy: !requirePatientVerification && creatorUserId ? creatorUserId : null,
       emailVerified: shouldRequireVerification ? null : new Date(),
       emailVerificationToken: verificationToken,
       emailVerificationTokenExpiresAt: verificationExpiresAt,

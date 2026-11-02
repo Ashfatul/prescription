@@ -12,6 +12,8 @@ export interface HospitalSettings {
   emergencyNotice: string;
   chamberDays: string;
   requireEmailVerification: boolean;
+  requireOrgApproval: boolean;
+  requirePatientVerification: boolean;
 }
 
 export const DEFAULT_HOSPITAL_SETTINGS: HospitalSettings = {
@@ -26,6 +28,8 @@ export const DEFAULT_HOSPITAL_SETTINGS: HospitalSettings = {
   emergencyNotice: "PPMS is a clinical management and prescription issuing tool. In life-threatening emergencies, call 10678 or immediately proceed to the nearest hospital emergency room.",
   chamberDays: "Saturday - Thursday",
   requireEmailVerification: true,
+  requireOrgApproval: false,
+  requirePatientVerification: false,
 };
 
 export async function isEmailVerificationRequired(): Promise<boolean> {
@@ -55,6 +59,71 @@ export async function setEmailVerificationRequired(required: boolean): Promise<v
   });
 }
 
+export async function isOrgApprovalRequired(): Promise<boolean> {
+  try {
+    const setting = await db.systemSetting.findUnique({
+      where: { key: "auth_require_org_approval" },
+    });
+    if (!setting) return false;
+    return setting.value === "true";
+  } catch {
+    return false;
+  }
+}
+
+export async function setOrgApprovalRequired(required: boolean): Promise<void> {
+  await db.systemSetting.upsert({
+    where: { key: "auth_require_org_approval" },
+    create: {
+      key: "auth_require_org_approval",
+      value: required ? "true" : "false",
+      category: "auth",
+    },
+    update: {
+      value: required ? "true" : "false",
+      category: "auth",
+    },
+  });
+}
+
+export async function isPatientVerificationRequired(orgId?: string): Promise<boolean> {
+  try {
+    if (orgId) {
+      const org = await db.organization.findUnique({
+        where: { id: orgId },
+        select: { settingsJson: true },
+      });
+      const orgSettings = org?.settingsJson as Record<string, unknown> | null;
+      if (orgSettings && typeof orgSettings.requirePatientVerification === "boolean") {
+        return orgSettings.requirePatientVerification;
+      }
+    }
+
+    const setting = await db.systemSetting.findUnique({
+      where: { key: "auth_require_patient_verification" },
+    });
+    if (!setting) return false;
+    return setting.value === "true";
+  } catch {
+    return false;
+  }
+}
+
+export async function setPatientVerificationRequired(required: boolean): Promise<void> {
+  await db.systemSetting.upsert({
+    where: { key: "auth_require_patient_verification" },
+    create: {
+      key: "auth_require_patient_verification",
+      value: required ? "true" : "false",
+      category: "auth",
+    },
+    update: {
+      value: required ? "true" : "false",
+      category: "auth",
+    },
+  });
+}
+
 export async function getHospitalSettings(): Promise<HospitalSettings> {
   try {
     const records = await db.systemSetting.findMany({
@@ -71,6 +140,16 @@ export async function getHospitalSettings(): Promise<HospitalSettings> {
         ? settingsMap["auth_require_email_verification"] === "true"
         : DEFAULT_HOSPITAL_SETTINGS.requireEmailVerification;
 
+    const requireOrgApproval =
+      settingsMap["auth_require_org_approval"] !== undefined
+        ? settingsMap["auth_require_org_approval"] === "true"
+        : DEFAULT_HOSPITAL_SETTINGS.requireOrgApproval;
+
+    const requirePatientVerification =
+      settingsMap["auth_require_patient_verification"] !== undefined
+        ? settingsMap["auth_require_patient_verification"] === "true"
+        : DEFAULT_HOSPITAL_SETTINGS.requirePatientVerification;
+
     return {
       hospitalName: settingsMap.hospitalName || DEFAULT_HOSPITAL_SETTINGS.hospitalName,
       hospitalBranch: settingsMap.hospitalBranch || DEFAULT_HOSPITAL_SETTINGS.hospitalBranch,
@@ -83,6 +162,8 @@ export async function getHospitalSettings(): Promise<HospitalSettings> {
       emergencyNotice: settingsMap.emergencyNotice || DEFAULT_HOSPITAL_SETTINGS.emergencyNotice,
       chamberDays: settingsMap.chamberDays || DEFAULT_HOSPITAL_SETTINGS.chamberDays,
       requireEmailVerification,
+      requireOrgApproval,
+      requirePatientVerification,
     };
   } catch (err) {
     console.error("Failed to load hospital settings from database:", err);
@@ -99,6 +180,10 @@ export async function updateHospitalSettings(
     if (value !== undefined && value !== null) {
       if (key === "requireEmailVerification") {
         await setEmailVerificationRequired(Boolean(value));
+      } else if (key === "requireOrgApproval") {
+        await setOrgApprovalRequired(Boolean(value));
+      } else if (key === "requirePatientVerification") {
+        await setPatientVerificationRequired(Boolean(value));
       } else {
         await db.systemSetting.upsert({
           where: { key },

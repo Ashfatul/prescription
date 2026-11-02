@@ -149,6 +149,92 @@ export const SYSTEM_EMAIL_TEMPLATES = [
     bodyText: `Welcome {{userName}}!\n\nYour clinic {{clinicName}} is active on {{appName}} under {{planName}}.\n\nAccess your dashboard here:\n{{dashboardUrl}}\n\n- The {{appName}} Team`,
   },
   {
+    key: "ORGANIZATION_APPROVED",
+    name: "Clinic Organization Approved by Super Admin",
+    description: "Sent to the clinic administrator when their organization registration has been approved by the Super Admin.",
+    subject: "Your clinic registration for {{clinicName}} has been approved! - {{appName}}",
+    availableVars: ["userName", "clinicName", "loginUrl", "appName", "supportEmail"],
+    bodyHtml: `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Clinic Registration Approved</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 24px; color: #0f172a; }
+    .card { max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; padding: 36px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    .brand { font-size: 20px; font-weight: 800; color: #0f766e; margin-bottom: 24px; display: inline-block; }
+    .badge { display: inline-block; padding: 4px 12px; background: #dcfce7; color: #166534; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; }
+    .title { font-size: 22px; font-weight: 800; color: #0f172a; margin-top: 0; margin-bottom: 12px; }
+    .text { font-size: 14px; line-height: 1.6; color: #475569; margin-bottom: 20px; }
+    .btn { display: inline-block; background-color: #0f766e; color: #ffffff !important; font-weight: 700; font-size: 14px; text-decoration: none; padding: 14px 28px; border-radius: 14px; box-shadow: 0 2px 8px rgba(15,118,110,0.25); }
+    .footer { font-size: 12px; color: #94a3b8; margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">{{appName}}</div>
+    <div class="badge">Registration Approved</div>
+    <h1 class="title">Clinic Registration Approved!</h1>
+    <p class="text">Hello <strong>{{userName}}</strong>,</p>
+    <p class="text">Great news! Your clinic registration for <strong>{{clinicName}}</strong> has been reviewed and officially approved by the platform Super Administrator.</p>
+    <p class="text">Your tenant workspace is now active. You may now log in to configure your physicians, reception triage, and pharmacy formulary.</p>
+    
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="{{loginUrl}}" class="btn" target="_blank">Log In to Your Clinic</a>
+    </div>
+
+    <div class="footer">
+      &copy; {{appName}} Clinical OS • Platform Administration
+    </div>
+  </div>
+</body>
+</html>`,
+    bodyText: `Hello {{userName}},\n\nYour clinic registration for {{clinicName}} has been reviewed and approved by the Super Admin.\n\nYou can now log in to your account:\n{{loginUrl}}\n\n- The {{appName}} Team`,
+  },
+  {
+    key: "PATIENT_ACCOUNT_VERIFIED",
+    name: "Patient Account Verified & Activated",
+    description: "Sent to the patient when their account registration is verified and approved by the clinic administration or front desk staff.",
+    subject: "Your patient account has been verified - {{appName}}",
+    availableVars: ["patientName", "clinicName", "loginUrl", "appName", "supportEmail"],
+    bodyHtml: `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Patient Account Verified</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 24px; color: #0f172a; }
+    .card { max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; padding: 36px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    .brand { font-size: 20px; font-weight: 800; color: #0f766e; margin-bottom: 24px; display: inline-block; }
+    .badge { display: inline-block; padding: 4px 12px; background: #dcfce7; color: #166534; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; }
+    .title { font-size: 22px; font-weight: 800; color: #0f172a; margin-top: 0; margin-bottom: 12px; }
+    .text { font-size: 14px; line-height: 1.6; color: #475569; margin-bottom: 20px; }
+    .btn { display: inline-block; background-color: #0f766e; color: #ffffff !important; font-weight: 700; font-size: 14px; text-decoration: none; padding: 14px 28px; border-radius: 14px; box-shadow: 0 2px 8px rgba(15,118,110,0.25); }
+    .footer { font-size: 12px; color: #94a3b8; margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">{{appName}}</div>
+    <div class="badge">Account Verified</div>
+    <h1 class="title">Your Patient Account is Ready!</h1>
+    <p class="text">Hello <strong>{{patientName}}</strong>,</p>
+    <p class="text">Your patient registration has been verified and activated by the clinical front desk at <strong>{{clinicName}}</strong>.</p>
+    <p class="text">You can now securely log in to your patient portal to book appointments, review your digital prescriptions, view diagnostic lab reports, and manage your medicine schedule.</p>
+    
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="{{loginUrl}}" class="btn" target="_blank">Sign In to Patient Portal</a>
+    </div>
+
+    <div class="footer">
+      &copy; {{appName}} Patient Health Services • {{clinicName}}
+    </div>
+  </div>
+</body>
+</html>`,
+    bodyText: `Hello {{patientName}},\n\nYour patient account has been verified and activated by the staff at {{clinicName}}.\n\nYou can now log in here:\n{{loginUrl}}\n\n- The {{appName}} Team`,
+  },
+  {
     key: "PRESCRIPTION_ALERT",
     name: "Prescription Issued Alert",
     description: "Sent to patients when an attending physician publishes a clinical prescription.",

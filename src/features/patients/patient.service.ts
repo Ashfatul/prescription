@@ -3,6 +3,8 @@ import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import { hashPassword } from "@/lib/auth/password";
 import { patientSchema, patientUpdateSchema } from "@/features/patients/patient.schema";
+import { logActivity } from "@/features/activity-log/activity-log.service";
+import { sendTemplatedEmail } from "@/features/email-templates/email-template.service";
 
 const patientUserSafeSelect = {
   id: true,
@@ -14,6 +16,10 @@ const patientUserSafeSelect = {
   accent: true,
   roleId: true,
   organizationId: true,
+  isApproved: true,
+  approvedAt: true,
+  approvedBy: true,
+  emailVerified: true,
   createdAt: true,
   updatedAt: true,
 };
@@ -143,4 +149,67 @@ export async function updatePatient(id: string, input: unknown) {
 export async function deletePatient(id: string) {
   await db.patient.delete({ where: { id } });
   return { deleted: true };
+}
+
+export async function verifyPatient(id: string, verifiedByUserName: string) {
+  const patient = await db.patient.findUnique({
+    where: { id },
+    include: {
+      user: true,
+      organization: true,
+    },
+  });
+
+  if (!patient) {
+    throw new AppError("Patient record not found", 404);
+  }
+
+  const updatedUser = await db.user.update({
+    where: { id: patient.userId },
+    data: {
+      isApproved: true,
+      approvedAt: new Date(),
+      approvedBy: verifiedByUserName,
+    },
+    select: patientUserSafeSelect,
+  });
+
+  await logActivity({
+    organizationId: patient.organizationId || patient.user.organizationId,
+    userName: verifiedByUserName,
+    userRole: "STAFF",
+    action: "PATIENT_VERIFIED",
+    entityType: "Patient",
+    entityId: patient.id,
+    detailsJson: {
+      patientName: patient.user.name,
+      patientEmail: patient.user.email,
+      verifiedBy: verifiedByUserName,
+    },
+  });
+
+  // Dispatch confirmation email
+  if (patient.user.email && !patient.user.email.endsWith("@ppms.local")) {
+    const host = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    await sendTemplatedEmail({
+      key: "PATIENT_ACCOUNT_VERIFIED",
+      to: patient.user.email,
+      variables: {
+        patientName: patient.user.name,
+        clinicName: patient.organization?.name || "Clinical Health Services",
+        loginUrl: `${host}/auth/login`,
+        appName: process.env.NEXT_PUBLIC_APP_NAME || "PPMS",
+        supportEmail: process.env.SUPPORT_EMAIL || "support@ppms.local",
+        verifiedBy: verifiedByUserName,
+      },
+      organizationId: patient.organizationId || patient.user.organizationId,
+    }).catch((err) => {
+      console.error("Failed to send patient account verification email:", err);
+    });
+  }
+
+  return {
+    ...patient,
+    user: updatedUser,
+  };
 }

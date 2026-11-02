@@ -1,8 +1,9 @@
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
-import { OrganizationStatus } from "@prisma/client";
+import { OrganizationStatus, RoleName } from "@prisma/client";
 import { logActivity } from "@/features/activity-log/activity-log.service";
 import { medicineService, testService } from "@/features/catalog/catalog.service";
+import { sendTemplatedEmail } from "@/features/email-templates/email-template.service";
 
 export type CreateOrgParams = {
   name: string;
@@ -121,6 +122,80 @@ export async function updateOrganization(
     },
     include: { plan: true },
   });
+}
+
+export async function approveOrganization(id: string, approvedByUserName: string) {
+  const existing = await db.organization.findUnique({
+    where: { id },
+    include: {
+      users: {
+        where: { role: { name: { in: [RoleName.ADMIN, RoleName.SUPER_ADMIN] } } },
+      },
+      plan: true,
+    },
+  });
+
+  if (!existing) {
+    throw new AppError("Organization not found", 404);
+  }
+
+  const updated = await db.organization.update({
+    where: { id },
+    data: {
+      status: OrganizationStatus.ACTIVE,
+      isApproved: true,
+      approvedAt: new Date(),
+      approvedBy: approvedByUserName,
+    },
+    include: { plan: true },
+  });
+
+  // Also approve all admin accounts of this clinic
+  await db.user.updateMany({
+    where: { organizationId: id, role: { name: RoleName.ADMIN } },
+    data: {
+      isApproved: true,
+      approvedAt: new Date(),
+      approvedBy: approvedByUserName,
+    },
+  });
+
+  await logActivity({
+    organizationId: id,
+    userName: approvedByUserName,
+    userRole: "SUPER_ADMIN",
+    action: "ORGANIZATION_APPROVED",
+    entityType: "Organization",
+    entityId: id,
+    detailsJson: {
+      clinicName: existing.name,
+      slug: existing.slug,
+      approvedBy: approvedByUserName,
+    },
+  });
+
+  // Dispatch confirmation email
+  const recipientEmail = existing.contactEmail || existing.users[0]?.email;
+  if (recipientEmail) {
+    const adminUser = existing.users[0];
+    const host = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    await sendTemplatedEmail({
+      key: "ORGANIZATION_APPROVED",
+      to: recipientEmail,
+      variables: {
+        userName: adminUser?.name || "Clinic Administrator",
+        clinicName: existing.name,
+        loginUrl: `${host}/auth/login`,
+        appName: process.env.NEXT_PUBLIC_APP_NAME || "PPMS",
+        approvedBy: approvedByUserName,
+      },
+      organizationId: id,
+    }).catch((err) => {
+      console.error("Failed to send clinic approval confirmation email:", err);
+    });
+  }
+
+  return updated;
 }
 
 export async function getSaaSGlobalMetrics() {

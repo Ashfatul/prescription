@@ -12,7 +12,7 @@ import { signToken } from "@/lib/auth/jwt";
 import { AUTH_COOKIE } from "@/lib/auth/constants";
 import { logActivity } from "@/features/activity-log/activity-log.service";
 import { medicineService, testService } from "@/features/catalog/catalog.service";
-import { isEmailVerificationRequired } from "@/features/settings/settings.service";
+import { isEmailVerificationRequired, isOrgApprovalRequired } from "@/features/settings/settings.service";
 import { sendTemplatedEmail } from "@/features/email-templates/email-template.service";
 
 export async function POST(req: NextRequest) {
@@ -85,6 +85,7 @@ export async function POST(req: NextRequest) {
 
       // 14-day free trial duration
       const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+      const requireOrgApproval = await isOrgApprovalRequired();
 
       // Create Organization
       const organization = await db.organization.create({
@@ -92,7 +93,9 @@ export async function POST(req: NextRequest) {
           name: clinicName,
           slug: cleanSlug,
           plan: plan?.id ? { connect: { id: plan.id } } : undefined,
-          status: OrganizationStatus.TRIAL,
+          status: requireOrgApproval ? OrganizationStatus.PENDING_APPROVAL : OrganizationStatus.TRIAL,
+          isApproved: !requireOrgApproval,
+          approvedAt: !requireOrgApproval ? new Date() : null,
           trialEndsAt,
           subscriptionStatus: "trialing",
           contactEmail: email,
@@ -128,6 +131,8 @@ export async function POST(req: NextRequest) {
           phone: phone || null,
           roleId: adminRole.id,
           organizationId: organization.id,
+          isApproved: !requireOrgApproval,
+          approvedAt: !requireOrgApproval ? new Date() : null,
           emailVerified: requireVerification ? null : new Date(),
           emailVerificationToken: verificationToken,
           emailVerificationTokenExpiresAt: verificationExpiresAt,
@@ -196,8 +201,11 @@ export async function POST(req: NextRequest) {
           {
             success: true,
             requireVerification: true,
+            requireOrgApproval,
             email: user.email,
-            message: "Clinic registered successfully! A verification email has been dispatched. Please verify your email before logging in.",
+            message: requireOrgApproval
+              ? "Clinic registered successfully! A verification email has been dispatched. After email confirmation, your clinic account will be reviewed and approved by the Super Administrator."
+              : "Clinic registered successfully! A verification email has been dispatched. Please verify your email before logging in.",
             data: {
               user: {
                 id: user.id,
@@ -215,7 +223,31 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Generate JWT session token (if email verification disabled)
+      // If email verification is off but organization approval is required, do NOT issue session token
+      if (requireOrgApproval) {
+        return NextResponse.json(
+          {
+            success: true,
+            requireOrgApproval: true,
+            message: "Clinic registered successfully! Your organization is pending review and confirmation by the Super Administrator. You will receive an email once approved.",
+            data: {
+              user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role.name,
+                organizationId: user.organizationId,
+                organizationName: organization.name,
+                status: organization.status,
+              },
+              organization,
+            },
+          },
+          { status: 201 }
+        );
+      }
+
+      // Generate JWT session token (if email verification and approval gates are passed)
       const token = await signToken({
         sub: user.id,
         role: user.role.name,
@@ -293,6 +325,19 @@ export async function POST(req: NextRequest) {
           requireVerification: true,
           email: user.email,
           message: "Registration successful! A verification link has been sent to your email. Please verify before logging in.",
+          data: user,
+        },
+        { status: 201 }
+      );
+    }
+
+    if (user && !user.isApproved) {
+      return NextResponse.json(
+        {
+          success: true,
+          requirePatientVerification: true,
+          email: user.email,
+          message: "Patient registered successfully! Your account is pending verification and activation by clinic front desk or administration. You will receive an email once verified.",
           data: user,
         },
         { status: 201 }

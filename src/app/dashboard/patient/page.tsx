@@ -37,22 +37,37 @@ export default async function PatientDashboardPage() {
     });
   }
 
-  const appointments = await db.appointment.findMany({
-    where: { patientId: patient.id },
-    include: {
-      doctor: {
-        include: {
-          user: {
-            select: {
-              name: true,
+  const [appointments, doctors] = await Promise.all([
+    db.appointment.findMany({
+      where: { patientId: patient.id },
+      include: {
+        doctor: {
+          include: {
+            user: {
+              select: {
+                name: true,
+              },
             },
           },
         },
       },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 30,
-  });
+      orderBy: { createdAt: "desc" },
+      take: 30,
+    }),
+    db.doctor.findMany({
+      where: { available: true },
+      include: {
+        user: {
+          select: {
+            name: true,
+            imageUrl: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 12,
+    }),
+  ]);
 
   type PatientPrescriptionItem = Awaited<
     ReturnType<
@@ -140,14 +155,63 @@ export default async function PatientDashboardPage() {
     serialNumber: a.serialNumber,
     status: a.status,
     notes: a.notes,
+    visitType: a.visitType,
+    fee:
+      a.fee !== null && a.fee !== undefined
+        ? a.fee
+        : a.visitType === "REPORT_REVIEW"
+        ? 0
+        : a.visitType === "FOLLOWUP"
+        ? (a.doctor.followupFee ?? 30)
+        : (a.doctor.newPatientFee ?? 50),
+    paymentStatus: a.paymentStatus,
+    paymentMethod: a.paymentMethod,
     appointmentDate: a.appointmentDate.toISOString(),
+    refundStatus: a.refundStatus,
+    refundAmount: a.refundAmount,
+    refundReason: a.refundReason,
+    cancellationReason: a.cancellationReason,
+    cancelledAt: a.cancelledAt ? a.cancelledAt.toISOString() : null,
+    cancelledByRole: a.cancelledByRole,
+    verifiedAt: a.verifiedAt ? a.verifiedAt.toISOString() : null,
+    verifiedBy: a.verifiedBy,
+    verificationNotes: a.verificationNotes,
     doctor: {
+      id: a.doctor.id,
       user: {
         name: a.doctor.user.name,
       },
       specialization: a.doctor.specialization,
       chamberAddress: a.doctor.chamberAddress,
+      newPatientFee: a.doctor.newPatientFee ?? 50,
+      followupFee: a.doctor.followupFee ?? 30,
+      reportFreeDays: a.doctor.reportFreeDays ?? 2,
+      cancellationWindowHours: a.doctor.cancellationWindowHours ?? 24,
     },
+  }));
+
+  const serializedDoctors = doctors.map((d) => ({
+    id: d.id,
+    name: d.user.name,
+    imageUrl: d.user.imageUrl,
+    specialization: d.specialization,
+    degrees: d.degrees,
+    designation: d.designation,
+    hospital: d.hospital,
+    chamberAddress: d.chamberAddress,
+    visitingHours: d.visitingHours,
+    consultationFee: d.consultationFee,
+    newPatientFee: d.newPatientFee ?? 50,
+    followupFee: d.followupFee ?? 30,
+    followupValidityDays: d.followupValidityDays ?? 90,
+    reportFreeDays: d.reportFreeDays ?? 2,
+    schedule: d.scheduleJson as {
+      days?: string[] | string;
+      startTime?: string;
+      endTime?: string;
+      hours?: string;
+      chamber?: string;
+    } | null,
   }));
 
   const serializedPrescriptions = prescriptions.map((p) => ({
@@ -175,6 +239,7 @@ export default async function PatientDashboardPage() {
       patientName={patient.user.name}
       initialAppointments={serializedAppointments}
       prescriptions={serializedPrescriptions}
+      doctors={serializedDoctors}
     />
   );
 }

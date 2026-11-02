@@ -138,6 +138,7 @@ export function SettingsManager() {
             </div>
           </div>
 
+          {/* Toggle 1: Email Verification */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
             <div className="space-y-1">
               <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -175,6 +176,92 @@ export function SettingsManager() {
               <span
                 className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
                   settings.requireEmailVerification ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Toggle 2: Super Admin Clinic Approval */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
+            <div className="space-y-1">
+              <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <span>Require Super Admin Approval for New Clinic Registrations</span>
+                {settings.requireOrgApproval ? (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                    Approval Required
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-500">
+                    Auto-Approved
+                  </span>
+                )}
+              </span>
+              <p className="text-xs text-slate-500 leading-relaxed max-w-xl">
+                When enabled, new clinic organizations cannot log in or manage patients until their account has been officially reviewed and confirmed by the platform Super Administrator.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSettings((prev) => ({
+                  ...prev,
+                  requireOrgApproval: !prev.requireOrgApproval,
+                }));
+                setSaveSuccess(false);
+              }}
+              className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                settings.requireOrgApproval
+                  ? "bg-[var(--brand-primary)]"
+                  : "bg-slate-300 dark:bg-slate-700"
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                  settings.requireOrgApproval ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Toggle 3: Patient Manual Verification */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
+            <div className="space-y-1">
+              <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <span>Require Clinic Staff / Admin Verification for New Patients</span>
+                {settings.requirePatientVerification ? (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                    Verification Required
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-500">
+                    Auto-Verified
+                  </span>
+                )}
+              </span>
+              <p className="text-xs text-slate-500 leading-relaxed max-w-xl">
+                When enabled, newly self-registered patient accounts remain pending until clinical front desk staff or hospital administrators verify their identity. After verification, patients receive a confirmation email and gain login access.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSettings((prev) => ({
+                  ...prev,
+                  requirePatientVerification: !prev.requirePatientVerification,
+                }));
+                setSaveSuccess(false);
+              }}
+              className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                settings.requirePatientVerification
+                  ? "bg-[var(--brand-primary)]"
+                  : "bg-slate-300 dark:bg-slate-700"
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                  settings.requirePatientVerification ? "translate-x-5" : "translate-x-0"
                 }`}
               />
             </button>

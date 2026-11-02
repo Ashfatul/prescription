@@ -17,12 +17,20 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   return withErrorHandling(req, async () => {
     const auth = await requireUser(req);
+    const host = req.headers.get("host") || "localhost:3000";
+    const protocol = req.headers.get("x-forwarded-proto") || "http";
+    const origin = `${protocol}://${host}`;
+
     return ok(
-      await createAppointment(await req.json(), {
-        role: auth.role,
-        userId: auth.sub,
-        organizationId: auth.organizationId,
-      }),
+      await createAppointment(
+        await req.json(),
+        {
+          role: auth.role,
+          userId: auth.sub,
+          organizationId: auth.organizationId,
+        },
+        origin
+      ),
       201
     );
   });

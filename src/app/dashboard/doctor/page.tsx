@@ -35,7 +35,12 @@ export default async function DoctorDashboardPage() {
 
   const [todaysAppointments, patients] = await Promise.all([
     db.appointment.findMany({
-      where: { doctorId: doctor.id },
+      where: {
+        doctorId: doctor.id,
+        status: {
+          not: "CANCELLED",
+        },
+      },
       include: {
         patient: {
           include: {

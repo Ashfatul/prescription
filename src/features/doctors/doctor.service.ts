@@ -139,10 +139,14 @@ export async function getDoctorQueue(id: string) {
     orderBy: { serialNumber: "asc" },
   });
 
-  const activeQueue = queue.filter((item) => item.status !== AppointmentStatus.CANCELLED);
+  const activeQueue = queue.filter(
+    (item) => item.status === AppointmentStatus.CONFIRMED || item.status === AppointmentStatus.BOOKED || item.status === AppointmentStatus.COMPLETED
+  );
   const missedQueue = queue.filter((item) => item.status === AppointmentStatus.CANCELLED);
   const completedQueue = queue.filter((item) => item.status === AppointmentStatus.COMPLETED);
-  const bookedQueue = queue.filter((item) => item.status === AppointmentStatus.BOOKED);
+  const bookedQueue = queue.filter(
+    (item) => item.status === AppointmentStatus.CONFIRMED || item.status === AppointmentStatus.BOOKED
+  );
 
   const current = bookedQueue[0] || null;
   const previous = completedQueue.length > 0 ? completedQueue[completedQueue.length - 1] : null;

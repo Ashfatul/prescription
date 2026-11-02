@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { RoleName, OrganizationStatus } from "@prisma/client";
 import { db } from "@/lib/db";
 import { withErrorHandling } from "@/lib/api-handler";
 import { AppError } from "@/lib/errors";
@@ -54,6 +55,42 @@ export async function GET(req: NextRequest) {
       entityId: user.id,
       detailsJson: { email: user.email },
     });
+
+    const isOrgPending =
+      updatedUser.role.name !== RoleName.SUPER_ADMIN &&
+      updatedUser.organization &&
+      (updatedUser.organization.status === OrganizationStatus.PENDING_APPROVAL ||
+        updatedUser.organization.isApproved === false);
+
+    const isPatientPending =
+      updatedUser.role.name === RoleName.PATIENT && updatedUser.isApproved === false;
+
+    const isUserPending =
+      updatedUser.role.name !== RoleName.SUPER_ADMIN && updatedUser.isApproved === false;
+
+    if (isOrgPending || isPatientPending || isUserPending) {
+      const message = isOrgPending
+        ? "Email address verified successfully! Your clinic registration is now awaiting review and confirmation by the Super Administrator. You will receive an email once approved."
+        : isPatientPending
+        ? "Email address verified successfully! Your patient account is now awaiting verification by clinic administration or front desk staff. You will receive an email once verified."
+        : "Email address verified successfully! Your account is awaiting administrative approval.";
+
+      return NextResponse.json({
+        success: true,
+        pendingApproval: true,
+        isOrgPending: Boolean(isOrgPending),
+        isPatientPending: Boolean(isPatientPending),
+        message,
+        data: {
+          id: updatedUser.id,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          role: updatedUser.role.name,
+          organizationId: updatedUser.organizationId,
+          pendingApproval: true,
+        },
+      });
+    }
 
     // Sign session token so user can proceed directly
     const sessionToken = await signToken({

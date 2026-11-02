@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Calendar, 
   Search, 
-  Clock, 
   MapPin, 
   ChevronDown, 
   ChevronUp, 
@@ -18,6 +17,7 @@ import {
 import { useLanguage } from "@/lib/i18n/language-context";
 import { useAuth } from "@/lib/auth/auth-context";
 import { AppointmentBookingModal } from "@/components/appointments/appointment-booking-modal";
+import { DoctorScheduleDisplay } from "@/components/doctors/doctor-schedule-display";
 
 type ScheduleData = {
   days?: string[] | string;
@@ -37,44 +37,18 @@ type PublicDoctor = {
   hospital?: string | null;
   chamberAddress?: string | null;
   contactNumber?: string | null;
+  visitingHours?: string | null;
+  consultationFee?: string | null;
+  newPatientFee?: number | null;
+  followupFee?: number | null;
+  followupValidityDays?: number | null;
+  reportFreeDays?: number | null;
   available: boolean;
   schedule: ScheduleData | null;
   currentSerial: number;
 };
 
 const INITIAL_DISPLAY_LIMIT = 9;
-
-function formatSchedule(schedule: ScheduleData | null | undefined): string | null {
-  if (!schedule || typeof schedule !== "object") return null;
-
-  if (schedule.days) {
-    const daysStr = Array.isArray(schedule.days)
-      ? schedule.days.map((d) => d.slice(0, 3)).join(", ")
-      : String(schedule.days);
-    const timeStr =
-      schedule.hours ||
-      (schedule.startTime && schedule.endTime ? `${schedule.startTime} - ${schedule.endTime}` : null) ||
-      schedule.startTime ||
-      "";
-    const chamberStr = schedule.chamber ? ` • ${schedule.chamber}` : "";
-    return timeStr ? `${daysStr}: ${timeStr}${chamberStr}` : `${daysStr}${chamberStr}`;
-  }
-
-  const entries = Object.entries(schedule).filter(([, v]) => typeof v === "string" || typeof v === "number");
-  if (entries.length > 0) {
-    return entries
-      .map(([key, val]) => {
-        const formattedKey = key
-          .replace(/([A-Z])/g, " $1")
-          .replace(/^./, (s) => s.toUpperCase())
-          .trim();
-        return `${formattedKey}: ${val}`;
-      })
-      .join(" | ");
-  }
-
-  return null;
-}
 
 interface DoctorListProps {
   initialLimit?: number;
@@ -275,8 +249,6 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT }: DoctorListP
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence mode="popLayout">
             {displayedDoctors.map((doctor, index) => {
-              const formattedSchedule = formatSchedule(doctor.schedule);
-
               return (
                 <motion.div
                   key={doctor.id}
@@ -349,29 +321,55 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT }: DoctorListP
 
                     {/* Hospital & Chamber Location */}
                     {doctor.hospital && (
-                      <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300 mb-2 truncate">
+                      <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300 mb-3 truncate">
                         <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                         <span className="truncate">{doctor.hospital}</span>
                       </div>
                     )}
 
-                    {/* Visiting Schedule Pill */}
-                    {formattedSchedule && (
-                      <div className="p-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] mb-4 text-xs">
-                        <div className="flex items-center gap-1 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                          <Clock className="w-3 h-3 text-[var(--brand-primary)]" />
-                          <span>{t.schedule}</span>
-                        </div>
-                        <p className="text-slate-700 dark:text-slate-300 leading-snug font-medium">
-                          {formattedSchedule}
-                        </p>
-                      </div>
-                    )}
+                    {/* Visiting Schedule & Visual Day Strip */}
+                    <div className="mb-3">
+                      <DoctorScheduleDisplay
+                        schedule={doctor.schedule}
+                        visitingHours={doctor.visitingHours}
+                        chamber={doctor.chamberAddress || doctor.hospital}
+                        compact={false}
+                        showEmergencyNotice={true}
+                      />
+                    </div>
                   </div>
 
                   <div>
+                    {/* Dynamic Doctor Consultation Fee Strip */}
+                    <div className="grid grid-cols-3 gap-1.5 p-2 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] mb-3 text-center">
+                      <div className="p-1">
+                        <span className="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">
+                          1st Visit
+                        </span>
+                        <span className="font-black text-xs text-blue-700 dark:text-blue-300 font-mono">
+                          ${doctor.newPatientFee ?? 50}
+                        </span>
+                      </div>
+                      <div className="p-1 border-x border-[var(--border-subtle)]">
+                        <span className="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">
+                          Follow-up
+                        </span>
+                        <span className="font-black text-xs text-teal-700 dark:text-teal-300 font-mono">
+                          ${doctor.followupFee ?? 30}
+                        </span>
+                      </div>
+                      <div className="p-1">
+                        <span className="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">
+                          Report
+                        </span>
+                        <span className="font-black text-xs text-emerald-600 dark:text-emerald-400 font-mono">
+                          Free (${0})
+                        </span>
+                      </div>
+                    </div>
+
                     {/* Live Serial Counter */}
-                    <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs mb-3">
+                    <div className="pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs mb-3">
                       <div>
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                           {t.currentSerial}

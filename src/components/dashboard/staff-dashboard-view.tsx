@@ -24,6 +24,7 @@ export function StaffDashboardView({ userId }: { userId: string }) {
       {/* Horizontal Dashboard Navigation Bar */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
         {[
+          { id: "verifications", label: "✅ Appointment Verifications" },
           { id: "reception", label: "📋 Reception Desk & Walk-ins" },
           { id: "schedules", label: "📅 Doctor Visiting Schedules" },
           { id: "chat", label: "💬 Clinical Consultation Chat" },
@@ -51,8 +52,10 @@ export function StaffDashboardView({ userId }: { userId: string }) {
       {tab === "schedules" && <StaffSchedulingManager />}
       {tab === "chat" && <ClinicalChat currentUserId={userId} />}
       {tab === "announcements" && <AnnouncementsManager canManage={true} userRole="STAFF" />}
-      {(tab === "reception" || (tab !== "schedules" && tab !== "chat" && tab !== "announcements")) && (
-        <ReceptionManager />
+      {tab === "verifications" && <ReceptionManager initialTab="verifications" />}
+      {tab === "reception" && <ReceptionManager initialTab="checkin" />}
+      {tab !== "schedules" && tab !== "chat" && tab !== "announcements" && tab !== "verifications" && tab !== "reception" && (
+        <ReceptionManager initialTab="verifications" />
       )}
     </div>
   );
