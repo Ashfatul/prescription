@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { CustomSelect } from "@/components/common/custom-select";
 import {
   Users,
   Search,
@@ -160,44 +161,52 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
           {/* Filter Dropdowns */}
           <div className="flex flex-wrap items-center gap-2.5">
             {/* Clinic Filter */}
-            <select
-              value={selectedClinic}
-              onChange={(e) => setSelectedClinic(e.target.value)}
-              aria-label="Filter staff by clinic"
-              className="px-3.5 py-2.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-[var(--brand-primary)] cursor-pointer"
-            >
-              <option value="ALL">All Clinics & Chambers</option>
-              {clinics.map((c) => (
-                <option key={c.slug} value={c.slug}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+            <div className="w-full sm:w-56">
+              <CustomSelect
+                size="sm"
+                allowClear={false}
+                value={selectedClinic}
+                onChange={(val) => setSelectedClinic(val)}
+                options={[
+                  { value: "ALL", label: "All Clinics & Chambers" },
+                  ...clinics.map((c) => ({ value: c.slug, label: c.name })),
+                ]}
+                searchable={clinics.length > 5}
+              />
+            </div>
 
             {/* Role Filter */}
-            <select
-              value={selectedRole}
-              onChange={(e) => setSelectedRole(e.target.value)}
-              aria-label="Filter staff by role"
-              className="px-3.5 py-2.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-[var(--brand-primary)] cursor-pointer"
-            >
-              <option value="ALL">All Roles</option>
-              <option value="STAFF">Front Desk & Triage (STAFF)</option>
-              <option value="ADMIN">Clinic Administration (ADMIN)</option>
-              <option value="DOCTOR">Consulting Physicians (DOCTOR)</option>
-            </select>
+            <div className="w-full sm:w-52">
+              <CustomSelect
+                size="sm"
+                allowClear={false}
+                value={selectedRole}
+                onChange={(val) => setSelectedRole(val)}
+                options={[
+                  { value: "ALL", label: "All Roles" },
+                  { value: "STAFF", label: "Front Desk & Triage (STAFF)" },
+                  { value: "ADMIN", label: "Clinic Administration (ADMIN)" },
+                  { value: "DOCTOR", label: "Consulting Physicians (DOCTOR)" },
+                ]}
+                searchable={false}
+              />
+            </div>
 
             {/* Sort Selector */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as "name" | "role" | "clinic")}
-              aria-label="Sort staff members"
-              className="px-3.5 py-2.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-[var(--brand-primary)] cursor-pointer"
-            >
-              <option value="name">Sort by Name (A-Z)</option>
-              <option value="role">Sort by Role</option>
-              <option value="clinic">Sort by Clinic</option>
-            </select>
+            <div className="w-full sm:w-48">
+              <CustomSelect
+                size="sm"
+                allowClear={false}
+                value={sortBy}
+                onChange={(val) => setSortBy(val as "name" | "role" | "clinic")}
+                options={[
+                  { value: "name", label: "Sort by Name (A-Z)" },
+                  { value: "role", label: "Sort by Role" },
+                  { value: "clinic", label: "Sort by Clinic" },
+                ]}
+                searchable={false}
+              />
+            </div>
           </div>
         </div>
 

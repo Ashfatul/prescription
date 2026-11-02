@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { CustomSelect } from "@/components/common/custom-select";
 import {
   Building2,
   Search,
@@ -195,17 +196,21 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
 
             {/* Sort Selector */}
             <div className="flex items-center gap-2 text-xs">
-              <span className="text-slate-400 hidden sm:inline">Sort:</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as "doctors" | "recent" | "alpha")}
-                aria-label="Sort clinics by criteria"
-                className="px-3 py-2 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-[var(--brand-primary)] cursor-pointer"
-              >
-                <option value="doctors">Most Doctors First</option>
-                <option value="recent">Recently Added</option>
-                <option value="alpha">Alphabetical (A - Z)</option>
-              </select>
+              <span className="text-slate-400 hidden sm:inline font-semibold">Sort:</span>
+              <div className="w-48">
+                <CustomSelect
+                  size="sm"
+                  allowClear={false}
+                  value={sortBy}
+                  onChange={(val) => setSortBy(val as "doctors" | "recent" | "alpha")}
+                  options={[
+                    { value: "doctors", label: "Most Doctors First" },
+                    { value: "recent", label: "Recently Added" },
+                    { value: "alpha", label: "Alphabetical (A - Z)" },
+                  ]}
+                  searchable={false}
+                />
+              </div>
             </div>
           </div>
         </div>

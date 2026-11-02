@@ -3,6 +3,7 @@
 import { FormEvent, useRef, useState } from "react";
 import Image from "next/image";
 import { ChangePasswordCard } from "@/components/common/change-password-card";
+import { CustomSelect } from "@/components/common/custom-select";
 
 export type DoctorProfile = {
   id: string;
@@ -543,16 +544,18 @@ export function DoctorProfileEditor({
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                 Follow-up Validity (Days)
               </label>
-              <select
-                value={followupValidityDays}
-                onChange={(e) => setFollowupValidityDays(Number(e.target.value))}
-                className="w-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-3.5 py-2.5 text-xs font-semibold outline-none focus:border-[var(--brand-primary)]"
-              >
-                <option value={30}>30 Days (1 Month)</option>
-                <option value={60}>60 Days (2 Months)</option>
-                <option value={90}>90 Days (3 Months - Recommended)</option>
-                <option value={180}>180 Days (6 Months)</option>
-              </select>
+              <CustomSelect
+                allowClear={false}
+                value={String(followupValidityDays)}
+                onChange={(val) => setFollowupValidityDays(Number(val))}
+                options={[
+                  { value: "30", label: "30 Days (1 Month)" },
+                  { value: "60", label: "60 Days (2 Months)" },
+                  { value: "90", label: "90 Days (3 Months - Recommended)" },
+                  { value: "180", label: "180 Days (6 Months)" },
+                ]}
+                searchable={false}
+              />
               <span className="mt-1 block text-[10px] text-slate-400">Requires previous prescription</span>
             </div>
 
@@ -560,17 +563,19 @@ export function DoctorProfileEditor({
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                 Free Report Review (Days)
               </label>
-              <select
-                value={reportFreeDays}
-                onChange={(e) => setReportFreeDays(Number(e.target.value))}
-                className="w-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-3.5 py-2.5 text-xs font-semibold outline-none focus:border-[var(--brand-primary)]"
-              >
-                <option value={0}>No free window (Charge immediate follow-up)</option>
-                <option value={2}>2 Days after visit ($0 Free - Recommended)</option>
-                <option value={3}>3 Days after visit ($0 Free)</option>
-                <option value={5}>5 Days after visit ($0 Free)</option>
-                <option value={7}>7 Days after visit ($0 Free)</option>
-              </select>
+              <CustomSelect
+                allowClear={false}
+                value={String(reportFreeDays)}
+                onChange={(val) => setReportFreeDays(Number(val))}
+                options={[
+                  { value: "0", label: "No free window (Charge immediate follow-up)" },
+                  { value: "2", label: "2 Days after visit ($0 Free - Recommended)" },
+                  { value: "3", label: "3 Days after visit ($0 Free)" },
+                  { value: "5", label: "5 Days after visit ($0 Free)" },
+                  { value: "7", label: "7 Days after visit ($0 Free)" },
+                ]}
+                searchable={false}
+              />
               <span className="mt-1 block text-[10px] text-slate-400">Diagnostic report check window</span>
             </div>
           </div>

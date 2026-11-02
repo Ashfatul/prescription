@@ -26,6 +26,8 @@ export interface SearchableSelectProps {
   required?: boolean;
   error?: string;
   searchable?: boolean;
+  size?: "sm" | "md";
+  allowClear?: boolean;
 }
 
 export function SearchableSelect({
@@ -42,6 +44,8 @@ export function SearchableSelect({
   required,
   error,
   searchable,
+  size = "md",
+  allowClear = true,
 }: SearchableSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -151,7 +155,11 @@ export function SearchableSelect({
         tabIndex={disabled ? -1 : 0}
         onClick={() => !disabled && (isOpen ? setIsOpen(false) : openDropdown())}
         onKeyDown={handleKeyDown}
-        className={`w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl border transition-all text-sm outline-none cursor-pointer select-none min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px] ${
+        className={`w-full flex items-center justify-between gap-2.5 rounded-xl border transition-all outline-none cursor-pointer select-none ${
+          size === "sm"
+            ? "px-3 py-1.5 text-xs min-h-[38px] h-[38px]"
+            : "px-4 py-2.5 text-sm min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
+        } ${
           disabled
             ? "opacity-60 cursor-not-allowed bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800"
             : isOpen
@@ -181,7 +189,7 @@ export function SearchableSelect({
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0 text-slate-400">
-          {value && !disabled && (
+          {allowClear && value && !disabled && (
             <button
               type="button"
               onClick={(e) => {
@@ -215,7 +223,7 @@ export function SearchableSelect({
 
       {/* Dropdown Popover */}
       {isOpen && (
-        <div className="absolute left-0 right-0 z-50 mt-2 max-h-72 w-full rounded-3xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-2.5 shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 flex flex-col">
+        <div className="absolute left-0 z-50 mt-2 max-h-72 w-full min-w-[200px] rounded-2xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-2.5 shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 flex flex-col">
           {/* Search bar */}
           {shouldShowSearch && (
             <div className="relative mb-2 shrink-0">
