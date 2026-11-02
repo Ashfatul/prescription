@@ -356,7 +356,7 @@ export function HospitalQueueDisplay({ initialDoctorId }: { initialDoctorId?: st
             </span>
           </div>
 
-          <div className="space-y-2 max-h-[600px] overflow-y-auto pr-1">
+          <div className="space-y-2 max-h-[600px] overflow-y-auto px-1.5 py-1">
             {doctors.map((doc, idx) => {
               const isSelected = idx === selectedIndex;
               return (
@@ -364,12 +364,19 @@ export function HospitalQueueDisplay({ initialDoctorId }: { initialDoctorId?: st
                   key={doc.id}
                   type="button"
                   onClick={() => handleSelectDoctor(idx)}
-                  className={`w-full p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                  className={`relative w-full p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between gap-3 ${
                     isSelected
-                      ? "bg-[var(--brand-surface)] border-[var(--brand-primary)] shadow-sm scale-[1.01]"
+                      ? "bg-[var(--brand-surface)] border-[var(--brand-primary)] shadow-xs ring-1 ring-[var(--brand-primary)]/40"
                       : "bg-[var(--bg-app)] border-[var(--border-subtle)] hover:border-[var(--brand-border)] hover:bg-[var(--bg-subtle)]"
                   }`}
                 >
+                  {/* Dedicated active selection accent strip */}
+                  {isSelected && (
+                    <span
+                      className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-[var(--brand-primary)]"
+                      aria-hidden="true"
+                    />
+                  )}
                   <div className="flex items-center gap-3 truncate">
                     <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-[var(--bg-surface)] border border-[var(--border-subtle)] shrink-0">
                       {doc.imageUrl ? (

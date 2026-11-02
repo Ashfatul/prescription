@@ -6,18 +6,15 @@ import {
   CheckCircle2, 
   Clock, 
   FileSpreadsheet, 
-  HeartPulse, 
   Layers, 
   Microscope, 
   PhoneCall, 
   Pill, 
   Printer, 
-  ShieldCheck, 
   Sparkles, 
   Stethoscope, 
   Tv,
-  Users, 
-  Zap 
+  Users
 } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
