@@ -64,7 +64,13 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT }: DoctorListP
   const [selectedDoctorForBooking, setSelectedDoctorForBooking] = useState<string | undefined>(undefined);
   
   // Filtering & Expand/Collapse state
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("search") || params.get("clinic") || "";
+    }
+    return "";
+  });
   const [selectedSpecialty, setSelectedSpecialty] = useState<string>("All");
   const [isExpanded, setIsExpanded] = useState(false);
 

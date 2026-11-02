@@ -22,6 +22,9 @@ import {
   ArrowRight, 
   ShieldCheck, 
   Tv,
+  Building2,
+  Users,
+  Layers,
 } from "lucide-react";
 import { LanguageToggle } from "@/components/common/language-toggle";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
@@ -187,34 +190,8 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
               </Link>
             </div>
 
-            {/* Center: Streamlined Reduced Menu Trigger Button & Fast Doctor Link */}
-            <div className="flex items-center gap-2">
-              {/* Quick Primary Shortcut: Find Doctors */}
-              <Link
-                href="/doctors"
-                className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
-                  pathname === "/doctors"
-                    ? "bg-[var(--brand-surface)] text-[var(--brand-text)] border-[var(--brand-border)] font-bold shadow-2xs"
-                    : "bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-200 border-[var(--border-subtle)] hover:border-[var(--brand-border)] hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)]"
-                }`}
-              >
-                <Stethoscope className="w-3.5 h-3.5 text-[var(--brand-primary)] shrink-0" />
-                <span>Find Doctors</span>
-              </Link>
-
-              {/* Quick Live Queue Display Shortcut */}
-              <Link
-                href="/live-queue"
-                className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
-                  pathname === "/live-queue"
-                    ? "bg-[var(--brand-surface)] text-[var(--brand-text)] border-[var(--brand-border)] font-bold shadow-2xs"
-                    : "bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-200 border-[var(--border-subtle)] hover:border-[var(--brand-border)] hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)]"
-                }`}
-              >
-                <Tv className="w-3.5 h-3.5 text-[var(--brand-primary)] shrink-0" />
-                <span>Live TV Display</span>
-              </Link>
-
+            {/* Center: Streamlined Menu Button - Triggers Directory Takeover */}
+            <div className="flex items-center">
               {/* Modern "Menu" Button with Icon - Triggers Full-Screen Menu */}
               <button
                 type="button"
@@ -370,7 +347,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
           <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-1 relative z-1">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               
-              {/* Column 1: Clinical Practice & Chambers */}
+              {/* Column 1: Clinical Directory & Care (4 Clean Items) */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2.5 pb-2 border-b border-[var(--border-subtle)]">
                   <div className="w-8 h-8 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center">
@@ -381,12 +358,36 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                       Clinical Chambers & Care
                     </h4>
                     <p className="text-[11px] text-slate-500">
-                      Physicians, consultations & triage
+                      Directory of clinics, specialists & healthcare teams
                     </p>
                   </div>
                 </div>
 
                 <div className="space-y-2.5">
+                  <Link
+                    href="/clinics"
+                    onClick={(e) => handleNavClick(e, "/clinics")}
+                    className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <Building2 className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)] flex items-center gap-1.5">
+                          <span>Registered Clinics</span>
+                          <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)]">
+                            All
+                          </span>
+                        </span>
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Browse all accredited polyclinics, hospitals & specialized medical centers
+                      </p>
+                    </div>
+                  </Link>
+
                   <Link
                     href="/doctors"
                     onClick={(e) => handleNavClick(e, "/doctors")}
@@ -398,56 +399,36 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
-                          Find Doctors & Chambers
+                          Consulting Physicians
                         </span>
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Browse verified doctors, BMDC credentials, degrees & visiting hours
+                        Verified doctors, BMDC credentials, chamber hours & appointment booking
                       </p>
                     </div>
                   </Link>
 
                   <Link
-                    href="/doctors"
-                    onClick={(e) => handleNavClick(e, "/doctors")}
+                    href="/staff"
+                    onClick={(e) => handleNavClick(e, "/staff")}
                     className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
                   >
-                    <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
-                      <Calendar className="w-4 h-4" />
+                    <div className="w-9 h-9 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <Users className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
-                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
-                          Book Appointment & Serial
+                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)] flex items-center gap-1.5">
+                          <span>Clinical Staff Directory</span>
+                          <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)]">
+                            Team
+                          </span>
                         </span>
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Schedule a consultation slot with instant OPD serial confirmation
-                      </p>
-                    </div>
-                  </Link>
-
-                  <Link
-                    href="/dashboard/staff"
-                    onClick={(e) => handleNavClick(e, "/dashboard/staff")}
-                    className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
-                  >
-                    <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
-                      <ClipboardList className="w-4 h-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
-                          Reception & Triage Desk
-                        </span>
-                        <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
-                          Staff
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        Patient queue management, check-in, triage & doctor availability
+                        Browse hospital staff, receptionists, triage coordinators & clinic admins
                       </p>
                     </div>
                   </Link>
@@ -469,14 +450,14 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Real-time waiting room calling screen with auto-cycling doctor serials & missed calls
+                        Real-time waiting room calling screen with auto-cycling doctor serial tokens
                       </p>
                     </div>
                   </Link>
                 </div>
               </div>
 
-              {/* Column 2: SaaS Platform & Prescribing Suite */}
+              {/* Column 2: SaaS Platform & Prescribing Suite (4 Clean Items) */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2.5 pb-2 border-b border-[var(--border-subtle)]">
                   <div className="w-8 h-8 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center">
@@ -557,10 +538,33 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                       </p>
                     </div>
                   </Link>
+
+                  <Link
+                    href="/dashboard/templates"
+                    onClick={(e) => handleNavClick(e, "/dashboard/templates")}
+                    className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block cursor-pointer"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <Layers className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
+                          WYSIWYG Template Studio
+                        </span>
+                        <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                          Design
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Custom clinic insignia, hospital letterhead, watermarks & legal disclaimers
+                      </p>
+                    </div>
+                  </Link>
                 </div>
               </div>
 
-              {/* Column 3: Portals, Accounts & Direct Hotline */}
+              {/* Column 3: Portals, Access & Support (4 Clean Items) */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2.5 pb-2 border-b border-[var(--border-subtle)]">
                   <div className="w-8 h-8 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center">
@@ -578,27 +582,6 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
 
                 <div className="space-y-2.5">
                   <Link
-                    href="/auth/register"
-                    onClick={(e) => handleNavClick(e, "/auth/register")}
-                    className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
-                  >
-                    <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
-                      <UserPlus className="w-4 h-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
-                          Patient Self-Registration
-                        </span>
-                        <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
-                      </div>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        Create a free patient medical account with instant clinic assignment
-                      </p>
-                    </div>
-                  </Link>
-
-                  <Link
                     href="/auth/login"
                     onClick={(e) => handleNavClick(e, "/auth/login")}
                     className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
@@ -615,6 +598,50 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
                         Secure authorization for doctors, hospital staff & administrators
+                      </p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/dashboard/staff"
+                    onClick={(e) => handleNavClick(e, "/dashboard/staff")}
+                    className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <ClipboardList className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
+                          Reception & Triage Desk
+                        </span>
+                        <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
+                          Staff
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Patient queue management, check-in, triage & doctor availability
+                      </p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/auth/register"
+                    onClick={(e) => handleNavClick(e, "/auth/register")}
+                    className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <UserPlus className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
+                          Patient Self-Registration
+                        </span>
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Create a free patient medical account with instant clinic assignment
                       </p>
                     </div>
                   </Link>

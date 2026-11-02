@@ -155,8 +155,21 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
             </h3>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link href="/doctors" className="hover:text-[var(--brand-text)] transition font-semibold text-[var(--brand-text)]">
+                <Link href="/clinics" className="hover:text-[var(--brand-text)] transition flex items-center gap-1.5 font-semibold text-[var(--brand-text)]">
+                  <span>Registered Clinics Directory</span>
+                  <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)]">
+                    All
+                  </span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/doctors" className="hover:text-[var(--brand-text)] transition flex items-center gap-1.5">
                   Consulting Physicians Directory
+                </Link>
+              </li>
+              <li>
+                <Link href="/staff" className="hover:text-[var(--brand-text)] transition flex items-center gap-1.5">
+                  <span>Clinical Staff Directory</span>
                 </Link>
               </li>
               <li>

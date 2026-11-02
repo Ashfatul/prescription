@@ -2,6 +2,8 @@ export const dictionary = {
   en: {
     appTitle: "Patient Prescription Management System",
     doctors: "Doctors",
+    clinics: "Clinics",
+    staff: "Staff",
     schedule: "Schedule",
     availability: "Availability",
     currentSerial: "Current Serial",
@@ -13,6 +15,8 @@ export const dictionary = {
   bn: {
     appTitle: "রোগী প্রেসক্রিপশন ম্যানেজমেন্ট সিস্টেম",
     doctors: "ডাক্তার",
+    clinics: "ক্লিনিক",
+    staff: "কর্মী",
     schedule: "সময়সূচী",
     availability: "উপলভ্যতা",
     currentSerial: "চলমান সিরিয়াল",
