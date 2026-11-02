@@ -8,20 +8,48 @@ export default async function PatientDashboardPage() {
 
   let patient = await db.patient.findUnique({
     where: { userId: user.id },
-    include: { user: true },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+        },
+      },
+    },
   });
 
   // Auto-initialize patient record if missing
   if (!patient) {
     patient = await db.patient.create({
       data: { userId: user.id },
-      include: { user: true },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+          },
+        },
+      },
     });
   }
 
   const appointments = await db.appointment.findMany({
     where: { patientId: patient.id },
-    include: { doctor: { include: { user: true } } },
+    include: {
+      doctor: {
+        include: {
+          user: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
     orderBy: { createdAt: "desc" },
     take: 30,
   });
@@ -31,7 +59,15 @@ export default async function PatientDashboardPage() {
       typeof db.prescription.findMany<{
         where: { patientId: string };
         include: {
-          doctor: { include: { user: true } };
+          doctor: {
+            include: {
+              user: {
+                select: {
+                  name: true,
+                },
+              },
+            };
+          };
           versions: {
             select: {
               id: true;
@@ -50,7 +86,15 @@ export default async function PatientDashboardPage() {
     prescriptions = await db.prescription.findMany({
       where: { patientId: patient.id },
       include: {
-        doctor: { include: { user: true } },
+        doctor: {
+          include: {
+            user: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
         versions: {
           select: {
             id: true,
@@ -69,7 +113,15 @@ export default async function PatientDashboardPage() {
       const base = await db.prescription.findMany({
         where: { patientId: patient.id },
         include: {
-          doctor: { include: { user: true } },
+          doctor: {
+            include: {
+              user: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
         },
         orderBy: { updatedAt: "desc" },
         take: 30,

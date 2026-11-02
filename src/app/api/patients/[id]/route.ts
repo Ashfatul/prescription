@@ -15,7 +15,7 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
     if (user.role !== RoleName.SUPER_ADMIN && user.organizationId) {
       const existing = await db.patient.findUnique({
         where: { id },
-        include: { user: true },
+        include: { user: { select: { organizationId: true } } },
       });
       if (
         existing &&
@@ -38,7 +38,7 @@ export async function DELETE(req: NextRequest, context: { params: Promise<{ id: 
     if (user.role !== RoleName.SUPER_ADMIN && user.organizationId) {
       const existing = await db.patient.findUnique({
         where: { id },
-        include: { user: true },
+        include: { user: { select: { organizationId: true } } },
       });
       if (
         existing &&

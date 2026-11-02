@@ -4,6 +4,15 @@ import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import { logActivity } from "@/features/activity-log/activity-log.service";
 
+const userSafeSelect = {
+  id: true,
+  name: true,
+  email: true,
+  phone: true,
+  imageUrl: true,
+  signatureUrl: true,
+};
+
 export async function togglePrescriptionSharing(
   prescriptionId: string,
   enable?: boolean,
@@ -12,8 +21,8 @@ export async function togglePrescriptionSharing(
   const existing = await db.prescription.findUnique({
     where: { id: prescriptionId },
     include: {
-      doctor: { include: { user: true } },
-      patient: { include: { user: true } },
+      doctor: { include: { user: { select: userSafeSelect } } },
+      patient: { include: { user: { select: userSafeSelect } } },
     },
   });
 
@@ -31,8 +40,8 @@ export async function togglePrescriptionSharing(
       shareToken,
     },
     include: {
-      doctor: { include: { user: true } },
-      patient: { include: { user: true } },
+      doctor: { include: { user: { select: userSafeSelect } } },
+      patient: { include: { user: { select: userSafeSelect } } },
       template: true,
     },
   });
@@ -91,8 +100,8 @@ export async function sendPrescriptionShareEmail(params: {
   const prescription = await db.prescription.findUnique({
     where: { id: params.prescriptionId },
     include: {
-      doctor: { include: { user: true } },
-      patient: { include: { user: true } },
+      doctor: { include: { user: { select: userSafeSelect } } },
+      patient: { include: { user: { select: userSafeSelect } } },
     },
   });
 
@@ -144,8 +153,8 @@ export async function getPrescriptionByShareToken(token: string) {
   const prescription = await db.prescription.findUnique({
     where: { shareToken: token },
     include: {
-      doctor: { include: { user: true } },
-      patient: { include: { user: true } },
+      doctor: { include: { user: { select: userSafeSelect } } },
+      patient: { include: { user: { select: userSafeSelect } } },
       template: true,
       attachments: { include: { file: true } },
       organization: true,

@@ -16,9 +16,31 @@ type ListOptions = {
   organizationId?: string | null;
 };
 
+const userSafeSelect = {
+  id: true,
+  name: true,
+  email: true,
+  phone: true,
+  imageUrl: true,
+  signatureUrl: true,
+  organizationId: true,
+};
+
 const prescriptionInclude = {
-  doctor: { include: { user: true } },
-  patient: { include: { user: true } },
+  doctor: {
+    include: {
+      user: {
+        select: userSafeSelect,
+      },
+    },
+  },
+  patient: {
+    include: {
+      user: {
+        select: userSafeSelect,
+      },
+    },
+  },
   template: true,
   attachments: { include: { file: true } },
   versions: {
@@ -30,6 +52,29 @@ const prescriptionInclude = {
       createdById: true,
     },
     orderBy: { versionNumber: "desc" as const },
+  },
+};
+
+const prescriptionFullInclude = {
+  doctor: {
+    include: {
+      user: {
+        select: userSafeSelect,
+      },
+    },
+  },
+  patient: {
+    include: {
+      user: {
+        select: userSafeSelect,
+      },
+    },
+  },
+  template: true,
+  attachments: { include: { file: true } },
+  appointment: true,
+  versions: {
+    orderBy: { versionNumber: "asc" as const },
   },
 };
 
@@ -69,7 +114,11 @@ export async function createPrescription(input: unknown) {
 
   const doc = await db.doctor.findUnique({
     where: { id: data.doctorId },
-    include: { user: true },
+    include: {
+      user: {
+        select: { organizationId: true },
+      },
+    },
   });
   const orgId = doc?.user?.organizationId || null;
   const shareToken = `rx-${crypto.randomBytes(8).toString("hex")}`;
@@ -130,15 +179,7 @@ export async function createPrescription(input: unknown) {
 
     return tx.prescription.findUnique({
       where: { id: prescription.id },
-      include: {
-        doctor: { include: { user: true } },
-        patient: { include: { user: true } },
-        template: true,
-        attachments: { include: { file: true } },
-        versions: {
-          orderBy: { versionNumber: "asc" },
-        },
-      },
+      include: prescriptionFullInclude,
     });
   });
 
@@ -179,16 +220,7 @@ export async function createPrescription(input: unknown) {
 export async function getPrescription(id: string, versionNumber?: number) {
   const item = await db.prescription.findUnique({
     where: { id },
-    include: {
-      doctor: { include: { user: true } },
-      patient: { include: { user: true } },
-      template: true,
-      attachments: { include: { file: true } },
-      appointment: true,
-      versions: {
-        orderBy: { versionNumber: "asc" },
-      },
-    },
+    include: prescriptionFullInclude,
   });
 
   if (!item) {
@@ -316,15 +348,7 @@ export async function updatePrescription(id: string, input: unknown) {
 
     return tx.prescription.findUnique({
       where: { id },
-      include: {
-        doctor: { include: { user: true } },
-        patient: { include: { user: true } },
-        template: true,
-        attachments: { include: { file: true } },
-        versions: {
-          orderBy: { versionNumber: "asc" },
-        },
-      },
+      include: prescriptionFullInclude,
     });
   });
 }

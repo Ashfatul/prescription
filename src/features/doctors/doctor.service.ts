@@ -4,6 +4,21 @@ import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import { doctorSchema, doctorUpdateSchema } from "@/features/doctors/doctor.schema";
 
+const doctorUserSafeSelect = {
+  id: true,
+  name: true,
+  email: true,
+  phone: true,
+  imageUrl: true,
+  signatureUrl: true,
+  theme: true,
+  accent: true,
+  roleId: true,
+  organizationId: true,
+  createdAt: true,
+  updatedAt: true,
+};
+
 export async function listDoctors(organizationId?: string) {
   return db.doctor.findMany({
     where: organizationId
@@ -11,7 +26,11 @@ export async function listDoctors(organizationId?: string) {
           OR: [{ organizationId }, { user: { organizationId } }],
         }
       : undefined,
-    include: { user: true },
+    include: {
+      user: {
+        select: doctorUserSafeSelect,
+      },
+    },
     orderBy: { createdAt: "desc" },
   });
 }
@@ -43,7 +62,11 @@ export async function createDoctor(input: unknown, organizationId?: string) {
       available: data.available,
       scheduleJson: data.scheduleJson as Prisma.InputJsonValue | undefined,
     },
-    include: { user: true },
+    include: {
+      user: {
+        select: doctorUserSafeSelect,
+      },
+    },
   });
 }
 
@@ -60,7 +83,11 @@ export async function updateDoctor(id: string, input: unknown) {
       ...data,
       scheduleJson: (data.scheduleJson ?? undefined) as Prisma.InputJsonValue | undefined,
     },
-    include: { user: true },
+    include: {
+      user: {
+        select: doctorUserSafeSelect,
+      },
+    },
   });
 
   if (data.signatureUrl !== undefined && existing.userId) {
@@ -91,9 +118,25 @@ export async function getDoctorQueue(id: string) {
         not: AppointmentStatus.CANCELLED,
       },
     },
-    include: {
+    select: {
+      id: true,
+      serialNumber: true,
+      status: true,
+      appointmentDate: true,
+      notes: true,
       patient: {
-        include: { user: true },
+        select: {
+          id: true,
+          gender: true,
+          dateOfBirth: true,
+          user: {
+            select: {
+              name: true,
+              imageUrl: true,
+              phone: true,
+            },
+          },
+        },
       },
     },
     orderBy: { serialNumber: "asc" },

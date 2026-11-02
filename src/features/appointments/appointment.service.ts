@@ -13,14 +13,36 @@ type ListOptions = {
   organizationId?: string | null;
 };
 
+const userSafeSelect = {
+  id: true,
+  name: true,
+  email: true,
+  phone: true,
+  imageUrl: true,
+};
+
+const appointmentInclude = {
+  doctor: {
+    include: {
+      user: {
+        select: userSafeSelect,
+      },
+    },
+  },
+  patient: {
+    include: {
+      user: {
+        select: userSafeSelect,
+      },
+    },
+  },
+};
+
 export async function listAppointments(options: ListOptions) {
   if (options.role === RoleName.DOCTOR) {
     return db.appointment.findMany({
       where: { doctor: { userId: options.userId } },
-      include: {
-        doctor: { include: { user: true } },
-        patient: { include: { user: true } },
-      },
+      include: appointmentInclude,
       orderBy: [{ appointmentDate: "asc" }, { serialNumber: "asc" }],
     });
   }
@@ -28,10 +50,7 @@ export async function listAppointments(options: ListOptions) {
   if (options.role === RoleName.PATIENT) {
     return db.appointment.findMany({
       where: { patient: { userId: options.userId } },
-      include: {
-        doctor: { include: { user: true } },
-        patient: { include: { user: true } },
-      },
+      include: appointmentInclude,
       orderBy: [{ appointmentDate: "desc" }, { serialNumber: "asc" }],
     });
   }
@@ -39,19 +58,13 @@ export async function listAppointments(options: ListOptions) {
   if (options.organizationId) {
     return db.appointment.findMany({
       where: { organizationId: options.organizationId },
-      include: {
-        doctor: { include: { user: true } },
-        patient: { include: { user: true } },
-      },
+      include: appointmentInclude,
       orderBy: [{ appointmentDate: "desc" }, { serialNumber: "asc" }],
     });
   }
 
   return db.appointment.findMany({
-    include: {
-      doctor: { include: { user: true } },
-      patient: { include: { user: true } },
-    },
+    include: appointmentInclude,
     orderBy: [{ appointmentDate: "desc" }, { serialNumber: "asc" }],
   });
 }
@@ -120,10 +133,7 @@ export async function createAppointment(
       notes: data.notes,
       status: AppointmentStatus.BOOKED,
     },
-    include: {
-      doctor: { include: { user: true } },
-      patient: { include: { user: true } },
-    },
+    include: appointmentInclude,
   });
 }
 

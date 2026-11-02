@@ -53,8 +53,9 @@ export async function generateRemindersFromPrescription(prescriptionId: string) 
   const prescription = await db.prescription.findUnique({
     where: { id: prescriptionId },
     include: {
-      patient: { include: { user: true } },
-      doctor: { include: { user: true } },
+      patient: {
+        select: { userId: true },
+      },
     },
   });
 

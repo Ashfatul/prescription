@@ -111,8 +111,31 @@ export default async function PrintablePrescriptionPage({
   const prescription = await db.prescription.findUnique({
     where: { id },
     include: {
-      doctor: { include: { user: true } },
-      patient: { include: { user: true } },
+      doctor: {
+        include: {
+          user: {
+            select: {
+              name: true,
+              email: true,
+              phone: true,
+              imageUrl: true,
+              signatureUrl: true,
+            },
+          },
+        },
+      },
+      patient: {
+        include: {
+          user: {
+            select: {
+              name: true,
+              email: true,
+              phone: true,
+              imageUrl: true,
+            },
+          },
+        },
+      },
       template: true,
       appointment: true,
       attachments: { include: { file: true } },

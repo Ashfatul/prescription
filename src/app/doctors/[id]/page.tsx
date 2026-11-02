@@ -31,7 +31,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const doctor = await db.doctor.findUnique({
     where: { id },
-    include: { user: true },
+    include: {
+      user: {
+        select: { name: true },
+      },
+    },
   });
 
   if (!doctor) {
@@ -52,7 +56,13 @@ export default async function DoctorDetailPage({ params }: Props) {
     db.doctor.findUnique({
       where: { id },
       include: {
-        user: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+            imageUrl: true,
+          },
+        },
       },
     }),
   ]);

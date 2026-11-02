@@ -4,6 +4,20 @@ import { AppError } from "@/lib/errors";
 import { hashPassword } from "@/lib/auth/password";
 import { patientSchema, patientUpdateSchema } from "@/features/patients/patient.schema";
 
+const patientUserSafeSelect = {
+  id: true,
+  name: true,
+  email: true,
+  phone: true,
+  imageUrl: true,
+  theme: true,
+  accent: true,
+  roleId: true,
+  organizationId: true,
+  createdAt: true,
+  updatedAt: true,
+};
+
 export async function listPatients(organizationId?: string) {
   return db.patient.findMany({
     where: organizationId
@@ -11,7 +25,11 @@ export async function listPatients(organizationId?: string) {
           OR: [{ organizationId }, { user: { organizationId } }],
         }
       : undefined,
-    include: { user: true },
+    include: {
+      user: {
+        select: patientUserSafeSelect,
+      },
+    },
     orderBy: { createdAt: "desc" },
   });
 }
@@ -61,7 +79,11 @@ export async function createPatient(input: unknown, organizationId?: string) {
   // Check if patient record already exists for this user
   const existing = await db.patient.findUnique({
     where: { userId },
-    include: { user: true },
+    include: {
+      user: {
+        select: patientUserSafeSelect,
+      },
+    },
   });
 
   if (existing) {
@@ -73,7 +95,11 @@ export async function createPatient(input: unknown, organizationId?: string) {
         medicalHistory: data.medicalHistory || existing.medicalHistory,
         dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : existing.dateOfBirth,
       },
-      include: { user: true },
+      include: {
+        user: {
+          select: patientUserSafeSelect,
+        },
+      },
     });
   }
 
@@ -85,7 +111,11 @@ export async function createPatient(input: unknown, organizationId?: string) {
       medicalHistory: data.medicalHistory,
       dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
     },
-    include: { user: true },
+    include: {
+      user: {
+        select: patientUserSafeSelect,
+      },
+    },
   });
 }
 
@@ -102,7 +132,11 @@ export async function updatePatient(id: string, input: unknown) {
       ...data,
       dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
     },
-    include: { user: true },
+    include: {
+      user: {
+        select: patientUserSafeSelect,
+      },
+    },
   });
 }
 

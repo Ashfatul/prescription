@@ -20,6 +20,14 @@ export type CreateTestReportParams = {
   organizationId?: string | null;
 };
 
+const userSafeSelect = {
+  id: true,
+  name: true,
+  email: true,
+  phone: true,
+  imageUrl: true,
+};
+
 export async function listTestReports(filter: {
   patientId?: string;
   doctorId?: string;
@@ -42,8 +50,8 @@ export async function listTestReports(filter: {
   return db.testReport.findMany({
     where,
     include: {
-      patient: { include: { user: true } },
-      doctor: { include: { user: true } },
+      patient: { include: { user: { select: userSafeSelect } } },
+      doctor: { include: { user: { select: userSafeSelect } } },
       uploadedBy: { select: { id: true, name: true, role: true } },
       prescription: { select: { id: true, createdAt: true } },
     },
@@ -54,7 +62,7 @@ export async function listTestReports(filter: {
 export async function createTestReport(params: CreateTestReportParams) {
   const patient = await db.patient.findUnique({
     where: { id: params.patientId },
-    include: { user: true },
+    include: { user: { select: { name: true, id: true } } },
   });
 
   if (!patient) {
@@ -83,8 +91,8 @@ export async function createTestReport(params: CreateTestReportParams) {
       organizationId: params.organizationId,
     },
     include: {
-      patient: { include: { user: true } },
-      doctor: { include: { user: true } },
+      patient: { include: { user: { select: userSafeSelect } } },
+      doctor: { include: { user: { select: userSafeSelect } } },
       uploadedBy: true,
     },
   });
@@ -109,7 +117,7 @@ export async function createTestReport(params: CreateTestReportParams) {
   if (params.doctorId && uploader?.role?.name === "PATIENT") {
     const doc = await db.doctor.findUnique({
       where: { id: params.doctorId },
-      include: { user: true },
+      include: { user: { select: { name: true } } },
     });
     if (doc) {
       await createNotification({
@@ -157,8 +165,8 @@ export async function updateTestReport(
       description: data.description !== undefined ? data.description : existing.description,
     },
     include: {
-      patient: { include: { user: true } },
-      doctor: { include: { user: true } },
+      patient: { include: { user: { select: userSafeSelect } } },
+      doctor: { include: { user: { select: userSafeSelect } } },
     },
   });
 }

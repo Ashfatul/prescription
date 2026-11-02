@@ -8,7 +8,18 @@ export default async function DoctorDashboardPage() {
 
   const doctor = await db.doctor.findUnique({
     where: { userId: user.id },
-    include: { user: true },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          imageUrl: true,
+          signatureUrl: true,
+        },
+      },
+    },
   });
 
   if (!doctor) {
@@ -28,7 +39,14 @@ export default async function DoctorDashboardPage() {
       include: {
         patient: {
           include: {
-            user: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                phone: true,
+              },
+            },
           },
         },
       },
@@ -37,7 +55,14 @@ export default async function DoctorDashboardPage() {
     }),
     db.patient.findMany({
       include: {
-        user: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+          },
+        },
       },
       take: 50,
       orderBy: { createdAt: "desc" },
@@ -49,7 +74,18 @@ export default async function DoctorDashboardPage() {
       typeof db.prescription.findMany<{
         where: { doctorId: string };
         include: {
-          patient: { include: { user: true } };
+          patient: {
+            include: {
+              user: {
+                select: {
+                  id: true;
+                  name: true;
+                  email: true;
+                  phone: true;
+                };
+              };
+            };
+          };
           template: true;
           versions: true;
         };
@@ -64,7 +100,14 @@ export default async function DoctorDashboardPage() {
       include: {
         patient: {
           include: {
-            user: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                phone: true,
+              },
+            },
           },
         },
         template: true,
@@ -83,7 +126,14 @@ export default async function DoctorDashboardPage() {
         include: {
           patient: {
             include: {
-              user: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  phone: true,
+                },
+              },
             },
           },
           template: true,

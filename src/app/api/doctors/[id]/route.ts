@@ -13,7 +13,22 @@ export async function GET(req: NextRequest, context: { params: Promise<{ id: str
     const { id } = await context.params;
     const doctor = await db.doctor.findUnique({
       where: { id },
-      include: { user: true },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            imageUrl: true,
+            signatureUrl: true,
+            theme: true,
+            accent: true,
+            roleId: true,
+            organizationId: true,
+          },
+        },
+      },
     });
     if (!doctor) {
       throw new AppError("Doctor not found", 404);
@@ -40,7 +55,7 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
     } else if (auth.role !== RoleName.SUPER_ADMIN && auth.organizationId) {
       const existing = await db.doctor.findUnique({
         where: { id },
-        include: { user: true },
+        include: { user: { select: { organizationId: true } } },
       });
       if (
         existing &&
@@ -63,7 +78,7 @@ export async function DELETE(req: NextRequest, context: { params: Promise<{ id: 
     if (auth.role !== RoleName.SUPER_ADMIN && auth.organizationId) {
       const existing = await db.doctor.findUnique({
         where: { id },
-        include: { user: true },
+        include: { user: { select: { organizationId: true } } },
       });
       if (
         existing &&
