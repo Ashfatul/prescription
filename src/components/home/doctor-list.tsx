@@ -381,10 +381,16 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT }: DoctorListP
                           {t.currentSerial}
                         </span>
                         <div className="flex items-baseline gap-1">
-                          <span className="text-base font-black text-[var(--brand-text)]">
-                            #{doctor.currentSerial || "1"}
+                          <span className="text-base font-black text-[var(--brand-text)] font-mono">
+                            {doctor.currentSerial && doctor.currentSerial > 0
+                              ? `#${doctor.currentSerial}`
+                              : "—"}
                           </span>
-                          <span className="text-[10px] text-slate-400">in chamber</span>
+                          <span className="text-[10px] text-slate-400">
+                            {doctor.currentSerial && doctor.currentSerial > 0
+                              ? "in chamber"
+                              : "Queue waiting"}
+                          </span>
                         </div>
                       </div>
 

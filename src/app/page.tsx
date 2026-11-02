@@ -7,7 +7,6 @@ import {
   Clock, 
   FileSpreadsheet, 
   Layers, 
-  Microscope, 
   PhoneCall, 
   Pill, 
   Printer, 
@@ -23,12 +22,25 @@ import { PricingSection } from "@/components/home/pricing-section";
 import { getCurrentUserFromCookie } from "@/lib/auth/session";
 import { getHospitalSettings } from "@/features/settings/settings.service";
 import { listPricingPlans } from "@/features/pricing/pricing.service";
+import { db } from "@/lib/db";
 
 export default async function Home() {
-  const [user, settings, rawPlans] = await Promise.all([
+  const [
+    user,
+    settings,
+    rawPlans,
+    totalDoctors,
+    totalPrescriptions,
+    totalClinics,
+    totalMedicines,
+  ] = await Promise.all([
     getCurrentUserFromCookie(),
     getHospitalSettings(),
     listPricingPlans(true),
+    db.doctor.count({ where: { available: true } }),
+    db.prescription.count(),
+    db.organization.count({ where: { status: "ACTIVE" } }),
+    db.medicine.count(),
   ]);
   const isLoggedIn = !!user;
 
@@ -148,49 +160,49 @@ export default async function Home() {
         </section>
 
         {/* ========================================================= */}
-        {/* STATS & PERFORMANCE TICKER                                */}
+        {/* STATS & PERFORMANCE TICKER (LIVE SYSTEM METRICS)          */}
         {/* ========================================================= */}
         <section className="w-full border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] py-8">
           <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               <div className="space-y-1">
-                <div className="text-3xl sm:text-4xl font-black text-[var(--brand-text)] tracking-tight">
-                  99.98%
+                <div className="text-3xl sm:text-4xl font-black text-[var(--brand-text)] tracking-tight font-mono">
+                  {totalDoctors}
                 </div>
                 <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  Chamber Uptime
+                  Consulting Physicians
                 </div>
-                <p className="text-[11px] text-slate-400">Zero downtime clinic connectivity</p>
+                <p className="text-[11px] text-slate-400">Active specialist chambers</p>
               </div>
 
               <div className="space-y-1">
-                <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-                  &lt; 20s
+                <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight font-mono">
+                  {totalPrescriptions}
                 </div>
                 <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  Prescription Speed
+                  Prescriptions Issued
                 </div>
-                <p className="text-[11px] text-slate-400">From vitals intake to printout</p>
+                <p className="text-[11px] text-slate-400">Digital clinical records</p>
               </div>
 
               <div className="space-y-1">
-                <div className="text-3xl sm:text-4xl font-black text-[var(--brand-text)] tracking-tight">
-                  15+
+                <div className="text-3xl sm:text-4xl font-black text-[var(--brand-text)] tracking-tight font-mono">
+                  {totalClinics}
                 </div>
                 <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  Clinical Modules
+                  Healthcare Centers
                 </div>
-                <p className="text-[11px] text-slate-400">Integrated hospital intelligence</p>
+                <p className="text-[11px] text-slate-400">Active clinics &amp; chambers</p>
               </div>
 
               <div className="space-y-1">
-                <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-                  100%
+                <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight font-mono">
+                  {totalMedicines}
                 </div>
                 <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  BMDC Format Adherence
+                  Pharmaceutical Formularies
                 </div>
-                <p className="text-[11px] text-slate-400">Laser-ready multi-page A4 format</p>
+                <p className="text-[11px] text-slate-400">Standard clinical drugs</p>
               </div>
             </div>
           </div>
@@ -301,20 +313,20 @@ export default async function Home() {
               {/* Feature 5 */}
               <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
-                  <Microscope className="w-6 h-6" />
+                  <Clock className="w-6 h-6" />
                 </div>
                 <div className="space-y-1.5">
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                    Diagnostic Reports & Scan Attachments
+                    Patient Electronic Prescriptions &amp; Medication Reminders
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                    Attach radiology scans, ultrasound PDFs, pathology results, and blood panels directly to the digital prescription for permanent historical tracking and consultation review.
+                    Patients securely access digital prescriptions, review revision histories, and configure automated medicine dosage schedules directly within their verified health portal.
                   </p>
                 </div>
                 <div className="pt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400">
-                  <span className="px-2 py-0.5 rounded-md bg-indigo-500/10">Radiology Imaging</span>
-                  <span className="px-2 py-0.5 rounded-md bg-indigo-500/10">Pathology PDFs</span>
-                  <span className="px-2 py-0.5 rounded-md bg-indigo-500/10">Cloud Stored</span>
+                  <span className="px-2 py-0.5 rounded-md bg-indigo-500/10">Version History</span>
+                  <span className="px-2 py-0.5 rounded-md bg-indigo-500/10">Dosage Reminders</span>
+                  <span className="px-2 py-0.5 rounded-md bg-indigo-500/10">Instant Print</span>
                 </div>
               </div>
 

@@ -655,7 +655,7 @@ export function AppointmentBookingModal({
                       </span>
                       <span className="flex items-center gap-1">
                         <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                        {selectedDoctor.chamberAddress || "Room 301"}
+                        {selectedDoctor.chamberAddress || "Doctor Consultation Chamber"}
                       </span>
                     </div>
                   </div>

@@ -19,7 +19,6 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { AppointmentBookingModal } from "@/components/appointments/appointment-booking-modal";
-import { TestReportsManager } from "@/components/dashboard/test-reports-manager";
 import { MedicineRemindersView } from "@/components/dashboard/medicine-reminders-view";
 import { ClinicalChat } from "@/components/dashboard/clinical-chat";
 import { PrescriptionShareModal } from "@/components/dashboard/prescription-share-modal";
@@ -369,7 +368,6 @@ export function PatientDashboardView({
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
         {[
           { id: "overview", label: "📋 Medical Overview" },
-          { id: "reports", label: "🧪 Test Reports & Scans" },
           { id: "reminders", label: "⏰ Medicine Reminders" },
           { id: "chat", label: "💬 Doctor Chat" },
           { id: "announcements", label: "📢 Clinic Notices" },
@@ -397,7 +395,6 @@ export function PatientDashboardView({
       </div>
 
       {/* Render Sub Tabs */}
-      {activeTab === "reports" && <TestReportsManager role="PATIENT" />}
       {activeTab === "reminders" && <MedicineRemindersView />}
       {activeTab === "chat" && currentUser && (
         <ClinicalChat currentUserId={currentUser.id} />
@@ -433,6 +430,53 @@ export function PatientDashboardView({
           <Plus className="w-4 h-4" />
           <span>Book New Consultation</span>
         </button>
+      </div>
+
+      {/* Patient Health Overview Live Stats (Direct from System) */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+        <div className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+            Prescriptions
+          </span>
+          <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight font-mono">
+            {prescriptions.length}
+          </span>
+          <p className="text-[11px] text-slate-500 mt-1">Official digital records</p>
+        </div>
+
+        <div className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+            Active Bookings
+          </span>
+          <span className="text-2xl sm:text-3xl font-extrabold text-[var(--brand-text)] tracking-tight font-mono">
+            {
+              initialAppointments.filter(
+                (a) => a.status === "PENDING" || a.status === "CONFIRMED" || a.status === "BOOKED"
+              ).length
+            }
+          </span>
+          <p className="text-[11px] text-slate-500 mt-1">Scheduled chamber visits</p>
+        </div>
+
+        <div className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+            Completed Visits
+          </span>
+          <span className="text-2xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight font-mono">
+            {initialAppointments.filter((a) => a.status === "COMPLETED").length}
+          </span>
+          <p className="text-[11px] text-slate-500 mt-1">Past consultations</p>
+        </div>
+
+        <div className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+            Total Appointments
+          </span>
+          <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight font-mono">
+            {initialAppointments.length}
+          </span>
+          <p className="text-[11px] text-slate-500 mt-1">All recorded serials</p>
+        </div>
       </div>
 
       {actionError && (
@@ -1015,7 +1059,7 @@ export function PatientDashboardView({
                   })}
                 </p>
                 <p className="text-[11px] text-slate-400">
-                  Chamber: {selectedSlip.doctor.chamberAddress || "Room 301, Consultation Wing"}
+                  Chamber: {selectedSlip.doctor.chamberAddress || "Doctor Consultation Chamber"}
                 </p>
 
                 {/* Consultation Fee & Visit Type */}

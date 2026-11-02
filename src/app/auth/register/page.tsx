@@ -7,7 +7,7 @@ import { Sparkles, Building2, Pill, ShieldCheck } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Registration - PPMS Clinical Suite",
-  description: "Register a new clinic or create a patient health account to access electronic prescriptions and lab reports.",
+  description: "Register a new clinic or create a patient health account to access electronic prescriptions and manage doctor appointments.",
 };
 
 export default function RegisterPage() {

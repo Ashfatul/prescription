@@ -1682,7 +1682,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                       Doctor: {issuedTicket.doctor.user.name} ({issuedTicket.doctor.specialization})
                     </p>
                     <p className="text-slate-500 text-[11px]">
-                      Chamber: {issuedTicket.doctor.chamberAddress || "OPD Room 301"}
+                      Chamber: {issuedTicket.doctor.chamberAddress || "OPD Consultation Chamber"}
                     </p>
                     <div className="pt-1.5 border-t border-[var(--brand-primary)]/10 flex items-center justify-between">
                       <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200">
@@ -1791,7 +1791,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                           {appt.doctor.user.name}
                         </span>
                         <span className="text-[11px] text-[var(--brand-text)]">
-                          {appt.doctor.specialization} ({appt.doctor.chamberAddress || "Room 301"})
+                          {appt.doctor.specialization}{appt.doctor.chamberAddress ? ` (${appt.doctor.chamberAddress})` : ""}
                         </span>
                       </td>
                       <td className="py-3 px-3">

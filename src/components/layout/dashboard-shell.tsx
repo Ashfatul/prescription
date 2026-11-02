@@ -28,7 +28,6 @@ import {
   CreditCard,
   Sparkles,
   ShieldAlert,
-  Microscope,
   MessageSquare,
   Calendar,
   PanelLeft,
@@ -331,13 +330,6 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             icon: <History className="w-4 h-4" />,
           },
           {
-            section: "Clinical Practice",
-            label: "Diagnostic Test Reports",
-            href: "/dashboard/doctor?tab=reports",
-            tabKey: "reports",
-            icon: <Microscope className="w-4 h-4" />,
-          },
-          {
             section: "Collaboration",
             label: "Clinical Chat",
             href: "/dashboard/doctor?tab=chat",
@@ -390,13 +382,6 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             href: "/dashboard/patient",
             tabKey: "main",
             icon: <FileText className="w-4 h-4" />,
-          },
-          {
-            section: "Healthcare Portal",
-            label: "Test Reports & Scans",
-            href: "/dashboard/patient?tab=reports",
-            tabKey: "reports",
-            icon: <Microscope className="w-4 h-4" />,
           },
           {
             section: "Healthcare Portal",

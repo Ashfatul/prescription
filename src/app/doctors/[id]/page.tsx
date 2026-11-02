@@ -431,7 +431,7 @@ export default async function DoctorDetailPage({ params }: Props) {
                   <p className="whitespace-pre-line">{doctor.bio}</p>
                 ) : (
                   <p className="text-slate-400 italic">
-                    Dr. {doctor.user.name} is a specialist in {doctor.specialization} serving at {doctor.hospital || "Metropolitan Specialized Hospital"}. Known for patient-centered clinical diagnosis, evidence-based medication protocols, and comprehensive follow-up care.
+                    Dr. {doctor.user.name} is a specialist in {doctor.specialization}{doctor.hospital ? ` serving at ${doctor.hospital}` : ""}. Known for patient-centered clinical diagnosis, evidence-based medication protocols, and comprehensive follow-up care.
                   </p>
                 )}
               </div>

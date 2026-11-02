@@ -103,7 +103,7 @@ export function StaffSchedulingManager() {
   const openEditModal = (doc: DoctorItem) => {
     setEditingDoctor(doc);
     setVisitingHours(doc.visitingHours || "09:00 AM - 01:00 PM");
-    setChamberAddress(doc.chamberAddress || "Room 301, 3rd Floor");
+    setChamberAddress(doc.chamberAddress || "");
     setContactNumber(doc.contactNumber || "");
   };
 

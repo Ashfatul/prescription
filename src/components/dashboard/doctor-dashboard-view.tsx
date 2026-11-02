@@ -8,7 +8,6 @@ import { DoctorProfileEditor } from "@/components/dashboard/doctor-profile-edito
 import { PrescriptionEditor } from "@/components/dashboard/prescription-editor";
 import { CatalogManager } from "@/components/dashboard/catalog-manager";
 import { TemplateManager } from "@/components/dashboard/template-manager";
-import { TestReportsManager } from "@/components/dashboard/test-reports-manager";
 import { ClinicalChat } from "@/components/dashboard/clinical-chat";
 import { PrescriptionShareModal } from "@/components/dashboard/prescription-share-modal";
 import { AnnouncementsBanner } from "@/components/dashboard/announcements-banner";
@@ -131,7 +130,6 @@ export type DoctorTabType =
   | "templates"
   | "profile"
   | "history"
-  | "reports"
   | "chat"
   | "announcements";
 
@@ -168,8 +166,6 @@ export function DoctorDashboardView({
       ? "queue"
       : urlTab === "history"
       ? "history"
-      : urlTab === "reports"
-      ? "reports"
       : urlTab === "chat"
       ? "chat"
       : urlTab === "announcements"
@@ -491,9 +487,6 @@ export function DoctorDashboardView({
       {activeTab === "profile" && (
         <DoctorProfileEditor doctor={doctor} onSaved={handleProfileUpdated} />
       )}
-
-      {/* Tab: Diagnostic Test Reports */}
-      {activeTab === "reports" && <TestReportsManager role="DOCTOR" />}
 
       {/* Tab: Doctor-Patient Clinical Chat */}
       {activeTab === "chat" && currentUser && (

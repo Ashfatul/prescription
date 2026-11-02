@@ -508,7 +508,7 @@ export function HospitalQueueDisplay({ initialDoctorId }: { initialDoctorId?: st
                   </div>
 
                   <p className="text-xs sm:text-sm text-slate-500 font-semibold">
-                    Please proceed to {selectedDoctor.chamberAddress || "Room 301, 3rd Floor Consultation Room"}
+                    Please proceed to {selectedDoctor.chamberAddress || "Doctor Consultation Chamber"}
                   </p>
                 </>
               ) : (

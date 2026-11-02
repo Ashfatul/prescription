@@ -42,7 +42,7 @@ export function UserManager() {
   const [createSpecialization, setCreateSpecialization] = useState("General Medicine");
   const [createDegrees, setCreateDegrees] = useState("MBBS");
   const [createBmdcRegNo, setCreateBmdcRegNo] = useState("");
-  const [createChamberAddress, setCreateChamberAddress] = useState("Room 301, 3rd Floor");
+  const [createChamberAddress, setCreateChamberAddress] = useState("");
   const [createVisitingHours, setCreateVisitingHours] = useState("09:00 AM - 01:00 PM");
   const [createError, setCreateError] = useState("");
 

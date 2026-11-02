@@ -220,7 +220,7 @@ export const SYSTEM_EMAIL_TEMPLATES = [
     <h1 class="title">Your Patient Account is Ready!</h1>
     <p class="text">Hello <strong>{{patientName}}</strong>,</p>
     <p class="text">Your patient registration has been verified and activated by the clinical front desk at <strong>{{clinicName}}</strong>.</p>
-    <p class="text">You can now securely log in to your patient portal to book appointments, review your digital prescriptions, view diagnostic lab reports, and manage your medicine schedule.</p>
+    <p class="text">You can now securely log in to your patient portal to book appointments, review your digital prescriptions, and manage your medicine schedule.</p>
     
     <div style="text-align: center; margin: 30px 0;">
       <a href="{{loginUrl}}" class="btn" target="_blank">Sign In to Patient Portal</a>

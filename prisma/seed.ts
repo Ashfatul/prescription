@@ -1,4 +1,4 @@
-import { AppointmentStatus, PrismaClient, RoleName, TestReportStatus } from "@prisma/client";
+import { AppointmentStatus, PrismaClient, RoleName } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -808,24 +808,6 @@ async function main() {
         diagnosis: ["Acute Upper Respiratory Tract Infection", "Mild Gastritis"],
         advice: ["Drink warm water", "Avoid oily/cold foods", "Take adequate rest"],
       },
-    },
-  });
-
-  // Seed sample test report uploaded by patient
-  await prisma.testReport.create({
-    data: {
-      title: "CBC & Blood Sugar Profile",
-      description: "Routine annual health checkup blood report",
-      fileUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-      fileType: "application/pdf",
-      originalName: "CBC_FBS_Report_Oct2026.pdf",
-      patientId: patient.id,
-      doctorId: primaryDoctorId,
-      prescriptionId: sampleRx.id,
-      uploadedById: patientUser.id,
-      status: TestReportStatus.REVIEWED,
-      organizationId: defaultOrg.id,
-      notes: "Hemoglobin 13.8 g/dL (Normal). Fasting blood sugar 98 mg/dL (Normal).",
     },
   });
 

@@ -348,7 +348,7 @@ export function RegisterForm() {
               Register Your Clinic or Hospital
             </h1>
             <p className="text-xs sm:text-sm text-slate-500">
-              Create your independent clinical tenant. Add doctors, configure receptionist queue, prescribe digitally, and manage diagnostic reports.
+              Create your independent clinical tenant. Add doctors, configure receptionist queue, prescribe digitally, and manage clinical formulary.
             </p>
           </div>
         ) : (
@@ -361,7 +361,7 @@ export function RegisterForm() {
               Create Your Health Account
             </h1>
             <p className="text-xs sm:text-sm text-slate-500">
-              Access your prescriptions, diagnostic test reports, medicine reminders, and doctor appointments.
+              Access your prescriptions, medicine reminders, and doctor appointments.
             </p>
           </div>
         )}
