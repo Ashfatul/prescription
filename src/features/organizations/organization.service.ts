@@ -4,6 +4,7 @@ import { OrganizationStatus, RoleName } from "@prisma/client";
 import { logActivity } from "@/features/activity-log/activity-log.service";
 import { medicineService, testService } from "@/features/catalog/catalog.service";
 import { sendTemplatedEmail } from "@/features/email-templates/email-template.service";
+import { cleanSlug, isValidSlugFormat } from "@/lib/organizations/slug";
 
 export type CreateOrgParams = {
   name: string;
@@ -14,6 +15,41 @@ export type CreateOrgParams = {
   address?: string;
   logoUrl?: string;
 };
+
+export async function validateSlugAvailability(rawSlug: string): Promise<{
+  available: boolean;
+  slug: string;
+  reason?: string;
+}> {
+  const slug = cleanSlug(rawSlug);
+  const formatCheck = isValidSlugFormat(slug);
+
+  if (!formatCheck.valid) {
+    return {
+      available: false,
+      slug,
+      reason: formatCheck.reason,
+    };
+  }
+
+  const existing = await db.organization.findUnique({
+    where: { slug },
+    select: { id: true, name: true },
+  });
+
+  if (existing) {
+    return {
+      available: false,
+      slug,
+      reason: `The subdomain '${slug}' is already taken by another registered clinic.`,
+    };
+  }
+
+  return {
+    available: true,
+    slug,
+  };
+}
 
 export async function listOrganizations() {
   const orgs = await db.organization.findMany({
@@ -59,18 +95,15 @@ export async function getOrganizationById(id: string) {
 }
 
 export async function createOrganization(params: CreateOrgParams, creatorUserId?: string) {
-  const existing = await db.organization.findUnique({
-    where: { slug: params.slug },
-  });
-
-  if (existing) {
-    throw new AppError("Clinic slug/identifier already exists. Please choose another.", 409);
+  const slugCheck = await validateSlugAvailability(params.slug);
+  if (!slugCheck.available) {
+    throw new AppError(slugCheck.reason || "Invalid or unavailable clinic slug.", 409);
   }
 
   const org = await db.organization.create({
     data: {
       name: params.name,
-      slug: params.slug.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
+      slug: slugCheck.slug,
       plan: params.planId ? { connect: { id: params.planId } } : undefined,
       contactEmail: params.contactEmail,
       contactPhone: params.contactPhone,

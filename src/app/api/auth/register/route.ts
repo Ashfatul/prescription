@@ -14,6 +14,7 @@ import { logActivity } from "@/features/activity-log/activity-log.service";
 import { medicineService, testService } from "@/features/catalog/catalog.service";
 import { isEmailVerificationRequired, isOrgApprovalRequired } from "@/features/settings/settings.service";
 import { sendTemplatedEmail } from "@/features/email-templates/email-template.service";
+import { validateSlugAvailability } from "@/features/organizations/organization.service";
 
 export async function POST(req: NextRequest) {
   return withErrorHandling(req, async () => {
@@ -42,26 +43,13 @@ export async function POST(req: NextRequest) {
         throw new AppError("Password must be at least 6 characters", 400);
       }
 
-      // Generate or clean clinic slug
+      // Validate clinic subdomain slug format, reservation, and availability
       const rawSlug = body.clinicSlug || clinicName;
-      const cleanSlug = rawSlug
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9-]/g, "-")
-        .replace(/-+/g, "-")
-        .replace(/^-|-$/g, "");
-
-      if (!cleanSlug) {
-        throw new AppError("Invalid clinic slug identifier", 400);
+      const slugValidation = await validateSlugAvailability(rawSlug);
+      if (!slugValidation.available) {
+        throw new AppError(slugValidation.reason || "Invalid or unavailable clinic subdomain.", 409);
       }
-
-      // Check for existing slug
-      const existingSlug = await db.organization.findUnique({
-        where: { slug: cleanSlug },
-      });
-      if (existingSlug) {
-        throw new AppError(`Clinic identifier '${cleanSlug}' is already taken. Please choose another.`, 409);
-      }
+      const cleanSlug = slugValidation.slug;
 
       // Check for existing email
       const existingUser = await db.user.findUnique({

@@ -20,6 +20,7 @@ import {
   Globe,
   Eye,
   EyeOff,
+  AlertCircle,
 } from "lucide-react";
 import { CustomSelect } from "@/components/common/custom-select";
 import { CustomDatePicker } from "@/components/common/custom-date-picker";
@@ -81,6 +82,13 @@ export function RegisterForm() {
   const [plans, setPlans] = useState<PricingPlanOption[]>([]);
   const [selectedPlanId, setSelectedPlanId] = useState("");
 
+  // Clinic Subdomain Validation State
+  type SlugStatus = "idle" | "checking" | "available" | "unavailable";
+  const [slugStatus, setSlugStatus] = useState<SlugStatus>("idle");
+  const [slugMessage, setSlugMessage] = useState("");
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
+  const [currentHost] = useState(() => (typeof window !== "undefined" ? window.location.host : ""));
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -88,13 +96,58 @@ export function RegisterForm() {
   // Auto slug generator from clinic name
   const handleClinicNameChange = (val: string) => {
     setClinicName(val);
-    const slugified = val
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-    setClinicSlug(slugified);
+    if (!isSlugManuallyEdited) {
+      const slugified = val
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+      setClinicSlug(slugified);
+    }
   };
+
+  // Debounced real-time subdomain slug validation
+  useEffect(() => {
+    if (mode !== "clinic") return;
+
+    const trimmed = clinicSlug.trim();
+    const timeoutId = setTimeout(async () => {
+      if (!trimmed) {
+        setSlugStatus("idle");
+        setSlugMessage("");
+        return;
+      }
+
+      if (trimmed.length < 3) {
+        setSlugStatus("unavailable");
+        setSlugMessage("Subdomain must be at least 3 characters.");
+        return;
+      }
+
+      setSlugStatus("checking");
+      try {
+        const res = await fetch(`/api/organizations/check-slug?slug=${encodeURIComponent(trimmed)}`);
+        const json = await res.json();
+        if (json.success && json.data) {
+          if (json.data.available) {
+            setSlugStatus("available");
+            setSlugMessage("Subdomain is available!");
+          } else {
+            setSlugStatus("unavailable");
+            setSlugMessage(json.data.reason || "Subdomain is already taken or unavailable.");
+          }
+        } else {
+          setSlugStatus("unavailable");
+          setSlugMessage(json.message || "Failed to validate subdomain.");
+        }
+      } catch {
+        setSlugStatus("unavailable");
+        setSlugMessage("Network error validating subdomain.");
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [clinicSlug, mode]);
 
   useEffect(() => {
     // Fetch organizations for patient dropdown
@@ -144,6 +197,12 @@ export function RegisterForm() {
         }
         if (!clinicSlug.trim()) {
           throw new Error("Clinic identifier URL slug is required.");
+        }
+        if (slugStatus === "checking") {
+          throw new Error("Validating clinic subdomain availability. Please wait...");
+        }
+        if (slugStatus === "unavailable") {
+          throw new Error(slugMessage || "Please enter a valid, available subdomain for your clinic.");
         }
         if (!name.trim()) {
           throw new Error("Administrator full name is required.");
@@ -348,22 +407,104 @@ export function RegisterForm() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className={labelClasses}>
-                    <Globe className="w-3 h-3" />
-                    <span>Clinic Identifier Slug *</span>
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className={labelClasses}>
+                      <Globe className="w-3 h-3 text-[var(--brand-primary)]" />
+                      <span>Clinic Subdomain Slug *</span>
+                    </label>
+                    {slugStatus === "checking" && (
+                      <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                        <Loader2 className="w-3 h-3 animate-spin text-[var(--brand-primary)]" />
+                        <span>Validating...</span>
+                      </span>
+                    )}
+                    {slugStatus === "available" && (
+                      <span className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" />
+                        <span>Available</span>
+                      </span>
+                    )}
+                    {slugStatus === "unavailable" && (
+                      <span className="text-[10px] font-extrabold text-rose-600 dark:text-rose-400 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        <span>Unavailable</span>
+                      </span>
+                    )}
+                  </div>
                   <div className="relative">
                     <input
                       type="text"
                       required
                       value={clinicSlug}
-                      onChange={(e) => setClinicSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))}
-                      placeholder="carewell-center"
-                      className={`${iconInputClasses} font-mono`}
+                      onChange={(e) => {
+                        setIsSlugManuallyEdited(true);
+                        setClinicSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"));
+                      }}
+                      placeholder="carewell"
+                      className={`${iconInputClasses} font-mono pr-10 ${
+                        slugStatus === "available"
+                          ? "!border-emerald-500 focus:!ring-emerald-500/20"
+                          : slugStatus === "unavailable"
+                          ? "!border-rose-500 focus:!ring-rose-500/20"
+                          : ""
+                      }`}
                     />
                     <Globe className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    {slugStatus === "checking" && (
+                      <Loader2 className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 animate-spin pointer-events-none" />
+                    )}
+                    {slugStatus === "available" && (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    )}
+                    {slugStatus === "unavailable" && (
+                      <AlertCircle className="w-4 h-4 text-rose-500 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    )}
                   </div>
+                  {slugMessage && (
+                    <p
+                      className={`text-[11px] font-medium leading-tight ${
+                        slugStatus === "available"
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-rose-600 dark:text-rose-400"
+                      }`}
+                    >
+                      {slugMessage}
+                    </p>
+                  )}
                 </div>
+              </div>
+
+              {/* SaaS Dedicated Subdomain Access Preview */}
+              <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1 shadow-2xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Globe className="w-3 h-3 text-[var(--brand-primary)]" />
+                    Your Dedicated Clinic URL
+                  </span>
+                  {slugStatus === "available" && (
+                    <span className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+                      Ready to Claim
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-1.5 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto">
+                  <span className="text-slate-400 select-none">https://</span>
+                  <span
+                    className={`font-black ${
+                      slugStatus === "available"
+                        ? "text-[var(--brand-text)] underline decoration-[var(--brand-primary)] underline-offset-4"
+                        : "text-slate-800 dark:text-slate-200"
+                    }`}
+                  >
+                    {clinicSlug.trim() || "your-subdomain"}
+                  </span>
+                  <span className="text-slate-400 select-none">
+                    .{currentHost ? currentHost.replace(/:\d+$/, "") : "ppms.local"}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 pt-0.5">
+                  This subdomain will serve your dedicated clinic profile, patient token booking, and consulting doctor roster.
+                </p>
               </div>
 
               <div className="grid sm:grid-cols-2 gap-4">
@@ -658,8 +799,11 @@ export function RegisterForm() {
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full py-3.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs sm:text-sm font-bold shadow-md hover:opacity-95 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            disabled={
+              loading ||
+              (mode === "clinic" && (slugStatus !== "available" || !clinicSlug.trim()))
+            }
+            className="w-full py-3.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs sm:text-sm font-bold shadow-md hover:opacity-95 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <>

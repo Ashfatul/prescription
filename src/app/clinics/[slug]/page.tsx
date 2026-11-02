@@ -23,6 +23,7 @@ import { getCurrentUserFromCookie } from "@/lib/auth/session";
 import { getHospitalSettings } from "@/features/settings/settings.service";
 import { db } from "@/lib/db";
 import { RoleName } from "@prisma/client";
+import { ClinicSubdomainBadge } from "@/components/clinics/clinic-subdomain-badge";
 
 interface ClinicPageProps {
   params: Promise<{
@@ -156,9 +157,12 @@ export default async function ClinicDetailsPage({ params }: ClinicPageProps) {
                     )}
                   </div>
 
-                  <p className="text-xs text-slate-500 font-mono">
-                    Facility Identifier: {clinic.slug}
-                  </p>
+                  <div className="flex flex-col gap-1.5 pt-1">
+                    <p className="text-xs text-slate-500 font-mono">
+                      Facility Identifier: <span className="font-semibold text-slate-700 dark:text-slate-300">{clinic.slug}</span>
+                    </p>
+                    <ClinicSubdomainBadge slug={clinic.slug} clinicName={clinic.name} />
+                  </div>
                 </div>
               </div>
 
