@@ -44,16 +44,16 @@ export default async function Home() {
     db.doctor.count({
       where: {
         available: true,
-        ...(isDemoMode ? {} : { organization: { isDemo: false, slug: { not: "ppms-clinic" } } }),
+        ...(isDemoMode ? {} : { organization: { slug: { not: "ppms-clinic" } } }),
       },
     }),
     db.prescription.count({
-      where: isDemoMode ? {} : { organization: { isDemo: false, slug: { not: "ppms-clinic" } } },
+      where: isDemoMode ? {} : { organization: { slug: { not: "ppms-clinic" } } },
     }),
     db.organization.count({
       where: {
         status: "ACTIVE",
-        ...(isDemoMode ? {} : { isDemo: false, slug: { not: "ppms-clinic" } }),
+        ...(isDemoMode ? {} : { slug: { not: "ppms-clinic" } }),
       },
     }),
     db.medicine.count(),

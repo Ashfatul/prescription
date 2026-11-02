@@ -42,7 +42,7 @@ export default async function DoctorsPage({ searchParams }: DoctorsPageProps) {
   const clinic = clinicSlug
     ? await db.organization.findUnique({
         where: { slug: clinicSlug },
-        select: { name: true, slug: true, isDemo: true, address: true },
+        select: { name: true, slug: true, address: true },
       })
     : null;
 

@@ -34,7 +34,7 @@ export default async function ClinicsPage() {
     db.organization.findMany({
       where: {
         status: { not: "SUSPENDED" },
-        ...(isDemoMode ? {} : { isDemo: false, slug: { not: "ppms-clinic" } }),
+        ...(isDemoMode ? {} : { slug: { not: "ppms-clinic" } }),
       },
       include: {
         plan: true,
@@ -69,7 +69,7 @@ export default async function ClinicsPage() {
     name: org.name,
     slug: org.slug,
     status: org.status as ClinicItem["status"],
-    isDemo: org.isDemo,
+    isDemo: Boolean((org as { isDemo?: boolean }).isDemo) || org.slug === "ppms-clinic",
     contactEmail: org.contactEmail,
     contactPhone: org.contactPhone,
     address: org.address,

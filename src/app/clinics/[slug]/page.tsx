@@ -95,7 +95,8 @@ export default async function ClinicDetailsPage({ params }: ClinicPageProps) {
   ]);
 
   const isDemo = isDemoModeActive();
-  if (!clinic || clinic.status === "SUSPENDED" || (!isDemo && (clinic.isDemo || clinic.slug === "ppms-clinic"))) {
+  const isDemoClinic = clinic ? (Boolean((clinic as { isDemo?: boolean }).isDemo) || clinic.slug === "ppms-clinic") : false;
+  if (!clinic || clinic.status === "SUSPENDED" || (!isDemo && isDemoClinic)) {
     notFound();
   }
 
@@ -153,7 +154,7 @@ export default async function ClinicDetailsPage({ params }: ClinicPageProps) {
                       {clinic.status === "ACTIVE" ? "Active Clinical Chamber" : clinic.status}
                     </span>
 
-                    {clinic.isDemo && (
+                    {isDemoClinic && (
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
                         <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
                         Demo Sandbox Facility

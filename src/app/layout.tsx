@@ -21,11 +21,6 @@ export const metadata: Metadata = {
   description: "A full-stack prescription and appointment management system.",
 };
 
-function ThemeScript() {
-  const code = `(function(){try{var a=localStorage.getItem("ppms-accent");if(a&&a!=="teal"){document.documentElement.setAttribute("data-accent",a)}else if(a==="teal"){document.documentElement.removeAttribute("data-accent")}var t=localStorage.getItem("theme");var d=t==="dark"||((!t||t==="system")&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(d){document.documentElement.classList.add("dark")}else{document.documentElement.classList.remove("dark")}}catch(e){}})()`;
-  return <script id="ppms-theme-script" dangerouslySetInnerHTML={{ __html: code }} />;
-}
-
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -64,9 +59,6 @@ export default async function RootLayout({
       data-accent={initialAccent !== "teal" ? initialAccent : undefined}
       className={`${geistSans.variable} ${geistMono.variable} ${isServerDark ? "dark " : ""}h-full antialiased`}
     >
-      <head>
-        <ThemeScript />
-      </head>
       <body className="min-h-full bg-background text-foreground">
         <Providers
           initialUser={safeUser}

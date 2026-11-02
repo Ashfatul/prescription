@@ -59,7 +59,6 @@ export async function listOrganizations(includeDemo?: boolean) {
     where: shouldIncludeDemo
       ? {}
       : {
-          isDemo: false,
           slug: { not: "ppms-clinic" },
         },
     include: {

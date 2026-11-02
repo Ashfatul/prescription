@@ -359,7 +359,7 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
         </div>
       ) : (
         /* Empty / No Match State */
-        <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4 max-w-lg mx-auto">
+        <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4 mx-auto w-full">
           <div className="w-16 h-16 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center mx-auto">
             <Users className="w-8 h-8" />
           </div>

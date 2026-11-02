@@ -28,12 +28,11 @@ export async function GET(req: NextRequest) {
       where.organization = {
         slug: clinicSlug,
         status: { not: "SUSPENDED" },
-        ...(isDemoMode ? {} : { isDemo: false, slug: { not: "ppms-clinic" } }),
+        ...(isDemoMode ? {} : { slug: { not: "ppms-clinic" } }),
       };
     } else if (!isDemoMode) {
       // Exclude demo clinic entirely when Demo Mode is off
       where.organization = {
-        isDemo: false,
         slug: { not: "ppms-clinic" },
         status: { not: "SUSPENDED" },
       };
@@ -51,7 +50,6 @@ export async function GET(req: NextRequest) {
             id: true,
             name: true,
             slug: true,
-            isDemo: true,
           },
         },
         user: {
@@ -105,7 +103,7 @@ export async function GET(req: NextRequest) {
       designation: doctor.designation,
       hospital: doctor.hospital || doctor.organization?.name || null,
       clinicSlug: doctor.organization?.slug || null,
-      isDemo: doctor.organization?.isDemo || false,
+      isDemo: Boolean((doctor.organization as { isDemo?: boolean } | null)?.isDemo) || doctor.organization?.slug === "ppms-clinic",
       bmdcRegNo: doctor.bmdcRegNo,
       chamberAddress: doctor.chamberAddress,
       contactNumber: doctor.contactNumber,
