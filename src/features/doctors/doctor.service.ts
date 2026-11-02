@@ -114,9 +114,6 @@ export async function getDoctorQueue(id: string) {
         gte: startOfDay(today),
         lte: endOfDay(today),
       },
-      status: {
-        not: AppointmentStatus.CANCELLED,
-      },
     },
     select: {
       id: true,
@@ -142,11 +139,25 @@ export async function getDoctorQueue(id: string) {
     orderBy: { serialNumber: "asc" },
   });
 
-  const current = queue.find((item) => item.status === AppointmentStatus.BOOKED);
+  const activeQueue = queue.filter((item) => item.status !== AppointmentStatus.CANCELLED);
+  const missedQueue = queue.filter((item) => item.status === AppointmentStatus.CANCELLED);
+  const completedQueue = queue.filter((item) => item.status === AppointmentStatus.COMPLETED);
+  const bookedQueue = queue.filter((item) => item.status === AppointmentStatus.BOOKED);
+
+  const current = bookedQueue[0] || null;
+  const previous = completedQueue.length > 0 ? completedQueue[completedQueue.length - 1] : null;
+  const next = bookedQueue.length > 1 ? bookedQueue[1] : null;
 
   return {
-    currentSerial: current?.serialNumber ?? 0,
-    total: queue.length,
-    queue,
+    currentSerial:
+      current?.serialNumber ??
+      (completedQueue.length > 0 ? completedQueue[completedQueue.length - 1].serialNumber : 0),
+    total: activeQueue.length,
+    totalBooked: bookedQueue.length,
+    totalCompleted: completedQueue.length,
+    previousSerial: previous?.serialNumber ?? null,
+    nextSerial: next?.serialNumber ?? null,
+    missedSerials: missedQueue.map((m) => m.serialNumber),
+    queue: activeQueue,
   };
 }

@@ -21,6 +21,7 @@ import {
   UserPlus, 
   ArrowRight, 
   ShieldCheck, 
+  Tv,
 } from "lucide-react";
 import { LanguageToggle } from "@/components/common/language-toggle";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
@@ -199,6 +200,19 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
               >
                 <Stethoscope className="w-3.5 h-3.5 text-[var(--brand-primary)] shrink-0" />
                 <span>Find Doctors</span>
+              </Link>
+
+              {/* Quick Live Queue Display Shortcut */}
+              <Link
+                href="/live-queue"
+                className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
+                  pathname === "/live-queue"
+                    ? "bg-[var(--brand-surface)] text-[var(--brand-text)] border-[var(--brand-border)] font-bold shadow-2xs"
+                    : "bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-200 border-[var(--border-subtle)] hover:border-[var(--brand-border)] hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)]"
+                }`}
+              >
+                <Tv className="w-3.5 h-3.5 text-[var(--brand-primary)] shrink-0" />
+                <span>Live TV Display</span>
               </Link>
 
               {/* Modern "Menu" Button with Icon - Triggers Full-Screen Menu */}
@@ -434,6 +448,28 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
                         Patient queue management, check-in, triage & doctor availability
+                      </p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/live-queue"
+                    onClick={(e) => handleNavClick(e, "/live-queue")}
+                    className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <Tv className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)] flex items-center gap-1.5">
+                          <span>Live Chamber TV Display</span>
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        </span>
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Real-time waiting room calling screen with auto-cycling doctor serials & missed calls
                       </p>
                     </div>
                   </Link>

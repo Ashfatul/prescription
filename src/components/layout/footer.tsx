@@ -160,8 +160,9 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
                 </Link>
               </li>
               <li>
-                <Link href="/doctors" className="hover:text-[var(--brand-text)] transition">
-                  Live Chamber Queue Status
+                <Link href="/live-queue" className="hover:text-[var(--brand-text)] transition flex items-center gap-1.5">
+                  <span>Live Chamber TV Monitor</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 </Link>
               </li>
               <li>
