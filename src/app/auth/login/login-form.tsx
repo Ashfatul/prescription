@@ -26,6 +26,16 @@ const DEMO_ACCOUNTS = [
     password: "Pass1234!",
     badge: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
     icon: "👑",
+    fullWidth: true,
+  },
+  {
+    role: "Admin",
+    name: "Clinic Admin",
+    email: "clinic.admin@ppms.local",
+    password: "Pass1234!",
+    badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300",
+    icon: "🏢",
+    fullWidth: false,
   },
   {
     role: "Doctor",
@@ -34,14 +44,7 @@ const DEMO_ACCOUNTS = [
     password: "Pass1234!",
     badge: "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
     icon: "🩺",
-  },
-  {
-    role: "Patient",
-    name: "Nusrat Jahan",
-    email: "patient@ppms.local",
-    password: "Pass1234!",
-    badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-    icon: "🧑",
+    fullWidth: false,
   },
   {
     role: "Staff",
@@ -50,6 +53,16 @@ const DEMO_ACCOUNTS = [
     password: "Pass1234!",
     badge: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
     icon: "🏥",
+    fullWidth: false,
+  },
+  {
+    role: "Patient",
+    name: "Nusrat Jahan",
+    email: "patient@ppms.local",
+    password: "Pass1234!",
+    badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+    icon: "🧑",
+    fullWidth: false,
   },
 ];
 
@@ -308,14 +321,23 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
                     type="button"
                     onClick={() => performLogin(account.email, account.password)}
                     disabled={loading}
-                    className="flex flex-col items-start rounded-2xl border border-[var(--border-default)] bg-[var(--bg-subtle)] p-3 text-left transition hover:border-[var(--brand-primary)] hover:shadow-xs disabled:opacity-60 cursor-pointer"
+                    className={`flex flex-col items-start rounded-2xl border border-[var(--border-default)] bg-[var(--bg-subtle)] p-3 text-left transition hover:border-[var(--brand-primary)] hover:shadow-xs disabled:opacity-60 cursor-pointer ${
+                      account.fullWidth ? "col-span-2" : "col-span-1"
+                    }`}
                   >
-                    <span
-                      className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${account.badge}`}
-                    >
-                      <span>{account.icon}</span>
-                      <span>{account.role}</span>
-                    </span>
+                    <div className="flex items-center justify-between w-full">
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${account.badge}`}
+                      >
+                        <span>{account.icon}</span>
+                        <span>{account.role}</span>
+                      </span>
+                      {account.fullWidth && (
+                        <span className="text-[10px] text-purple-600 dark:text-purple-400 font-semibold hidden sm:inline">
+                          Global Platform Master
+                        </span>
+                      )}
+                    </div>
                     <span className="mt-1.5 text-xs font-bold text-slate-900 dark:text-slate-100 truncate w-full">
                       {account.name}
                     </span>

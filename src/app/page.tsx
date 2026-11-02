@@ -22,6 +22,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { DoctorList } from "@/components/home/doctor-list";
 import { PricingSection } from "@/components/home/pricing-section";
+import { ChamberQueuePreview } from "@/components/home/chamber-queue-preview";
 import { getCurrentUserFromCookie } from "@/lib/auth/session";
 import { getHospitalSettings } from "@/features/settings/settings.service";
 import { listPricingPlans } from "@/features/pricing/pricing.service";
@@ -51,7 +52,7 @@ export default async function Home() {
 
       <main className="flex-1 w-full overflow-hidden">
         {/* ========================================================= */}
-        {/* HERO SECTION - MODERN UNIQUE STYLE                        */}
+        {/* HERO SECTION - CLEAN CLINICAL ARCHITECTURE                */}
         {/* ========================================================= */}
         <section className="relative w-full overflow-hidden border-b border-[var(--border-subtle)] bg-[radial-gradient(ellipse_80%_60%_at_50%_-15%,rgba(15,118,110,0.12),transparent)] dark:bg-[radial-gradient(ellipse_80%_60%_at_50%_-15%,rgba(20,184,166,0.15),transparent)]">
           {/* Subtle Ambient Background Mesh */}
@@ -81,7 +82,7 @@ export default async function Home() {
 
                 {/* Subtitle */}
                 <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl font-normal">
-                  The clinical prescribing and chamber management suite built for high-velocity physicians, polyclinics, and hospitals. From 1-click clinical presets and automated dosage auto-fill to real-time chamber queue dispenses and laser-ready multi-page A4 printouts.
+                  The clinical prescribing suite built for high-velocity physicians, polyclinics, and hospitals. Write complete, legal multi-page prescriptions in under 20 seconds with 1-click clinical presets, auto-populating formulary dosage, and laser-ready A4 printouts.
                 </p>
 
                 {/* Primary Action Buttons */}
@@ -109,14 +110,15 @@ export default async function Home() {
                     className="flex items-center gap-2 px-5 py-3.5 rounded-2xl border border-[var(--border-strong)]/40 bg-[var(--bg-surface)] text-xs sm:text-sm font-bold text-[var(--text-primary)] hover:border-[var(--brand-primary)] hover:text-[var(--brand-text)] transition-all shadow-2xs"
                   >
                     <Calendar className="w-4 h-4 text-[var(--brand-primary)]" />
-                    <span>Book Doctor Consultation</span>
+                    <span>Book Specialist</span>
                   </a>
 
                   <a
-                    href="#features"
-                    className="flex items-center gap-1.5 px-4 py-3.5 rounded-2xl text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-[var(--text-primary)] transition"
+                    href="#chamber-queue"
+                    className="flex items-center gap-1.5 px-4 py-3.5 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] text-xs sm:text-sm font-bold text-[var(--brand-text)] hover:border-[var(--brand-primary)] transition"
                   >
-                    <span>Explore Features</span>
+                    <Activity className="w-4 h-4 text-[var(--brand-primary)]" />
+                    <span>Live Token Dispenser</span>
                     <span>↓</span>
                   </a>
                 </div>
@@ -133,7 +135,7 @@ export default async function Home() {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                    <span className="font-medium">Live Serial Queues</span>
+                    <span className="font-medium">1-Click Presets</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
@@ -142,7 +144,7 @@ export default async function Home() {
                 </div>
               </div>
 
-              {/* Right Column: Unique Interactive Hero Clinical Rx Simulation Card */}
+              {/* Right Column: Clean, Elegant Digital Prescription Studio Showcase */}
               <div className="lg:col-span-5 relative">
                 {/* Floating Glow Ambient Pill */}
                 <div className="absolute -top-8 -right-8 w-64 h-64 bg-[var(--brand-primary)]/15 rounded-full blur-3xl pointer-events-none" />
@@ -150,75 +152,50 @@ export default async function Home() {
                 {/* Floating Accolade Badge Top-Right */}
                 <div className="absolute -top-4 -right-2 sm:-right-4 z-20 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-strong)]/40 shadow-md text-xs font-bold text-slate-800 dark:text-slate-200">
                   <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
-                  <span>&lt; 20s Prescription Generation</span>
+                  <span>&lt; 20s Fast Prescribing</span>
                 </div>
 
                 {/* Floating Accolade Badge Bottom-Left */}
                 <div className="absolute -bottom-4 -left-2 sm:-left-4 z-20 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-strong)]/40 shadow-md text-xs font-bold text-slate-800 dark:text-slate-200">
                   <Printer className="w-4 h-4 text-[var(--brand-primary)]" />
-                  <span>BMDC Verified Legal A4 Layout</span>
+                  <span>BMDC Legal A4 Format</span>
                 </div>
 
-                {/* Main Hero Card Simulation */}
+                {/* Main Hero Card Simulation: Clean Electronic Prescription */}
                 <div className="relative z-10 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xl overflow-hidden p-5 sm:p-6 space-y-4">
                   {/* Card Header: Hospital & Chamber Identity */}
-                  <div className="flex items-start justify-between pb-3 border-b border-[var(--border-subtle)]">
-                    <div className="space-y-0.5">
-                      <div className="flex items-center gap-1.5">
+                  <div className="flex items-start justify-between pb-3.5 border-b border-[var(--border-subtle)]">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
                         <span className="w-2.5 h-2.5 rounded-full bg-[var(--brand-primary)]" />
                         <h2 className="text-sm font-black text-slate-900 dark:text-white tracking-tight">
-                          Metropolitan Hospital
+                          Metropolitan Specialized Hospital
                         </h2>
                       </div>
-                      <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                        Chamber 301 • Dr. Fahim Rahman, MBBS, FCPS
+                      <p className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                        Dr. Fahim Rahman <span className="font-normal text-slate-400">• MBBS, FCPS (Medicine)</span>
+                      </p>
+                      <p className="text-[10px] text-slate-400 font-mono">
+                        BMDC Reg: A-54910 • Chamber 301
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      <span>Live Consulting</span>
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--brand-surface)] border border-[var(--brand-border)] text-[var(--brand-text)] text-[10px] font-bold">
+                      <span>A4 Verified</span>
                     </div>
                   </div>
 
-                  {/* Chamber Queue Ticker Strip */}
-                  <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs">
-                    <div>
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 block">
-                        Now Serving
-                      </span>
-                      <span className="text-base font-black text-[var(--brand-text)]">
-                        Token #04
-                      </span>
-                    </div>
-
-                    <div className="text-center">
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 block">
-                        Next in Lobby
-                      </span>
-                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                        Token #05
-                      </span>
-                    </div>
-
-                    <div className="text-right">
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 block">
-                        Queue Waiting
-                      </span>
-                      <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                        12 Patients
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Active Patient Vitals Card */}
-                  <div className="p-3 rounded-2xl bg-[var(--brand-surface)] border border-[var(--brand-border)]/60 text-xs space-y-2">
+                  {/* Patient Demographic & Vitals Intake Bar */}
+                  <div className="p-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs space-y-2">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
                         <HeartPulse className="w-4 h-4 text-[var(--brand-primary)]" />
-                        <span className="font-bold text-[var(--text-primary)]">Tariqul Islam (42y / Male)</span>
+                        <span>Tariqul Islam</span>
+                        <span className="text-slate-400 font-normal">• 42y / Male</span>
                       </div>
-                      <span className="text-[10px] font-mono font-bold text-[var(--brand-text)]">Rx #82910</span>
+                      <span className="text-[10px] font-mono font-bold text-[var(--brand-text)] bg-[var(--brand-surface)] px-2 py-0.5 rounded-md">
+                        #RX-82910
+                      </span>
                     </div>
 
                     <div className="grid grid-cols-4 gap-1.5 pt-1 text-[10px]">
@@ -241,23 +218,46 @@ export default async function Home() {
                     </div>
                   </div>
 
-                  {/* 1-Click Fast Prescribed Items Preview */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
-                        <Pill className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-                        <span>Prescribed Medicines (Auto-populated)</span>
+                  {/* 1-Click Chief Complaints & Diagnosis Preset Chips */}
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex items-center gap-1.5 text-[11px]">
+                      <span className="font-bold text-slate-700 dark:text-slate-300">Diagnosis:</span>
+                      <span className="px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] font-semibold text-[10px]">
+                        Acute Upper Respiratory Infection
                       </span>
-                      <span className="text-[10px] text-emerald-600 font-semibold">1-Click Presets</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1 text-[10px]">
+                      <span className="px-2 py-0.5 rounded-full bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 font-medium border border-[var(--border-subtle)]">
+                        Fever x 3 days
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 font-medium border border-[var(--border-subtle)]">
+                        Dry Cough
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 font-medium border border-[var(--border-subtle)]">
+                        Throat Pain
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Rx Prescribed Medications (Clean, spacious list) */}
+                  <div className="space-y-2 pt-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                        <span className="text-base font-serif italic font-bold text-[var(--brand-text)]">℞</span>
+                        <span>Prescribed Medications</span>
+                      </span>
+                      <span className="text-[10px] text-[var(--brand-text)] font-semibold">
+                        Auto-Populated Dosage
+                      </span>
                     </div>
 
-                    <div className="space-y-1.5 text-xs">
-                      <div className="p-2 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] flex items-center justify-between">
+                    <div className="space-y-2 text-xs">
+                      <div className="p-2.5 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] flex items-center justify-between">
                         <div>
                           <strong className="text-slate-900 dark:text-white font-bold block text-xs">
                             Tab. Napa Extra 500mg+65mg
                           </strong>
-                          <span className="text-[10px] text-slate-500">Paracetamol + Caffeine</span>
+                          <span className="text-[10px] text-slate-500">Paracetamol + Caffeine • After meal</span>
                         </div>
                         <div className="flex items-center gap-1 text-[10px] font-bold">
                           <span className="px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)]">
@@ -269,12 +269,12 @@ export default async function Home() {
                         </div>
                       </div>
 
-                      <div className="p-2 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] flex items-center justify-between">
+                      <div className="p-2.5 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] flex items-center justify-between">
                         <div>
                           <strong className="text-slate-900 dark:text-white font-bold block text-xs">
                             Cap. Maxpro 20mg
                           </strong>
-                          <span className="text-[10px] text-slate-500">Esomeprazole Magnesium</span>
+                          <span className="text-[10px] text-slate-500">Esomeprazole • 30 mins before meal</span>
                         </div>
                         <div className="flex items-center gap-1 text-[10px] font-bold">
                           <span className="px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)]">
@@ -288,15 +288,15 @@ export default async function Home() {
                     </div>
                   </div>
 
-                  {/* Doctor Signature & Legal Verification Stamp */}
+                  {/* Doctor Signature & Advice Footer */}
                   <div className="pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-[11px]">
-                    <div className="flex items-center gap-1.5 text-slate-500">
-                      <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                      <span>BMDC Reg: <strong>A-54910</strong></span>
+                    <div className="text-slate-500 text-[10px] max-w-[210px] truncate">
+                      Advice: Complete bed rest, warm fluids.
                     </div>
 
                     <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[10px]">
-                      <span>✓ Digitally Verified</span>
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      <span>Digitally Verified</span>
                     </div>
                   </div>
                 </div>
@@ -354,6 +354,11 @@ export default async function Home() {
             </div>
           </div>
         </section>
+
+        {/* ========================================================= */}
+        {/* LIVE CHAMBER QUEUE & WALK-IN TOKEN DISPENSER SECTION      */}
+        {/* ========================================================= */}
+        <ChamberQueuePreview />
 
         {/* ========================================================= */}
         {/* FEATURES SHOWCASE SECTION                                 */}

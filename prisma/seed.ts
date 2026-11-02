@@ -177,6 +177,7 @@ async function main() {
     where: { email: "admin@ppms.local" },
     update: {
       organizationId: defaultOrg.id,
+      emailVerified: new Date(),
     },
     create: {
       name: "Super Admin",
@@ -184,6 +185,23 @@ async function main() {
       passwordHash,
       roleId: roleByName.SUPER_ADMIN,
       organizationId: defaultOrg.id,
+      emailVerified: new Date(),
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: "clinic.admin@ppms.local" },
+    update: {
+      organizationId: defaultOrg.id,
+      emailVerified: new Date(),
+    },
+    create: {
+      name: "Clinic Admin",
+      email: "clinic.admin@ppms.local",
+      passwordHash,
+      roleId: roleByName.ADMIN,
+      organizationId: defaultOrg.id,
+      emailVerified: new Date(),
     },
   });
 
