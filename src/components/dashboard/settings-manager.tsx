@@ -19,6 +19,7 @@ import {
   DEFAULT_HOSPITAL_SETTINGS 
 } from "@/features/settings/settings.service";
 import { ChangePasswordCard } from "@/components/common/change-password-card";
+import { TwoFactorAuthCard } from "@/components/common/two-factor-auth-card";
 
 export function SettingsManager() {
   const [settings, setSettings] = useState<HospitalSettings>(DEFAULT_HOSPITAL_SETTINGS);
@@ -501,8 +502,9 @@ export function SettingsManager() {
         </div>
       </form>
 
-      {/* Account Security & Password Management */}
-      <div className="pt-4 border-t border-[var(--border-subtle)]">
+      {/* Account Security, Two-Factor Authentication & Password Management */}
+      <div className="pt-4 border-t border-[var(--border-subtle)] space-y-6">
+        <TwoFactorAuthCard />
         <ChangePasswordCard />
       </div>
     </div>

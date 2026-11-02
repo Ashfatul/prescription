@@ -135,6 +135,9 @@ model User {
   approvedAt                      DateTime?
   approvedBy                      String?
   isDemo                          Boolean          @default(false)
+  twoFactorEnabled                Boolean          @default(false)
+  twoFactorSecret                 String?
+  twoFactorBackupCodes            Json?            @default("[]")
   notificationPreferences Json?            @default("{\"emailPrescriptionAlerts\":true,\"systemPrescriptionAlerts\":true,\"emailAppointmentReminders\":true,\"systemAppointmentReminders\":true,\"emailMedicineReminders\":true,\"announcements\":true}")
   roleId                  String
   role                    Role             @relation(fields: [roleId], references: [id])

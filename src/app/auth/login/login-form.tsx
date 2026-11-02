@@ -8,11 +8,14 @@ import {
   Building2,
   HeartPulse,
   ArrowRight,
+  ArrowLeft,
   Eye,
   EyeOff,
   Lock,
   Mail,
   ShieldCheck,
+  Shield,
+  KeyRound,
   Sparkles,
 } from "lucide-react";
 import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
@@ -74,12 +77,20 @@ const DEMO_ACCOUNTS = [
 
 export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
   const router = useRouter();
-  const { user, login, loading: authLoading } = useAuth();
+  const { user, login, verify2FALogin, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // 2FA Verification Challenge State
+  const [is2FAChallenge, setIs2FAChallenge] = useState(false);
+  const [tempToken, setTempToken] = useState("");
+  const [maskedEmail, setMaskedEmail] = useState("");
+  const [twoFactorCode, setTwoFactorCode] = useState("");
+  const [useBackupCode, setUseBackupCode] = useState(false);
+  const [twoFactorLoading, setTwoFactorLoading] = useState(false);
 
   // If user is already authenticated on the client, redirect to dashboard immediately
   useEffect(() => {
@@ -97,6 +108,15 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
     const res = await login(loginEmail, loginPassword);
     setLoading(false);
 
+    if (res.requires2FA) {
+      setIs2FAChallenge(true);
+      setTempToken(res.tempToken || "");
+      setMaskedEmail(res.maskedEmail || loginEmail);
+      setTwoFactorCode("");
+      setError("");
+      return;
+    }
+
     if (!res.success) {
       if (res.requireVerification) {
         router.push(`/auth/verify-email?email=${encodeURIComponent(res.email || loginEmail)}`);
@@ -113,6 +133,32 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     void performLogin(email, password);
+  };
+
+  const onVerify2FASubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!twoFactorCode.trim() || twoFactorLoading) return;
+
+    setTwoFactorLoading(true);
+    setError("");
+
+    const res = await verify2FALogin(tempToken, twoFactorCode.trim());
+    setTwoFactorLoading(false);
+
+    if (!res.success) {
+      setError(res.error || "Invalid verification code.");
+      return;
+    }
+
+    router.push("/dashboard");
+    router.refresh();
+  };
+
+  const cancel2FA = () => {
+    setIs2FAChallenge(false);
+    setTempToken("");
+    setTwoFactorCode("");
+    setError("");
   };
 
   return (
@@ -163,7 +209,97 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
 
         {/* Center Card Content */}
         <div className="my-auto py-8 max-w-md w-full mx-auto space-y-6">
-          <div className="space-y-1.5">
+          {is2FAChallenge ? (
+            <div className="space-y-6 animate-in fade-in zoom-in-95 duration-200">
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20 text-xs font-bold">
+                  <Shield className="w-3.5 h-3.5" />
+                  <span>Two-Factor Authentication</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+                  Security Check
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                  {useBackupCode
+                    ? "Enter an unused 8-character recovery backup code to access your account."
+                    : `Enter the 6-digit code from your authenticator app for ${maskedEmail || "your account"}.`}
+                </p>
+              </div>
+
+              <form className="space-y-4" onSubmit={onVerify2FASubmit}>
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    {useBackupCode ? "Recovery Backup Code" : "6-Digit Authenticator Code"}
+                  </label>
+                  <div className="relative">
+                    <input
+                      className={`w-full rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[52px] h-[52px] ${
+                        useBackupCode
+                          ? "px-4 font-mono text-center tracking-[0.15em] text-lg font-bold"
+                          : "px-4 font-mono text-center tracking-[0.3em] text-2xl font-bold"
+                      }`}
+                      value={twoFactorCode}
+                      onChange={(e) => setTwoFactorCode(e.target.value)}
+                      placeholder={useBackupCode ? "XXXX-XXXX" : "000000"}
+                      maxLength={useBackupCode ? 9 : 6}
+                      autoFocus
+                      required
+                    />
+                    <KeyRound className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                </div>
+
+                {error && (
+                  <p className="rounded-xl bg-red-50 p-3 text-xs font-semibold text-red-600 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/50 leading-relaxed">
+                    {error}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={twoFactorLoading || !twoFactorCode.trim()}
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[var(--brand-primary)] text-white text-sm font-bold shadow-xs hover:opacity-95 transition-all disabled:opacity-60 cursor-pointer"
+                >
+                  {twoFactorLoading ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span>Verifying Code...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Verify & Sign In</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+
+                <div className="flex items-center justify-between pt-2 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setUseBackupCode(!useBackupCode);
+                      setTwoFactorCode("");
+                      setError("");
+                    }}
+                    className="text-[var(--brand-primary)] font-semibold hover:underline cursor-pointer"
+                  >
+                    {useBackupCode ? "Use Authenticator App instead" : "Use backup recovery code"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={cancel2FA}
+                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer flex items-center gap-1"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>Back to login</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-1.5">
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-[11px] font-bold">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Verified Clinical Access</span>
@@ -359,6 +495,8 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
                 ))}
               </div>
             </div>
+          )}
+            </>
           )}
         </div>
 

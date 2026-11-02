@@ -25,6 +25,7 @@ import { PrescriptionShareModal } from "@/components/dashboard/prescription-shar
 import { AnnouncementsBanner } from "@/components/dashboard/announcements-banner";
 import { AnnouncementsManager } from "@/components/dashboard/announcements-manager";
 import { ChangePasswordCard } from "@/components/common/change-password-card";
+import { TwoFactorAuthCard } from "@/components/common/two-factor-auth-card";
 import { createGoogleCalendarAppointmentUrl } from "@/lib/calendar";
 import { useAuth } from "@/lib/auth/auth-context";
 import { DoctorScheduleDisplay } from "@/components/doctors/doctor-schedule-display";
@@ -371,7 +372,7 @@ export function PatientDashboardView({
           { id: "reminders", label: "⏰ Medicine Reminders" },
           { id: "chat", label: "💬 Doctor Chat" },
           { id: "announcements", label: "📢 Clinic Notices" },
-          { id: "security", label: "🔒 Security & Password" },
+          { id: "security", label: "🔒 Security & 2FA" },
         ].map((t) => {
           const isActive =
             t.id === "overview"
@@ -402,7 +403,12 @@ export function PatientDashboardView({
       {activeTab === "announcements" && (
         <AnnouncementsManager canManage={false} userRole="PATIENT" />
       )}
-      {activeTab === "security" && <ChangePasswordCard />}
+      {activeTab === "security" && (
+        <div className="space-y-6">
+          <TwoFactorAuthCard />
+          <ChangePasswordCard />
+        </div>
+      )}
 
       {/* Default Overview */}
       {(activeTab === "overview" || activeTab === "main") && (

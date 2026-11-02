@@ -3,6 +3,7 @@
 import { FormEvent, useRef, useState } from "react";
 import Image from "next/image";
 import { ChangePasswordCard } from "@/components/common/change-password-card";
+import { TwoFactorAuthCard } from "@/components/common/two-factor-auth-card";
 import { CustomSelect } from "@/components/common/custom-select";
 
 export type DoctorProfile = {
@@ -761,8 +762,9 @@ export function DoctorProfileEditor({
         </div>
       </form>
 
-      {/* Account Security & Password Change */}
-      <div className="mt-8">
+      {/* Account Security, Two-Factor Authentication & Password Management */}
+      <div className="mt-8 space-y-6">
+        <TwoFactorAuthCard />
         <ChangePasswordCard />
       </div>
     </div>

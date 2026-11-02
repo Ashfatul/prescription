@@ -8,6 +8,7 @@ import { ThemeCustomizer } from "@/components/common/theme-customizer";
 import { LanguageToggle } from "@/components/common/language-toggle";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { ChangePasswordCard } from "@/components/common/change-password-card";
+import { TwoFactorAuthCard } from "@/components/common/two-factor-auth-card";
 import { DemoCountdownTimer } from "@/components/common/demo-countdown-timer";
 import { useAuth } from "@/lib/auth/auth-context";
 import {
@@ -595,10 +596,10 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
               type="button"
               onClick={() => setChangePasswordOpen(true)}
               className="text-[10px] font-semibold text-slate-500 hover:text-[var(--brand-primary)] flex items-center gap-1 cursor-pointer"
-              title="Change Account Password"
+              title="Account Security, 2FA & Password"
             >
               <KeyRound className="w-3 h-3" />
-              <span>Password</span>
+              <span>Security</span>
             </button>
             <button
               type="button"
@@ -716,10 +717,10 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         </main>
       </div>
 
-      {/* Change Password Modal */}
+      {/* Account Security & 2FA Modal */}
       {changePasswordOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in">
-          <div className="w-full max-w-lg relative animate-in zoom-in-95 modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl">
+          <div className="w-full max-w-2xl relative animate-in zoom-in-95 modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl">
             <button
               type="button"
               onClick={() => setChangePasswordOpen(false)}
@@ -728,7 +729,8 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             >
               ✕
             </button>
-            <div className="modal-body flex-1 overflow-y-auto">
+            <div className="modal-body flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+              <TwoFactorAuthCard />
               <ChangePasswordCard />
             </div>
           </div>

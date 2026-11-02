@@ -3,7 +3,7 @@ import { RoleName, OrganizationStatus } from "@prisma/client";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { verifyPassword } from "@/lib/auth/password";
-import { signToken } from "@/lib/auth/jwt";
+import { signToken, sign2FATempToken } from "@/lib/auth/jwt";
 import { AUTH_COOKIE } from "@/lib/auth/constants";
 import { withErrorHandling } from "@/lib/api-handler";
 import { AppError } from "@/lib/errors";
@@ -88,6 +88,18 @@ export async function POST(req: NextRequest) {
         },
         { status: 403 }
       );
+    }
+
+    // 2FA Security Challenge Check
+    if (user.twoFactorEnabled) {
+      const tempToken = await sign2FATempToken(user.id);
+      return NextResponse.json({
+        success: true,
+        requires2FA: true,
+        tempToken,
+        maskedEmail: user.email.replace(/(.{2})(.*)(?=@)/, (_, a, b) => a + "*".repeat(Math.max(1, b.length))),
+        message: "Two-factor authentication required. Please enter your 6-digit authenticator code.",
+      });
     }
 
     const token = await signToken({

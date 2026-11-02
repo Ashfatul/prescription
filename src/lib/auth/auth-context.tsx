@@ -23,13 +23,23 @@ export interface AuthUser {
   patient?: { id: string } | null;
 }
 
+export interface LoginResult {
+  success: boolean;
+  error?: string;
+  user?: AuthUser;
+  requireVerification?: boolean;
+  email?: string;
+  requires2FA?: boolean;
+  tempToken?: string;
+  maskedEmail?: string;
+  message?: string;
+}
+
 export interface AuthContextType {
   user: AuthUser | null;
   loading: boolean;
-  login: (
-    email: string,
-    password: string
-  ) => Promise<{ success: boolean; error?: string; user?: AuthUser; requireVerification?: boolean; email?: string }>;
+  login: (email: string, password: string) => Promise<LoginResult>;
+  verify2FALogin: (tempToken: string, code: string) => Promise<{ success: boolean; error?: string; user?: AuthUser }>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<AuthUser | null>;
   updatePreferences: (prefs: { theme?: string; accent?: string }) => Promise<void>;
@@ -300,7 +310,7 @@ export function AuthProvider({
     async (
       email: string,
       password: string
-    ): Promise<{ success: boolean; error?: string; user?: AuthUser; requireVerification?: boolean; email?: string }> => {
+    ): Promise<LoginResult> => {
       setLoading(true);
       try {
         const res = await fetch("/api/auth/login", {
@@ -309,6 +319,19 @@ export function AuthProvider({
           body: JSON.stringify({ email, password }),
         });
         const data = await res.json();
+
+        // Check if 2FA verification challenge is required
+        if (data?.requires2FA) {
+          setLoading(false);
+          return {
+            success: false,
+            requires2FA: true,
+            tempToken: data.tempToken,
+            maskedEmail: data.maskedEmail,
+            message: data.message,
+          };
+        }
+
         if (!res.ok || !data.success) {
           setLoading(false);
           return {
@@ -353,6 +376,52 @@ export function AuthProvider({
     [refreshUser]
   );
 
+  const verify2FALogin = useCallback(
+    async (tempToken: string, code: string): Promise<{ success: boolean; error?: string; user?: AuthUser }> => {
+      setLoading(true);
+      try {
+        const res = await fetch("/api/auth/login/2fa", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tempToken, code }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          setLoading(false);
+          return {
+            success: false,
+            error: data.message || "Invalid verification code",
+          };
+        }
+
+        const currentUser = await refreshUser();
+        const finalUser = currentUser || normalizeUser(data.data);
+        setUser(finalUser);
+        setLoading(false);
+
+        if (finalUser) {
+          applyUserThemeLocally(finalUser.theme, finalUser.accent);
+        }
+
+        if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+          try {
+            const channel = new BroadcastChannel(AUTH_CHANNEL_NAME);
+            channel.postMessage({ type: "LOGIN" });
+            channel.close();
+          } catch {
+            // ignore
+          }
+        }
+
+        return { success: true, user: finalUser ?? undefined };
+      } catch {
+        setLoading(false);
+        return { success: false, error: "Network error during two-factor verification" };
+      }
+    },
+    [refreshUser]
+  );
+
   const logout = useCallback(async () => {
     setLoading(true);
     try {
@@ -384,6 +453,7 @@ export function AuthProvider({
         user,
         loading,
         login,
+        verify2FALogin,
         logout,
         refreshUser,
         updatePreferences,

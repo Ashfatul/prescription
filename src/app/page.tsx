@@ -247,11 +247,11 @@ export default async function Home() {
             {/* 6 Core Feature Cards Grid */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {/* Feature 1 */}
-              <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4">
+              <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
                 <div className="w-12 h-12 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
                   <Pill className="w-6 h-6" />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 flex-grow-1">
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                     Fast Prescribing Pad with 1-Click Presets
                   </h3>
@@ -267,11 +267,11 @@ export default async function Home() {
               </div>
 
               {/* Feature 2 */}
-              <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4">
+              <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
                 <div className="w-12 h-12 rounded-2xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
                   <Printer className="w-6 h-6" />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 flex-grow-1">
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                     Interactive A4 Template Designer
                   </h3>
@@ -281,17 +281,17 @@ export default async function Home() {
                 </div>
                 <div className="pt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold text-sky-600 dark:text-sky-400">
                   <span className="px-2 py-0.5 rounded-md bg-sky-500/10">WYSIWYG Designer</span>
-                  <span className="px-2 py-0.5 rounded-md bg-sky-500/10">Watermark Logos</span>
+                  <span className="px-2 py-0.5 rounded-md bg-sky-500/10">Watermark</span>
                   <span className="px-2 py-0.5 rounded-md bg-sky-500/10">Paginated Print</span>
                 </div>
               </div>
 
               {/* Feature 3 */}
-              <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4">
+              <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
                 <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
                   <Clock className="w-6 h-6" />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 flex-grow-1">
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                     Real-Time Chamber Queue Dispenser
                   </h3>
@@ -307,11 +307,11 @@ export default async function Home() {
               </div>
 
               {/* Feature 4 */}
-              <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4">
+              <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
                   <Users className="w-6 h-6" />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 flex-grow-1">
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                     Front Desk & Receptionist Triage
                   </h3>
@@ -327,11 +327,11 @@ export default async function Home() {
               </div>
 
               {/* Feature 5 */}
-              <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4">
+              <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
                 <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
                   <Clock className="w-6 h-6" />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 flex-grow-1">
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                     Patient Electronic Prescriptions &amp; Medication Reminders
                   </h3>
@@ -347,11 +347,11 @@ export default async function Home() {
               </div>
 
               {/* Feature 6 */}
-              <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4">
+              <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
                 <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
                   <FileSpreadsheet className="w-6 h-6" />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 flex-grow-1">
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                     Clinical Analytics & Drug Intelligence
                   </h3>
@@ -360,7 +360,7 @@ export default async function Home() {
                   </p>
                 </div>
                 <div className="pt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold text-rose-600 dark:text-rose-400">
-                  <span className="px-2 py-0.5 rounded-md bg-rose-500/10">Formulary Share %</span>
+                  <span className="px-2 py-0.5 rounded-md bg-rose-500/10">Formulary %</span>
                   <span className="px-2 py-0.5 rounded-md bg-rose-500/10">Disease Prevalence</span>
                   <span className="px-2 py-0.5 rounded-md bg-rose-500/10">Patient Volume</span>
                 </div>
