@@ -1395,7 +1395,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
         <div className="grid gap-6 lg:grid-cols-12">
           {/* Left Form (8 Cols) */}
           <div className="lg:col-span-8 p-6 sm:p-7 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-start flex-col justify-between pb-3 border-b border-slate-100 dark:border-slate-800 gap-4">
               <div>
                 <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <Plus className="w-4 h-4 text-[var(--brand-primary)]" />
