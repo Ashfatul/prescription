@@ -1,5 +1,6 @@
 import { AppointmentStatus, PrismaClient, RoleName } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { seedOrResetDemoClinic } from "../src/features/demo/demo-reset.service";
 
 const prisma = new PrismaClient();
 
@@ -133,148 +134,124 @@ async function main() {
     },
   });
 
-  // 2. Seed Default Organization
-  const defaultOrg = await prisma.organization.upsert({
+  // =========================================================================
+  // 2. SEED DEDICATED DEMO FACILITY: PPMS CLINIC (Isolated Demo Sandbox)
+  // =========================================================================
+  console.log("Seeding PPMS Clinic (Dedicated Demo Sandbox)...");
+  const demoOrg = await seedOrResetDemoClinic(prisma);
+  console.log(`PPMS Clinic seeded successfully with ID: ${demoOrg.id}`);
+
+  // =========================================================================
+  // 3. SEED PRODUCTION CLINIC 1: METROPOLITAN SPECIALIZED HOSPITAL
+  // =========================================================================
+  console.log("Seeding Metropolitan Specialized Hospital (Production Clinic)...");
+  const metroOrg = await prisma.organization.upsert({
     where: { slug: "metro-hospital" },
     update: {
       name: "Metropolitan Specialized Hospital",
+      isDemo: false,
       planId: proPlan.id,
       contactEmail: "info@metropolitanhospital.com",
       contactPhone: "+880 2-8901234",
       address: "Plot 12, Road 4, Sector 7, Uttara, Dhaka-1230",
+      status: "ACTIVE",
     },
     create: {
       name: "Metropolitan Specialized Hospital",
       slug: "metro-hospital",
+      isDemo: false,
       planId: proPlan.id,
       contactEmail: "info@metropolitanhospital.com",
       contactPhone: "+880 2-8901234",
       address: "Plot 12, Road 4, Sector 7, Uttara, Dhaka-1230",
+      status: "ACTIVE",
     },
   });
 
-  const secondaryOrg = await prisma.organization.upsert({
-    where: { slug: "care-polyclinic" },
+  // Metro Hospital Staff & Admin
+  await prisma.user.upsert({
+    where: { email: "admin.metro@metropolitanhospital.com" },
     update: {
-      name: "Care Family Polyclinic",
-      planId: starterPlan.id,
-      contactEmail: "care@carepolyclinic.com",
-      contactPhone: "+880 1819-998877",
-      address: "Mirpur 10 Circle, Dhaka",
+      name: "Metro Medical Director",
+      organizationId: metroOrg.id,
+      isDemo: false,
     },
     create: {
-      name: "Care Family Polyclinic",
-      slug: "care-polyclinic",
-      planId: starterPlan.id,
-      contactEmail: "care@carepolyclinic.com",
-      contactPhone: "+880 1819-998877",
-      address: "Mirpur 10 Circle, Dhaka",
-    },
-  });
-
-  // 3. Seed Users
-  const admin = await prisma.user.upsert({
-    where: { email: "admin@ppms.local" },
-    update: {
-      organizationId: defaultOrg.id,
-      emailVerified: new Date(),
-    },
-    create: {
-      name: "Super Admin",
-      email: "admin@ppms.local",
+      name: "Metro Medical Director",
+      email: "admin.metro@metropolitanhospital.com",
       passwordHash,
-      roleId: roleByName.SUPER_ADMIN,
-      organizationId: defaultOrg.id,
+      roleId: roleByName.ADMIN,
+      organizationId: metroOrg.id,
+      isDemo: false,
       emailVerified: new Date(),
     },
   });
 
   await prisma.user.upsert({
-    where: { email: "clinic.admin@ppms.local" },
+    where: { email: "staff.metro@metropolitanhospital.com" },
     update: {
-      organizationId: defaultOrg.id,
-      emailVerified: new Date(),
+      name: "Metro Reception Desk",
+      organizationId: metroOrg.id,
+      isDemo: false,
     },
     create: {
-      name: "Clinic Admin",
-      email: "clinic.admin@ppms.local",
-      passwordHash,
-      roleId: roleByName.ADMIN,
-      organizationId: defaultOrg.id,
-      emailVerified: new Date(),
-    },
-  });
-
-  const patientUser = await prisma.user.upsert({
-    where: { email: "patient@ppms.local" },
-    update: {
-      organizationId: defaultOrg.id,
-    },
-    create: {
-      name: "Nusrat Jahan",
-      email: "patient@ppms.local",
-      passwordHash,
-      roleId: roleByName.PATIENT,
-      organizationId: defaultOrg.id,
-    },
-  });
-
-  const staffUser = await prisma.user.upsert({
-    where: { email: "staff@ppms.local" },
-    update: {
-      organizationId: defaultOrg.id,
-    },
-    create: {
-      name: "Front Desk Staff",
-      email: "staff@ppms.local",
+      name: "Metro Reception Desk",
+      email: "staff.metro@metropolitanhospital.com",
       passwordHash,
       roleId: roleByName.STAFF,
-      organizationId: defaultOrg.id,
+      organizationId: metroOrg.id,
+      isDemo: false,
+      emailVerified: new Date(),
     },
   });
 
-  const patient = await prisma.patient.upsert({
-    where: { userId: patientUser.id },
-    update: {},
+  // Metro Hospital Patients
+  const metroPatient1User = await prisma.user.upsert({
+    where: { email: "zubair.metro@gmail.com" },
+    update: {
+      name: "Zubair Ahmed",
+      organizationId: metroOrg.id,
+      isDemo: false,
+    },
     create: {
-      userId: patientUser.id,
-      gender: "Female",
-      medicalHistory: "Mild seasonal allergy, History of Dyspepsia",
+      name: "Zubair Ahmed",
+      email: "zubair.metro@gmail.com",
+      passwordHash,
+      roleId: roleByName.PATIENT,
+      organizationId: metroOrg.id,
+      isDemo: false,
     },
   });
 
-  const doctorsData = [
-    {
-      name: "Dr. Fahim Rahman",
-      email: "doctor@ppms.local",
-      imageUrl:
-        "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80",
-      specialization: "General Medicine",
-      degrees: "MBBS, FCPS (Medicine), MACP (USA)",
-      designation: "Senior Consultant, Department of Medicine",
-      hospital: "Metropolitan Specialized Hospital",
-      bmdcRegNo: "BMDC-A-41285",
-      chamberAddress: "Room 301, 3rd Floor, Diagnostic & Consultation Block",
-      contactNumber: "+880 1711-234567",
-      available: true,
-      schedule: {
-        days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
-        startTime: "09:00 AM",
-        endTime: "01:00 PM",
-        chamber: "Room 301",
-      },
+  const metroPatient1 = await prisma.patient.upsert({
+    where: { userId: metroPatient1User.id },
+    update: {
+      organizationId: metroOrg.id,
+      gender: "Male",
+      dateOfBirth: new Date("1988-04-12"),
+      medicalHistory: "Type 2 Diabetes, Mild Dyslipidemia",
     },
+    create: {
+      userId: metroPatient1User.id,
+      organizationId: metroOrg.id,
+      gender: "Male",
+      dateOfBirth: new Date("1988-04-12"),
+      medicalHistory: "Type 2 Diabetes, Mild Dyslipidemia",
+    },
+  });
+
+  // Metro Hospital Doctors
+  const metroDoctors = [
     {
       name: "Dr. Sarah Jenkins",
-      email: "sarah.jenkins@ppms.local",
-      imageUrl:
-        "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=400&q=80",
+      email: "sarah.jenkins@metrohospital.org",
+      imageUrl: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=400&q=80",
       specialization: "Cardiology",
       degrees: "MBBS, MD (Cardiology), FACC (USA)",
       designation: "Associate Professor & Interventional Cardiologist",
-      hospital: "National Heart & Vascular Institute",
+      hospital: "Metropolitan Specialized Hospital",
       bmdcRegNo: "BMDC-A-32918",
-      chamberAddress: "Cardio Suite 204, 2nd Floor",
+      chamberAddress: "Cardio Suite 204, 2nd Floor, Metropolitan Hospital",
       contactNumber: "+880 1819-345678",
       available: true,
       schedule: {
@@ -286,15 +263,14 @@ async function main() {
     },
     {
       name: "Dr. Tariq Al-Mansoor",
-      email: "tariq.mansoor@ppms.local",
-      imageUrl:
-        "https://images.unsplash.com/photo-1622902046580-2b47f47f5471?auto=format&fit=crop&w=400&q=80",
+      email: "tariq.mansoor@metrohospital.org",
+      imageUrl: "https://images.unsplash.com/photo-1622902046580-2b47f47f5471?auto=format&fit=crop&w=400&q=80",
       specialization: "Pediatrics & Child Health",
       degrees: "MBBS, DCH, FCPS (Pediatrics)",
       designation: "Consultant Pediatrician",
-      hospital: "Green Valley Children & Mother Hospital",
+      hospital: "Metropolitan Specialized Hospital",
       bmdcRegNo: "BMDC-A-54012",
-      chamberAddress: "Pediatric Wing 102, Ground Floor",
+      chamberAddress: "Pediatric Wing 102, Ground Floor, Metropolitan Hospital",
       contactNumber: "+880 1912-456789",
       available: true,
       schedule: {
@@ -306,15 +282,14 @@ async function main() {
     },
     {
       name: "Dr. Ayesha Siddiqua",
-      email: "ayesha.siddiqua@ppms.local",
-      imageUrl:
-        "https://images.unsplash.com/photo-1594824813637-2309e53b6ee9?auto=format&fit=crop&w=400&q=80",
+      email: "ayesha.siddiqua@metrohospital.org",
+      imageUrl: "https://images.unsplash.com/photo-1594824813637-2309e53b6ee9?auto=format&fit=crop&w=400&q=80",
       specialization: "Dermatology",
       degrees: "MBBS, DDV, FCPS (Dermatology)",
       designation: "Assistant Professor & Dermatologist",
-      hospital: "Skin & Laser Center, Care Hospital",
+      hospital: "Metropolitan Specialized Hospital",
       bmdcRegNo: "BMDC-A-62874",
-      chamberAddress: "Skin Clinic 405, 4th Floor",
+      chamberAddress: "Skin Clinic 405, 4th Floor, Metropolitan Hospital",
       contactNumber: "+880 1613-567890",
       available: true,
       schedule: {
@@ -324,62 +299,20 @@ async function main() {
         chamber: "Skin Clinic 405",
       },
     },
-    {
-      name: "Dr. Marcus Vance",
-      email: "marcus.vance@ppms.local",
-      imageUrl:
-        "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=400&q=80",
-      specialization: "Orthopedics & Trauma",
-      degrees: "MBBS, MS (Orthopedics), AO Trauma Fellow",
-      designation: "Senior Orthopedic & Joint Surgeon",
-      hospital: "Apex Orthopedic & Trauma Hospital",
-      bmdcRegNo: "BMDC-A-29401",
-      chamberAddress: "Orthopedic Center 512, 5th Floor",
-      contactNumber: "+880 1514-678901",
-      available: false,
-      schedule: {
-        days: ["Sunday", "Monday", "Wednesday", "Thursday"],
-        startTime: "11:00 AM",
-        endTime: "03:00 PM",
-        chamber: "Orthopedic Center 512",
-      },
-    },
-    {
-      name: "Dr. Nusrat Parvin",
-      email: "nusrat.parvin@ppms.local",
-      imageUrl:
-        "https://images.unsplash.com/photo-1651008376811-b90baee60c1f?auto=format&fit=crop&w=400&q=80",
-      specialization: "Gynecology & Obstetrics",
-      degrees: "MBBS, DGO, FCPS (Obs & Gynae)",
-      designation: "Consultant Obstetrician & Gynecologist",
-      hospital: "City Women & Children Care Hospital",
-      bmdcRegNo: "BMDC-A-48193",
-      chamberAddress: "Women's Health 208, 2nd Floor",
-      contactNumber: "+880 1715-789012",
-      available: true,
-      schedule: {
-        days: ["Sunday", "Tuesday", "Wednesday", "Thursday"],
-        startTime: "05:00 PM",
-        endTime: "09:00 PM",
-        chamber: "Women's Health 208",
-      },
-    },
   ];
 
   const now = new Date();
   const todayAtTen = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0, 0);
 
-  let primaryDoctorId = "";
-
-  for (let i = 0; i < doctorsData.length; i++) {
-    const item = doctorsData[i];
-
+  for (let i = 0; i < metroDoctors.length; i++) {
+    const item = metroDoctors[i];
     const user = await prisma.user.upsert({
       where: { email: item.email },
       update: {
         name: item.name,
         imageUrl: item.imageUrl,
-        organizationId: defaultOrg.id,
+        organizationId: metroOrg.id,
+        isDemo: false,
       },
       create: {
         name: item.name,
@@ -387,13 +320,15 @@ async function main() {
         passwordHash,
         roleId: roleByName.DOCTOR,
         imageUrl: item.imageUrl,
-        organizationId: defaultOrg.id,
+        organizationId: metroOrg.id,
+        isDemo: false,
       },
     });
 
     const doc = await prisma.doctor.upsert({
       where: { userId: user.id },
       update: {
+        organizationId: metroOrg.id,
         specialization: item.specialization,
         degrees: item.degrees,
         designation: item.designation,
@@ -401,15 +336,14 @@ async function main() {
         bmdcRegNo: item.bmdcRegNo,
         chamberAddress: item.chamberAddress,
         contactNumber: item.contactNumber,
-        newPatientFee: 50,
-        followupFee: 30,
-        followupValidityDays: 90,
-        reportFreeDays: 2,
+        newPatientFee: 60,
+        followupFee: 35,
         scheduleJson: item.schedule,
         available: item.available,
       },
       create: {
         userId: user.id,
+        organizationId: metroOrg.id,
         specialization: item.specialization,
         degrees: item.degrees,
         designation: item.designation,
@@ -417,16 +351,12 @@ async function main() {
         bmdcRegNo: item.bmdcRegNo,
         chamberAddress: item.chamberAddress,
         contactNumber: item.contactNumber,
-        newPatientFee: 50,
-        followupFee: 30,
-        followupValidityDays: 90,
-        reportFreeDays: 2,
+        newPatientFee: 60,
+        followupFee: 35,
         scheduleJson: item.schedule,
         available: item.available,
       },
     });
-
-    if (i === 0) primaryDoctorId = doc.id;
 
     if (item.available) {
       await prisma.appointment.upsert({
@@ -438,22 +368,249 @@ async function main() {
           },
         },
         update: {
-          organizationId: defaultOrg.id,
+          organizationId: metroOrg.id,
         },
         create: {
           doctorId: doc.id,
-          patientId: patient.id,
-          organizationId: defaultOrg.id,
+          patientId: metroPatient1.id,
+          organizationId: metroOrg.id,
           appointmentDate: todayAtTen,
           serialNumber: i + 1,
           status: AppointmentStatus.BOOKED,
-          notes: "Consultation appointment",
+          notes: "Routine specialist check-up",
+          paymentStatus: "PAID",
+          fee: 60,
         },
       });
     }
   }
 
-  // Clear and seed comprehensive catalog
+  // =========================================================================
+  // 4. SEED PRODUCTION CLINIC 2: CARE FAMILY POLYCLINIC
+  // =========================================================================
+  console.log("Seeding Care Family Polyclinic (Production Clinic)...");
+  const careOrg = await prisma.organization.upsert({
+    where: { slug: "care-polyclinic" },
+    update: {
+      name: "Care Family Polyclinic",
+      isDemo: false,
+      planId: starterPlan.id,
+      contactEmail: "care@carepolyclinic.com",
+      contactPhone: "+880 1819-998877",
+      address: "Mirpur 10 Circle, Section 6, Dhaka-1216",
+      status: "ACTIVE",
+    },
+    create: {
+      name: "Care Family Polyclinic",
+      slug: "care-polyclinic",
+      isDemo: false,
+      planId: starterPlan.id,
+      contactEmail: "care@carepolyclinic.com",
+      contactPhone: "+880 1819-998877",
+      address: "Mirpur 10 Circle, Section 6, Dhaka-1216",
+      status: "ACTIVE",
+    },
+  });
+
+  // Care Clinic Staff & Admin
+  await prisma.user.upsert({
+    where: { email: "admin.care@carepolyclinic.com" },
+    update: {
+      name: "Care Clinic Administrator",
+      organizationId: careOrg.id,
+      isDemo: false,
+    },
+    create: {
+      name: "Care Clinic Administrator",
+      email: "admin.care@carepolyclinic.com",
+      passwordHash,
+      roleId: roleByName.ADMIN,
+      organizationId: careOrg.id,
+      isDemo: false,
+      emailVerified: new Date(),
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: "staff.care@carepolyclinic.com" },
+    update: {
+      name: "Care Clinic Triage Staff",
+      organizationId: careOrg.id,
+      isDemo: false,
+    },
+    create: {
+      name: "Care Clinic Triage Staff",
+      email: "staff.care@carepolyclinic.com",
+      passwordHash,
+      roleId: roleByName.STAFF,
+      organizationId: careOrg.id,
+      isDemo: false,
+      emailVerified: new Date(),
+    },
+  });
+
+  // Care Clinic Patients
+  const carePatient1User = await prisma.user.upsert({
+    where: { email: "tanvir.care@gmail.com" },
+    update: {
+      name: "Tanvir Hasan",
+      organizationId: careOrg.id,
+      isDemo: false,
+    },
+    create: {
+      name: "Tanvir Hasan",
+      email: "tanvir.care@gmail.com",
+      passwordHash,
+      roleId: roleByName.PATIENT,
+      organizationId: careOrg.id,
+      isDemo: false,
+    },
+  });
+
+  const carePatient1 = await prisma.patient.upsert({
+    where: { userId: carePatient1User.id },
+    update: {
+      organizationId: careOrg.id,
+      gender: "Male",
+      dateOfBirth: new Date("1991-08-19"),
+      medicalHistory: "Post-op Knee Arthroscopy follow up",
+    },
+    create: {
+      userId: carePatient1User.id,
+      organizationId: careOrg.id,
+      gender: "Male",
+      dateOfBirth: new Date("1991-08-19"),
+      medicalHistory: "Post-op Knee Arthroscopy follow up",
+    },
+  });
+
+  // Care Clinic Doctors
+  const careDoctors = [
+    {
+      name: "Dr. Marcus Vance",
+      email: "marcus.vance@careclinic.org",
+      imageUrl: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=400&q=80",
+      specialization: "Orthopedics & Joint Trauma",
+      degrees: "MBBS, MS (Orthopedics), AO Trauma Fellow",
+      designation: "Senior Orthopedic & Joint Surgeon",
+      hospital: "Care Family Polyclinic",
+      bmdcRegNo: "BMDC-A-29401",
+      chamberAddress: "Orthopedic Suite 512, 5th Floor, Care Polyclinic",
+      contactNumber: "+880 1514-678901",
+      available: true,
+      schedule: {
+        days: ["Sunday", "Monday", "Wednesday", "Thursday"],
+        startTime: "11:00 AM",
+        endTime: "03:00 PM",
+        chamber: "Orthopedic Suite 512",
+      },
+    },
+    {
+      name: "Dr. Nusrat Parvin",
+      email: "nusrat.parvin@careclinic.org",
+      imageUrl: "https://images.unsplash.com/photo-1651008376811-b90baee60c1f?auto=format&fit=crop&w=400&q=80",
+      specialization: "Gynecology & Obstetrics",
+      degrees: "MBBS, DGO, FCPS (Obs & Gynae)",
+      designation: "Consultant Obstetrician & Gynecologist",
+      hospital: "Care Family Polyclinic",
+      bmdcRegNo: "BMDC-A-48193",
+      chamberAddress: "Women's Health Suite 208, 2nd Floor, Care Polyclinic",
+      contactNumber: "+880 1715-789012",
+      available: true,
+      schedule: {
+        days: ["Sunday", "Tuesday", "Wednesday", "Thursday"],
+        startTime: "05:00 PM",
+        endTime: "09:00 PM",
+        chamber: "Women's Health Suite 208",
+      },
+    },
+  ];
+
+  for (let i = 0; i < careDoctors.length; i++) {
+    const item = careDoctors[i];
+    const user = await prisma.user.upsert({
+      where: { email: item.email },
+      update: {
+        name: item.name,
+        imageUrl: item.imageUrl,
+        organizationId: careOrg.id,
+        isDemo: false,
+      },
+      create: {
+        name: item.name,
+        email: item.email,
+        passwordHash,
+        roleId: roleByName.DOCTOR,
+        imageUrl: item.imageUrl,
+        organizationId: careOrg.id,
+        isDemo: false,
+      },
+    });
+
+    const doc = await prisma.doctor.upsert({
+      where: { userId: user.id },
+      update: {
+        organizationId: careOrg.id,
+        specialization: item.specialization,
+        degrees: item.degrees,
+        designation: item.designation,
+        hospital: item.hospital,
+        bmdcRegNo: item.bmdcRegNo,
+        chamberAddress: item.chamberAddress,
+        contactNumber: item.contactNumber,
+        newPatientFee: 50,
+        followupFee: 30,
+        scheduleJson: item.schedule,
+        available: item.available,
+      },
+      create: {
+        userId: user.id,
+        organizationId: careOrg.id,
+        specialization: item.specialization,
+        degrees: item.degrees,
+        designation: item.designation,
+        hospital: item.hospital,
+        bmdcRegNo: item.bmdcRegNo,
+        chamberAddress: item.chamberAddress,
+        contactNumber: item.contactNumber,
+        newPatientFee: 50,
+        followupFee: 30,
+        scheduleJson: item.schedule,
+        available: item.available,
+      },
+    });
+
+    if (item.available) {
+      await prisma.appointment.upsert({
+        where: {
+          doctorId_appointmentDate_serialNumber: {
+            doctorId: doc.id,
+            appointmentDate: todayAtTen,
+            serialNumber: i + 1,
+          },
+        },
+        update: {
+          organizationId: careOrg.id,
+        },
+        create: {
+          doctorId: doc.id,
+          patientId: carePatient1.id,
+          organizationId: careOrg.id,
+          appointmentDate: todayAtTen,
+          serialNumber: i + 1,
+          status: AppointmentStatus.BOOKED,
+          notes: "Chamber consultation appointment",
+          paymentStatus: "PAID",
+          fee: 50,
+        },
+      });
+    }
+  }
+
+  // =========================================================================
+  // 5. SEED GLOBAL FORMULARY CATALOG (Medicines & Tests)
+  // =========================================================================
+  console.log("Seeding Formulary Catalog (Medicines & Diagnostic Tests)...");
   await prisma.medicine.deleteMany({});
   await prisma.diagnosticTest.deleteMany({});
 
@@ -717,184 +874,51 @@ async function main() {
     ],
   });
 
-  await prisma.template.upsert({
-    where: { id: "default-template" },
-    update: {
-      name: "Professional Hospital Template",
-      isDefault: true,
-      contentJson: {
-        hospitalName: "Metropolitan Specialized Hospital",
-        hospitalTagline: "Center of Medical Excellence & Compassionate Care",
-        hospitalAddress: "Plot 12, Road 4, Sector 7, Uttara, Dhaka-1230",
-        hospitalPhone: "+880 2-8901234 / Emergency: 10678",
-        hospitalEmail: "info@metropolitanhospital.com",
-        hospitalWebsite: "www.metropolitanhospital.com",
-        themeColor: "#0f766e",
-        showVitals: true,
-        showClinicalNotes: true,
-        disclaimer:
-          "This is a legally valid computer-generated medical prescription. Please keep it safe for follow-up visits. For medical emergencies, call our 24/7 hotline 10678 or visit the nearest emergency room immediately.",
-      },
-    },
-    create: {
-      id: "default-template",
-      name: "Professional Hospital Template",
-      isDefault: true,
-      createdById: admin.id,
-      contentJson: {
-        hospitalName: "Metropolitan Specialized Hospital",
-        hospitalTagline: "Center of Medical Excellence & Compassionate Care",
-        hospitalAddress: "Plot 12, Road 4, Sector 7, Uttara, Dhaka-1230",
-        hospitalPhone: "+880 2-8901234 / Emergency: 10678",
-        hospitalEmail: "info@metropolitanhospital.com",
-        hospitalWebsite: "www.metropolitanhospital.com",
-        themeColor: "#0f766e",
-        showVitals: true,
-        showClinicalNotes: true,
-        disclaimer:
-          "This is a legally valid computer-generated medical prescription. Please keep it safe for follow-up visits. For medical emergencies, call our 24/7 hotline 10678 or visit the nearest emergency room immediately.",
-      },
-    },
-  });
-
-  // 4. Seed a sample prescription with share token and medicine reminder
-  const sampleRx = await prisma.prescription.create({
-    data: {
-      doctorId: primaryDoctorId,
-      patientId: patient.id,
-      organizationId: defaultOrg.id,
-      isPublicShareEnabled: true,
-      shareToken: "rx-metro-sample-82910",
-      notes: "Take complete rest and drink plenty of warm fluids. Follow up after 7 days.",
-      medicinesJson: [
-        {
-          name: "Napa Extra",
-          type: "Tablet",
-          dosage: "500mg + 65mg",
-          dose: "1+0+1",
-          timing: "After meal",
-          duration: "5 days",
-          instructions: "Take when fever or pain is prominent",
+  // Seed default template for Metropolitan Hospital
+  const adminUser = await prisma.user.findFirst({ where: { role: { name: RoleName.SUPER_ADMIN } } });
+  if (adminUser) {
+    await prisma.template.upsert({
+      where: { id: "default-template" },
+      update: {
+        name: "Professional Hospital Template",
+        isDefault: true,
+        contentJson: {
+          hospitalName: "Metropolitan Specialized Hospital",
+          hospitalTagline: "Center of Medical Excellence & Compassionate Care",
+          hospitalAddress: "Plot 12, Road 4, Sector 7, Uttara, Dhaka-1230",
+          hospitalPhone: "+880 2-8901234 / Emergency: 10678",
+          hospitalEmail: "info@metropolitanhospital.com",
+          hospitalWebsite: "www.metropolitanhospital.com",
+          themeColor: "#0f766e",
+          showVitals: true,
+          showClinicalNotes: true,
+          disclaimer:
+            "This is a legally valid computer-generated medical prescription. Please keep it safe for follow-up visits. For medical emergencies, call our 24/7 hotline 10678 or visit the nearest emergency room immediately.",
         },
-        {
-          name: "Maxpro",
-          type: "Capsule",
-          dosage: "20mg",
-          dose: "1+0+1",
-          timing: "30 mins before meal",
-          duration: "14 days",
-          instructions: "Take 30 minutes prior to breakfast and dinner",
+      },
+      create: {
+        id: "default-template",
+        name: "Professional Hospital Template",
+        isDefault: true,
+        createdById: adminUser.id,
+        contentJson: {
+          hospitalName: "Metropolitan Specialized Hospital",
+          hospitalTagline: "Center of Medical Excellence & Compassionate Care",
+          hospitalAddress: "Plot 12, Road 4, Sector 7, Uttara, Dhaka-1230",
+          hospitalPhone: "+880 2-8901234 / Emergency: 10678",
+          hospitalEmail: "info@metropolitanhospital.com",
+          hospitalWebsite: "www.metropolitanhospital.com",
+          themeColor: "#0f766e",
+          showVitals: true,
+          showClinicalNotes: true,
+          disclaimer:
+            "This is a legally valid computer-generated medical prescription. Please keep it safe for follow-up visits. For medical emergencies, call our 24/7 hotline 10678 or visit the nearest emergency room immediately.",
         },
-      ],
-      testsJson: [
-        {
-          name: "CBC with ESR (Complete Blood Count)",
-          instructions: "Clean blood sample. Fasting not required.",
-        },
-        {
-          name: "Fasting Blood Sugar (FBS)",
-          instructions: "8-10 hours overnight fasting.",
-        },
-      ],
-      vitalsJson: {
-        bp: "120/80",
-        pulse: "74",
-        temp: "98.4",
-        spo2: "99",
-        weight: "68",
       },
-      clinicalInfoJson: {
-        complaints: ["Mild fever x 3 days", "Dry cough", "Throat irritation"],
-        diagnosis: ["Acute Upper Respiratory Tract Infection", "Mild Gastritis"],
-        advice: ["Drink warm water", "Avoid oily/cold foods", "Take adequate rest"],
-      },
-    },
-  });
+    });
+  }
 
-  // Seed sample medicine reminder
-  await prisma.medicineReminder.create({
-    data: {
-      patientId: patient.id,
-      prescriptionId: sampleRx.id,
-      organizationId: defaultOrg.id,
-      medicineName: "Maxpro 20mg",
-      dosage: "20mg",
-      frequency: "1+0+1",
-      timeOfDay: "07:30 AM, 08:00 PM",
-      notes: "30 mins before breakfast and dinner",
-    },
-  });
-
-  // Seed sample announcements
-  await prisma.announcement.createMany({
-    data: [
-      {
-        title: "Annual Infection Control Protocol Update",
-        content: "All clinical and front-desk staff are reminded to follow updated sterilization guidelines and hygiene checks in OPD consulting chambers.",
-        targetRole: "ALL",
-        priority: "HIGH",
-        authorId: admin.id,
-        authorName: "Super Admin",
-        organizationId: defaultOrg.id,
-      },
-      {
-        title: "OPD Holiday Schedule - Upcoming Public Holiday",
-        content: "OPD chambers will operate from 9:00 AM to 1:00 PM on the upcoming holiday. Emergency admissions remain operational 24/7.",
-        targetRole: "PATIENT",
-        priority: "NORMAL",
-        authorId: admin.id,
-        authorName: "Medical Administration",
-        organizationId: defaultOrg.id,
-      },
-    ],
-  });
-
-  // Seed sample activity logs
-  await prisma.activityLog.createMany({
-    data: [
-      {
-        action: "ORGANIZATION_INITIALIZED",
-        entityType: "Organization",
-        entityId: defaultOrg.id,
-        userName: "System Setup",
-        userRole: "SUPER_ADMIN",
-        organizationId: defaultOrg.id,
-        detailsJson: { name: defaultOrg.name, plan: "Professional Polyclinic" },
-      },
-      {
-        action: "PRESCRIPTION_CREATED",
-        entityType: "Prescription",
-        entityId: sampleRx.id,
-        userName: "Dr. Fahim Rahman",
-        userRole: "DOCTOR",
-        organizationId: defaultOrg.id,
-        detailsJson: { patient: "Nusrat Jahan", medicinesCount: 2, testsCount: 2 },
-      },
-      {
-        action: "TEST_REPORT_UPLOADED",
-        entityType: "TestReport",
-        userName: "Nusrat Jahan",
-        userRole: "PATIENT",
-        organizationId: defaultOrg.id,
-        detailsJson: { title: "CBC & Blood Sugar Profile" },
-      },
-    ],
-  });
-
-  // Seed notification for patient
-  await prisma.notification.create({
-    data: {
-      userId: patientUser.id,
-      title: "New Digital Prescription Issued",
-      message: "Dr. Fahim Rahman has issued a new digital prescription for your consultation. You can view, download, or share it.",
-      type: "PRESCRIPTION_CREATED",
-      link: `/prescriptions/${sampleRx.id}/print`,
-    },
-  });
-
-  console.log("Seed completed successfully with multi-tenant SaaS organizations, pricing plans, prescription sharing, reports, and activity logs.");
-  void staffUser;
-  void secondaryOrg;
+  console.log("Database seeded successfully with clean separation across PPMS Clinic (Demo), Metro Hospital, and Care Polyclinic.");
 }
 
 main()

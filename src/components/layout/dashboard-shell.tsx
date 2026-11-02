@@ -8,6 +8,7 @@ import { ThemeCustomizer } from "@/components/common/theme-customizer";
 import { LanguageToggle } from "@/components/common/language-toggle";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { ChangePasswordCard } from "@/components/common/change-password-card";
+import { DemoCountdownTimer } from "@/components/common/demo-countdown-timer";
 import { useAuth } from "@/lib/auth/auth-context";
 import {
   BarChart3,
@@ -34,6 +35,10 @@ import {
   PanelLeftClose,
   Mail,
   KeyRound,
+  Tv,
+  CheckCircle2,
+  UserPlus,
+  FileSearch,
 } from "lucide-react";
 
 interface DashboardShellProps {
@@ -277,10 +282,31 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
       ? [
           {
             section: "Front Desk & Triage",
-            label: "Reception & Queue",
-            href: "/dashboard/staff",
-            tabKey: "reception",
-            icon: <ClipboardList className="w-4 h-4" />,
+            label: "Fast Walk-in Check-in",
+            href: "/dashboard/staff?tab=checkin",
+            tabKey: "checkin",
+            icon: <UserPlus className="w-4 h-4" />,
+          },
+          {
+            section: "Front Desk & Triage",
+            label: "Appointment Verifications",
+            href: "/dashboard/staff?tab=verifications",
+            tabKey: "verifications",
+            icon: <CheckCircle2 className="w-4 h-4" />,
+          },
+          {
+            section: "Front Desk & Triage",
+            label: "Chamber Queue & Slips",
+            href: "/dashboard/staff?tab=queue",
+            tabKey: "queue",
+            icon: <Clock className="w-4 h-4" />,
+          },
+          {
+            section: "Front Desk & Triage",
+            label: "Patients & Lab Reports",
+            href: "/dashboard/staff?tab=patients",
+            tabKey: "patients",
+            icon: <FileSearch className="w-4 h-4" />,
           },
           {
             section: "Doctor Rosters",
@@ -288,6 +314,13 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             href: "/dashboard/staff?tab=schedules",
             tabKey: "schedules",
             icon: <Calendar className="w-4 h-4" />,
+          },
+          {
+            section: "Waiting Hall Monitors",
+            label: "Live TV Queue Display",
+            href: "/live-queue",
+            tabKey: "live-queue",
+            icon: <Tv className="w-4 h-4" />,
           },
           {
             section: "Collaboration",
@@ -310,17 +343,17 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
       ? [
           {
             section: "Clinical Practice",
-            label: "Write Prescription",
-            href: "/dashboard/doctor",
-            tabKey: "main",
-            icon: <PenLine className="w-4 h-4" />,
-          },
-          {
-            section: "Clinical Practice",
             label: "Chamber Queue",
             href: "/dashboard/doctor?tab=queue",
             tabKey: "queue",
             icon: <Clock className="w-4 h-4" />,
+          },
+          {
+            section: "Clinical Practice",
+            label: "Write Prescription",
+            href: "/dashboard/doctor",
+            tabKey: "main",
+            icon: <PenLine className="w-4 h-4" />,
           },
           {
             section: "Clinical Practice",
@@ -330,11 +363,11 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             icon: <History className="w-4 h-4" />,
           },
           {
-            section: "Collaboration",
-            label: "Clinical Chat",
-            href: "/dashboard/doctor?tab=chat",
-            tabKey: "chat",
-            icon: <MessageSquare className="w-4 h-4" />,
+            section: "Clinical Practice",
+            label: "Patient Lab Reports",
+            href: "/dashboard/doctor?tab=reports",
+            tabKey: "reports",
+            icon: <FileSearch className="w-4 h-4" />,
           },
           {
             section: "Medical Formulary",
@@ -351,6 +384,13 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             icon: <FlaskConical className="w-4 h-4" />,
           },
           {
+            section: "Waiting Hall Monitors",
+            label: "Live TV Queue Display",
+            href: "/live-queue",
+            tabKey: "live-queue",
+            icon: <Tv className="w-4 h-4" />,
+          },
+          {
             section: "Configuration",
             label: "Hospital Templates",
             href: "/dashboard/doctor?tab=templates",
@@ -363,6 +403,13 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             href: "/dashboard/doctor?tab=profile",
             tabKey: "profile",
             icon: <UserCog className="w-4 h-4" />,
+          },
+          {
+            section: "Collaboration",
+            label: "Clinical Chat",
+            href: "/dashboard/doctor?tab=chat",
+            tabKey: "chat",
+            icon: <MessageSquare className="w-4 h-4" />,
           },
           {
             section: "Hospital Communications",
@@ -489,7 +536,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
                   const hasQuery = item.href.includes("?");
                   const isActive = hasQuery
                     ? isBaseMatch && activeTab === item.tabKey
-                    : isBaseMatch;
+                    : isBaseMatch && (!activeTab || activeTab === "main" || activeTab === item.tabKey);
 
                   return (
                     <Link
@@ -659,6 +706,9 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             </div>
           </div>
         </header>
+
+        {/* Demo Environment Auto-Reset Banner */}
+        <DemoCountdownTimer variant="banner" />
 
         {/* Page Content Body */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">

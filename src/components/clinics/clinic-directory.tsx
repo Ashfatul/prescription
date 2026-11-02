@@ -41,6 +41,7 @@ export type ClinicItem = {
   name: string;
   slug: string;
   status: "ACTIVE" | "TRIAL" | "SUSPENDED" | "PENDING_APPROVAL";
+  isDemo?: boolean;
   contactEmail: string | null;
   contactPhone: string | null;
   address: string | null;
@@ -279,6 +280,13 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                           />
                           {clinic.status === "ACTIVE" ? "Active" : clinic.status}
                         </span>
+
+                        {clinic.isDemo && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 shrink-0">
+                            <Sparkles className="w-3 h-3" />
+                            <span>Demo Sandbox</span>
+                          </span>
+                        )}
 
                         {clinic.plan && (
                           <span className="px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] text-[10px] font-bold border border-[var(--brand-border)]/60 shrink-0">

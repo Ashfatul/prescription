@@ -121,16 +121,24 @@ export async function getDoctorQueue(id: string) {
       status: true,
       appointmentDate: true,
       notes: true,
+      visitType: true,
+      diseasesJson: true,
+      allergiesJson: true,
+      medicalFlagsJson: true,
+      dietRequired: true,
+      dietInstructionsJson: true,
       patient: {
         select: {
           id: true,
           gender: true,
           dateOfBirth: true,
+          medicalHistory: true,
           user: {
             select: {
               name: true,
               imageUrl: true,
               phone: true,
+              email: true,
             },
           },
         },

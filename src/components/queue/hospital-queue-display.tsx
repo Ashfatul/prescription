@@ -69,7 +69,13 @@ export type DoctorQueueData = {
 
 const CYCLE_INTERVAL_SECONDS = 15;
 
-export function HospitalQueueDisplay({ initialDoctorId }: { initialDoctorId?: string }) {
+export function HospitalQueueDisplay({
+  initialDoctorId,
+  clinicSlug,
+}: {
+  initialDoctorId?: string;
+  clinicSlug?: string;
+}) {
   const [doctors, setDoctors] = useState<DoctorQueueData[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -79,6 +85,10 @@ export function HospitalQueueDisplay({ initialDoctorId }: { initialDoctorId?: st
   const [currentTime, setCurrentTime] = useState("");
 
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const effectiveClinicSlug =
+    clinicSlug ||
+    (typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("clinic") || undefined : undefined);
 
   // Live wall clock
   useEffect(() => {
@@ -110,7 +120,10 @@ export function HospitalQueueDisplay({ initialDoctorId }: { initialDoctorId?: st
     let isMounted = true;
 
     const fetchQueue = () => {
-      fetch("/api/public/live-queue", { cache: "no-store" })
+      const url = effectiveClinicSlug
+        ? `/api/public/live-queue?clinic=${encodeURIComponent(effectiveClinicSlug)}`
+        : "/api/public/live-queue";
+      fetch(url, { cache: "no-store" })
         .then((res) => {
           if (!res.ok) return null;
           return res.json();
@@ -139,7 +152,7 @@ export function HospitalQueueDisplay({ initialDoctorId }: { initialDoctorId?: st
       isMounted = false;
       clearInterval(pollTimer);
     };
-  }, [initialDoctorId]);
+  }, [initialDoctorId, effectiveClinicSlug]);
 
   // Auto-cycle timer
   useEffect(() => {

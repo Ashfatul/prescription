@@ -89,6 +89,8 @@ model Organization {
   isApproved            Boolean            @default(true)
   approvedAt            DateTime?
   approvedBy            String?
+  isDemo                Boolean            @default(false)
+  lastDemoResetAt       DateTime?
   users                 User[]
   doctors               Doctor[]
   patients              Patient[]
@@ -132,6 +134,7 @@ model User {
   isApproved                      Boolean          @default(true)
   approvedAt                      DateTime?
   approvedBy                      String?
+  isDemo                          Boolean          @default(false)
   notificationPreferences Json?            @default("{\"emailPrescriptionAlerts\":true,\"systemPrescriptionAlerts\":true,\"emailAppointmentReminders\":true,\"systemAppointmentReminders\":true,\"emailMedicineReminders\":true,\"announcements\":true}")
   roleId                  String
   role                    Role             @relation(fields: [roleId], references: [id])

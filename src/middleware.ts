@@ -130,7 +130,8 @@ export async function middleware(req: NextRequest) {
       pathname === "/api/pricing-plans" ||
       pathname === "/api/organizations" ||
       pathname === "/api/organizations/check-slug" ||
-      pathname.startsWith("/api/public/");
+      pathname.startsWith("/api/public/") ||
+      pathname.startsWith("/api/demo/");
 
     if (!isPublicApi && !payload) {
       return NextResponse.json(

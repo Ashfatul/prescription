@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { DoctorQueue } from "@/components/dashboard/doctor-queue";
@@ -13,7 +13,19 @@ import { PrescriptionShareModal } from "@/components/dashboard/prescription-shar
 import { AnnouncementsBanner } from "@/components/dashboard/announcements-banner";
 import { AnnouncementsManager } from "@/components/dashboard/announcements-manager";
 import { useAuth } from "@/lib/auth/auth-context";
-import { Share2 } from "lucide-react";
+import {
+  Share2,
+  Clock,
+  Search,
+  FileSearch,
+  Paperclip,
+  ExternalLink,
+  ArrowRight,
+  Activity,
+  ShieldAlert,
+  Phone,
+  UserCheck,
+} from "lucide-react";
 
 type DoctorData = {
   id: string;
@@ -42,7 +54,20 @@ type DoctorData = {
   };
 };
 
-type AppointmentData = {
+export type TestReportSummary = {
+  id: string;
+  title: string;
+  description?: string | null;
+  reportDate?: string | null;
+  fileUrl: string;
+  fileType: string;
+  originalName: string;
+  status?: string | null;
+  notes?: string | null;
+  createdAt: string;
+};
+
+export type AppointmentData = {
   id: string;
   serialNumber: number;
   status: string;
@@ -69,10 +94,11 @@ type AppointmentData = {
       email: string;
       phone?: string | null;
     };
+    testReports?: TestReportSummary[];
   };
 };
 
-type PatientData = {
+export type PatientData = {
   id: string;
   gender?: string | null;
   dateOfBirth?: string | null;
@@ -82,9 +108,10 @@ type PatientData = {
     email: string;
     phone?: string | null;
   };
+  testReports?: TestReportSummary[];
 };
 
-type PrescriptionSummary = {
+export type PrescriptionSummary = {
   id: string;
   version: number;
   patientId: string;
@@ -130,12 +157,13 @@ export type DoctorTabType =
   | "templates"
   | "profile"
   | "history"
+  | "reports"
   | "chat"
   | "announcements";
 
 export function DoctorDashboardView({
   doctor: initialDoctor,
-  appointments,
+  appointments: initialAppointments,
   patients,
   recentPrescriptions,
 }: {
@@ -146,11 +174,20 @@ export function DoctorDashboardView({
 }) {
   const { user: currentUser } = useAuth();
   const [doctor, setDoctor] = useState<DoctorData>(initialDoctor);
+  const [appointmentsState, setAppointmentsState] = useState<AppointmentData[]>(initialAppointments);
   const [prescriptionToRevise, setPrescriptionToRevise] = useState<PrescriptionSummary | null>(null);
   const [historyModalPrescription, setHistoryModalPrescription] = useState<PrescriptionSummary | null>(null);
   const [sharingPrescriptionId, setSharingPrescriptionId] = useState<string | null>(null);
+  const [queueSearch, setQueueSearch] = useState("");
+  const [reportsSearch, setReportsSearch] = useState("");
+
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  // Active Selected Appointment for Prescription
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(() => {
+    return searchParams.get("appointmentId") || null;
+  });
 
   const urlTab = searchParams.get("tab");
   const activeTab: DoctorTabType =
@@ -166,21 +203,117 @@ export function DoctorDashboardView({
       ? "queue"
       : urlTab === "history"
       ? "history"
+      : urlTab === "reports"
+      ? "reports"
       : urlTab === "chat"
       ? "chat"
       : urlTab === "announcements"
       ? "announcements"
       : "prescription";
 
-  const handleTabChange = (tab: DoctorTabType) => {
-    router.replace(`/dashboard/doctor?tab=${tab}`);
-  };
-
   const handleProfileUpdated = (updated: Partial<DoctorData>) => {
     setDoctor((prev) => ({
       ...prev,
       ...updated,
     }));
+  };
+
+  // Waiting appointments for today (Requirement 2 & 3)
+  const waitingAppointments = useMemo(
+    () =>
+      appointmentsState.filter(
+        (a) => a.status === "CONFIRMED" || a.status === "BOOKED"
+      ),
+    [appointmentsState]
+  );
+
+  const completedAppointments = useMemo(
+    () => appointmentsState.filter((a) => a.status === "COMPLETED"),
+    [appointmentsState]
+  );
+
+  const nextWaitingAppt = waitingAppointments[0] || null;
+
+  // Filtered waiting appointments based on search query
+  const filteredWaiting = useMemo(() => {
+    if (!queueSearch.trim()) return waitingAppointments;
+    const q = queueSearch.toLowerCase();
+    return waitingAppointments.filter(
+      (a) =>
+        a.serialNumber.toString().includes(q) ||
+        a.patient.user.name.toLowerCase().includes(q) ||
+        (a.patient.user.phone && a.patient.user.phone.toLowerCase().includes(q))
+    );
+  }, [waitingAppointments, queueSearch]);
+
+  // Aggregate all patient test reports for reports tab (Requirement 12)
+  const allPatientReports = useMemo(() => {
+    const list: Array<TestReportSummary & { patientName: string; patientPhone?: string | null }> = [];
+    const seen = new Set<string>();
+
+    appointmentsState.forEach((a) => {
+      (a.patient.testReports || []).forEach((r) => {
+        if (!seen.has(r.id)) {
+          seen.add(r.id);
+          list.push({
+            ...r,
+            patientName: a.patient.user.name,
+            patientPhone: a.patient.user.phone,
+          });
+        }
+      });
+    });
+
+    patients.forEach((p) => {
+      (p.testReports || []).forEach((r) => {
+        if (!seen.has(r.id)) {
+          seen.add(r.id);
+          list.push({
+            ...r,
+            patientName: p.user.name,
+            patientPhone: p.user.phone,
+          });
+        }
+      });
+    });
+
+    return list;
+  }, [appointmentsState, patients]);
+
+  const filteredReports = useMemo(() => {
+    if (!reportsSearch.trim()) return allPatientReports;
+    const q = reportsSearch.toLowerCase();
+    return allPatientReports.filter(
+      (r) =>
+        r.title.toLowerCase().includes(q) ||
+        r.patientName.toLowerCase().includes(q) ||
+        (r.description && r.description.toLowerCase().includes(q))
+    );
+  }, [allPatientReports, reportsSearch]);
+
+  const startConsultationForAppt = (apptId: string) => {
+    setSelectedAppointmentId(apptId);
+    setPrescriptionToRevise(null);
+    router.replace(`/dashboard/doctor?tab=prescription&appointmentId=${apptId}`);
+  };
+
+  const handleCallNextPatient = () => {
+    if (nextWaitingAppt) {
+      startConsultationForAppt(nextWaitingAppt.id);
+    } else {
+      setSelectedAppointmentId(null);
+      setPrescriptionToRevise(null);
+      router.replace("/dashboard/doctor?tab=prescription");
+    }
+  };
+
+  const handlePrescriptionCreated = (_id: string, completedApptId?: string) => {
+    if (completedApptId) {
+      setAppointmentsState((prev) =>
+        prev.map((a) => (a.id === completedApptId ? { ...a, status: "COMPLETED" } : a))
+      );
+    }
+    router.refresh();
   };
 
   return (
@@ -194,7 +327,7 @@ export function DoctorDashboardView({
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] px-3 py-1 text-xs font-bold">
-                Doctor Practice Portal
+                Attending Physician Chamber
               </span>
               <span
                 className={`rounded-full px-3 py-1 text-[11px] font-semibold ${
@@ -203,7 +336,7 @@ export function DoctorDashboardView({
                     : "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
                 }`}
               >
-                {doctor.available ? "● Active Consultation Queue" : "○ Queue Paused"}
+                {doctor.available ? "● Active Consultation Session" : "○ Chamber Paused"}
               </span>
             </div>
 
@@ -226,74 +359,241 @@ export function DoctorDashboardView({
             </div>
           </div>
 
-          {/* Quick Action Block */}
-          <div className="flex items-center gap-3">
+          {/* Quick Queue Status Block */}
+          <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] px-4 py-2.5">
               <span className="text-xs text-[var(--text-secondary)]">Queue Waiting:</span>
               <span className="rounded-full bg-[var(--brand-primary)] px-2.5 py-0.5 text-xs font-bold text-white">
-                {appointments.length}
+                {waitingAppointments.length}
               </span>
             </div>
 
-            {activeTab !== "prescription" && (
-              <Link
-                href="/dashboard/doctor"
-                className="flex items-center gap-1.5 rounded-2xl bg-[var(--brand-primary)] px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:brightness-110 transition"
+            <div className="flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-[var(--bg-surface)] px-4 py-2.5 text-xs">
+              <span className="text-slate-500">Completed Today:</span>
+              <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">
+                {completedAppointments.length}
+              </span>
+            </div>
+
+            {nextWaitingAppt && !selectedAppointmentId && activeTab === "prescription" && (
+              <button
+                type="button"
+                onClick={() => startConsultationForAppt(nextWaitingAppt.id)}
+                className="flex items-center gap-1.5 rounded-2xl bg-[var(--brand-primary)] px-4 py-2.5 text-xs font-extrabold text-white shadow-sm hover:brightness-110 transition cursor-pointer"
               >
-                <span>📝 Write Prescription</span>
-              </Link>
+                <span>📞 Call Serial #{nextWaitingAppt.serialNumber}</span>
+              </button>
             )}
           </div>
         </div>
       </div>
 
-      {/* Horizontal Dashboard Navigation Bar */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-        {[
-          { id: "prescription", label: "📝 Prescription Generator" },
-          { id: "queue", label: `👥 Today's Queue (${appointments.length})` },
-          { id: "catalog", label: "💊 Medicines Catalog" },
-          { id: "tests", label: "🧪 Lab Investigations" },
-          { id: "templates", label: "📑 Templates" },
-          { id: "history", label: "📜 History & Archive" },
-          { id: "profile", label: "👨‍⚕️ Profile & Signature" },
-          { id: "announcements", label: "📢 Hospital Notices" },
-        ].map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => handleTabChange(tab.id as DoctorTabType)}
-              className={`shrink-0 rounded-2xl px-4 py-2.5 text-xs font-bold transition cursor-pointer ${
-                isActive
-                  ? "bg-[var(--brand-primary)] text-white shadow-sm"
-                  : "bg-[var(--bg-surface)] text-[var(--text-secondary)] border border-[var(--border-subtle)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)]"
-              }`}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Tab 1: Professional Prescription Generator */}
+      {/* TAB 1: PRESCRIPTION FLOW (QUEUE-DRIVEN) */}
       {activeTab === "prescription" && (
-        <PrescriptionEditor
-          key={prescriptionToRevise ? prescriptionToRevise.id : "new-prescription"}
-          doctor={doctor}
-          appointments={appointments}
-          patients={patients}
-          initialPrescriptionToRevise={prescriptionToRevise}
-          onCancelRevision={() => setPrescriptionToRevise(null)}
-          onPrescriptionCreated={() => {
-            setPrescriptionToRevise(null);
-            router.refresh();
-          }}
-        />
+        <>
+          {selectedAppointmentId || prescriptionToRevise ? (
+            /* Prescription Editor when a Queued Patient is Active */
+            <PrescriptionEditor
+              key={
+                prescriptionToRevise
+                  ? prescriptionToRevise.id
+                  : `appt-${selectedAppointmentId || "active"}`
+              }
+              doctor={doctor}
+              appointments={appointmentsState}
+              patients={patients}
+              selectedAppointmentId={selectedAppointmentId}
+              initialPrescriptionToRevise={prescriptionToRevise}
+              onCancelRevision={() => {
+                setPrescriptionToRevise(null);
+                setSelectedAppointmentId(null);
+              }}
+              onBackToQueue={() => {
+                setSelectedAppointmentId(null);
+                setPrescriptionToRevise(null);
+                router.replace("/dashboard/doctor?tab=prescription");
+              }}
+              onPrescriptionCreated={handlePrescriptionCreated}
+              onCallNextPatient={handleCallNextPatient}
+            />
+          ) : (
+            /* Chamber Waiting Queue Console when No Patient is Selected (Requirement 2 & 8) */
+            <div className="p-6 sm:p-7 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-6 animate-in fade-in">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="px-2.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-xs font-bold">
+                      Queue-Driven Consultation
+                    </span>
+                    <span className="text-xs text-slate-500 font-medium">
+                      Select patient to write prescription
+                    </span>
+                  </div>
+                  <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
+                    Today&apos;s Chamber Waiting Queue ({waitingAppointments.length} Waiting)
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Patient demographics, triage vitals, and medical history are prepared by triage staff. Click &quot;Start Consultation&quot; to begin.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  {nextWaitingAppt && (
+                    <button
+                      type="button"
+                      onClick={() => startConsultationForAppt(nextWaitingAppt.id)}
+                      className="px-5 py-3 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-extrabold shadow-md hover:opacity-95 transition cursor-pointer flex items-center gap-2"
+                    >
+                      <UserCheck className="w-4 h-4" />
+                      <span>Call Next Patient (Serial #{nextWaitingAppt.serialNumber})</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Search & Filter Bar */}
+              <div className="flex items-center justify-between gap-4">
+                <div className="relative w-full max-w-md">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <input
+                    type="text"
+                    placeholder="Search by serial #, patient name, or phone..."
+                    value={queueSearch}
+                    onChange={(e) => setQueueSearch(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
+                  />
+                </div>
+
+                <span className="text-xs text-slate-400 font-medium shrink-0">
+                  Showing {filteredWaiting.length} of {waitingAppointments.length} waiting
+                </span>
+              </div>
+
+              {/* Waiting Patients List */}
+              {filteredWaiting.length === 0 ? (
+                <div className="p-12 text-center rounded-3xl bg-[var(--bg-app)] border border-dashed border-slate-200 dark:border-slate-800 space-y-3">
+                  <Clock className="w-8 h-8 text-slate-400 mx-auto" />
+                  <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                    No Patients Currently Waiting in Queue
+                  </h3>
+                  <p className="text-xs text-slate-500 max-w-md mx-auto">
+                    {waitingAppointments.length === 0
+                      ? "All queued patients have been attended or the waiting room is currently empty. Staff can check in new walk-in patients from the Reception Desk."
+                      : "No patients matched your search query. Try clearing the filter."}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-3.5">
+                  {filteredWaiting.map((appt) => {
+                    const diseases = Array.isArray(appt.diseasesJson) ? (appt.diseasesJson as string[]) : [];
+                    const allergies = Array.isArray(appt.allergiesJson) ? (appt.allergiesJson as string[]) : [];
+                    const reportCount = appt.patient.testReports?.length || 0;
+
+                    return (
+                      <div
+                        key={appt.id}
+                        className="p-5 rounded-2xl bg-[var(--bg-app)] border border-slate-200/90 dark:border-slate-800/90 hover:border-[var(--brand-border)] transition-all shadow-xs space-y-3"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <span className="w-10 h-10 rounded-2xl bg-[var(--brand-primary)] text-white font-mono font-black text-sm flex items-center justify-center shadow-xs shrink-0">
+                              #{appt.serialNumber}
+                            </span>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-extrabold text-sm text-slate-900 dark:text-white">
+                                  {appt.patient.user.name}
+                                </span>
+                                <span className="text-xs text-slate-500">
+                                  ({appt.patient.gender || "Patient"})
+                                </span>
+                              </div>
+                              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400 mt-0.5">
+                                {appt.patient.user.phone && (
+                                  <span className="flex items-center gap-1">
+                                    <Phone className="w-3 h-3 text-slate-400" />
+                                    <span>{appt.patient.user.phone}</span>
+                                  </span>
+                                )}
+                                <span>• Visit Type: {appt.visitType || "Standard"}</span>
+                                {appt.paymentStatus && (
+                                  <span>• Status: <strong className="text-emerald-600">{appt.paymentStatus}</strong></span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                            {reportCount > 0 && (
+                              <span className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-bold">
+                                <Paperclip className="w-3 h-3" />
+                                <span>{reportCount} Lab Reports</span>
+                              </span>
+                            )}
+
+                            <button
+                              type="button"
+                              onClick={() => startConsultationForAppt(appt.id)}
+                              className="px-4 py-2.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-extrabold shadow-sm hover:opacity-95 transition cursor-pointer flex items-center gap-1.5"
+                            >
+                              <span>Start Consultation / Prescribe</span>
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Triage & Clinical Notes Strip */}
+                        {appt.notes && (
+                          <div className="p-3 rounded-xl bg-[var(--bg-surface)] border border-slate-200/60 dark:border-slate-800/60 text-xs text-slate-600 dark:text-slate-300 flex items-center gap-2">
+                            <Activity className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                            <span><strong>Triage Vitals:</strong> {appt.notes}</span>
+                          </div>
+                        )}
+
+                        {/* Allergy & Disease Badges */}
+                        {(allergies.length > 0 || diseases.length > 0) && (
+                          <div className="flex flex-wrap items-center gap-1.5 pt-1 text-xs">
+                            {allergies.length > 0 && (
+                              <div className="flex flex-wrap items-center gap-1 text-rose-600">
+                                <ShieldAlert className="w-3 h-3" />
+                                <span className="font-bold text-[11px]">Allergies:</span>
+                                {allergies.map((al) => (
+                                  <span
+                                    key={al}
+                                    className="px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 text-[10px] font-bold border border-rose-200 dark:border-rose-900/40"
+                                  >
+                                    {al}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+
+                            {diseases.length > 0 && (
+                              <div className="flex flex-wrap items-center gap-1 text-slate-500 ml-2">
+                                <span className="font-bold text-[11px]">History:</span>
+                                {diseases.map((dis) => (
+                                  <span
+                                    key={dis}
+                                    className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-semibold"
+                                  >
+                                    {dis}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+        </>
       )}
 
-      {/* Tab 2: Live Queue & Today's Appointments */}
+      {/* TAB 2: CHAMBER QUEUE OVERVIEW */}
       {activeTab === "queue" && (
         <div className="grid gap-6 lg:grid-cols-2">
           <DoctorQueue doctorId={doctor.id} />
@@ -304,201 +604,175 @@ export function DoctorDashboardView({
                 <h2 className="text-base font-bold text-slate-900 dark:text-white">
                   Today&apos;s Booked Appointments
                 </h2>
-                <p className="text-xs text-slate-500">Live patient schedule queue</p>
+                <p className="text-xs text-slate-500">Live patient turn sequence</p>
               </div>
               <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                {appointments.length} patients waiting
+                {waitingAppointments.length} patients waiting
               </span>
             </div>
 
             <div className="space-y-2.5">
-              {appointments.length === 0 ? (
+              {appointmentsState.length === 0 ? (
                 <p className="py-8 text-center text-sm text-slate-400">
                   No appointments scheduled for today.
                 </p>
               ) : (
-                appointments.map((item) => {
-                  const diseases = Array.isArray(item.diseasesJson) ? (item.diseasesJson as string[]) : [];
-                  const allergies = Array.isArray(item.allergiesJson) ? (item.allergiesJson as string[]) : [];
-                  const flags = Array.isArray(item.medicalFlagsJson) ? (item.medicalFlagsJson as string[]) : [];
-                  const diets = Array.isArray(item.dietInstructionsJson) ? (item.dietInstructionsJson as string[]) : [];
+                appointmentsState.map((item) => (
+                  <div
+                    key={item.id}
+                    className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200/70 dark:border-slate-800/70 text-sm transition hover:border-[var(--brand-border)] space-y-3"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="rounded-lg bg-[var(--brand-surface)] px-2.5 py-1 text-xs font-black text-[var(--brand-text)] border border-[var(--brand-border)] font-mono">
+                          Serial #{item.serialNumber}
+                        </span>
+                        <span className="font-bold text-slate-900 dark:text-white">
+                          {item.patient.user.name}
+                        </span>
+                        <span className="text-xs text-slate-500">
+                          ({item.patient.gender || "Patient"})
+                        </span>
+                      </div>
 
-                  return (
-                    <div
-                      key={item.id}
-                      className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200/70 dark:border-slate-800/70 text-sm transition hover:border-[var(--brand-border)] space-y-3"
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div className="flex items-center gap-2">
-                          <span className="rounded-lg bg-[var(--brand-surface)] px-2.5 py-1 text-xs font-black text-[var(--brand-text)] border border-[var(--brand-border)] font-mono">
-                            Serial #{item.serialNumber}
-                          </span>
-                          <span className="font-bold text-slate-900 dark:text-white">
-                            {item.patient.user.name}
-                          </span>
-                          <span className="text-xs text-slate-500">
-                            ({item.patient.gender || "Patient"})
-                          </span>
-                        </div>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            item.status === "COMPLETED"
+                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+                              : "bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300"
+                          }`}
+                        >
+                          {item.status}
+                        </span>
 
-                        <div className="flex items-center gap-2">
-                          {/* Visit Type & Fee Badge */}
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                              item.visitType === "REPORT_REVIEW"
-                                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30"
-                                : item.visitType === "FOLLOWUP"
-                                ? "bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30"
-                                : "bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/30"
-                            }`}
-                          >
-                            {item.visitType === "REPORT_REVIEW"
-                              ? "Free Report Review ($0)"
-                              : item.visitType === "FOLLOWUP"
-                              ? `Follow-up ($${item.fee ?? 30})`
-                              : `New Patient ($${item.fee ?? 50})`}
-                          </span>
-
-                          {/* Payment Status Badge */}
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
-                              item.paymentStatus === "PAID"
-                                ? "bg-emerald-600 text-white"
-                                : item.paymentStatus === "WAIVED"
-                                ? "bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300"
-                                : "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
-                            }`}
-                          >
-                            {item.paymentStatus || "PENDING"}
-                          </span>
-
+                        {item.status !== "COMPLETED" && (
                           <button
                             type="button"
-                            onClick={() => handleTabChange("prescription")}
+                            onClick={() => startConsultationForAppt(item.id)}
                             className="rounded-xl bg-[var(--brand-primary)] px-3 py-1 text-xs font-bold text-white transition hover:opacity-90 shadow-xs cursor-pointer"
                           >
                             Prescribe
                           </button>
-                        </div>
+                        )}
                       </div>
-
-                      {/* Clinical Alerts Row: Allergies, Diseases, Flags & Diet */}
-                      {(allergies.length > 0 || diseases.length > 0 || flags.length > 0 || item.dietRequired) && (
-                        <div className="pt-2 border-t border-slate-200/50 dark:border-slate-800/50 space-y-1.5 text-xs">
-                          {/* Allergies Alert */}
-                          {allergies.length > 0 && (
-                            <div className="flex flex-wrap items-center gap-1.5">
-                              <span className="text-[10px] font-black uppercase tracking-wider text-rose-600 dark:text-rose-400 px-1.5 py-0.5 rounded-md bg-rose-500/10 border border-rose-500/30">
-                                ⚠ Allergy Alert:
-                              </span>
-                              {allergies.map((allergy) => (
-                                <span
-                                  key={allergy}
-                                  className="text-[11px] font-bold text-rose-700 dark:text-rose-300 px-2 py-0.5 rounded-lg bg-rose-100 dark:bg-rose-950/60"
-                                >
-                                  {allergy}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-
-                          {/* Chronic Diseases */}
-                          {diseases.length > 0 && (
-                            <div className="flex flex-wrap items-center gap-1.5">
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                                History:
-                              </span>
-                              {diseases.map((disease) => (
-                                <span
-                                  key={disease}
-                                  className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)]"
-                                >
-                                  {disease}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-
-                          {/* Critical Flags */}
-                          {flags.length > 0 && (
-                            <div className="flex flex-wrap items-center gap-1.5">
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                                Flags:
-                              </span>
-                              {flags.map((flag) => (
-                                <span
-                                  key={flag}
-                                  className="text-[11px] font-semibold text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-800"
-                                >
-                                  {flag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-
-                          {/* Diet Guidance */}
-                          {item.dietRequired && (
-                            <div className="flex flex-wrap items-center gap-1.5">
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                                Diet:
-                              </span>
-                              {diets.map((diet) => (
-                                <span
-                                  key={diet}
-                                  className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800"
-                                >
-                                  {diet}
-                                </span>
-                              ))}
-                              {item.dietNotes && (
-                                <span className="text-[11px] text-slate-500 italic">
-                                  &quot;{item.dietNotes}&quot;
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {item.notes && (
-                        <p className="text-xs text-slate-500 pt-1 border-t border-dashed border-slate-200 dark:border-slate-800">
-                          <strong>Triage Note:</strong> {item.notes}
-                        </p>
-                      )}
                     </div>
-                  );
-                })
+                  </div>
+                ))
               )}
             </div>
           </div>
         </div>
       )}
 
-      {/* Tab 3: Pharmaceutical Catalog */}
+      {/* TAB 3: PATIENT LAB REPORTS (Requirement 12) */}
+      {activeTab === "reports" && (
+        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+            <div>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <FileSearch className="w-4 h-4 text-[var(--brand-primary)]" />
+                <span>Patient Diagnostic Lab Reports & Scans</span>
+              </h2>
+              <p className="text-xs text-slate-500">
+                Uploaded by hospital triage staff prior to physician consultation
+              </p>
+            </div>
+
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search reports or patients..."
+                value={reportsSearch}
+                onChange={(e) => setReportsSearch(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            {filteredReports.length === 0 ? (
+              <p className="py-12 text-center text-xs text-slate-400">
+                No diagnostic test reports found.
+              </p>
+            ) : (
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider font-semibold">
+                    <th className="py-2.5 px-3">Report Title</th>
+                    <th className="py-2.5 px-3">Patient</th>
+                    <th className="py-2.5 px-3">Date</th>
+                    <th className="py-2.5 px-3">Notes</th>
+                    <th className="py-2.5 px-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  {filteredReports.map((r) => (
+                    <tr key={r.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/40">
+                      <td className="py-3 px-3">
+                        <span className="font-bold text-slate-900 dark:text-white block">
+                          {r.title}
+                        </span>
+                        <span className="text-[11px] text-slate-400">{r.originalName}</span>
+                      </td>
+                      <td className="py-3 px-3">
+                        <span className="font-bold text-slate-800 dark:text-slate-200 block">
+                          {r.patientName}
+                        </span>
+                        <span className="text-[11px] text-slate-400">{r.patientPhone || "No phone"}</span>
+                      </td>
+                      <td className="py-3 px-3 text-slate-500">
+                        {r.reportDate ? new Date(r.reportDate).toLocaleDateString() : ""}
+                      </td>
+                      <td className="py-3 px-3 text-slate-500 max-w-xs truncate">
+                        {r.notes || r.description || "—"}
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        <a
+                          href={r.fileUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-90 transition"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          <span>View Report</span>
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: PHARMACEUTICAL CATALOG */}
       {activeTab === "catalog" && <CatalogManager initialTab="medicines" />}
 
-      {/* Tab: Diagnostic Lab Tests */}
+      {/* TAB 5: DIAGNOSTIC LAB TESTS */}
       {activeTab === "tests" && <CatalogManager initialTab="tests" />}
 
-      {/* Tab 4: Hospital & Prescription Templates */}
+      {/* TAB 6: TEMPLATES */}
       {activeTab === "templates" && <TemplateManager />}
 
-      {/* Tab 5: Doctor Profile & Chamber Settings */}
+      {/* TAB 7: PROFILE & CREDENTIALS */}
       {activeTab === "profile" && (
         <DoctorProfileEditor doctor={doctor} onSaved={handleProfileUpdated} />
       )}
 
-      {/* Tab: Doctor-Patient Clinical Chat */}
+      {/* TAB 8: CLINICAL CHAT */}
       {activeTab === "chat" && currentUser && (
         <ClinicalChat currentUserId={currentUser.id} />
       )}
 
-      {/* Tab: Hospital Bulletins & Announcements */}
+      {/* TAB 9: ANNOUNCEMENTS */}
       {activeTab === "announcements" && (
         <AnnouncementsManager canManage={false} userRole="DOCTOR" />
       )}
 
-      {/* Tab 6: Prescription History & Archive */}
+      {/* TAB 10: PRESCRIPTION ARCHIVE */}
       {activeTab === "history" && (
         <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
@@ -512,8 +786,12 @@ export function DoctorDashboardView({
             </div>
             <button
               type="button"
-              onClick={() => handleTabChange("prescription")}
-              className="rounded-xl bg-[var(--brand-primary)] px-4 py-2 text-xs font-bold text-white shadow-xs"
+              onClick={() => {
+                setSelectedAppointmentId(null);
+                setPrescriptionToRevise(null);
+                router.replace("/dashboard/doctor?tab=prescription");
+              }}
+              className="rounded-xl bg-[var(--brand-primary)] px-4 py-2 text-xs font-bold text-white shadow-xs cursor-pointer"
             >
               + Create New
             </button>
@@ -542,7 +820,9 @@ export function DoctorDashboardView({
                     const testCount = Array.isArray(p.testsJson) ? p.testsJson.length : 0;
                     const dateStr = new Date(p.updatedAt || p.createdAt).toLocaleDateString();
                     const versionCount = p.versions ? p.versions.length : 1;
-                    const latestReason = p.versions?.[0]?.changeReason || (p.version > 1 ? `Revision v${p.version}` : "Initial consultation");
+                    const latestReason =
+                      p.versions?.[0]?.changeReason ||
+                      (p.version > 1 ? `Revision v${p.version}` : "Initial consultation");
 
                     return (
                       <tr key={p.id} className="text-xs hover:bg-slate-50 dark:hover:bg-slate-800/40">
@@ -551,7 +831,8 @@ export function DoctorDashboardView({
                             {p.patient.user.name}
                           </p>
                           <p className="text-[11px] text-slate-500">
-                            {p.patient.gender || "Patient"}{p.patient.user.phone ? ` • ${p.patient.user.phone}` : ""}
+                            {p.patient.gender || "Patient"}
+                            {p.patient.user.phone ? ` • ${p.patient.user.phone}` : ""}
                           </p>
                         </td>
 
@@ -571,7 +852,10 @@ export function DoctorDashboardView({
                                 </button>
                               )}
                             </div>
-                            <span className="text-[11px] text-slate-500 truncate max-w-[200px]" title={latestReason}>
+                            <span
+                              className="text-[11px] text-slate-500 truncate max-w-[200px]"
+                              title={latestReason}
+                            >
                               ↳ {latestReason}
                             </span>
                           </div>
@@ -597,7 +881,8 @@ export function DoctorDashboardView({
                               type="button"
                               onClick={() => {
                                 setPrescriptionToRevise(p);
-                                handleTabChange("prescription");
+                                setSelectedAppointmentId(null);
+                                router.replace("/dashboard/doctor?tab=prescription");
                               }}
                               title="Revise prescription and create a new version"
                               className="inline-flex items-center gap-1 rounded-xl bg-amber-500 text-white px-2.5 py-1.5 text-xs font-bold transition hover:bg-amber-600 shadow-xs cursor-pointer"
@@ -617,7 +902,7 @@ export function DoctorDashboardView({
                             <button
                               type="button"
                               onClick={() => setSharingPrescriptionId(p.id)}
-                              title="Share Prescription via Public Link, QR Code, or Email"
+                              title="Share Prescription"
                               className="inline-flex items-center gap-1 rounded-xl bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-300 border border-[var(--border-subtle)] px-2.5 py-1.5 text-xs font-bold hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition cursor-pointer"
                             >
                               <Share2 className="w-3.5 h-3.5" />
@@ -629,7 +914,7 @@ export function DoctorDashboardView({
                                 type="button"
                                 onClick={() => setHistoryModalPrescription(p)}
                                 title="View All Historical Versions"
-                                className="inline-flex items-center gap-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer"
+                                className="inline-flex items-center gap-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 transition cursor-pointer"
                               >
                                 <span>📜 History</span>
                               </button>
@@ -650,7 +935,6 @@ export function DoctorDashboardView({
       {historyModalPrescription && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-2xl bg-[var(--bg-surface)] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
-            {/* Modal Header */}
             <div className="modal-header shrink-0 flex items-start justify-between gap-4 p-6 pb-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
@@ -660,7 +944,8 @@ export function DoctorDashboardView({
                   {historyModalPrescription.patient.user.name}
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Rx ID: <code className="font-mono">{historyModalPrescription.id}</code> • Total Versions: <strong>{historyModalPrescription.versions?.length || 1}</strong>
+                  Rx ID: <code className="font-mono">{historyModalPrescription.id}</code> • Total
+                  Versions: <strong>{historyModalPrescription.versions?.length || 1}</strong>
                 </p>
               </div>
 
@@ -673,7 +958,6 @@ export function DoctorDashboardView({
               </button>
             </div>
 
-            {/* Version Timeline Body */}
             <div className="modal-body flex-1 overflow-y-auto p-6 sm:p-8 space-y-3">
               {(historyModalPrescription.versions || []).map((ver, idx) => {
                 const isLatest = ver.versionNumber === historyModalPrescription.version;
@@ -713,9 +997,7 @@ export function DoctorDashboardView({
                               ● Current Active
                             </span>
                           )}
-                          <span className="text-xs text-slate-500">
-                            {verDate}
-                          </span>
+                          <span className="text-xs text-slate-500">{verDate}</span>
                         </div>
 
                         <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-2">
@@ -723,7 +1005,8 @@ export function DoctorDashboardView({
                         </p>
 
                         <p className="text-[11px] text-slate-500 mt-1">
-                          Snapshot: <strong>{vMedCount}</strong> medicines • <strong>{vTestCount}</strong> diagnostic tests
+                          Snapshot: <strong>{vMedCount}</strong> medicines •{" "}
+                          <strong>{vTestCount}</strong> diagnostic tests
                         </p>
                       </div>
 
@@ -742,7 +1025,6 @@ export function DoctorDashboardView({
               })}
             </div>
 
-            {/* Modal Footer */}
             <div className="modal-footer shrink-0 p-4 sm:px-8 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between">
               <button
                 type="button"
@@ -750,7 +1032,8 @@ export function DoctorDashboardView({
                   const target = historyModalPrescription;
                   setHistoryModalPrescription(null);
                   setPrescriptionToRevise(target);
-                  handleTabChange("prescription");
+                  setSelectedAppointmentId(null);
+                  router.replace("/dashboard/doctor?tab=prescription");
                 }}
                 className="px-4 py-2.5 rounded-xl bg-amber-500 text-white text-xs font-bold hover:bg-amber-600 transition shadow-xs cursor-pointer"
               >
@@ -769,7 +1052,7 @@ export function DoctorDashboardView({
         </div>
       )}
 
-      {/* Prescription Share Modal (Public Link, QR Code, Email) */}
+      {/* Prescription Share Modal */}
       {sharingPrescriptionId && (
         <PrescriptionShareModal
           prescriptionId={sharingPrescriptionId}

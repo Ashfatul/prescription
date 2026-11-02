@@ -42,10 +42,10 @@ export function AuthBrandingPanel({
   features = SYSTEM_PILLARS,
 }: AuthBrandingPanelProps) {
   return (
-    <div className="relative hidden lg:flex flex-col justify-between h-screen max-h-screen sticky top-0 overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 p-8 xl:p-12 text-white select-none">
+    <div className="relative hidden lg:flex flex-col justify-between h-screen max-h-screen sticky top-0 overflow-auto bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 p-8 xl:p-12 text-white select-none">
       {/* Decorative Subtle Background Mesh & Glows */}
       <div className="pointer-events-none absolute -top-24 -left-24 w-80 h-80 rounded-full bg-teal-500/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-teal-600/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-teal-600/10 blur-3xl overflow-hidden" />
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.02]"
         style={{
@@ -107,7 +107,7 @@ export function AuthBrandingPanel({
           {features.slice(0, 3).map((feat, idx) => (
             <div
               key={idx}
-              className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-start gap-3 backdrop-blur-xs"
+              className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center justify gap-3 backdrop-blur-xs"
             >
               <div className="w-8 h-8 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center shrink-0 mt-0.5">
                 {feat.icon}

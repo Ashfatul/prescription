@@ -22,9 +22,13 @@ import { PricingSection } from "@/components/home/pricing-section";
 import { getCurrentUserFromCookie } from "@/lib/auth/session";
 import { getHospitalSettings } from "@/features/settings/settings.service";
 import { listPricingPlans } from "@/features/pricing/pricing.service";
+import { isDemoModeActive } from "@/features/demo/demo-reset.service";
+import { DemoCountdownTimer } from "@/components/common/demo-countdown-timer";
 import { db } from "@/lib/db";
 
 export default async function Home() {
+  const isDemoMode = isDemoModeActive();
+
   const [
     user,
     settings,
@@ -37,9 +41,21 @@ export default async function Home() {
     getCurrentUserFromCookie(),
     getHospitalSettings(),
     listPricingPlans(true),
-    db.doctor.count({ where: { available: true } }),
-    db.prescription.count(),
-    db.organization.count({ where: { status: "ACTIVE" } }),
+    db.doctor.count({
+      where: {
+        available: true,
+        ...(isDemoMode ? {} : { organization: { isDemo: false, slug: { not: "ppms-clinic" } } }),
+      },
+    }),
+    db.prescription.count({
+      where: isDemoMode ? {} : { organization: { isDemo: false, slug: { not: "ppms-clinic" } } },
+    }),
+    db.organization.count({
+      where: {
+        status: "ACTIVE",
+        ...(isDemoMode ? {} : { isDemo: false, slug: { not: "ppms-clinic" } }),
+      },
+    }),
     db.medicine.count(),
   ]);
   const isLoggedIn = !!user;
@@ -538,6 +554,7 @@ export default async function Home() {
         </section>
       </main>
 
+      <DemoCountdownTimer variant="floating" />
       {/* Modern Clinical Multi-Column Footer */}
       <Footer initialSettings={settings} />
     </div>

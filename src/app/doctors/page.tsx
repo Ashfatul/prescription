@@ -14,17 +14,37 @@ import { Footer } from "@/components/layout/footer";
 import { DoctorList } from "@/components/home/doctor-list";
 import { getCurrentUserFromCookie } from "@/lib/auth/session";
 import { getHospitalSettings } from "@/features/settings/settings.service";
+import { DemoCountdownTimer } from "@/components/common/demo-countdown-timer";
+import { db } from "@/lib/db";
 
 export const metadata: Metadata = {
   title: "Consulting Physicians & Specialists Directory | PPMS",
   description: "Browse registered hospital physicians, specialist chambers, visiting hours, and real-time live serial queues.",
 };
 
-export default async function DoctorsPage() {
-  const [user, settings] = await Promise.all([
+export const dynamic = "force-dynamic";
+
+interface DoctorsPageProps {
+  searchParams?: Promise<{
+    clinic?: string;
+    search?: string;
+  }>;
+}
+
+export default async function DoctorsPage({ searchParams }: DoctorsPageProps) {
+  const [user, settings, sParams] = await Promise.all([
     getCurrentUserFromCookie(),
     getHospitalSettings(),
+    searchParams ? await searchParams : Promise.resolve({} as { clinic?: string; search?: string }),
   ]);
+
+  const clinicSlug = sParams?.clinic;
+  const clinic = clinicSlug
+    ? await db.organization.findUnique({
+        where: { slug: clinicSlug },
+        select: { name: true, slug: true, isDemo: true, address: true },
+      })
+    : null;
 
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] flex flex-col">
@@ -41,6 +61,14 @@ export default async function DoctorsPage() {
                 <span>Home</span>
               </Link>
               <span>/</span>
+              {clinic && (
+                <>
+                  <Link href={`/clinics/${clinic.slug}`} className="hover:text-[var(--brand-text)] transition truncate max-w-[150px]">
+                    {clinic.name}
+                  </Link>
+                  <span>/</span>
+                </>
+              )}
               <span className="font-semibold text-[var(--text-primary)]">Physicians & Chambers</span>
             </div>
 
@@ -49,14 +77,25 @@ export default async function DoctorsPage() {
               <div className="space-y-3 max-w-3xl">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-bold uppercase tracking-wider border border-[var(--brand-border)]">
                   <Stethoscope className="w-3.5 h-3.5" />
-                  <span>Outpatient & Chamber Specialists</span>
+                  <span>{clinic ? `${clinic.name} Specialists` : "Outpatient & Chamber Specialists"}</span>
                 </div>
                 <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-                  Consulting Physicians & Specialists
+                  {clinic ? `${clinic.name} Doctors` : "Consulting Physicians & Specialists"}
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                  View visiting schedules, chamber room numbers, verified BMDC registration credentials, and live in-chamber serial tokens for {settings.hospitalName}.
+                  {clinic
+                    ? `View visiting schedules, chamber room numbers, verified BMDC registration credentials, and live chamber serial queues for ${clinic.name}.`
+                    : `View visiting schedules, chamber room numbers, verified BMDC registration credentials, and live in-chamber serial tokens for ${settings.hospitalName}.`}
                 </p>
+
+                {clinic && (
+                  <div className="pt-1 flex items-center gap-2 text-xs font-semibold text-[var(--brand-text)]">
+                    <span>Showing verified practitioners practicing strictly at this facility.</span>
+                    <Link href="/doctors" className="underline hover:opacity-80">
+                      View all clinics
+                    </Link>
+                  </div>
+                )}
               </div>
 
               {/* Dynamic Chamber Hours Badges */}
@@ -96,10 +135,11 @@ export default async function DoctorsPage() {
 
         {/* Directory Content Area */}
         <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-          <DoctorList initialLimit={9} />
+          <DoctorList initialLimit={9} clinicSlug={clinicSlug} />
         </section>
       </main>
 
+      <DemoCountdownTimer variant="floating" />
       <Footer initialSettings={settings} />
     </div>
   );

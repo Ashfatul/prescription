@@ -1,5 +1,6 @@
 import crypto from "crypto";
-import { Prisma, RoleName } from "@prisma/client";
+import { Prisma, RoleName, AppointmentStatus } from "@prisma/client";
+import { startOfDay, endOfDay } from "date-fns";
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import {
@@ -124,12 +125,32 @@ export async function createPrescription(input: unknown) {
   const shareToken = `rx-${crypto.randomBytes(8).toString("hex")}`;
 
   const created = await db.$transaction(async (tx) => {
+    let effectiveAppointmentId = data.appointmentId || null;
+    if (!effectiveAppointmentId) {
+      const today = new Date();
+      const activeAppt = await tx.appointment.findFirst({
+        where: {
+          doctorId: data.doctorId,
+          patientId: data.patientId,
+          status: { in: [AppointmentStatus.CONFIRMED, AppointmentStatus.BOOKED] },
+          appointmentDate: {
+            gte: startOfDay(today),
+            lte: endOfDay(today),
+          },
+        },
+        orderBy: { serialNumber: "asc" },
+      });
+      if (activeAppt) {
+        effectiveAppointmentId = activeAppt.id;
+      }
+    }
+
     const prescription = await tx.prescription.create({
       data: {
         doctorId: data.doctorId,
         patientId: data.patientId,
         organizationId: orgId,
-        appointmentId: data.appointmentId,
+        appointmentId: effectiveAppointmentId || undefined,
         shareToken,
         isPublicShareEnabled: false,
         version: 1,
@@ -142,6 +163,15 @@ export async function createPrescription(input: unknown) {
         templateId: data.templateId,
       },
     });
+
+    if (effectiveAppointmentId) {
+      await tx.appointment.update({
+        where: { id: effectiveAppointmentId },
+        data: { status: AppointmentStatus.COMPLETED },
+      }).catch((err) => {
+        console.warn("Failed to mark appointment as COMPLETED upon prescription creation:", err);
+      });
+    }
 
     // Save initial version snapshot (Version 1)
     await tx.prescriptionVersion.create({

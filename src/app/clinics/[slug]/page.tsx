@@ -24,6 +24,8 @@ import { getHospitalSettings } from "@/features/settings/settings.service";
 import { db } from "@/lib/db";
 import { RoleName } from "@prisma/client";
 import { ClinicSubdomainBadge } from "@/components/clinics/clinic-subdomain-badge";
+import { isDemoModeActive } from "@/features/demo/demo-reset.service";
+import { DemoCountdownTimer } from "@/components/common/demo-countdown-timer";
 
 interface ClinicPageProps {
   params: Promise<{
@@ -92,7 +94,8 @@ export default async function ClinicDetailsPage({ params }: ClinicPageProps) {
     }),
   ]);
 
-  if (!clinic || clinic.status === "SUSPENDED") {
+  const isDemo = isDemoModeActive();
+  if (!clinic || clinic.status === "SUSPENDED" || (!isDemo && (clinic.isDemo || clinic.slug === "ppms-clinic"))) {
     notFound();
   }
 
@@ -150,6 +153,13 @@ export default async function ClinicDetailsPage({ params }: ClinicPageProps) {
                       {clinic.status === "ACTIVE" ? "Active Clinical Chamber" : clinic.status}
                     </span>
 
+                    {clinic.isDemo && (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                        <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                        Demo Sandbox Facility
+                      </span>
+                    )}
+
                     {clinic.plan && (
                       <span className="px-2.5 py-1 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-bold border border-[var(--brand-border)]">
                         {clinic.plan.name}
@@ -179,7 +189,15 @@ export default async function ClinicDetailsPage({ params }: ClinicPageProps) {
                 )}
 
                 <Link
-                  href={`/doctors?search=${encodeURIComponent(clinic.name)}`}
+                  href={`/live-queue?clinic=${encodeURIComponent(clinic.slug)}`}
+                  className="px-4 py-2.5 rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] text-[var(--brand-text)] hover:opacity-95 text-xs font-bold transition flex items-center gap-2 shadow-2xs"
+                >
+                  <Tv className="w-3.5 h-3.5" />
+                  <span>Live Chamber TV</span>
+                </Link>
+
+                <Link
+                  href={`/doctors?clinic=${encodeURIComponent(clinic.slug)}`}
                   className="px-5 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white hover:opacity-95 text-xs font-bold transition flex items-center gap-2 shadow-xs"
                 >
                   <Calendar className="w-3.5 h-3.5" />
@@ -436,7 +454,7 @@ export default async function ClinicDetailsPage({ params }: ClinicPageProps) {
               </div>
 
               <Link
-                href={`/doctors?search=${encodeURIComponent(clinic.name)}`}
+                href={`/doctors?clinic=${encodeURIComponent(clinic.slug)}`}
                 className="text-xs font-bold text-[var(--brand-text)] hover:underline flex items-center gap-1"
               >
                 <span>View Full Visiting Schedules</span>
@@ -539,6 +557,7 @@ export default async function ClinicDetailsPage({ params }: ClinicPageProps) {
         </section>
       </main>
 
+      <DemoCountdownTimer variant="floating" />
       <Footer initialSettings={settings} />
     </div>
   );

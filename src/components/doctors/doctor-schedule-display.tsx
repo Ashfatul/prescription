@@ -114,9 +114,9 @@ export function DoctorScheduleDisplay({
               } ${d.isToday ? "ring-2 ring-[var(--brand-primary)] font-black" : ""}`}
             >
               <span className="text-[10px] uppercase font-bold leading-none">{d.day}</span>
-              <span className="text-[8px] mt-0.5 leading-none opacity-80">
+              {/* <span className="text-[8px] mt-0.5 leading-none opacity-80">
                 {d.isActive ? "Open" : "Off"}
-              </span>
+              </span> */}
             </div>
           ))}
         </div>

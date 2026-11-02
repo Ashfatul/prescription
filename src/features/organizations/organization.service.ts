@@ -51,8 +51,17 @@ export async function validateSlugAvailability(rawSlug: string): Promise<{
   };
 }
 
-export async function listOrganizations() {
+export async function listOrganizations(includeDemo?: boolean) {
+  const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true" || process.env.DEMO_MODE === "true";
+  const shouldIncludeDemo = includeDemo !== undefined ? includeDemo : isDemoMode;
+
   const orgs = await db.organization.findMany({
+    where: shouldIncludeDemo
+      ? {}
+      : {
+          isDemo: false,
+          slug: { not: "ppms-clinic" },
+        },
     include: {
       plan: true,
       _count: {

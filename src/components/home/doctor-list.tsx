@@ -52,9 +52,10 @@ const INITIAL_DISPLAY_LIMIT = 9;
 
 interface DoctorListProps {
   initialLimit?: number;
+  clinicSlug?: string;
 }
 
-export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT }: DoctorListProps = {}) {
+export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }: DoctorListProps = {}) {
   const { user } = useAuth();
   const isStaffOrDoctor = user && (user.role === "DOCTOR" || user.role === "STAFF" || user.role === "SUPER_ADMIN");
 
@@ -67,7 +68,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT }: DoctorListP
   const [searchQuery, setSearchQuery] = useState(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      return params.get("search") || params.get("clinic") || "";
+      return params.get("search") || (!clinicSlug ? params.get("clinic") || "" : "");
     }
     return "";
   });
@@ -81,7 +82,8 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT }: DoctorListP
 
     const load = async () => {
       try {
-        const res = await fetch("/api/public/doctors");
+        const queryParam = clinicSlug ? `?clinic=${encodeURIComponent(clinicSlug)}` : "";
+        const res = await fetch(`/api/public/doctors${queryParam}`);
         if (!res.ok) return;
         const payload = await res.json();
         if (active && payload.success && Array.isArray(payload.data)) {
@@ -101,7 +103,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT }: DoctorListP
       active = false;
       clearInterval(timer);
     };
-  }, []);
+  }, [clinicSlug]);
 
   // Compute unique specializations
   const specializations = useMemo(() => {

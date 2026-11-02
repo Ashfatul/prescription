@@ -9,11 +9,22 @@ import {
   FileText,
   AlertCircle,
   ExternalLink,
+  ArrowLeft,
+  CheckCircle2,
+  Copy,
+  Plus,
+  X,
+  Stethoscope,
+  Activity,
+  ShieldAlert,
+  Phone,
+  Mail,
+  FileSearch,
 } from "lucide-react";
 import { SearchableSelect, SelectOption } from "@/components/common/searchable-select";
 import { PrescriptionPreviewModal } from "@/components/dashboard/prescription-preview-modal";
 
-type DoctorInfo = {
+export type DoctorInfo = {
   id: string;
   specialization: string;
   degrees?: string | null;
@@ -31,7 +42,20 @@ type DoctorInfo = {
   };
 };
 
-type PatientInfo = {
+export type TestReportInfo = {
+  id: string;
+  title: string;
+  description?: string | null;
+  reportDate?: string | null;
+  fileUrl: string;
+  fileType: string;
+  originalName: string;
+  status?: string | null;
+  notes?: string | null;
+  createdAt: string;
+};
+
+export type PatientInfo = {
   id: string;
   user: {
     name: string;
@@ -41,17 +65,30 @@ type PatientInfo = {
   gender?: string | null;
   dateOfBirth?: string | null;
   medicalHistory?: string | null;
+  testReports?: TestReportInfo[];
 };
 
-type AppointmentInfo = {
+export type AppointmentInfo = {
   id: string;
   serialNumber: number;
   appointmentDate: string;
   patientId: string;
+  status: string;
+  notes?: string | null;
+  visitType?: string | null;
+  fee?: number | null;
+  paymentStatus?: string | null;
+  paymentMethod?: string | null;
+  diseasesJson?: unknown;
+  allergiesJson?: unknown;
+  medicalFlagsJson?: unknown;
+  dietRequired?: boolean | null;
+  dietInstructionsJson?: unknown;
+  dietNotes?: string | null;
   patient: PatientInfo;
 };
 
-type TemplateOption = {
+export type TemplateOption = {
   id: string;
   name: string;
   isDefault: boolean;
@@ -80,39 +117,142 @@ export type TestRow = {
   instructions: string;
 };
 
-// Fast 1-click clinical presets
-const COMPLAINT_PRESETS = [
-  "High fever for 3 days",
-  "Dry hacking cough & sore throat",
-  "Severe headache & body ache",
-  "Epigastric burning & dyspepsia",
-  "Shortness of breath on exertion",
-  "Burning sensation during micturition",
-  "Generalized weakness & fatigue",
-  "Loose watery stool & vomiting",
+// Categorized high-readability 1-click presets
+const COMPLAINT_GROUPS = [
+  {
+    category: "General / Fever",
+    items: [
+      "High fever for 3 days",
+      "Severe headache & body ache",
+      "Generalized weakness & fatigue",
+      "Night chills & malaise",
+    ],
+  },
+  {
+    category: "Respiratory",
+    items: [
+      "Dry hacking cough & sore throat",
+      "Productive cough with sputum",
+      "Shortness of breath on exertion",
+      "Runny nose & nasal congestion",
+    ],
+  },
+  {
+    category: "Gastrointestinal",
+    items: [
+      "Epigastric burning & dyspepsia",
+      "Loose watery stool & vomiting",
+      "Abdominal cramping & nausea",
+      "Bloating & hyperacidity",
+    ],
+  },
+  {
+    category: "Urinary & Other",
+    items: [
+      "Burning sensation during micturition",
+      "Frequent daytime urination",
+      "High random blood sugar on check",
+    ],
+  },
 ];
 
-const DIAGNOSIS_PRESETS = [
-  "Acute Viral Pharyngitis",
-  "Upper Respiratory Tract Infection (URTI)",
-  "Acute Gastritis / Peptic Ulcer Disease",
-  "Essential Hypertension (Stage 1)",
-  "Type 2 Diabetes Mellitus",
-  "Mild Bronchial Asthma",
-  "Urinary Tract Infection (UTI)",
-  "Acute Gastroenteritis",
+const DIAGNOSIS_GROUPS = [
+  {
+    category: "Infections",
+    items: [
+      "Acute Viral Pharyngitis",
+      "Upper Respiratory Tract Infection (URTI)",
+      "Acute Gastroenteritis",
+      "Urinary Tract Infection (UTI)",
+      "Enteric Fever (Typhoid)",
+    ],
+  },
+  {
+    category: "Cardio-Metabolic",
+    items: [
+      "Essential Hypertension (Stage 1)",
+      "Type 2 Diabetes Mellitus",
+      "Dyslipidemia / High Cholesterol",
+      "Hyperuricemia / Gout",
+    ],
+  },
+  {
+    category: "Respiratory & GI",
+    items: [
+      "Mild Bronchial Asthma",
+      "Acute Gastritis / Peptic Ulcer Disease",
+      "GERD (Acid Reflux)",
+      "Irritable Bowel Syndrome (IBS)",
+    ],
+  },
 ];
 
-const FREQUENCY_PRESETS = ["1 + 0 + 1", "1 + 1 + 1", "0 + 0 + 1", "1 + 0 + 0", "1 + 1 + 1 + 1", "Every 8 hours", "As needed (SOS)"];
-const DURATION_PRESETS = ["3 Days", "5 Days", "7 Days", "10 Days", "14 Days", "1 Month", "Continuous"];
+const FREQUENCY_PRESETS = [
+  "1 + 0 + 1",
+  "1 + 1 + 1",
+  "0 + 0 + 1",
+  "1 + 0 + 0",
+  "1 + 1 + 1 + 1",
+  "Every 8 hours",
+  "As needed (SOS)",
+];
 
-const ADVICE_PRESETS = [
-  "Drink plenty of boiled warm water.",
-  "Avoid oily, spicy, and outside street food.",
-  "Avoid cold drinks, ice cream, and dust exposure.",
-  "Take adequate rest and avoid physical overexertion.",
-  "Walk 30 minutes daily in morning / evening.",
-  "Monitor Blood Pressure & Fasting Blood Sugar regularly.",
+const TIMING_PRESETS = [
+  "30 mins before meal",
+  "After meal",
+  "With meal",
+  "At bedtime",
+  "Empty stomach",
+];
+
+const DURATION_PRESETS = [
+  "3 Days",
+  "5 Days",
+  "7 Days",
+  "10 Days",
+  "14 Days",
+  "1 Month",
+  "Continuous",
+];
+
+const ADVICE_GROUPS = [
+  {
+    category: "Fluids & Rest",
+    items: [
+      "Drink plenty of boiled warm water.",
+      "Take adequate bed rest and avoid physical overexertion.",
+    ],
+  },
+  {
+    category: "Dietary Guidance",
+    items: [
+      "Avoid oily, spicy, and outside street food.",
+      "Avoid cold drinks, ice cream, and dust exposure.",
+      "Eat high-fiber vegetables and fresh fruits.",
+      "Reduce daily salt and refined sugar intake.",
+    ],
+  },
+  {
+    category: "Monitoring & Lifestyle",
+    items: [
+      "Walk 30 minutes daily in morning / evening.",
+      "Monitor Blood Pressure & Fasting Blood Sugar regularly.",
+      "Return immediately if symptoms worsen or fever persists.",
+    ],
+  },
+];
+
+const COMMON_TEST_CHIPS = [
+  { name: "CBC with ESR (Complete Blood Count)", instructions: "Clean blood sample" },
+  { name: "Fasting Blood Sugar (FBS)", instructions: "10-12 hours overnight fasting" },
+  { name: "HbA1c (Glycated Hemoglobin)", instructions: "Any time, non-fasting" },
+  { name: "Serum Creatinine", instructions: "Clean blood sample" },
+  { name: "Lipid Profile", instructions: "12 hours strict overnight fasting" },
+  { name: "Urine Routine & Microscopic (R/M/E)", instructions: "Midstream early morning sample" },
+  { name: "SGPT / ALT (Liver Function)", instructions: "Clean blood sample" },
+  { name: "Chest X-Ray P/A View", instructions: "Standard upright view" },
+  { name: "ECG (12 Lead)", instructions: "At complete resting state" },
+  { name: "USG of Whole Abdomen", instructions: "Empty stomach with full bladder" },
 ];
 
 const HISTORY_PRESETS = [
@@ -123,7 +263,6 @@ const HISTORY_PRESETS = [
   "Chronic Kidney Disease (CKD)",
   "Dyslipidemia / High Cholesterol",
   "Hypothyroidism",
-  "Hyperuricemia / Gout",
   "No Known Major Illness",
 ];
 
@@ -143,7 +282,7 @@ const FOLLOWUP_PRESETS = [
   "After 7 days",
   "After 14 days",
   "After 1 month",
-  "With investigation report",
+  "With investigation reports",
   "As needed (SOS)",
 ];
 
@@ -164,9 +303,10 @@ const FORMULATION_OPTIONS: SelectOption[] = [
   { value: "Lotion", label: "Lotion", badge: "Lot" },
 ];
 
-function appendBulletLine(existingText: string, newItem: string, bullet = "• "): string {
+// Helper to format text lines using standard "- " bullet (Requirement 6)
+function appendBulletLine(existingText: string, newItem: string, bullet = "- "): string {
   const trimmed = existingText.trimEnd();
-  const cleanItem = newItem.trim().replace(/^([•\-\–\—]|\-\-)\s*/, "");
+  const cleanItem = newItem.trim().replace(/^([•\-\–\—*]|\-\-)\s*/, "");
   const formattedLine = `${bullet}${cleanItem}`;
 
   if (!trimmed) {
@@ -175,12 +315,38 @@ function appendBulletLine(existingText: string, newItem: string, bullet = "• "
 
   const existingLines = trimmed
     .split("\n")
-    .map((line) => line.trim().replace(/^([•\-\–\—]|\-\-)\s*/, ""));
+    .map((line) => line.trim().replace(/^([•\-\–\—*]|\-\-)\s*/, ""));
   if (existingLines.includes(cleanItem)) {
     return trimmed;
   }
 
   return `${trimmed}\n${formattedLine}`;
+}
+
+function parseTriage(notes?: string | null) {
+  if (!notes) return { complaint: "", bp: "", pulse: "", temp: "", weight: "" };
+  let complaint = "";
+  let bp = "";
+  let pulse = "";
+  let temp = "";
+  let weight = "";
+
+  const complaintMatch = notes.match(/Complaint:\s*([^|]+)/i);
+  if (complaintMatch) complaint = complaintMatch[1].trim();
+
+  const bpMatch = notes.match(/BP:\s*([^,|]+)/i);
+  if (bpMatch && bpMatch[1] !== "N/A") bp = bpMatch[1].trim();
+
+  const pulseMatch = notes.match(/Pulse:\s*([^,|]+)/i);
+  if (pulseMatch && pulseMatch[1] !== "N/A") pulse = pulseMatch[1].trim();
+
+  const tempMatch = notes.match(/Temp:\s*([^,|]+)/i);
+  if (tempMatch && tempMatch[1] !== "N/A") temp = tempMatch[1].trim();
+
+  const wtMatch = notes.match(/Wt:\s*([^,|]+)/i);
+  if (wtMatch && wtMatch[1] !== "N/A") weight = wtMatch[1].trim();
+
+  return { complaint, bp, pulse, temp, weight };
 }
 
 export type PrescriptionRevisionData = {
@@ -195,65 +361,70 @@ export type PrescriptionRevisionData = {
   clinicalInfoJson?: unknown;
   doctorOverrideJson?: unknown;
   notes?: string | null;
-  patient?: {
-    id: string;
-    gender?: string | null;
-    dateOfBirth?: string | null;
-    medicalHistory?: string | null;
-    user: {
-      name: string;
-      email: string;
-      phone?: string | null;
-    };
-  };
+  patient?: PatientInfo;
 };
-
-const REVISION_REASON_PRESETS = [
-  "Updated after lab / diagnostic report",
-  "Follow-up visit dose adjustment",
-  "Medication change due to allergy / intolerance",
-  "Added new complementary medication",
-  "Titrated medicine dose based on BP / Sugar readings",
-  "Patient symptoms improved / stepped down medication",
-];
 
 export function PrescriptionEditor({
   doctor,
   appointments = [],
   patients = [],
+  selectedAppointmentId: initialAppointmentId = null,
   initialPrescriptionToRevise = null,
   onCancelRevision,
+  onBackToQueue,
   onPrescriptionCreated,
+  onCallNextPatient,
 }: {
   doctor: DoctorInfo;
   appointments?: AppointmentInfo[];
   patients?: PatientInfo[];
+  selectedAppointmentId?: string | null;
   initialPrescriptionToRevise?: PrescriptionRevisionData | null;
   onCancelRevision?: () => void;
-  onPrescriptionCreated?: (id: string) => void;
+  onBackToQueue?: () => void;
+  onPrescriptionCreated?: (id: string, appointmentId?: string) => void;
+  onCallNextPatient?: () => void;
 }) {
-  // Revision Mode State
+  // Active Consultation Target
+  const currentAppointment = useMemo(() => {
+    if (initialPrescriptionToRevise?.appointmentId) {
+      return appointments.find((a) => a.id === initialPrescriptionToRevise.appointmentId) || null;
+    }
+    if (initialAppointmentId) {
+      return appointments.find((a) => a.id === initialAppointmentId) || null;
+    }
+    return appointments[0] || null;
+  }, [appointments, initialAppointmentId, initialPrescriptionToRevise]);
+
+  const currentPatient = useMemo(() => {
+    if (currentAppointment?.patient) return currentAppointment.patient;
+    if (initialPrescriptionToRevise?.patient) return initialPrescriptionToRevise.patient;
+    const targetId = initialPrescriptionToRevise?.patientId || currentAppointment?.patientId;
+    return patients.find((p) => p.id === targetId) || patients[0] || null;
+  }, [currentAppointment, initialPrescriptionToRevise, patients]);
+
+  const triage = useMemo(() => parseTriage(currentAppointment?.notes), [currentAppointment]);
+
+  // Revision State
   const [editingPrescription, setEditingPrescription] = useState<PrescriptionRevisionData | null>(
     initialPrescriptionToRevise || null
   );
   const [changeReason, setChangeReason] = useState("");
   const [savedVersionNumber, setSavedVersionNumber] = useState<number | null>(null);
 
-  // Base Template
+  // Template State
   const [templates, setTemplates] = useState<TemplateOption[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>(
     initialPrescriptionToRevise?.templateId || ""
   );
 
-  // Catalog loaded from DB
+  // Catalogs
   const [catalogMedicines, setCatalogMedicines] = useState<SelectOption[]>([]);
   const [catalogTests, setCatalogTests] = useState<SelectOption[]>([]);
 
-  // Doctor Header Override
+  // Doctor Header Details (defaults to profile)
   const initO = (initialPrescriptionToRevise?.doctorOverrideJson as Record<string, string>) || {};
-  const [customizeDoctorHeader, setCustomizeDoctorHeader] = useState(
-    Boolean(initO.doctorName || initO.specialization || initO.hospital)
-  );
+  const [customizeDoctorHeader, setCustomizeDoctorHeader] = useState(false);
   const [docName, setDocName] = useState(initO.doctorName || doctor.user.name || "");
   const [docSpecialization, setDocSpecialization] = useState(initO.specialization || doctor.specialization || "");
   const [docDegrees, setDocDegrees] = useState(initO.degrees || doctor.degrees || "");
@@ -264,33 +435,50 @@ export function PrescriptionEditor({
   const [docContact, setDocContact] = useState(initO.contactNumber || doctor.contactNumber || "");
   const docSignatureUrl = initO.signatureUrl || doctor.signatureUrl || doctor.user?.signatureUrl || "";
 
-  // Patient Selection
-  const [selectedPatientId, setSelectedPatientId] = useState<string>(
-    initialPrescriptionToRevise?.patientId || appointments[0]?.patientId || patients[0]?.id || ""
-  );
-  const [selectedAppointmentId, setSelectedAppointmentId] = useState<string>(
-    initialPrescriptionToRevise?.appointmentId || appointments[0]?.id || ""
-  );
-
-  // Vitals
+  // Triage Vitals (Staff prepared, Doctor can refine)
   const initV = (initialPrescriptionToRevise?.vitalsJson as Record<string, string>) || {};
-  const [bp, setBp] = useState(initV.bp || "120/80 mmHg");
-  const [weight, setWeight] = useState(initV.weight || "");
-  const [pulse, setPulse] = useState(initV.pulse || "72 bpm");
-  const [temp, setTemp] = useState(initV.temp || "98.4 °F");
+  const [bp, setBp] = useState(initV.bp || triage.bp || "120/80 mmHg");
+  const [pulse, setPulse] = useState(initV.pulse || triage.pulse || "72 bpm");
+  const [temp, setTemp] = useState(initV.temp || triage.temp || "98.6 °F");
+  const [weight, setWeight] = useState(initV.weight || triage.weight || "");
   const [bloodSugar, setBloodSugar] = useState(initV.bloodSugar || "");
   const [spo2, setSpo2] = useState(initV.spo2 || "");
 
-  // Patient History & Comorbidities
+  // Clinical History & Allergies (Staff triage populated)
   const initC = (initialPrescriptionToRevise?.clinicalInfoJson as Record<string, string>) || {};
-  const [medicalHistory, setMedicalHistory] = useState(initC.medicalHistory || "");
-  const [allergies, setAllergies] = useState(initC.allergies || "");
+  const initialHistory = useMemo(() => {
+    if (initC.medicalHistory) return initC.medicalHistory;
+    const items: string[] = [];
+    if (Array.isArray(currentAppointment?.diseasesJson) && currentAppointment.diseasesJson.length > 0) {
+      items.push(...(currentAppointment.diseasesJson as string[]).map((d) => `- ${d}`));
+    }
+    if (currentPatient?.medicalHistory) {
+      const cleaned = currentPatient.medicalHistory.trim();
+      if (cleaned && !items.some((i) => i.includes(cleaned))) {
+        items.push(cleaned.startsWith("- ") ? cleaned : `- ${cleaned}`);
+      }
+    }
+    return items.join("\n");
+  }, [initC.medicalHistory, currentAppointment?.diseasesJson, currentPatient?.medicalHistory]);
 
-  // Clinical Details
-  const [complaints, setComplaints] = useState(initC.complaints || "");
+  const initialAllergies = useMemo(() => {
+    if (initC.allergies) return initC.allergies;
+    if (Array.isArray(currentAppointment?.allergiesJson) && currentAppointment.allergiesJson.length > 0) {
+      return (currentAppointment.allergiesJson as string[]).map((a) => `- ${a}`).join("\n");
+    }
+    return "";
+  }, [initC.allergies, currentAppointment?.allergiesJson]);
+
+  const [medicalHistory, setMedicalHistory] = useState(initialHistory);
+  const [allergies, setAllergies] = useState(initialAllergies);
+
+  // Complaints & Diagnosis
+  const [complaints, setComplaints] = useState(
+    initC.complaints || (triage.complaint ? `- ${triage.complaint}` : "")
+  );
   const [diagnosis, setDiagnosis] = useState(initC.diagnosis || "");
 
-  // Diagnostic Tests
+  // Prescribed Tests
   const [tests, setTests] = useState<TestRow[]>(() => {
     if (initialPrescriptionToRevise && Array.isArray(initialPrescriptionToRevise.testsJson)) {
       return initialPrescriptionToRevise.testsJson as TestRow[];
@@ -298,7 +486,7 @@ export function PrescriptionEditor({
     return [{ name: "CBC with ESR (Complete Blood Count)", instructions: "Clean blood sample" }];
   });
 
-  // Medicines (Rx)
+  // Prescribed Medicines (Rx)
   const [medicines, setMedicines] = useState<MedicineRow[]>(() => {
     if (
       initialPrescriptionToRevise &&
@@ -314,25 +502,203 @@ export function PrescriptionEditor({
         dosage: "500mg + 65mg",
         frequency: "1 + 0 + 1",
         duration: "5 Days",
-        instructions: "1 tablet after meal, 2-3 times daily as needed",
+        instructions: "After meal",
       },
     ];
   });
 
   // Advice & Follow-Up
   const [advice, setAdvice] = useState(
-    initC.advice || "Drink plenty of boiled warm water. Take adequate bed rest. Avoid oily & spicy foods."
+    initC.advice ||
+      "- Drink plenty of boiled warm water.\n- Avoid oily, spicy, and outside street food.\n- Take complete bed rest."
   );
   const [followUp, setFollowUp] = useState(initC.followUp || "After 7 days with investigation reports");
   const [notes, setNotes] = useState(initialPrescriptionToRevise?.notes || "");
 
-  // Attachments
+  // Attachments & Reports
   const [attachments, setAttachments] = useState<
     { id: string; name: string; url: string; fileType: string }[]
   >([]);
   const [uploadingAttachment, setUploadingAttachment] = useState(false);
   const [attachmentError, setAttachmentError] = useState<string | null>(null);
+  const [showReportsModal, setShowReportsModal] = useState(false);
 
+  // Submission States
+  const [submitting, setSubmitting] = useState(false);
+  const [createdPrescriptionId, setCreatedPrescriptionId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+
+  // Load catalogs on mount
+  useEffect(() => {
+    let active = true;
+    async function loadData() {
+      try {
+        const [tplRes, medRes, testRes] = await Promise.all([
+          fetch("/api/templates"),
+          fetch("/api/medicines"),
+          fetch("/api/tests"),
+        ]);
+        const [tplData, medData, testData] = await Promise.all([
+          tplRes.json(),
+          medRes.json(),
+          testRes.json(),
+        ]);
+
+        if (!active) return;
+        if (tplData.success && Array.isArray(tplData.data)) {
+          setTemplates(tplData.data);
+          const def = tplData.data.find((t: TemplateOption) => t.isDefault) || tplData.data[0];
+          if (def && !selectedTemplateId) setSelectedTemplateId(def.id);
+        }
+
+        if (medData.success && Array.isArray(medData.data)) {
+          setCatalogMedicines(
+            medData.data.map(
+              (m: { name: string; dosage: string; type: string; instructions?: string | null }) => ({
+                value: m.name,
+                label: `${m.name} (${m.dosage})`,
+                badge: m.type,
+                description: m.instructions || undefined,
+                payload: m,
+              })
+            )
+          );
+        }
+
+        if (testData.success && Array.isArray(testData.data)) {
+          setCatalogTests(
+            testData.data.map((t: { name: string; instructions?: string | null }) => ({
+              value: t.name,
+              label: t.name,
+              description: t.instructions || undefined,
+              payload: t,
+            }))
+          );
+        }
+      } catch (err) {
+        console.error("Failed to load prescription catalog dependencies", err);
+      }
+    }
+
+    void loadData();
+    return () => {
+      active = false;
+    };
+  }, [selectedTemplateId]);
+
+  // Patient Age Calculation
+  const patientAge = useMemo(() => {
+    if (!currentPatient) return undefined;
+    if (currentPatient.dateOfBirth) {
+      const birth = new Date(currentPatient.dateOfBirth);
+      const diffYears = Math.floor((Date.now() - birth.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+      if (diffYears > 0 && diffYears < 130) return diffYears;
+    }
+    if (currentPatient.medicalHistory) {
+      const match = currentPatient.medicalHistory.match(/Age:\s*(\d+)/i);
+      if (match) return match[1];
+    }
+    return undefined;
+  }, [currentPatient]);
+
+  // Medicine Actions
+  const addMedicine = (preset?: Partial<MedicineRow>) => {
+    setMedicines((prev) => [
+      ...prev,
+      {
+        type: preset?.type || "Tablet",
+        name: preset?.name || "",
+        dosage: preset?.dosage || "",
+        frequency: preset?.frequency || "1 + 0 + 1",
+        duration: preset?.duration || "7 Days",
+        instructions: preset?.instructions || "After meal",
+      },
+    ]);
+  };
+
+  const cloneMedicine = (index: number) => {
+    setMedicines((prev) => {
+      const copy = [...prev];
+      const target = copy[index];
+      copy.splice(index + 1, 0, { ...target });
+      return copy;
+    });
+  };
+
+  const updateMedicine = (index: number, field: keyof MedicineRow, value: string) => {
+    setMedicines((prev) => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
+  };
+
+  const handleSelectMedicineFromCatalog = (index: number, option?: SelectOption) => {
+    if (!option) return;
+    const item = option.payload as
+      | { name?: string; type?: string; dosage?: string; instructions?: string | null }
+      | undefined;
+    if (item && item.name) {
+      setMedicines((prev) => {
+        const copy = [...prev];
+        copy[index] = {
+          ...copy[index],
+          name: item.name || copy[index].name,
+          type: item.type || copy[index].type,
+          dosage: item.dosage || copy[index].dosage,
+          instructions: item.instructions || copy[index].instructions,
+        };
+        return copy;
+      });
+    } else {
+      updateMedicine(index, "name", option.value);
+    }
+  };
+
+  const removeMedicine = (index: number) => {
+    setMedicines((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Test Actions
+  const addTest = (name = "", instructions = "") => {
+    setTests((prev) => [...prev, { name, instructions }]);
+  };
+
+  const removeTest = (index: number) => {
+    setTests((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const updateTest = (index: number, field: keyof TestRow, value: string) => {
+    setTests((prev) => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
+  };
+
+  // Quick Preset Handlers (using standard "- " bullet)
+  const appendComplaint = (phrase: string) => {
+    setComplaints((prev) => appendBulletLine(prev, phrase, "- "));
+  };
+
+  const appendDiagnosis = (dx: string) => {
+    setDiagnosis((prev) => appendBulletLine(prev, dx, "- "));
+  };
+
+  const appendAdvice = (adv: string) => {
+    setAdvice((prev) => appendBulletLine(prev, adv, "- "));
+  };
+
+  const appendHistory = (item: string) => {
+    setMedicalHistory((prev) => appendBulletLine(prev, item, "- "));
+  };
+
+  const appendAllergy = (item: string) => {
+    setAllergies((prev) => appendBulletLine(prev, item, "- "));
+  };
+
+  // File Attachment Upload
   const handleUploadAttachment = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -372,272 +738,28 @@ export function PrescriptionEditor({
     }
   };
 
-  // State
-  const [submitting, setSubmitting] = useState(false);
-  const [createdPrescriptionId, setCreatedPrescriptionId] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
-
-  // Fetch templates and catalog on mount
-  useEffect(() => {
-    let active = true;
-
-    async function initData() {
-      try {
-        const [tplRes, medRes, testRes] = await Promise.all([
-          fetch("/api/templates"),
-          fetch("/api/medicines"),
-          fetch("/api/tests"),
-        ]);
-        const [tplData, medData, testData] = await Promise.all([
-          tplRes.json(),
-          medRes.json(),
-          testRes.json(),
-        ]);
-
-        if (!active) return;
-
-        if (tplData.success && Array.isArray(tplData.data)) {
-          setTemplates(tplData.data);
-          const def = tplData.data.find((t: TemplateOption) => t.isDefault) || tplData.data[0];
-          if (def) setSelectedTemplateId(def.id);
-        }
-
-        if (medData.success && Array.isArray(medData.data)) {
-          const medOptions: SelectOption[] = medData.data.map(
-            (m: { name: string; dosage: string; type: string; instructions?: string | null }) => ({
-              value: m.name,
-              label: `${m.name} (${m.dosage})`,
-              badge: m.type,
-              description: m.instructions || undefined,
-              payload: m,
-            })
-          );
-          setCatalogMedicines(medOptions);
-        }
-
-        if (testData.success && Array.isArray(testData.data)) {
-          const testOptions: SelectOption[] = testData.data.map(
-            (t: { name: string; instructions?: string | null }) => ({
-              value: t.name,
-              label: t.name,
-              description: t.instructions || undefined,
-              payload: t,
-            })
-          );
-          setCatalogTests(testOptions);
-        }
-      } catch (err) {
-        console.error("Failed to load prescription editor dependencies", err);
-      }
-    }
-
-    void initData();
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  const handlePatientSelect = (patientId: string) => {
-    setSelectedPatientId(patientId);
-    const appt = appointments.find((a) => a.patientId === patientId);
-    setSelectedAppointmentId(appt?.id || "");
-
-    const pat = appt?.patient || patients.find((p) => p.id === patientId);
-    if (pat?.medicalHistory && !medicalHistory.trim()) {
-      setMedicalHistory(pat.medicalHistory);
-    }
-  };
-
-  const addMedicine = (preset?: Partial<MedicineRow>) => {
-    setMedicines((prev) => [
-      ...prev,
-      {
-        type: preset?.type || "Tablet",
-        name: preset?.name || "",
-        dosage: preset?.dosage || "",
-        frequency: preset?.frequency || "1 + 0 + 1",
-        duration: preset?.duration || "7 Days",
-        instructions: preset?.instructions || "After meals",
-      },
-    ]);
-  };
-
-  const updateMedicine = (index: number, field: keyof MedicineRow, value: string) => {
-    setMedicines((prev) => {
-      const copy = [...prev];
-      copy[index] = { ...copy[index], [field]: value };
-      return copy;
-    });
-  };
-
-  const handleSelectMedicineFromCatalog = (index: number, option?: SelectOption) => {
-    if (!option) return;
-    const item = option.payload as
-      | { name?: string; type?: string; dosage?: string; instructions?: string | null }
-      | undefined;
-    if (item && item.name) {
-      setMedicines((prev) => {
-        const copy = [...prev];
-        copy[index] = {
-          ...copy[index],
-          name: item.name || copy[index].name,
-          type: item.type || copy[index].type,
-          dosage: item.dosage || copy[index].dosage,
-          instructions: item.instructions || copy[index].instructions,
-        };
-        return copy;
-      });
-    } else {
-      updateMedicine(index, "name", option.value);
-    }
-  };
-
-  const removeMedicine = (index: number) => {
-    setMedicines((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const addTest = (name = "", instructions = "") => {
-    setTests((prev) => [...prev, { name, instructions }]);
-  };
-
-  const handleSelectTestFromCatalog = (index: number, option?: SelectOption) => {
-    if (!option) return;
-    const item = option.payload as
-      | { name?: string; instructions?: string | null }
-      | undefined;
-    if (item && item.name) {
-      setTests((prev) => {
-        const copy = [...prev];
-        copy[index] = {
-          name: item.name || copy[index].name,
-          instructions: item.instructions || copy[index].instructions || "",
-        };
-        return copy;
-      });
-    } else {
-      setTests((prev) => {
-        const copy = [...prev];
-        copy[index] = { ...copy[index], name: option.value };
-        return copy;
-      });
-    }
-  };
-
-  const updateTest = (index: number, field: keyof TestRow, value: string) => {
-    setTests((prev) => {
-      const copy = [...prev];
-      copy[index] = { ...copy[index], [field]: value };
-      return copy;
-    });
-  };
-
-  const removeTest = (index: number) => {
-    setTests((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  // Helper to append preset to text areas on separate lines with bullet markers
-  const appendComplaint = (phrase: string) => {
-    setComplaints((prev) => appendBulletLine(prev, phrase));
-  };
-
-  const setDiagnosisPreset = (dx: string) => {
-    setDiagnosis((prev) => appendBulletLine(prev, dx));
-  };
-
-  const appendAdvice = (adv: string) => {
-    setAdvice((prev) => appendBulletLine(prev, adv));
-  };
-
-  const appendHistory = (item: string) => {
-    setMedicalHistory((prev) => appendBulletLine(prev, item));
-  };
-
-  const appendAllergy = (item: string) => {
-    setAllergies((prev) => appendBulletLine(prev, item));
-  };
-
-  // Patient options for SearchableSelect
-  const patientOptions: SelectOption[] = useMemo(() => {
-    const list: SelectOption[] = [];
-    appointments.forEach((appt) => {
-      list.push({
-        value: appt.patientId,
-        label: `${appt.patient.user.name} (Serial #${appt.serialNumber})`,
-        description: `${appt.patient.user.email}${appt.patient.user.phone ? ` • Tel: ${appt.patient.user.phone}` : ""}`,
-        badge: `Today #${appt.serialNumber}`,
-      });
-    });
-    patients
-      .filter((p) => !appointments.some((a) => a.patientId === p.id))
-      .forEach((p) => {
-        list.push({
-          value: p.id,
-          label: p.user.name,
-          description: `${p.user.email}${p.user.phone ? ` • Tel: ${p.user.phone}` : ""}`,
-          badge: "Patient Record",
-        });
-      });
-    return list;
-  }, [appointments, patients]);
-
-  // Template options for SearchableSelect
-  const templateOptions: SelectOption[] = useMemo(
-    () =>
-      templates.map((tpl) => ({
-        value: tpl.id,
-        label: `${tpl.name}${tpl.isDefault ? " (Default)" : ""}`,
-        badge: tpl.isDefault ? "Default" : undefined,
-        description: tpl.contentJson?.hospitalName
-          ? `Hospital: ${tpl.contentJson.hospitalName}`
-          : undefined,
-      })),
-    [templates]
-  );
-
-  const currentPatient =
-    appointments.find((a) => a.patientId === selectedPatientId)?.patient ||
-    patients.find((p) => p.id === selectedPatientId);
-
-  const patientAge = useMemo(() => {
-    if (!currentPatient) return undefined;
-    if (currentPatient.dateOfBirth) {
-      const birth = new Date(currentPatient.dateOfBirth);
-      const diffYears = Math.floor(
-        (Date.now() - birth.getTime()) / (365.25 * 24 * 60 * 60 * 1000)
-      );
-      if (diffYears > 0 && diffYears < 130) return diffYears;
-    }
-    if (currentPatient.medicalHistory) {
-      const match = currentPatient.medicalHistory.match(/Age:\s*(\d+)/i);
-      if (match) return match[1];
-    }
-    return undefined;
-  }, [currentPatient]);
-
-  const selectedTemplate = templates.find((t) => t.id === selectedTemplateId);
-
+  // Submit Handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     setErrorMessage("");
 
-    if (!selectedPatientId) {
-      setErrorMessage("Please select a patient.");
+    if (!currentPatient) {
+      setErrorMessage("No queued patient selected. Please select a patient from the queue.");
       setSubmitting(false);
       return;
     }
 
     if (medicines.length === 0 || !medicines[0].name.trim()) {
-      setErrorMessage("Please add at least one medicine.");
+      setErrorMessage("Please specify at least one prescribed medicine.");
       setSubmitting(false);
       return;
     }
 
     const payload = {
       doctorId: doctor.id,
-      patientId: selectedPatientId,
-      appointmentId: selectedAppointmentId || undefined,
+      patientId: currentPatient.id,
+      appointmentId: currentAppointment?.id || undefined,
       templateId: selectedTemplateId || undefined,
       medicines: medicines.filter((m) => m.name.trim()),
       tests: tests.filter((t) => t.name.trim()),
@@ -666,7 +788,7 @@ export function PrescriptionEditor({
         bmdcRegNo: docRegNo,
         chamberAddress: docChamber,
         contactNumber: docContact,
-        signatureUrl: docSignatureUrl || doctor.signatureUrl || doctor.user?.signatureUrl || undefined,
+        signatureUrl: docSignatureUrl || undefined,
       },
       notes,
       attachmentIds: attachments.map((a) => a.id),
@@ -697,625 +819,574 @@ export function PrescriptionEditor({
       setCreatedPrescriptionId(data.data.id);
       const nextVer = data.data.version || (editingPrescription ? (editingPrescription.version || 1) + 1 : 1);
       setSavedVersionNumber(nextVer);
-      onPrescriptionCreated?.(data.data.id);
+      onPrescriptionCreated?.(data.data.id, currentAppointment?.id);
     } catch {
       setSubmitting(false);
-      setErrorMessage("Network error while saving prescription.");
+      setErrorMessage("Network error while issuing prescription.");
     }
   };
 
-  const resetForm = () => {
+  const handleResetForAnother = () => {
     setCreatedPrescriptionId(null);
     setSavedVersionNumber(null);
     setEditingPrescription(null);
     setChangeReason("");
     onCancelRevision?.();
-    setMedicines([
-      {
-        type: "Tablet",
-        name: "Napa Extra",
-        dosage: "500mg + 65mg",
-        frequency: "1 + 0 + 1",
-        duration: "5 Days",
-        instructions: "1 tablet after meal, 2-3 times daily as needed",
-      },
-    ]);
-    setTests([{ name: "CBC with ESR (Complete Blood Count)", instructions: "Clean blood sample" }]);
-    setComplaints("");
-    setDiagnosis("");
-    setMedicalHistory("");
-    setAllergies("");
-    setBloodSugar("");
-    setSpo2("");
-    setAdvice("");
-    setFollowUp("");
-    setNotes("");
-    setAttachments([]);
+    onCallNextPatient?.();
   };
 
-  const handleCancelRevision = () => {
-    resetForm();
-  };
+  const patientReports = currentPatient?.testReports || [];
+  const selectedTemplate = templates.find((t) => t.id === selectedTemplateId);
 
   return (
     <div className="space-y-6">
-      {/* Top Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <span>Prescription Generator</span>
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)]">
-              {editingPrescription ? `Revising v${editingPrescription.version || 1}` : "Fast Prescribing"}
-            </span>
-          </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            {editingPrescription
-              ? `Creating Version ${(editingPrescription.version || 1) + 1} • All previous versions are permanently preserved in history.`
-              : "Auto-fill medicines from catalog, 1-click clinical presets, and multi-page preview."}
-          </p>
+      {/* Top Consultation Control Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm">
+        <div className="flex items-center gap-3">
+          {onBackToQueue && (
+            <button
+              type="button"
+              onClick={onBackToQueue}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to Queue</span>
+            </button>
+          )}
+
+          <div>
+            <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+              <span>Prescription Console</span>
+              {currentAppointment?.serialNumber && (
+                <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-[var(--brand-primary)] text-white shadow-2xs font-mono">
+                  Serial #{currentAppointment.serialNumber}
+                </span>
+              )}
+              {editingPrescription && (
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/30">
+                  Revising v{editingPrescription.version || 1}
+                </span>
+              )}
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Consultation workspace. Enter medications, lab investigations, and patient instructions.
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           {templates.length > 0 && (
-            <div className="flex items-center gap-2">
-              <label className="text-xs font-semibold text-slate-500 whitespace-nowrap hidden sm:inline">
-                Template:
-              </label>
-              <div className="w-48 sm:w-60">
-                <SearchableSelect
-                  options={templateOptions}
-                  value={selectedTemplateId}
-                  placeholder="Select template..."
-                  searchPlaceholder="Search layout templates..."
-                  onChange={(val) => setSelectedTemplateId(val)}
-                />
-              </div>
+            <div className="w-44 sm:w-52">
+              <SearchableSelect
+                options={templates.map((tpl) => ({
+                  value: tpl.id,
+                  label: `${tpl.name}${tpl.isDefault ? " (Default)" : ""}`,
+                  badge: tpl.isDefault ? "Default" : undefined,
+                }))}
+                value={selectedTemplateId}
+                placeholder="Layout template..."
+                searchPlaceholder="Search templates..."
+                onChange={(val) => setSelectedTemplateId(val)}
+              />
             </div>
           )}
 
-          {/* Live Preview Button */}
           <button
             type="button"
             onClick={() => setShowPreviewModal(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all shadow-xs"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-2xs cursor-pointer"
           >
-            <svg className="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
             <span>Live Preview</span>
           </button>
         </div>
       </div>
 
-      {/* Revision Mode Banner with Reason presets */}
-      {editingPrescription && (
-        <div className="rounded-3xl border-2 border-amber-500/40 bg-amber-50/80 dark:bg-amber-950/30 dark:border-amber-700/60 p-6 shadow-sm space-y-4 animate-in fade-in">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-start sm:items-center gap-3.5">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500 text-white font-black text-lg shadow-sm">
-                v{(editingPrescription.version || 1) + 1}
-              </div>
-              <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-black uppercase tracking-wider text-amber-900 dark:text-amber-300">
-                    Modifying Existing Prescription
-                  </span>
-                  <span className="rounded-full bg-amber-200/90 dark:bg-amber-900/60 px-2.5 py-0.5 text-[11px] font-bold text-amber-900 dark:text-amber-200 border border-amber-300/60 dark:border-amber-700/60">
-                    Current Active: v{editingPrescription.version || 1} ➔ Next: v{(editingPrescription.version || 1) + 1}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-700 dark:text-slate-300 mt-1 font-medium">
-                  Patient: <strong className="text-slate-900 dark:text-white">{currentPatient?.user.name}</strong> • Rx ID: <code className="font-mono text-xs">{editingPrescription.id}</code>
-                </p>
-                <p className="text-[11px] text-amber-800/90 dark:text-amber-400/90 mt-0.5">
-                  Preserving History: All earlier versions remain archived and directly inspectable & printable by both you and the patient.
-                </p>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleCancelRevision}
-              className="self-start sm:self-auto px-4 py-2 rounded-xl text-xs font-bold border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition shadow-2xs"
-            >
-              ✕ Cancel Revision / New Rx
-            </button>
-          </div>
-
-          <div className="pt-3 border-t border-amber-200/70 dark:border-amber-900/40 space-y-2">
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-              Revision Reason / Clinical Note for Version {(editingPrescription.version || 1) + 1}:
-            </label>
-            <input
-              type="text"
-              value={changeReason}
-              onChange={(e) => setChangeReason(e.target.value)}
-              placeholder="e.g. Updated after CBC report returned; adjusted antibiotic dosage..."
-              className="w-full rounded-xl border border-amber-300/80 dark:border-amber-800/80 bg-white dark:bg-slate-900 px-3.5 py-2 text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
-            />
-            <div className="flex flex-wrap items-center gap-1.5 pt-1">
-              <span className="text-[11px] font-semibold text-slate-500 mr-1">1-Click Reasons:</span>
-              {REVISION_REASON_PRESETS.map((reason) => (
-                <button
-                  key={reason}
-                  type="button"
-                  onClick={() => setChangeReason(reason)}
-                  className="text-[11px] px-2.5 py-1 rounded-lg bg-amber-100/90 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-800/50 transition font-medium border border-amber-300/60 dark:border-amber-800/50 cursor-pointer"
-                >
-                  + {reason}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Success Notification Banner */}
+      {/* Success Notification Banner with Queue Advancement */}
       {createdPrescriptionId && (
-        <div className="p-6 rounded-3xl border-2 border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40 dark:border-emerald-700 shadow-sm animate-in fade-in">
+        <div className="p-6 rounded-3xl border-2 border-emerald-500 bg-emerald-50/80 dark:bg-emerald-950/40 dark:border-emerald-600 shadow-sm animate-in fade-in space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
+            <div className="space-y-1">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 text-xs font-bold">
-                ✓ {savedVersionNumber && savedVersionNumber > 1 ? `Version ${savedVersionNumber} Saved (History Preserved)` : "Prescription Generated Successfully"}
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                <span>
+                  {savedVersionNumber && savedVersionNumber > 1
+                    ? `Version ${savedVersionNumber} Saved (History Preserved)`
+                    : "Prescription Issued & Queue Cleared"}
+                </span>
               </span>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white mt-2">
-                {savedVersionNumber && savedVersionNumber > 1
-                  ? `Prescription Updated to Version ${savedVersionNumber}`
-                  : "Ready for Printing & Patient Sharing"}
+              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
+                {currentPatient?.user.name}’s consultation is complete.
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400">
-                Prescription ID: <code className="font-mono font-semibold">{createdPrescriptionId}</code>
-                {savedVersionNumber && ` • Active Version: v${savedVersionNumber}`}
+                Prescription ID: <code className="font-mono font-bold">{createdPrescriptionId}</code> •
+                Removed from Chamber Queue • TV waiting display updated.
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
               <Link
-                href={`/prescriptions/${createdPrescriptionId}/print${savedVersionNumber ? `?version=${savedVersionNumber}` : ""}`}
+                href={`/prescriptions/${createdPrescriptionId}/print${
+                  savedVersionNumber ? `?version=${savedVersionNumber}` : ""
+                }`}
                 target="_blank"
-                className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-semibold shadow-sm hover:opacity-90 transition-all"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-sm hover:opacity-95 transition"
               >
                 <span>🖨️ View & Print Full A4 (v{savedVersionNumber || 1})</span>
               </Link>
-              <button
-                type="button"
-                onClick={resetForm}
-                className="px-4 py-2.5 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition-all"
-              >
-                + Write Another Prescription
-              </button>
+
+              {onCallNextPatient && (
+                <button
+                  type="button"
+                  onClick={handleResetForAnother}
+                  className="px-4 py-2.5 rounded-2xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold hover:opacity-90 transition cursor-pointer"
+                >
+                  📞 Call Next Patient
+                </button>
+              )}
+
+              {onBackToQueue && (
+                <button
+                  type="button"
+                  onClick={onBackToQueue}
+                  className="px-4 py-2.5 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition cursor-pointer"
+                >
+                  👥 Chamber Queue
+                </button>
+              )}
             </div>
           </div>
         </div>
       )}
 
       {errorMessage && (
-        <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 text-xs font-medium text-red-600 border border-red-200 dark:border-red-800">
-          {errorMessage}
+        <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-xs font-semibold text-rose-600 border border-rose-200 dark:border-rose-900/50 flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{errorMessage}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Section 1: Doctor & Hospital Header (Profile Pre-filled) */}
-        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-xs space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                1. Doctor & Hospital Header
+      {/* SECTION 1: Patient Clinical & Triage Context Banner (Staff Managed - Read Only) */}
+      <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="space-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[10px] font-black uppercase tracking-wider text-[var(--brand-primary)] bg-[var(--brand-surface)] border border-[var(--brand-border)] px-2.5 py-0.5 rounded-md">
+                Patient Demographics (Verified by Staff)
               </span>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {docHospital ? `${docHospital} • ` : ""}
-                {docName} ({docDegrees || docSpecialization})
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setCustomizeDoctorHeader(!customizeDoctorHeader)}
-              className="text-xs font-semibold text-[var(--brand-text)] hover:underline"
-            >
-              {customizeDoctorHeader ? "Hide Header Editor" : "✎ Modify Header for this Prescription"}
-            </button>
-          </div>
-
-          {customizeDoctorHeader && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-3 border-t border-slate-100 dark:border-slate-800 animate-in fade-in">
-              <div>
-                <label className="text-[11px] font-semibold text-slate-500 block mb-1">Doctor Name</label>
-                <input
-                  type="text"
-                  value={docName}
-                  onChange={(e) => setDocName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-[11px] font-semibold text-slate-500 block mb-1">Degrees & Post-Graduation</label>
-                <input
-                  type="text"
-                  value={docDegrees}
-                  onChange={(e) => setDocDegrees(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-[11px] font-semibold text-slate-500 block mb-1">Specialization</label>
-                <input
-                  type="text"
-                  value={docSpecialization}
-                  onChange={(e) => setDocSpecialization(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-[11px] font-semibold text-slate-500 block mb-1">Hospital / Medical Center</label>
-                <input
-                  type="text"
-                  value={docHospital}
-                  onChange={(e) => setDocHospital(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-[11px] font-semibold text-slate-500 block mb-1">Designation / Rank</label>
-                <input
-                  type="text"
-                  value={docDesignation}
-                  onChange={(e) => setDocDesignation(e.target.value)}
-                  placeholder="e.g. Senior Consultant"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-[11px] font-semibold text-slate-500 block mb-1">BMDC Registration No.</label>
-                <input
-                  type="text"
-                  value={docRegNo}
-                  onChange={(e) => setDocRegNo(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-[11px] font-semibold text-slate-500 block mb-1">Chamber / Address</label>
-                <input
-                  type="text"
-                  value={docChamber}
-                  onChange={(e) => setDocChamber(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-[11px] font-semibold text-slate-500 block mb-1">Contact Phone</label>
-                <input
-                  type="text"
-                  value={docContact}
-                  onChange={(e) => setDocContact(e.target.value)}
-                  placeholder="e.g. +880 1711-234567"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
-                />
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Section 2: Patient Selection & Vital Signs */}
-        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-xs space-y-4">
-          <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
-            2. Patient Information & Vitals
-          </span>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-            <div className="lg:col-span-5">
-              <label className="block text-xs font-semibold text-slate-500 mb-1.5">
-                Select Patient *
-              </label>
-              {editingPrescription ? (
-                <div className="p-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-default)] flex items-center justify-between">
-                  <div className="min-w-0 pr-2">
-                    <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                      {currentPatient?.user.name}
-                    </p>
-                    <p className="text-[11px] text-slate-500 truncate">
-                      {currentPatient?.user.email} {currentPatient?.user.phone ? `• Tel: ${currentPatient.user.phone}` : ""}
-                    </p>
-                  </div>
-                  <span className="shrink-0 px-2.5 py-1 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-[10px] font-bold">
-                    🔒 Locked for Revision
-                  </span>
-                </div>
-              ) : (
-                <SearchableSelect
-                  options={patientOptions}
-                  value={selectedPatientId}
-                  onChange={(val) => handlePatientSelect(val)}
-                  placeholder="Search patient by name, serial #, phone..."
-                  searchPlaceholder="Search patients in queue or archive..."
-                />
+              {currentAppointment?.visitType && (
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20">
+                  {currentAppointment.visitType === "FOLLOWUP"
+                    ? "Follow-up Visit"
+                    : currentAppointment.visitType === "REPORT_REVIEW"
+                    ? "Report Review (Free)"
+                    : "First Consultation"}
+                </span>
+              )}
+              {currentAppointment?.paymentStatus && (
+                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+                  Fee: ${currentAppointment.fee ?? 0} ({currentAppointment.paymentStatus})
+                </span>
               )}
             </div>
 
-            <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">
-                  BP (mmHg)
-                </label>
-                <input
-                  type="text"
-                  value={bp}
-                  onChange={(e) => setBp(e.target.value)}
-                  placeholder="120/80"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">
-                  Pulse (bpm)
-                </label>
-                <input
-                  type="text"
-                  value={pulse}
-                  onChange={(e) => setPulse(e.target.value)}
-                  placeholder="72 bpm"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">
-                  Temp (°F)
-                </label>
-                <input
-                  type="text"
-                  value={temp}
-                  onChange={(e) => setTemp(e.target.value)}
-                  placeholder="98.6 °F"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">
-                  Weight (kg)
-                </label>
-                <input
-                  type="text"
-                  value={weight}
-                  onChange={(e) => setWeight(e.target.value)}
-                  placeholder="65 kg"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">
-                  RBS / Sugar
-                </label>
-                <input
-                  type="text"
-                  value={bloodSugar}
-                  onChange={(e) => setBloodSugar(e.target.value)}
-                  placeholder="7.2 mmol/L"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-500 mb-1">
-                  SpO2 (%)
-                </label>
-                <input
-                  type="text"
-                  value={spo2}
-                  onChange={(e) => setSpo2(e.target.value)}
-                  placeholder="98%"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
-                />
-              </div>
+            <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+              {currentPatient?.user.name || "Patient Record"}
+            </h3>
+
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+              <span>
+                Gender: <strong className="text-slate-800 dark:text-slate-200">{currentPatient?.gender || "Not specified"}</strong>
+              </span>
+              <span>
+                Age: <strong className="text-slate-800 dark:text-slate-200">{patientAge ? `${patientAge} yrs` : "N/A"}</strong>
+              </span>
+              {currentPatient?.user.phone && (
+                <span className="flex items-center gap-1">
+                  <Phone className="w-3 h-3 text-slate-400" />
+                  <span>{currentPatient.user.phone}</span>
+                </span>
+              )}
+              {currentPatient?.user.email && (
+                <span className="flex items-center gap-1">
+                  <Mail className="w-3 h-3 text-slate-400" />
+                  <span>{currentPatient.user.email}</span>
+                </span>
+              )}
             </div>
           </div>
 
-          {/* Patient Chronic History & Drug Allergies Area */}
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Medical History & Chronic Comorbidities */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Medical History & Comorbidities (Diabetes, HTN, etc.)
-                </label>
-                <span className="text-[10px] font-mono text-slate-400">Hx</span>
-              </div>
-              <textarea
-                rows={3}
-                value={medicalHistory}
-                onChange={(e) => setMedicalHistory(e.target.value)}
-                placeholder="Click quick presets below or type patient chronic conditions (each on a separate line)..."
-                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed"
+          <div className="flex flex-wrap items-center gap-2 self-start lg:self-center">
+            {/* View Attached Lab Reports Button */}
+            {patientReports.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => setShowReportsModal(true)}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-bold hover:bg-blue-100 transition cursor-pointer shadow-2xs"
+              >
+                <Paperclip className="w-3.5 h-3.5 text-blue-600" />
+                <span>Lab Reports ({patientReports.length})</span>
+              </button>
+            ) : (
+              <span className="text-[11px] text-slate-400 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800">
+                No lab reports uploaded
+              </span>
+            )}
+
+            {onBackToQueue && (
+              <button
+                type="button"
+                onClick={onBackToQueue}
+                className="text-xs text-[var(--brand-text)] hover:underline font-semibold cursor-pointer"
+              >
+                Switch Patient
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Triage Vitals Strip */}
+        <div>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-2 flex items-center gap-1.5">
+            <Activity className="w-3.5 h-3.5 text-rose-500" />
+            <span>Triage Vital Signs (Recorded by Front Desk)</span>
+          </span>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
+              <label className="text-[10px] font-bold text-slate-500 uppercase block">BP (mmHg)</label>
+              <input
+                type="text"
+                value={bp}
+                onChange={(e) => setBp(e.target.value)}
+                placeholder="120/80"
+                className="w-full mt-1 font-mono font-bold text-xs text-slate-900 dark:text-white bg-transparent focus:outline-none"
               />
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                <span className="text-[10px] uppercase font-bold text-slate-400 self-center">
-                  Quick chips:
-                </span>
-                {HISTORY_PRESETS.map((chip) => (
-                  <button
-                    key={chip}
-                    type="button"
-                    onClick={() => appendHistory(chip)}
-                    className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition-all cursor-pointer"
-                  >
-                    + {chip}
-                  </button>
-                ))}
-              </div>
             </div>
 
-            {/* Drug Allergies & Safety Precautions */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="block text-xs font-semibold text-rose-600 dark:text-rose-400">
-                  Drug Allergies & Safety Alerts
-                </label>
-                <span className="text-[10px] uppercase font-bold px-1.5 py-0.2 rounded bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900/40">
-                  Safety Critical
-                </span>
-              </div>
-              <textarea
-                rows={3}
-                value={allergies}
-                onChange={(e) => setAllergies(e.target.value)}
-                placeholder="Click quick presets below or type drug allergies (e.g. Penicillin, Sulfa drugs)..."
-                className="w-full px-3.5 py-2.5 rounded-2xl border border-rose-200 dark:border-rose-900/60 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-rose-500 leading-relaxed"
+            <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
+              <label className="text-[10px] font-bold text-slate-500 uppercase block">Pulse (bpm)</label>
+              <input
+                type="text"
+                value={pulse}
+                onChange={(e) => setPulse(e.target.value)}
+                placeholder="72 bpm"
+                className="w-full mt-1 font-mono font-bold text-xs text-slate-900 dark:text-white bg-transparent focus:outline-none"
               />
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                <span className="text-[10px] uppercase font-bold text-slate-400 self-center">
-                  Quick chips:
-                </span>
-                {ALLERGY_PRESETS.map((chip) => (
-                  <button
-                    key={chip}
-                    type="button"
-                    onClick={() => appendAllergy(chip)}
-                    className="px-2 py-0.5 rounded-lg bg-rose-50 dark:bg-rose-950/30 text-[11px] text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-900/40 hover:bg-rose-100 hover:text-rose-900 transition-all cursor-pointer"
-                  >
-                    + {chip}
-                  </button>
-                ))}
-              </div>
+            </div>
+
+            <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
+              <label className="text-[10px] font-bold text-slate-500 uppercase block">Temp (°F)</label>
+              <input
+                type="text"
+                value={temp}
+                onChange={(e) => setTemp(e.target.value)}
+                placeholder="98.6 °F"
+                className="w-full mt-1 font-mono font-bold text-xs text-slate-900 dark:text-white bg-transparent focus:outline-none"
+              />
+            </div>
+
+            <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
+              <label className="text-[10px] font-bold text-slate-500 uppercase block">Weight (kg)</label>
+              <input
+                type="text"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+                placeholder="65 kg"
+                className="w-full mt-1 font-mono font-bold text-xs text-slate-900 dark:text-white bg-transparent focus:outline-none"
+              />
+            </div>
+
+            <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
+              <label className="text-[10px] font-bold text-slate-500 uppercase block">RBS / Sugar</label>
+              <input
+                type="text"
+                value={bloodSugar}
+                onChange={(e) => setBloodSugar(e.target.value)}
+                placeholder="7.2 mmol/L"
+                className="w-full mt-1 font-mono font-bold text-xs text-slate-900 dark:text-white bg-transparent focus:outline-none"
+              />
+            </div>
+
+            <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
+              <label className="text-[10px] font-bold text-slate-500 uppercase block">SpO2 (%)</label>
+              <input
+                type="text"
+                value={spo2}
+                onChange={(e) => setSpo2(e.target.value)}
+                placeholder="98%"
+                className="w-full mt-1 font-mono font-bold text-xs text-slate-900 dark:text-white bg-transparent focus:outline-none"
+              />
             </div>
           </div>
         </div>
 
-        {/* Section 3: Clinical Complaints & Diagnosis (With 1-Click Fast Presets) */}
-        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-xs space-y-4">
-          <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
-            3. Chief Complaints & Diagnosis (1-Click Fast Presets)
-          </span>
+        {/* Safety Critical Alerts (History & Allergies from Staff Intake) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-2">
+          {/* Drug Allergies Alert */}
+          <div className="p-4 rounded-2xl bg-rose-50/60 dark:bg-rose-950/30 border border-rose-200/70 dark:border-rose-900/60 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-rose-700 dark:text-rose-300 flex items-center gap-1.5">
+                <ShieldAlert className="w-3.5 h-3.5" />
+                <span>Drug Allergies & Safety Warnings</span>
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-200 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200">
+                Safety Critical
+              </span>
+            </div>
+            <textarea
+              rows={2}
+              value={allergies}
+              onChange={(e) => setAllergies(e.target.value)}
+              placeholder="Allergies (e.g. Penicillin, Sulfa drugs, NSAIDs)..."
+              className="w-full px-3 py-2 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white focus:outline-none"
+            />
+            <div className="flex flex-wrap gap-1.5">
+              {ALLERGY_PRESETS.map((a) => (
+                <button
+                  key={a}
+                  type="button"
+                  onClick={() => appendAllergy(a)}
+                  className="px-2 py-0.5 rounded-lg bg-white dark:bg-slate-900 text-[11px] font-semibold text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900/40 hover:bg-rose-100 transition cursor-pointer"
+                >
+                  + {a}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Medical History */}
+          <div className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                Medical History & Comorbidities (Staff Recorded)
+              </span>
+              <span className="text-[10px] font-mono text-slate-400">Hx</span>
+            </div>
+            <textarea
+              rows={2}
+              value={medicalHistory}
+              onChange={(e) => setMedicalHistory(e.target.value)}
+              placeholder="Chronic conditions (Diabetes, HTN, Asthma)..."
+              className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white focus:outline-none"
+            />
+            <div className="flex flex-wrap gap-1.5">
+              {HISTORY_PRESETS.map((h) => (
+                <button
+                  key={h}
+                  type="button"
+                  onClick={() => appendHistory(h)}
+                  className="px-2 py-0.5 rounded-lg bg-white dark:bg-slate-800 text-[11px] font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition cursor-pointer"
+                >
+                  + {h}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* SECTION 2: Doctor Chamber Header (Compact by default) */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-surface)] border border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-teal-500" />
+            <span className="font-bold text-slate-800 dark:text-slate-200">
+              Chamber: {docHospital || "General OPD"} • {docName} ({docSpecialization})
+            </span>
+            {docRegNo && <span className="text-slate-400">• Reg: {docRegNo}</span>}
+          </div>
+          <button
+            type="button"
+            onClick={() => setCustomizeDoctorHeader(!customizeDoctorHeader)}
+            className="text-xs font-semibold text-[var(--brand-text)] hover:underline self-start sm:self-auto"
+          >
+            {customizeDoctorHeader ? "Hide Header Editor" : "✎ Edit Chamber Details"}
+          </button>
+        </div>
+
+        {customizeDoctorHeader && (
+          <div className="p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 animate-in fade-in">
+            <div>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">Doctor Name</label>
+              <input
+                type="text"
+                value={docName}
+                onChange={(e) => setDocName(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">Degrees</label>
+              <input
+                type="text"
+                value={docDegrees}
+                onChange={(e) => setDocDegrees(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">Specialization</label>
+              <input
+                type="text"
+                value={docSpecialization}
+                onChange={(e) => setDocSpecialization(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">Hospital Name</label>
+              <input
+                type="text"
+                value={docHospital}
+                onChange={(e) => setDocHospital(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">Designation</label>
+              <input
+                type="text"
+                value={docDesignation}
+                onChange={(e) => setDocDesignation(e.target.value)}
+                placeholder="e.g. Consultant"
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">BMDC Reg No</label>
+              <input
+                type="text"
+                value={docRegNo}
+                onChange={(e) => setDocRegNo(e.target.value)}
+                placeholder="e.g. A-12345"
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">Chamber Address</label>
+              <input
+                type="text"
+                value={docChamber}
+                onChange={(e) => setDocChamber(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">Contact Phone</label>
+              <input
+                type="text"
+                value={docContact}
+                onChange={(e) => setDocContact(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* SECTION 3: Clinical Findings & Diagnosis */}
+        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)] flex items-center gap-1.5">
+              <Stethoscope className="w-3.5 h-3.5" />
+              <span>1. Chief Complaints & Clinical Diagnosis</span>
+            </span>
+            <span className="text-[11px] text-slate-400 font-medium">Use `- ` for manual entries</span>
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Complaints */}
-            <div className="space-y-2">
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Chief Complaints / Symptoms
+            {/* Chief Complaints */}
+            <div className="space-y-2.5">
+              <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                Chief Complaints & Symptoms
               </label>
               <textarea
                 rows={4}
                 value={complaints}
                 onChange={(e) => setComplaints(e.target.value)}
-                placeholder="Click quick presets below or type patient symptoms (each on a separate line)..."
-                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed"
+                placeholder="- High fever for 3 days&#10;- Sore throat & headache"
+                className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium"
               />
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                <span className="text-[10px] uppercase font-bold text-slate-400 self-center">
-                  Quick chips:
+
+              {/* Categorized Pill Presets (Requirement 5 & 6) */}
+              <div className="space-y-2 pt-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                  Quick Select Presets:
                 </span>
-                {COMPLAINT_PRESETS.map((chip) => (
-                  <button
-                    key={chip}
-                    type="button"
-                    onClick={() => appendComplaint(chip)}
-                    className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition-all cursor-pointer"
-                  >
-                    + {chip}
-                  </button>
-                ))}
+                <div className="space-y-1.5">
+                  {COMPLAINT_GROUPS.map((grp) => (
+                    <div key={grp.category} className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-[10px] font-bold text-slate-400 w-24 shrink-0">
+                        {grp.category}:
+                      </span>
+                      {grp.items.map((item) => (
+                        <button
+                          key={item}
+                          type="button"
+                          onClick={() => appendComplaint(item)}
+                          className="px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-[var(--bg-surface)] text-slate-700 dark:text-slate-300 border border-slate-200/90 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] hover:border-[var(--brand-border)] transition cursor-pointer shadow-2xs"
+                        >
+                          + {item}
+                        </button>
+                      ))}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Diagnosis */}
-            <div className="space-y-2">
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+            {/* Clinical Diagnosis (Dx) */}
+            <div className="space-y-2.5">
+              <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
                 Clinical Diagnosis (Dx)
               </label>
               <textarea
                 rows={4}
                 value={diagnosis}
                 onChange={(e) => setDiagnosis(e.target.value)}
-                placeholder="Click quick presets below or type clinical conditions (each on a separate line)..."
-                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed"
+                placeholder="- Upper Respiratory Tract Infection (URTI)&#10;- Mild Acute Gastritis"
+                className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium"
               />
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                <span className="text-[10px] uppercase font-bold text-slate-400 self-center">
-                  Quick chips:
+
+              {/* Categorized Diagnosis Presets */}
+              <div className="space-y-2 pt-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                  Common Diagnoses:
                 </span>
-                {DIAGNOSIS_PRESETS.map((chip) => (
-                  <button
-                    key={chip}
-                    type="button"
-                    onClick={() => setDiagnosisPreset(chip)}
-                    className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition-all cursor-pointer"
-                  >
-                    + {chip}
-                  </button>
-                ))}
+                <div className="space-y-1.5">
+                  {DIAGNOSIS_GROUPS.map((grp) => (
+                    <div key={grp.category} className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-[10px] font-bold text-slate-400 w-24 shrink-0">
+                        {grp.category}:
+                      </span>
+                      {grp.items.map((item) => (
+                        <button
+                          key={item}
+                          type="button"
+                          onClick={() => appendDiagnosis(item)}
+                          className="px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-[var(--bg-surface)] text-slate-700 dark:text-slate-300 border border-slate-200/90 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] hover:border-[var(--brand-border)] transition cursor-pointer shadow-2xs"
+                        >
+                          + {item}
+                        </button>
+                      ))}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Section 4: Investigations & Diagnostic Tests (Searchable Catalog) */}
-        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-xs space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
-              4. Diagnostic Investigations Advised
-            </span>
-            <button
-              type="button"
-              onClick={() => addTest()}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-            >
-              + Add Investigation
-            </button>
-          </div>
-
-          <div className="space-y-3">
-            {tests.map((test, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-1 sm:grid-cols-12 gap-3 p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 items-center"
-              >
-                <div className="sm:col-span-1 text-center font-bold text-xs text-slate-400">
-                  #{index + 1}
-                </div>
-                <div className="sm:col-span-6">
-                  <SearchableSelect
-                    options={catalogTests}
-                    value={test.name}
-                    placeholder="Search diagnostic test catalog or type new..."
-                    allowCustom
-                    onChange={(val, opt) => handleSelectTestFromCatalog(index, opt || { value: val, label: val })}
-                  />
-                </div>
-                <div className="sm:col-span-4">
-                  <input
-                    type="text"
-                    value={test.instructions}
-                    onChange={(e) => updateTest(index, "instructions", e.target.value)}
-                    placeholder="Instructions (e.g. 10-12h fasting)"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-xs focus:outline-none"
-                  />
-                </div>
-                <div className="sm:col-span-1 text-right">
-                  <button
-                    type="button"
-                    onClick={() => removeTest(index)}
-                    className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Section 5: Prescribed Medications (℞ Rx Section) */}
-        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border-2 border-[var(--brand-primary)]/40 shadow-sm space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-serif font-black text-[var(--brand-primary)]">
-                ℞
-              </span>
+        {/* SECTION 4: Prescribed Medications (℞ Rx Section - Requirement 11) */}
+        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border-2 border-[var(--brand-primary)]/40 shadow-sm space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-2.5">
+              <span className="text-3xl font-serif font-black text-[var(--brand-primary)]">℞</span>
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                  5. Prescribed Medications (Rx)
+                  2. Prescribed Medications (Rx)
                 </span>
-                <p className="text-[11px] text-slate-500">
-                  Select drugs from catalog to auto-fill dosage, formulation, and instructions.
+                <p className="text-xs text-slate-500">
+                  Select brand or generic to auto-populate dosage & instructions. Add custom entries freely.
                 </p>
               </div>
             </div>
@@ -1323,155 +1394,187 @@ export function PrescriptionEditor({
             <button
               type="button"
               onClick={() => addMedicine()}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-semibold hover:opacity-90 shadow-xs transition-all self-start sm:self-auto"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-95 shadow-sm transition cursor-pointer self-start sm:self-auto"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-              </svg>
-              <span>Add Medicine</span>
+              <Plus className="w-4 h-4" />
+              <span>Add Prescribed Medicine</span>
             </button>
           </div>
 
-          {/* Medicines Rows */}
+          {/* Medicine Cards List */}
           <div className="space-y-4">
             {medicines.map((med, index) => (
               <div
                 key={index}
-                className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200/90 dark:border-slate-800/90 space-y-3"
+                className="p-5 rounded-2xl bg-[var(--bg-app)] border border-slate-200/90 dark:border-slate-800/90 space-y-4 hover:border-[var(--brand-border)] transition-all shadow-xs"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-bold flex items-center justify-center">
-                      {index + 1}
+                {/* Card Header */}
+                <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-200/60 dark:border-slate-800/60">
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-7 h-7 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-black flex items-center justify-center shadow-xs">
+                      #{index + 1}
                     </span>
-                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                      Pharmaceutical Entry
+                    <span className="px-2.5 py-0.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs uppercase tracking-wide">
+                      {med.type || "Tablet"}
                     </span>
+                    <span className="font-extrabold text-sm text-slate-900 dark:text-white">
+                      {med.name || "New Medication"}
+                    </span>
+                    {med.dosage && (
+                      <span className="text-xs font-bold text-[var(--brand-text)] bg-[var(--brand-surface)] px-2 py-0.5 rounded-md border border-[var(--brand-border)]">
+                        {med.dosage}
+                      </span>
+                    )}
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => removeMedicine(index)}
-                    className="text-xs font-medium text-red-500 hover:underline"
-                  >
-                    Remove
-                  </button>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => cloneMedicine(index)}
+                      className="px-2.5 py-1 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition cursor-pointer flex items-center gap-1"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Duplicate</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeMedicine(index)}
+                      className="px-2.5 py-1 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Remove</span>
+                    </button>
+                  </div>
                 </div>
 
-                {/* Primary Drug Search and Type/Dosage */}
+                {/* Field 1: Formulation, Brand Name, Strength */}
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
                   <div className="sm:col-span-3">
-                    <label className="block text-[10px] font-semibold text-slate-500 uppercase mb-1">
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
                       Formulation
                     </label>
                     <SearchableSelect
                       options={FORMULATION_OPTIONS}
                       value={med.type}
-                      placeholder="Select formulation..."
-                      searchPlaceholder="Search formulation..."
+                      placeholder="Formulation..."
+                      searchPlaceholder="Search form..."
                       allowCustom
                       onChange={(val) => updateMedicine(index, "type", val)}
                     />
                   </div>
 
                   <div className="sm:col-span-6">
-                    <label className="block text-[10px] font-semibold text-slate-500 uppercase mb-1">
-                      Medicine / Brand Search (Auto-Fill) *
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                      Drug / Brand Search (Auto-Fills) *
                     </label>
                     <SearchableSelect
                       options={catalogMedicines}
                       value={med.name}
-                      placeholder="Type brand or generic (e.g. Maxpro, Napa)..."
+                      placeholder="Search brand or generic (e.g. Maxpro, Napa, Amoxicillin)..."
                       allowCustom
                       onChange={(val, opt) => handleSelectMedicineFromCatalog(index, opt || { value: val, label: val })}
                     />
                   </div>
 
                   <div className="sm:col-span-3">
-                    <label className="block text-[10px] font-semibold text-slate-500 uppercase mb-1">
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
                       Strength / Dosage
                     </label>
                     <input
                       type="text"
                       value={med.dosage}
                       onChange={(e) => updateMedicine(index, "dosage", e.target.value)}
-                      placeholder="e.g. 20mg, 500mg"
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs focus:outline-none"
+                      placeholder="e.g. 20mg, 500mg, 10ml"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20"
                     />
                   </div>
                 </div>
 
-                {/* Frequency, Duration, & Instructions with Chip Bars */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-1">
-                  <div className="sm:col-span-4 space-y-1">
-                    <label className="block text-[10px] font-semibold text-slate-500 uppercase">
-                      Dose Frequency
+                {/* Field 2: Frequency with Clear Pill Badges */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                      Dose Schedule (Frequency)
                     </label>
+                    <span className="text-[11px] font-mono font-bold text-[var(--brand-text)]">
+                      Dose: {med.frequency || "Not specified"}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1.5">
                     <input
                       type="text"
                       value={med.frequency}
                       onChange={(e) => updateMedicine(index, "frequency", e.target.value)}
-                      placeholder="1 + 0 + 1"
-                      className="w-full px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs font-semibold focus:outline-none"
+                      placeholder="e.g. 1 + 0 + 1"
+                      className="w-32 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs font-bold focus:outline-none"
                     />
-                    <div className="flex flex-wrap gap-1">
-                      {FREQUENCY_PRESETS.map((f) => (
+                    {FREQUENCY_PRESETS.map((f) => {
+                      const isSelected = med.frequency === f;
+                      return (
                         <button
                           key={f}
                           type="button"
                           onClick={() => updateMedicine(index, "frequency", f)}
-                          className="px-1.5 py-0.5 rounded text-[10px] bg-slate-200/80 dark:bg-slate-700/80 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)]"
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer border ${
+                            isSelected
+                              ? "bg-[var(--brand-primary)] text-white border-[var(--brand-primary)] shadow-xs"
+                              : "bg-[var(--bg-surface)] text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[var(--brand-border)] hover:bg-[var(--brand-surface)]"
+                          }`}
                         >
                           {f}
                         </button>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
+                </div>
 
-                  <div className="sm:col-span-3 space-y-1">
-                    <label className="block text-[10px] font-semibold text-slate-500 uppercase">
-                      Duration
-                    </label>
-                    <input
-                      type="text"
-                      value={med.duration}
-                      onChange={(e) => updateMedicine(index, "duration", e.target.value)}
-                      placeholder="7 Days"
-                      className="w-full px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs font-semibold focus:outline-none"
-                    />
-                    <div className="flex flex-wrap gap-1">
-                      {DURATION_PRESETS.map((d) => (
-                        <button
-                          key={d}
-                          type="button"
-                          onClick={() => updateMedicine(index, "duration", d)}
-                          className="px-1.5 py-0.5 rounded text-[10px] bg-slate-200/80 dark:bg-slate-700/80 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)]"
-                        >
-                          {d}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-5 space-y-1">
-                    <label className="block text-[10px] font-semibold text-slate-500 uppercase">
-                      Intake Instructions
+                {/* Field 3: Timing & Duration */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                  <div className="space-y-1.5">
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                      Timing & Meal Relation
                     </label>
                     <input
                       type="text"
                       value={med.instructions}
                       onChange={(e) => updateMedicine(index, "instructions", e.target.value)}
                       placeholder="e.g. 30 mins before breakfast & dinner"
-                      className="w-full px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs focus:outline-none"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs focus:outline-none"
                     />
-                    <div className="flex flex-wrap gap-1">
-                      {["Before meal", "After meal", "With meal", "At bedtime"].map((inst) => (
+                    <div className="flex flex-wrap gap-1.5">
+                      {TIMING_PRESETS.map((t) => (
                         <button
-                          key={inst}
+                          key={t}
                           type="button"
-                          onClick={() => updateMedicine(index, "instructions", inst)}
-                          className="px-1.5 py-0.5 rounded text-[10px] bg-slate-200/80 dark:bg-slate-700/80 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)]"
+                          onClick={() => updateMedicine(index, "instructions", t)}
+                          className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[var(--bg-surface)] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition cursor-pointer"
                         >
-                          {inst}
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                      Course Duration
+                    </label>
+                    <input
+                      type="text"
+                      value={med.duration}
+                      onChange={(e) => updateMedicine(index, "duration", e.target.value)}
+                      placeholder="e.g. 7 Days"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs font-semibold focus:outline-none"
+                    />
+                    <div className="flex flex-wrap gap-1.5">
+                      {DURATION_PRESETS.map((d) => (
+                        <button
+                          key={d}
+                          type="button"
+                          onClick={() => updateMedicine(index, "duration", d)}
+                          className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[var(--bg-surface)] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition cursor-pointer"
+                        >
+                          {d}
                         </button>
                       ))}
                     </div>
@@ -1480,98 +1583,188 @@ export function PrescriptionEditor({
               </div>
             ))}
           </div>
+
+          <div className="pt-2 flex justify-center">
+            <button
+              type="button"
+              onClick={() => addMedicine()}
+              className="px-6 py-2.5 rounded-2xl border-2 border-dashed border-[var(--brand-primary)]/40 hover:border-[var(--brand-primary)] bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-bold transition cursor-pointer flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              <span>+ Add Prescribed Medicine</span>
+            </button>
+          </div>
         </div>
 
-        {/* Section 6: Advice & Follow-Up */}
-        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-xs space-y-4">
+        {/* SECTION 5: Diagnostic Lab Investigations Advised */}
+        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
+                3. Diagnostic Investigations Advised
+              </span>
+              <p className="text-xs text-slate-500">Order lab tests, radiology scans, or pathological tests.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => addTest()}
+              className="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+            >
+              + Add Investigation
+            </button>
+          </div>
+
+          {/* Quick Test Chips */}
+          <div className="flex flex-wrap items-center gap-1.5 pb-2">
+            <span className="text-[11px] font-bold text-slate-500 mr-1">Quick Select:</span>
+            {COMMON_TEST_CHIPS.map((chip) => (
+              <button
+                key={chip.name}
+                type="button"
+                onClick={() => addTest(chip.name, chip.instructions)}
+                className="px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-[var(--bg-app)] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] hover:border-[var(--brand-border)] transition cursor-pointer"
+              >
+                + {chip.name.split(" (")[0]}
+              </button>
+            ))}
+          </div>
+
+          {/* Tests List */}
+          <div className="space-y-3">
+            {tests.map((test, index) => (
+              <div
+                key={index}
+                className="grid grid-cols-1 sm:grid-cols-12 gap-3 p-3.5 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 items-center"
+              >
+                <div className="sm:col-span-1 text-center font-black text-xs text-[var(--brand-primary)]">
+                  #{index + 1}
+                </div>
+                <div className="sm:col-span-6">
+                  <SearchableSelect
+                    options={catalogTests}
+                    value={test.name}
+                    placeholder="Search diagnostic tests..."
+                    allowCustom
+                    onChange={(val) => updateTest(index, "name", val)}
+                  />
+                </div>
+                <div className="sm:col-span-4">
+                  <input
+                    type="text"
+                    value={test.instructions}
+                    onChange={(e) => updateTest(index, "instructions", e.target.value)}
+                    placeholder="Instructions (e.g. 10-12h overnight fasting)"
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-xs focus:outline-none"
+                  />
+                </div>
+                <div className="sm:col-span-1 text-right">
+                  <button
+                    type="button"
+                    onClick={() => removeTest(index)}
+                    className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition cursor-pointer"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* SECTION 6: Advice & Follow-Up */}
+        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
           <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
-            6. Lifestyle Advice & Follow-Up (With 1-Click Chips)
+            4. Lifestyle Advice & Next Visit Schedule
           </span>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+            {/* Advice */}
+            <div className="space-y-2.5">
+              <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
                 Special Advice / Dietary Precautions
               </label>
               <textarea
                 rows={4}
                 value={advice}
                 onChange={(e) => setAdvice(e.target.value)}
-                placeholder="Click quick presets below or type dietary instructions, physical activity, restrictions..."
-                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed"
+                placeholder="- Drink plenty of boiled warm water.&#10;- Avoid oily and spicy foods."
+                className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium"
               />
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                <span className="text-[10px] uppercase font-bold text-slate-400 self-center">
-                  Quick chips:
-                </span>
-                {ADVICE_PRESETS.map((chip) => (
-                  <button
-                    key={chip}
-                    type="button"
-                    onClick={() => appendAdvice(chip)}
-                    className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition-all cursor-pointer"
-                  >
-                    + {chip}
-                  </button>
+
+              <div className="space-y-1.5 pt-1">
+                {ADVICE_GROUPS.map((grp) => (
+                  <div key={grp.category} className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-[10px] font-bold text-slate-400 w-24 shrink-0">
+                      {grp.category}:
+                    </span>
+                    {grp.items.map((item) => (
+                      <button
+                        key={item}
+                        type="button"
+                        onClick={() => appendAdvice(item)}
+                        className="px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-[var(--bg-surface)] text-slate-700 dark:text-slate-300 border border-slate-200/90 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] hover:border-[var(--brand-border)] transition cursor-pointer shadow-2xs"
+                      >
+                        + {item}
+                      </button>
+                    ))}
+                  </div>
                 ))}
               </div>
             </div>
 
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Follow-Up / Next Visit
+            {/* Follow-up & Private Notes */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                  Follow-Up / Next Consultation Visit
                 </label>
                 <input
                   type="text"
                   value={followUp}
                   onChange={(e) => setFollowUp(e.target.value)}
                   placeholder="e.g. After 7 days with investigation reports"
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs font-semibold focus:outline-none"
                 />
-                <div className="flex flex-wrap gap-1.5 pt-1.5">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 self-center">
-                    Quick chips:
-                  </span>
+                <div className="flex flex-wrap gap-1.5 pt-1">
                   {FOLLOWUP_PRESETS.map((chip) => (
                     <button
                       key={chip}
                       type="button"
                       onClick={() => setFollowUp(chip)}
-                      className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition-all cursor-pointer"
+                      className="px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-[var(--bg-surface)] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition cursor-pointer"
                     >
-                      + {chip}
+                      {chip}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
                   Private Physician Notes (Internal Only)
                 </label>
                 <input
                   type="text"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Optional internal medical record notes..."
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
+                  placeholder="Internal medical observations (not printed on prescription)..."
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
                 />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Section 7: Diagnostic Lab Reports & Document Attachments */}
-        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-xs space-y-4">
+        {/* SECTION 7: File Attachments */}
+        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)] flex items-center gap-1.5">
               <Paperclip className="w-3.5 h-3.5" />
-              <span>7. Diagnostic Lab Reports & Medical Attachments</span>
+              <span>5. Prescription Attachments (Optional)</span>
             </span>
-            <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold cursor-pointer transition shadow-xs">
+            <label className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold cursor-pointer transition shadow-2xs">
               <Upload className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-              <span>{uploadingAttachment ? "Uploading..." : "Upload Document / Scan"}</span>
+              <span>{uploadingAttachment ? "Uploading..." : "Attach File"}</span>
               <input
                 type="file"
                 accept="image/*,.pdf,.doc,.docx"
@@ -1583,46 +1776,31 @@ export function PrescriptionEditor({
           </div>
 
           {attachmentError && (
-            <div className="p-3 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{attachmentError}</span>
-            </div>
+            <div className="p-3 rounded-2xl bg-rose-50 text-rose-600 text-xs">{attachmentError}</div>
           )}
 
           {attachments.length === 0 ? (
             <p className="text-xs text-slate-400 py-3 text-center bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
-              No diagnostic files attached. You can attach patient lab reports, X-Rays, or clinical summaries (PDF, Images up to 5MB).
+              No files attached to this prescription.
             </p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {attachments.map((att, idx) => (
                 <div
                   key={att.id}
-                  className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 text-xs"
+                  className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs"
                 >
-                  <div className="flex items-center gap-2 min-w-0">
+                  <div className="flex items-center gap-2 truncate">
                     <FileText className="w-4 h-4 text-[var(--brand-primary)] shrink-0" />
-                    <span className="font-semibold text-slate-800 dark:text-slate-200 truncate">
-                      {att.name}
-                    </span>
+                    <span className="font-semibold truncate">{att.name}</span>
                   </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    <a
-                      href={att.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-1 rounded-lg text-slate-400 hover:text-[var(--brand-primary)] cursor-pointer"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => setAttachments((prev) => prev.filter((_, i) => i !== idx))}
-                      className="p-1 rounded-lg text-red-400 hover:text-red-600 cursor-pointer"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setAttachments((prev) => prev.filter((_, i) => i !== idx))}
+                    className="p-1 text-rose-500 hover:text-rose-700"
+                  >
+                    ✕
+                  </button>
                 </div>
               ))}
             </div>
@@ -1634,25 +1812,100 @@ export function PrescriptionEditor({
           <button
             type="button"
             onClick={() => setShowPreviewModal(true)}
-            className="px-5 py-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition-all shadow-xs"
+            className="px-5 py-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition shadow-xs cursor-pointer"
           >
             👁️ Open Live Preview
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="px-7 py-3 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 transition-all disabled:opacity-60 flex items-center gap-2"
+            className="px-8 py-3.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-black shadow-md hover:opacity-95 transition disabled:opacity-60 flex items-center gap-2 cursor-pointer"
           >
             {submitting ? (
-              <span>Saving Prescription...</span>
+              <span>Saving & Clearing Queue...</span>
             ) : editingPrescription ? (
-              <span>💾 Save as Version {(editingPrescription.version || 1) + 1} (Preserve History)</span>
+              <span>💾 Save as Version {(editingPrescription.version || 1) + 1}</span>
             ) : (
-              <span>✓ Save & Generate Prescription</span>
+              <span>✓ Save & Complete Consultation</span>
             )}
           </button>
         </div>
       </form>
+
+      {/* Patient Lab Reports Drawer / Modal */}
+      {showReportsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="w-full max-w-2xl rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                  <FileSearch className="w-4 h-4 text-[var(--brand-primary)]" />
+                  <span>Attached Lab Reports & Scans</span>
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Uploaded by triage staff for {currentPatient?.user.name}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowReportsModal(false)}
+                className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="max-h-96 overflow-y-auto space-y-3">
+              {patientReports.length === 0 ? (
+                <p className="text-center py-8 text-xs text-slate-400">
+                  No lab reports found for this patient.
+                </p>
+              ) : (
+                patientReports.map((r) => (
+                  <div
+                    key={r.id}
+                    className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between gap-3 text-xs"
+                  >
+                    <div className="space-y-0.5 min-w-0">
+                      <span className="font-bold text-slate-900 dark:text-white block truncate">
+                        {r.title}
+                      </span>
+                      <p className="text-[11px] text-slate-500 truncate">
+                        {r.description || r.originalName} • {r.reportDate ? new Date(r.reportDate).toLocaleDateString() : ""}
+                      </p>
+                      {r.notes && (
+                        <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">
+                          Notes: {r.notes}
+                        </p>
+                      )}
+                    </div>
+
+                    <a
+                      href={r.fileUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-90 transition"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>View File</span>
+                    </a>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowReportsModal(false)}
+                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Live Multi-Page Prescription Modal */}
       <PrescriptionPreviewModal

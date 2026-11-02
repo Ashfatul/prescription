@@ -52,11 +52,15 @@ export default async function DoctorDashboardPage() {
                 phone: true,
               },
             },
+            testReports: {
+              orderBy: { createdAt: "desc" },
+              take: 10,
+            },
           },
         },
       },
       orderBy: { serialNumber: "asc" },
-      take: 20,
+      take: 50,
     }),
     db.patient.findMany({
       include: {
@@ -67,6 +71,10 @@ export default async function DoctorDashboardPage() {
             email: true,
             phone: true,
           },
+        },
+        testReports: {
+          orderBy: { createdAt: "desc" },
+          take: 5,
         },
       },
       take: 50,
@@ -192,6 +200,17 @@ export default async function DoctorDashboardPage() {
     status: appt.status,
     appointmentDate: appt.appointmentDate.toISOString(),
     patientId: appt.patientId,
+    notes: appt.notes || null,
+    visitType: appt.visitType || null,
+    fee: appt.fee ?? null,
+    paymentStatus: appt.paymentStatus || null,
+    paymentMethod: appt.paymentMethod || null,
+    diseasesJson: appt.diseasesJson ?? null,
+    allergiesJson: appt.allergiesJson ?? null,
+    medicalFlagsJson: appt.medicalFlagsJson ?? null,
+    dietRequired: appt.dietRequired ?? null,
+    dietInstructionsJson: appt.dietInstructionsJson ?? null,
+    dietNotes: appt.dietNotes || null,
     patient: {
       id: appt.patient.id,
       gender: appt.patient.gender,
@@ -202,6 +221,18 @@ export default async function DoctorDashboardPage() {
         email: appt.patient.user.email,
         phone: appt.patient.user.phone,
       },
+      testReports: (appt.patient.testReports || []).map((tr) => ({
+        id: tr.id,
+        title: tr.title,
+        description: tr.description,
+        reportDate: tr.reportDate ? tr.reportDate.toISOString() : null,
+        fileUrl: tr.fileUrl,
+        fileType: tr.fileType,
+        originalName: tr.originalName,
+        status: tr.status,
+        notes: tr.notes,
+        createdAt: tr.createdAt.toISOString(),
+      })),
     },
   }));
 
@@ -215,6 +246,18 @@ export default async function DoctorDashboardPage() {
       email: p.user.email,
       phone: p.user.phone,
     },
+    testReports: (p.testReports || []).map((tr) => ({
+      id: tr.id,
+      title: tr.title,
+      description: tr.description,
+      reportDate: tr.reportDate ? tr.reportDate.toISOString() : null,
+      fileUrl: tr.fileUrl,
+      fileType: tr.fileType,
+      originalName: tr.originalName,
+      status: tr.status,
+      notes: tr.notes,
+      createdAt: tr.createdAt.toISOString(),
+    })),
   }));
 
   const serializedPrescriptions = (recentPrescriptions || []).map((p) => ({

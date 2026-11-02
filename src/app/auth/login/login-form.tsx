@@ -17,11 +17,13 @@ import {
 } from "lucide-react";
 import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
+import { DemoCountdownTimer } from "@/components/common/demo-countdown-timer";
 
 const DEMO_ACCOUNTS = [
   {
     role: "Super Admin",
     name: "Super Admin",
+    facility: "PPMS Clinic (Global Master)",
     email: "admin@ppms.local",
     password: "Pass1234!",
     badge: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
@@ -29,8 +31,9 @@ const DEMO_ACCOUNTS = [
     fullWidth: true,
   },
   {
-    role: "Admin",
-    name: "Clinic Admin",
+    role: "Clinic Admin",
+    name: "PPMS Clinic Admin",
+    facility: "PPMS Clinic",
     email: "clinic.admin@ppms.local",
     password: "Pass1234!",
     badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300",
@@ -40,6 +43,7 @@ const DEMO_ACCOUNTS = [
   {
     role: "Doctor",
     name: "Dr. Fahim Rahman",
+    facility: "PPMS Clinic",
     email: "doctor@ppms.local",
     password: "Pass1234!",
     badge: "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
@@ -48,7 +52,8 @@ const DEMO_ACCOUNTS = [
   },
   {
     role: "Staff",
-    name: "Front Desk Staff",
+    name: "PPMS Front Desk Staff",
+    facility: "PPMS Clinic",
     email: "staff@ppms.local",
     password: "Pass1234!",
     badge: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
@@ -58,6 +63,7 @@ const DEMO_ACCOUNTS = [
   {
     role: "Patient",
     name: "Nusrat Jahan",
+    facility: "PPMS Clinic",
     email: "patient@ppms.local",
     password: "Pass1234!",
     badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
@@ -301,17 +307,24 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
 
           {/* Quick Demo Login Profiles */}
           {isDemoMode && (
-            <div className="pt-4 border-t border-[var(--border-subtle)] space-y-2.5">
+            <div className="pt-4 border-t border-[var(--border-subtle)] space-y-3.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                  Quick Demo Evaluation
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
+                    PPMS Clinic Demo Evaluation
+                  </span>
+                </div>
                 <span className="rounded-full bg-[var(--brand-surface)] px-2.5 py-0.5 text-[10px] font-bold text-[var(--brand-text)] border border-[var(--brand-border)]">
                   Instant Access
                 </span>
               </div>
+
+              {/* 6-Hour Countdown Live Banner */}
+              <DemoCountdownTimer variant="inline" />
+
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Click any clinical profile for 1-click test authorization:
+                Click any profile below to sign in immediately to the <strong className="text-[var(--text-primary)]">PPMS Clinic</strong> sandbox facility:
               </p>
 
               <div className="grid grid-cols-2 gap-2.5 pt-1">
@@ -332,11 +345,9 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
                         <span>{account.icon}</span>
                         <span>{account.role}</span>
                       </span>
-                      {account.fullWidth && (
-                        <span className="text-[10px] text-purple-600 dark:text-purple-400 font-semibold hidden sm:inline">
-                          Global Platform Master
-                        </span>
-                      )}
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold truncate max-w-[150px]">
+                        🏥 {account.facility}
+                      </span>
                     </div>
                     <span className="mt-1.5 text-xs font-bold text-slate-900 dark:text-slate-100 truncate w-full">
                       {account.name}
