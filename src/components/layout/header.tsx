@@ -207,7 +207,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                   }`}>
                     {menuOpen && !isClosing ? <X className="w-3.5 h-3.5" /> : <Menu className="w-3.5 h-3.5" />}
                   </div>
-                  <span className="tracking-tight">Menu</span>
+                  <span className="tracking-tight">{t.menu}</span>
                   <ChevronDown className={`w-3.5 h-3.5 opacity-60 transition-transform duration-200 ${menuOpen && !isClosing ? "rotate-180" : ""}`} />
                 </button>
               </div>
@@ -269,8 +269,8 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                       className="flex items-center gap-1.5 rounded-xl bg-[var(--brand-primary)] px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-white shadow-xs hover:opacity-90 transition-all cursor-pointer whitespace-nowrap"
                     >
                       <Calendar className="w-3.5 h-3.5 shrink-0" />
-                      <span className="hidden sm:inline">Book Consultation</span>
-                      <span className="sm:hidden">Book</span>
+                      <span className="hidden sm:inline">{t.bookAppointment}</span>
+                      <span className="sm:hidden">{t.bookNow}</span>
                     </Link>
                   </div>
                 )
@@ -336,7 +336,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                   aria-label="Close menu"
                 >
                   <X className="w-4 h-4" />
-                  <span className="hidden sm:inline">Close</span>
+                  <span className="hidden sm:inline">{t.close}</span>
                 </button>
               </div>
 
@@ -375,9 +375,9 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)] flex items-center gap-1.5">
-                          <span>Registered Clinics</span>
+                          <span>{t.clinics}</span>
                           <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)]">
-                            All
+                            {t.all}
                           </span>
                         </span>
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
@@ -399,7 +399,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
-                          Consulting Physicians
+                          {t.doctors}
                         </span>
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
                       </div>
@@ -420,7 +420,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)] flex items-center gap-1.5">
-                          <span>Clinical Staff Directory</span>
+                          <span>{t.staff}</span>
                           <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)]">
                             Team
                           </span>
@@ -444,7 +444,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)] flex items-center gap-1.5">
-                          <span>Live Chamber TV Display</span>
+                          <span>{t.liveTvDisplay}</span>
                           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                         </span>
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
@@ -506,7 +506,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
-                          SaaS Pricing Plans
+                          {t.pricingPlans}
                         </span>
                         <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                           Plans
@@ -592,7 +592,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
-                          Clinical Portal Sign In
+                          {t.signIn}
                         </span>
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
                       </div>
@@ -613,10 +613,10 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
-                          Reception & Triage Desk
+                          {t.receptionDesk}
                         </span>
                         <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
-                          Staff
+                          {t.roleStaff}
                         </span>
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
@@ -636,7 +636,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
-                          Patient Self-Registration
+                          {t.createAccount}
                         </span>
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
                       </div>
@@ -657,7 +657,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
-                          Hospital Emergency Hotline
+                          {t.emergencyHotline}
                         </span>
                         <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-600 text-white shrink-0 shadow-2xs">
                           {settings.emergencyHotline}

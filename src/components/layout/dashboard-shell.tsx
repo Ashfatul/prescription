@@ -11,6 +11,7 @@ import { ChangePasswordCard } from "@/components/common/change-password-card";
 import { TwoFactorAuthCard } from "@/components/common/two-factor-auth-card";
 import { DemoCountdownTimer } from "@/components/common/demo-countdown-timer";
 import { useAuth } from "@/lib/auth/auth-context";
+import { useLanguage } from "@/lib/i18n/language-context";
 import {
   BarChart3,
   Users,
@@ -71,6 +72,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
   const activeTab = searchParams.get("tab") || "main";
 
   const { logout } = useAuth();
+  const { t } = useLanguage();
 
   const onLogout = async () => {
     await logout();
@@ -83,106 +85,106 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
     ...(role === RoleName.SUPER_ADMIN
       ? [
           {
-            section: "Front Desk & Triage",
-            label: "Reception Desk",
+            section: t.frontDeskTriage,
+            label: t.receptionDesk,
             href: "/dashboard/staff",
             tabKey: "reception",
             icon: <ClipboardList className="w-4 h-4" />,
           },
           {
-            section: "System Overview",
-            label: "System Analytics",
+            section: t.systemOverview,
+            label: t.systemAnalytics,
             href: "/dashboard/admin",
             tabKey: "main",
             icon: <BarChart3 className="w-4 h-4" />,
           },
           {
-            section: "Multi-Clinic SaaS",
-            label: "Subscription & Billing",
+            section: t.multiClinicSaaS,
+            label: t.subscriptionBilling,
             href: "/dashboard/admin?tab=billing",
             tabKey: "billing",
             icon: <Sparkles className="w-4 h-4" />,
           },
           {
-            section: "Multi-Clinic SaaS",
-            label: "Clinics & Organizations",
+            section: t.multiClinicSaaS,
+            label: t.clinicsOrganizations,
             href: "/dashboard/admin?tab=organizations",
             tabKey: "organizations",
             icon: <Building2 className="w-4 h-4" />,
           },
           {
-            section: "Multi-Clinic SaaS",
-            label: "SaaS Pricing Plans",
+            section: t.multiClinicSaaS,
+            label: t.pricingPlans,
             href: "/dashboard/admin?tab=pricing",
             tabKey: "pricing",
             icon: <CreditCard className="w-4 h-4" />,
           },
           {
-            section: "Accounts & Security",
-            label: "User Accounts",
+            section: t.accountsSecurity,
+            label: t.userAccounts,
             href: "/dashboard/admin?tab=users",
             tabKey: "users",
             icon: <Users className="w-4 h-4" />,
           },
           {
-            section: "Accounts & Security",
-            label: "Role & Permissions",
+            section: t.accountsSecurity,
+            label: t.rolesPermissions,
             href: "/dashboard/admin?tab=roles",
             tabKey: "roles",
             icon: <Shield className="w-4 h-4" />,
           },
           {
-            section: "Governance & Audit",
-            label: "Hospital Broadcasts",
+            section: t.governanceAudit,
+            label: t.announcements,
             href: "/dashboard/admin?tab=announcements",
             tabKey: "announcements",
             icon: <Megaphone className="w-4 h-4" />,
           },
           {
-            section: "Governance & Audit",
-            label: "Activity Audit Logs",
+            section: t.governanceAudit,
+            label: t.activityLogs,
             href: "/dashboard/admin?tab=activity",
             tabKey: "activity",
             icon: <ShieldAlert className="w-4 h-4" />,
           },
           {
-            section: "Communications & Mail",
-            label: "Email Templates & SMTP",
+            section: t.emailTemplates,
+            label: t.emailTemplates,
             href: "/dashboard/admin?tab=email-templates",
             tabKey: "email-templates",
             icon: <Mail className="w-4 h-4" />,
           },
           {
-            section: "Collaboration",
-            label: "Clinical Chat Hub",
+            section: t.clinicalChatHub,
+            label: t.clinicalChatHub,
             href: "/dashboard/admin?tab=chat",
             tabKey: "chat",
             icon: <MessageSquare className="w-4 h-4" />,
           },
           {
-            section: "Medical Formulary",
-            label: "Pharmaceutical Drugs",
+            section: t.medicalFormulary,
+            label: t.pharmaceuticalDrugs,
             href: "/dashboard/admin?tab=catalog",
             tabKey: "catalog",
             icon: <Pill className="w-4 h-4" />,
           },
           {
-            section: "Medical Formulary",
-            label: "Diagnostic Lab Tests",
+            section: t.medicalFormulary,
+            label: t.diagnosticLabTests,
             href: "/dashboard/admin?tab=tests",
             tabKey: "tests",
             icon: <FlaskConical className="w-4 h-4" />,
           },
           {
-            section: "Prescription Pad",
-            label: "Prescription Designer",
+            section: t.prescriptionPad,
+            label: t.prescriptionDesigner,
             href: "/dashboard/admin?tab=templates",
             tabKey: "templates",
             icon: <FileCode2 className="w-4 h-4" />,
           },
           {
-            section: "Configuration",
-            label: "Hospital Settings",
+            section: t.configuration,
+            label: t.hospitalSettings,
             href: "/dashboard/admin?tab=settings",
             tabKey: "settings",
             icon: <Building2 className="w-4 h-4" />,
@@ -193,85 +195,85 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
     ...(role === RoleName.ADMIN
       ? [
           {
-            section: "Front Desk & Triage",
-            label: "Reception Desk",
+            section: t.frontDeskTriage,
+            label: t.receptionDesk,
             href: "/dashboard/staff",
             tabKey: "reception",
             icon: <ClipboardList className="w-4 h-4" />,
           },
           {
-            section: "Clinic Overview",
-            label: "Clinic Analytics",
+            section: t.systemOverview,
+            label: t.clinicAnalytics,
             href: "/dashboard/admin",
             tabKey: "main",
             icon: <BarChart3 className="w-4 h-4" />,
           },
           {
-            section: "Subscription & Billing",
-            label: "Subscription & Billing",
+            section: t.subscriptionBilling,
+            label: t.subscriptionBilling,
             href: "/dashboard/admin?tab=billing",
             tabKey: "billing",
             icon: <Sparkles className="w-4 h-4" />,
           },
           {
-            section: "Accounts & Security",
-            label: "Doctors & Staff Accounts",
+            section: t.accountsSecurity,
+            label: t.userAccounts,
             href: "/dashboard/admin?tab=users",
             tabKey: "users",
             icon: <Users className="w-4 h-4" />,
           },
           {
-            section: "Accounts & Security",
-            label: "Role & Permissions",
+            section: t.accountsSecurity,
+            label: t.rolesPermissions,
             href: "/dashboard/admin?tab=roles",
             tabKey: "roles",
             icon: <Shield className="w-4 h-4" />,
           },
           {
-            section: "Governance & Audit",
-            label: "Clinic Broadcasts",
+            section: t.governanceAudit,
+            label: t.announcements,
             href: "/dashboard/admin?tab=announcements",
             tabKey: "announcements",
             icon: <Megaphone className="w-4 h-4" />,
           },
           {
-            section: "Governance & Audit",
-            label: "Activity Audit Logs",
+            section: t.governanceAudit,
+            label: t.activityLogs,
             href: "/dashboard/admin?tab=activity",
             tabKey: "activity",
             icon: <ShieldAlert className="w-4 h-4" />,
           },
           {
-            section: "Collaboration",
-            label: "Clinical Chat Hub",
+            section: t.clinicalChatHub,
+            label: t.clinicalChatHub,
             href: "/dashboard/admin?tab=chat",
             tabKey: "chat",
             icon: <MessageSquare className="w-4 h-4" />,
           },
           {
-            section: "Medical Formulary",
-            label: "Pharmaceutical Drugs",
+            section: t.medicalFormulary,
+            label: t.pharmaceuticalDrugs,
             href: "/dashboard/admin?tab=catalog",
             tabKey: "catalog",
             icon: <Pill className="w-4 h-4" />,
           },
           {
-            section: "Medical Formulary",
-            label: "Diagnostic Lab Tests",
+            section: t.medicalFormulary,
+            label: t.diagnosticLabTests,
             href: "/dashboard/admin?tab=tests",
             tabKey: "tests",
             icon: <FlaskConical className="w-4 h-4" />,
           },
           {
-            section: "Prescription Pad",
-            label: "Prescription Designer",
+            section: t.prescriptionPad,
+            label: t.prescriptionDesigner,
             href: "/dashboard/admin?tab=templates",
             tabKey: "templates",
             icon: <FileCode2 className="w-4 h-4" />,
           },
           {
-            section: "Configuration",
-            label: "Clinic Settings",
+            section: t.configuration,
+            label: t.clinicSettings,
             href: "/dashboard/admin?tab=settings",
             tabKey: "settings",
             icon: <Building2 className="w-4 h-4" />,
@@ -282,57 +284,57 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
     ...(role === RoleName.STAFF
       ? [
           {
-            section: "Front Desk & Triage",
-            label: "Fast Walk-in Check-in",
+            section: t.frontDeskTriage,
+            label: t.fastWalkInCheckIn,
             href: "/dashboard/staff?tab=checkin",
             tabKey: "checkin",
             icon: <UserPlus className="w-4 h-4" />,
           },
           {
-            section: "Front Desk & Triage",
-            label: "Appointment Verifications",
+            section: t.frontDeskTriage,
+            label: t.appointmentVerifications,
             href: "/dashboard/staff?tab=verifications",
             tabKey: "verifications",
             icon: <CheckCircle2 className="w-4 h-4" />,
           },
           {
-            section: "Front Desk & Triage",
-            label: "Chamber Queue & Slips",
+            section: t.frontDeskTriage,
+            label: t.chamberQueueSlips,
             href: "/dashboard/staff?tab=queue",
             tabKey: "queue",
             icon: <Clock className="w-4 h-4" />,
           },
           {
-            section: "Front Desk & Triage",
-            label: "Patients & Lab Reports",
+            section: t.frontDeskTriage,
+            label: t.patientsLabReports,
             href: "/dashboard/staff?tab=patients",
             tabKey: "patients",
             icon: <FileSearch className="w-4 h-4" />,
           },
           {
-            section: "Doctor Rosters",
-            label: "Visiting Schedules",
+            section: t.doctorRosters,
+            label: t.visitingSchedules,
             href: "/dashboard/staff?tab=schedules",
             tabKey: "schedules",
             icon: <Calendar className="w-4 h-4" />,
           },
           {
-            section: "Waiting Hall Monitors",
-            label: "Live TV Queue Display",
+            section: t.waitingHallMonitors,
+            label: t.liveTvDisplay,
             href: "/live-queue",
             tabKey: "live-queue",
             icon: <Tv className="w-4 h-4" />,
           },
           {
-            section: "Collaboration",
-            label: "Clinical Chat",
+            section: t.clinicalChatHub,
+            label: t.clinicalChat,
             href: "/dashboard/staff?tab=chat",
             tabKey: "chat",
             icon: <MessageSquare className="w-4 h-4" />,
           },
           {
-            section: "Hospital Communications",
-            label: "Hospital Bulletins",
+            section: t.governanceAudit,
+            label: t.announcements,
             href: "/dashboard/staff?tab=announcements",
             tabKey: "announcements",
             icon: <Megaphone className="w-4 h-4" />,
@@ -343,78 +345,78 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
     ...(role === RoleName.DOCTOR
       ? [
           {
-            section: "Clinical Practice",
-            label: "Chamber Queue",
+            section: t.clinicalPractice,
+            label: t.currentSerial,
             href: "/dashboard/doctor?tab=queue",
             tabKey: "queue",
             icon: <Clock className="w-4 h-4" />,
           },
           {
-            section: "Clinical Practice",
-            label: "Write Prescription",
+            section: t.clinicalPractice,
+            label: t.writePrescription,
             href: "/dashboard/doctor",
             tabKey: "main",
             icon: <PenLine className="w-4 h-4" />,
           },
           {
-            section: "Clinical Practice",
-            label: "Prescription Archive",
+            section: t.clinicalPractice,
+            label: t.prescriptionArchive,
             href: "/dashboard/doctor?tab=history",
             tabKey: "history",
             icon: <History className="w-4 h-4" />,
           },
           {
-            section: "Clinical Practice",
-            label: "Patient Lab Reports",
+            section: t.clinicalPractice,
+            label: t.patientsLabReports,
             href: "/dashboard/doctor?tab=reports",
             tabKey: "reports",
             icon: <FileSearch className="w-4 h-4" />,
           },
           {
-            section: "Medical Formulary",
-            label: "Pharmaceutical Drugs",
+            section: t.medicalFormulary,
+            label: t.pharmaceuticalDrugs,
             href: "/dashboard/doctor?tab=catalog",
             tabKey: "catalog",
             icon: <Pill className="w-4 h-4" />,
           },
           {
-            section: "Medical Formulary",
-            label: "Diagnostic Lab Tests",
+            section: t.medicalFormulary,
+            label: t.diagnosticLabTests,
             href: "/dashboard/doctor?tab=tests",
             tabKey: "tests",
             icon: <FlaskConical className="w-4 h-4" />,
           },
           {
-            section: "Waiting Hall Monitors",
-            label: "Live TV Queue Display",
+            section: t.waitingHallMonitors,
+            label: t.liveTvDisplay,
             href: "/live-queue",
             tabKey: "live-queue",
             icon: <Tv className="w-4 h-4" />,
           },
           {
-            section: "Configuration",
-            label: "Hospital Templates",
+            section: t.configuration,
+            label: t.hospitalTemplates,
             href: "/dashboard/doctor?tab=templates",
             tabKey: "templates",
             icon: <FileCode2 className="w-4 h-4" />,
           },
           {
-            section: "Configuration",
-            label: "Chamber & Credentials",
+            section: t.configuration,
+            label: t.chamberCredentials,
             href: "/dashboard/doctor?tab=profile",
             tabKey: "profile",
             icon: <UserCog className="w-4 h-4" />,
           },
           {
-            section: "Collaboration",
-            label: "Clinical Chat",
+            section: t.clinicalChatHub,
+            label: t.clinicalChat,
             href: "/dashboard/doctor?tab=chat",
             tabKey: "chat",
             icon: <MessageSquare className="w-4 h-4" />,
           },
           {
-            section: "Hospital Communications",
-            label: "Hospital Bulletins",
+            section: t.governanceAudit,
+            label: t.announcements,
             href: "/dashboard/doctor?tab=announcements",
             tabKey: "announcements",
             icon: <Megaphone className="w-4 h-4" />,
@@ -425,29 +427,29 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
     ...(role === RoleName.PATIENT
       ? [
           {
-            section: "Healthcare Portal",
-            label: "My Prescriptions",
+            section: t.healthcarePortal,
+            label: t.myPrescriptions,
             href: "/dashboard/patient",
             tabKey: "main",
             icon: <FileText className="w-4 h-4" />,
           },
           {
-            section: "Healthcare Portal",
-            label: "Medicine Reminders",
+            section: t.healthcarePortal,
+            label: t.medicineReminders,
             href: "/dashboard/patient?tab=reminders",
             tabKey: "reminders",
             icon: <Clock className="w-4 h-4" />,
           },
           {
-            section: "Collaboration",
-            label: "Chat with Doctor",
+            section: t.clinicalChatHub,
+            label: t.clinicalChat,
             href: "/dashboard/patient?tab=chat",
             tabKey: "chat",
             icon: <MessageSquare className="w-4 h-4" />,
           },
           {
-            section: "Hospital Communications",
-            label: "Clinic Notices",
+            section: t.governanceAudit,
+            label: t.clinicNotices,
             href: "/dashboard/patient?tab=announcements",
             tabKey: "announcements",
             icon: <Megaphone className="w-4 h-4" />,
@@ -456,8 +458,8 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
       : []),
 
     {
-      section: "Public Portal",
-      label: "Find Doctors / Chambers",
+      section: t.publicPortal,
+      label: t.findDoctorsChambers,
       href: "/",
       tabKey: "public",
       icon: <Compass className="w-4 h-4" />,
@@ -489,15 +491,15 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
   const getRoleTitle = (roleName: RoleName) => {
     switch (roleName) {
       case RoleName.SUPER_ADMIN:
-        return "Super Admin (Platform)";
+        return t.roleSuperAdmin;
       case RoleName.ADMIN:
-        return "Clinic Administrator";
+        return t.roleClinicAdmin;
       case RoleName.DOCTOR:
-        return "Attending Physician";
+        return t.roleDoctor;
       case RoleName.STAFF:
-        return "Hospital Staff";
+        return t.roleStaff;
       default:
-        return "Patient User";
+        return t.rolePatient;
     }
   };
 
@@ -568,7 +570,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         {/* Appearance Control */}
         <div className="flex items-center justify-between px-1">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-            Appearance
+            {t.appearance}
           </span>
           <ThemeCustomizer compact direction="up" align="right" />
         </div>
@@ -599,12 +601,13 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
               title="Account Security, 2FA & Password"
             >
               <KeyRound className="w-3 h-3" />
-              <span>Security</span>
+              <span>{t.security}</span>
             </button>
             <button
               type="button"
               onClick={onLogout}
               className="text-[11px] font-semibold text-red-500 hover:text-red-600 dark:hover:text-red-400 flex items-center gap-1 cursor-pointer"
+              title={t.logout}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -687,7 +690,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             <div className="flex items-center gap-2">
               <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-800/50">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                EMR Cloud Active
+                {t("emrCloudActive", "EMR Cloud Active")}
               </span>
             </div>
           </div>

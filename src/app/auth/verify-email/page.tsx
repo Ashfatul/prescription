@@ -19,12 +19,15 @@ import {
 } from "lucide-react";
 import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
+import { LanguageToggle } from "@/components/common/language-toggle";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 function VerifyEmailInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const emailParam = searchParams.get("email");
+  const { t, language } = useLanguage();
 
   const [email, setEmail] = useState(emailParam || "");
   const [verifying, setVerifying] = useState(Boolean(token));
@@ -470,7 +473,8 @@ export default function VerifyEmailPage() {
             <span>Email Identity Authentication</span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <LanguageToggle />
             <ThemeCustomizer compact direction="down" align="right" />
             <Link
               href="/auth/login"

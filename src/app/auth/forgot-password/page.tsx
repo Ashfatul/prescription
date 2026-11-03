@@ -5,8 +5,11 @@ import Link from "next/link";
 import { Mail, ArrowLeft, ArrowRight, CheckCircle2, AlertCircle, RefreshCw, KeyRound, ShieldCheck, Sparkles } from "lucide-react";
 import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
+import { LanguageToggle } from "@/components/common/language-toggle";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export default function ForgotPasswordPage() {
+  const { t, language } = useLanguage();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -89,14 +92,15 @@ export default function ForgotPasswordPage() {
             <span>Cryptographic Account Recovery</span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <LanguageToggle />
             <ThemeCustomizer compact direction="down" align="right" />
             <Link
               href="/auth/login"
               className="text-xs font-semibold text-slate-500 hover:text-[var(--brand-primary)] transition flex items-center gap-1"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Login</span>
+              <span>{t.signIn}</span>
             </Link>
           </div>
         </div>
@@ -111,10 +115,12 @@ export default function ForgotPasswordPage() {
                     <KeyRound className="w-6 h-6" />
                   </div>
                   <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                    Forgot Password?
+                    {t.forgotPassword}
                   </h2>
                   <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
-                    Enter your account email address and we’ll dispatch a secure, single-use password reset link.
+                    {language === "bn"
+                      ? "আপনার নিবন্ধিত ইমেইল ঠিকানা প্রদান করুন, আমরা পাসওয়ার্ড রিসেট করার নিরাপদ লিংক পাঠাব।"
+                      : "Enter your account email address and we’ll dispatch a secure, single-use password reset link."}
                   </p>
                 </div>
 
@@ -128,7 +134,7 @@ export default function ForgotPasswordPage() {
                 <form onSubmit={(e) => void handleSubmit(e)} className="space-y-3.5">
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
-                      Account Email Address
+                      {t.emailAddress}
                     </label>
                     <div className="relative">
                       <input
@@ -151,11 +157,11 @@ export default function ForgotPasswordPage() {
                     {loading ? (
                       <>
                         <RefreshCw className="w-4 h-4 animate-spin" />
-                        <span>Sending Instructions...</span>
+                        <span>{t.submitting}</span>
                       </>
                     ) : (
                       <>
-                        <span>Send Reset Instructions</span>
+                        <span>{language === "bn" ? "রিসেট লিংক পাঠান" : "Send Reset Instructions"}</span>
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}
@@ -167,7 +173,8 @@ export default function ForgotPasswordPage() {
                     href="/auth/login"
                     className="text-xs font-medium text-slate-500 hover:text-[var(--brand-primary)] transition"
                   >
-                    Remember your password? <span className="font-bold underline">Sign in</span>
+                    {language === "bn" ? "পাসওয়ার্ড মনে পড়েছে? " : "Remember your password? "}
+                    <span className="font-bold underline">{t.signIn}</span>
                   </Link>
                 </div>
               </>
@@ -179,17 +186,19 @@ export default function ForgotPasswordPage() {
 
                 <div>
                   <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                    Instructions Dispatched
+                    {language === "bn" ? "ইমেইল পাঠানো হয়েছে" : "Instructions Dispatched"}
                   </h2>
                   <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 max-w-sm mx-auto leading-relaxed">
-                    If an active account matches <strong className="text-slate-900 dark:text-white font-mono">{email}</strong>, a password reset link has been dispatched.
+                    {language === "bn"
+                      ? `যদি এই অ্যাকাউন্টের সাথে মিল থাকে (${email}), তবে পাসওয়ার্ড রিসেট করার নির্দেশনা পাঠানো হয়েছে।`
+                      : `If an active account matches ${email}, a password reset link has been dispatched.`}
                   </p>
                 </div>
 
                 <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[11px] text-slate-500 dark:text-slate-400 text-left space-y-1 leading-relaxed">
-                  <p className="font-semibold text-slate-700 dark:text-slate-300">Next Steps:</p>
-                  <p>1. Open your inbox and click the reset link within 1 hour.</p>
-                  <p>2. If you don&apos;t receive an email, check your Spam or Junk folder.</p>
+                  <p className="font-semibold text-slate-700 dark:text-slate-300">{language === "bn" ? "পরবর্তী করণীয়:" : "Next Steps:"}</p>
+                  <p>{language === "bn" ? "১. আপনার ইনবক্স চেক করে ১ ঘণ্টার মধ্যে লিংকে ক্লিক করুন।" : "1. Open your inbox and click the reset link within 1 hour."}</p>
+                  <p>{language === "bn" ? "২. ইমেইল না পেলে স্প্যাম বা জাঙ্ক ফোল্ডার চেক করুন।" : "2. If you don't receive an email, check your Spam or Junk folder."}</p>
                 </div>
 
                 <div className="pt-1 flex flex-col gap-2">
@@ -198,13 +207,13 @@ export default function ForgotPasswordPage() {
                     onClick={() => setSubmitted(false)}
                     className="text-xs font-semibold text-[var(--brand-primary)] hover:underline py-1 cursor-pointer"
                   >
-                    Try another email address
+                    {language === "bn" ? "অন্য ইমেইল দিয়ে চেষ্টা করুন" : "Try another email address"}
                   </button>
                   <Link
                     href="/auth/login"
                     className="w-full min-h-[42px] rounded-xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center transition"
                   >
-                    Return to Login
+                    {language === "bn" ? "লগইনে ফিরে যান" : "Return to Login"}
                   </Link>
                 </div>
               </div>
@@ -214,14 +223,14 @@ export default function ForgotPasswordPage() {
 
         {/* Bottom Footer */}
         <div className="pt-4 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
-          <span>Protected by HIPAA & BMDC compliant security standards.</span>
+          <span>{language === "bn" ? "বিএমডিসি ও স্বাস্থ্য নিরাপত্তা মানদণ্ড দ্বারা সুরক্ষিত।" : "Protected by HIPAA & BMDC compliant security standards."}</span>
           <div className="flex items-center gap-3">
-            <Link href="/" className="hover:text-[var(--brand-primary)] transition font-medium">
-              Privacy Policy
+            <Link href="/privacy" className="hover:text-[var(--brand-primary)] transition font-medium">
+              {t.footerPrivacyPolicy}
             </Link>
             <span>•</span>
-            <Link href="/" className="hover:text-[var(--brand-primary)] transition font-medium">
-              Security Overview
+            <Link href="/terms" className="hover:text-[var(--brand-primary)] transition font-medium">
+              {t.footerTermsOfService}
             </Link>
           </div>
         </div>

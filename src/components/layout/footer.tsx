@@ -17,8 +17,10 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { HospitalSettings, DEFAULT_HOSPITAL_SETTINGS } from "@/features/settings/settings.service";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function Footer({ initialSettings }: { initialSettings?: HospitalSettings }) {
+  const { t, language } = useLanguage();
   const [settings, setSettings] = useState<HospitalSettings>(
     initialSettings || DEFAULT_HOSPITAL_SETTINGS
   );
@@ -45,25 +47,26 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
             <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="font-semibold">
-                Clinical Health Network: <strong>{settings.hospitalName} ({settings.hospitalBranch})</strong>
+                {language === "bn" ? "স্বাস্থ্যসেবা নেটওয়ার্ক: " : "Clinical Health Network: "}
+                <strong>{settings.hospitalName} ({settings.hospitalBranch})</strong>
               </span>
             </div>
 
             <div className="flex items-center gap-4 text-[11px] text-slate-500 font-medium">
               <span className="flex items-center gap-1">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                BMDC Legal Format Verified
+                {t.footerLegalFormatVerified}
               </span>
               <span className="hidden sm:flex items-center gap-1">
                 <Lock className="w-3.5 h-3.5 text-emerald-500" />
-                Encrypted Health Records
+                {t.footerEncryptedHealth}
               </span>
               <a
                 href={`tel:${settings.emergencyHotline}`}
                 className="flex items-center gap-1 font-bold text-rose-600 dark:text-rose-400 hover:underline"
               >
                 <PhoneCall className="w-3.5 h-3.5" />
-                Hotline: {settings.emergencyHotline}
+                {t.emergencyHotline}: {settings.emergencyHotline}
               </a>
             </div>
           </div>
@@ -96,18 +99,20 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
             </Link>
 
             <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-400 max-w-md">
-              The high-velocity clinical prescribing suite designed for modern physicians, polyclinics, and multi-specialty hospitals. Zero-redundancy prescription composition, automated dosage frequencies, real-time chamber queue dispenses, and BMDC-compliant paginated A4 printing.
+              {language === "bn"
+                ? "আধুনিক চিকিৎসক, পলিক্লিনিক ও মাল্টি-স্পেশালিটি হাসপাতালের জন্য নির্মিত উচ্চগতির প্রেসক্রিপশন প্ল্যাটফর্ম। সহজ ও দ্রুত প্রেসক্রিপশন তৈরি, স্বয়ংক্রিয় ডোজ, রিয়েল-টাইম চেম্বার কিউ ডিসপেন্সিং এবং বিএমডিসি-অনুমোদিত A4 প্রিন্ট।"
+                : "The high-velocity clinical prescribing suite designed for modern physicians, polyclinics, and multi-specialty hospitals. Zero-redundancy prescription composition, automated dosage frequencies, real-time chamber queue dispenses, and BMDC-compliant paginated A4 printing."}
             </p>
 
             {/* Compliance Badges */}
             <div className="pt-2 flex flex-wrap gap-2 text-[11px]">
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] font-medium text-slate-700 dark:text-slate-300">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                BMDC Prescribing Compliant
+                {t.bmdcCompliantBadge}
               </span>
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] font-medium text-slate-700 dark:text-slate-300">
                 <Lock className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-                Intranet & Cloud Hybrid
+                {t.cloudHybridBadge}
               </span>
             </div>
           </div>
@@ -116,32 +121,32 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
               <Activity className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-              <span>Clinical Suites</span>
+              <span>{t.footerClinicalSuites}</span>
             </h3>
             <ul className="space-y-2 text-xs">
               <li>
                 <Link href="/dashboard" className="hover:text-[var(--brand-text)] transition flex items-center gap-1.5">
-                  <span>Doctor Prescribing Pad</span>
+                  <span>{t.footerDoctorPad}</span>
                 </Link>
               </li>
               <li>
                 <Link href="/dashboard/staff" className="hover:text-[var(--brand-text)] transition flex items-center gap-1.5">
-                  <span>Front Desk Triage & Intake</span>
+                  <span>{t.footerFrontDeskTriage}</span>
                 </Link>
               </li>
               <li>
                 <Link href="/dashboard/templates" className="hover:text-[var(--brand-text)] transition flex items-center gap-1.5">
-                  <span>WYSIWYG Template Studio</span>
+                  <span>{t.footerTemplateStudio}</span>
                 </Link>
               </li>
               <li>
                 <Link href="/dashboard/admin" className="hover:text-[var(--brand-text)] transition flex items-center gap-1.5">
-                  <span>Formulary & Lab Catalog</span>
+                  <span>{t.footerFormularyCatalog}</span>
                 </Link>
               </li>
               <li>
                 <Link href="/dashboard/admin?tab=settings" className="hover:text-[var(--brand-text)] transition flex items-center gap-1.5">
-                  <span>Hospital Admin Settings</span>
+                  <span>{t.footerHospitalAdminSettings}</span>
                 </Link>
               </li>
             </ul>
@@ -151,36 +156,36 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
               <HeartHandshake className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-              <span>Patient Services</span>
+              <span>{t.footerPatientServices}</span>
             </h3>
             <ul className="space-y-2 text-xs">
               <li>
                 <Link href="/clinics" className="hover:text-[var(--brand-text)] transition flex items-center gap-1.5 font-semibold text-[var(--brand-text)]">
-                  <span>Registered Clinics Directory</span>
+                  <span>{t.footerRegisteredClinics}</span>
                   <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)]">
-                    All
+                    {t.all}
                   </span>
                 </Link>
               </li>
               <li>
                 <Link href="/doctors" className="hover:text-[var(--brand-text)] transition flex items-center gap-1.5">
-                  Consulting Physicians Directory
+                  {t.footerConsultingPhysicians}
                 </Link>
               </li>
               <li>
                 <Link href="/staff" className="hover:text-[var(--brand-text)] transition flex items-center gap-1.5">
-                  <span>Clinical Staff Directory</span>
+                  <span>{t.footerClinicalStaff}</span>
                 </Link>
               </li>
               <li>
                 <Link href="/live-queue" className="hover:text-[var(--brand-text)] transition flex items-center gap-1.5">
-                  <span>Live Chamber TV Monitor</span>
+                  <span>{t.footerLiveTvMonitor}</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 </Link>
               </li>
               <li>
                 <Link href="/dashboard/patient" className="hover:text-[var(--brand-text)] transition">
-                  Patient Health Records Portal
+                  {t.footerPatientPortal}
                 </Link>
               </li>
               <li>
@@ -190,7 +195,7 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
                   rel="noreferrer"
                   className="hover:text-[var(--brand-text)] transition"
                 >
-                  Doctor Directory API (JSON)
+                  {t.footerDoctorApi}
                 </a>
               </li>
             </ul>
@@ -200,7 +205,7 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
               <Scale className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-              <span>Legal & Governance</span>
+              <span>{t.footerLegalGovernance}</span>
             </h3>
             <ul className="space-y-2 text-xs">
               <li>
@@ -209,7 +214,7 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
                   className="hover:text-[var(--brand-text)] transition flex items-center gap-1.5 font-medium"
                 >
                   <FileText className="w-3 h-3 text-slate-400" />
-                  <span>Privacy & Health Data Policy</span>
+                  <span>{t.footerPrivacyPolicy}</span>
                 </Link>
               </li>
               <li>
@@ -218,7 +223,7 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
                   className="hover:text-[var(--brand-text)] transition flex items-center gap-1.5 font-medium"
                 >
                   <Scale className="w-3 h-3 text-slate-400" />
-                  <span>Terms of Service Agreement</span>
+                  <span>{t.footerTermsOfService}</span>
                 </Link>
               </li>
               <li>
@@ -227,7 +232,7 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
                   className="hover:text-[var(--brand-text)] transition flex items-center gap-1.5 font-medium"
                 >
                   <AlertCircle className="w-3 h-3 text-slate-400" />
-                  <span>Medical & Prescribing Disclaimer</span>
+                  <span>{t.footerMedicalDisclaimer}</span>
                 </Link>
               </li>
             </ul>
@@ -240,14 +245,14 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
           <div className="flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
             <span>
-              <strong>Emergency Notice:</strong> {settings.emergencyNotice}
+              <strong>{t.footerEmergencyNotice}:</strong> {settings.emergencyNotice}
             </span>
           </div>
           <a
             href={`tel:${settings.emergencyHotline}`}
             className="shrink-0 px-3 py-1.5 rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-700 transition"
           >
-            Hotline: {settings.emergencyHotline}
+            {t.emergencyHotline}: {settings.emergencyHotline}
           </a>
         </div>
 
@@ -259,37 +264,37 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
           </div>
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-[var(--brand-primary)] shrink-0" />
-            <span>OPD Visiting Hours: <strong className="text-[var(--text-primary)]">{settings.opdVisitingHours}</strong></span>
+            <span>{t.footerOpdVisitingHours}: <strong className="text-[var(--text-primary)]">{settings.opdVisitingHours}</strong></span>
           </div>
           <div className="flex items-center gap-2">
             <Mail className="w-4 h-4 text-[var(--brand-primary)] shrink-0" />
-            <span className="truncate">Support: {settings.supportEmail}</span>
+            <span className="truncate">{language === "bn" ? "সহায়তা: " : "Support: "}{settings.supportEmail}</span>
           </div>
         </div>
 
         {/* Bottom Legal Copyright & Live Health Status Bar */}
         <div className="mt-8 pt-6 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
           <p className="text-slate-500 text-center sm:text-left">
-            &copy; {new Date().getFullYear()} {settings.hospitalName}. All rights reserved.
+            &copy; {new Date().getFullYear()} {settings.hospitalName}. {t.allRightsReserved}
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
             <Link href="/privacy" className="text-slate-500 hover:text-[var(--text-primary)] transition">
-              Privacy Policy
+              {t.footerPrivacyPolicy}
             </Link>
             <span className="text-slate-300 dark:text-slate-700">•</span>
             <Link href="/terms" className="text-slate-500 hover:text-[var(--text-primary)] transition">
-              Terms of Service
+              {t.footerTermsOfService}
             </Link>
             <span className="text-slate-300 dark:text-slate-700">•</span>
             <Link href="/disclaimer" className="text-slate-500 hover:text-[var(--text-primary)] transition">
-              Medical Disclaimer
+              {t.footerMedicalDisclaimer}
             </Link>
           </div>
 
           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[11px] font-semibold text-slate-700 dark:text-slate-300">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>All Clinical Services Operational (99.98% Uptime)</span>
+            <span>{t.footerAllServicesOperational}</span>
           </div>
         </div>
 

@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { SearchableSelect, SelectOption } from "@/components/common/searchable-select";
 import { PrescriptionPreviewModal } from "@/components/dashboard/prescription-preview-modal";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export type DoctorInfo = {
   id: string;
@@ -385,6 +386,8 @@ export function PrescriptionEditor({
   onPrescriptionCreated?: (id: string, appointmentId?: string) => void;
   onCallNextPatient?: () => void;
 }) {
+  const { t, language } = useLanguage();
+
   // Active Consultation Target
   const currentAppointment = useMemo(() => {
     if (initialPrescriptionToRevise?.appointmentId) {
@@ -850,26 +853,26 @@ export function PrescriptionEditor({
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to Queue</span>
+              <span>{t.backToQueue}</span>
             </button>
           )}
 
           <div>
             <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-              <span>Prescription Console</span>
+              <span>{t.prescriptionConsole}</span>
               {currentAppointment?.serialNumber && (
                 <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-[var(--brand-primary)] text-white shadow-2xs font-mono">
-                  Serial #{currentAppointment.serialNumber}
+                  {language === "bn" ? `সিরিয়াল #${currentAppointment.serialNumber}` : `Serial #${currentAppointment.serialNumber}`}
                 </span>
               )}
               {editingPrescription && (
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/30">
-                  Revising v{editingPrescription.version || 1}
+                  {t.revisingVersion} {editingPrescription.version || 1}
                 </span>
               )}
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Consultation workspace. Enter medications, lab investigations, and patient instructions.
+              {t.consultationWorkspace}
             </p>
           </div>
         </div>
@@ -880,12 +883,12 @@ export function PrescriptionEditor({
               <SearchableSelect
                 options={templates.map((tpl) => ({
                   value: tpl.id,
-                  label: `${tpl.name}${tpl.isDefault ? " (Default)" : ""}`,
-                  badge: tpl.isDefault ? "Default" : undefined,
+                  label: `${tpl.name}${tpl.isDefault ? (language === "bn" ? " (ডিফল্ট)" : " (Default)") : ""}`,
+                  badge: tpl.isDefault ? (language === "bn" ? "ডিফল্ট" : "Default") : undefined,
                 }))}
                 value={selectedTemplateId}
-                placeholder="Layout template..."
-                searchPlaceholder="Search templates..."
+                placeholder={t.layoutTemplate}
+                searchPlaceholder={t.searchTemplates}
                 onChange={(val) => setSelectedTemplateId(val)}
               />
             </div>
@@ -896,7 +899,7 @@ export function PrescriptionEditor({
             onClick={() => setShowPreviewModal(true)}
             className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-2xs cursor-pointer"
           >
-            <span>Live Preview</span>
+            <span>{t.livePreview}</span>
           </button>
         </div>
       </div>
@@ -910,16 +913,16 @@ export function PrescriptionEditor({
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                 <span>
                   {savedVersionNumber && savedVersionNumber > 1
-                    ? `Version ${savedVersionNumber} Saved (History Preserved)`
-                    : "Prescription Issued & Queue Cleared"}
+                    ? `${language === "bn" ? `ভার্সন ${savedVersionNumber}` : `Version ${savedVersionNumber}`} ${t.versionSavedHistoryPreserved}`
+                    : t.prescriptionIssuedQueueCleared}
                 </span>
               </span>
               <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
-                {currentPatient?.user.name}’s consultation is complete.
+                {currentPatient?.user.name} {t.consultationCompleteTitle}
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400">
                 Prescription ID: <code className="font-mono font-bold">{createdPrescriptionId}</code> •
-                Removed from Chamber Queue • TV waiting display updated.
+                {language === "bn" ? " সিরিয়াল সম্পন্ন ও রুম মনিটর আপডেট করা হয়েছে।" : " Removed from Chamber Queue • TV waiting display updated."}
               </p>
             </div>
 
@@ -931,7 +934,7 @@ export function PrescriptionEditor({
                 target="_blank"
                 className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-sm hover:opacity-95 transition"
               >
-                <span>🖨️ View & Print Full A4 (v{savedVersionNumber || 1})</span>
+                <span>🖨️ {t.viewAndPrintA4} (v{savedVersionNumber || 1})</span>
               </Link>
 
               {onCallNextPatient && (
@@ -940,7 +943,7 @@ export function PrescriptionEditor({
                   onClick={handleResetForAnother}
                   className="px-4 py-2.5 rounded-2xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold hover:opacity-90 transition cursor-pointer"
                 >
-                  📞 Call Next Patient
+                  📞 {t.callNextPatient}
                 </button>
               )}
 
@@ -950,7 +953,7 @@ export function PrescriptionEditor({
                   onClick={onBackToQueue}
                   className="px-4 py-2.5 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition cursor-pointer"
                 >
-                  👥 Chamber Queue
+                  👥 {t.chamberQueue}
                 </button>
               )}
             </div>
@@ -971,34 +974,34 @@ export function PrescriptionEditor({
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[10px] font-black uppercase tracking-wider text-[var(--brand-primary)] bg-[var(--brand-surface)] border border-[var(--brand-border)] px-2.5 py-0.5 rounded-md">
-                Patient Demographics (Verified by Staff)
+                {t.patientDemographicsVerified}
               </span>
               {currentAppointment?.visitType && (
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20">
                   {currentAppointment.visitType === "FOLLOWUP"
-                    ? "Follow-up Visit"
+                    ? t.followupVisit
                     : currentAppointment.visitType === "REPORT_REVIEW"
-                    ? "Report Review (Free)"
-                    : "First Consultation"}
+                    ? t.reportReviewFree
+                    : t.firstConsultation}
                 </span>
               )}
               {currentAppointment?.paymentStatus && (
                 <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
-                  Fee: ${currentAppointment.fee ?? 0} ({currentAppointment.paymentStatus})
+                  {t.consultationFee}: ${currentAppointment.fee ?? 0} ({currentAppointment.paymentStatus})
                 </span>
               )}
             </div>
 
             <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
-              {currentPatient?.user.name || "Patient Record"}
+              {currentPatient?.user.name || (language === "bn" ? "রোগীর তথ্য" : "Patient Record")}
             </h3>
 
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
               <span>
-                Gender: <strong className="text-slate-800 dark:text-slate-200">{currentPatient?.gender || "Not specified"}</strong>
+                {t.patientGender}: <strong className="text-slate-800 dark:text-slate-200">{currentPatient?.gender || (language === "bn" ? "অনুল্লেখিত" : "Not specified")}</strong>
               </span>
               <span>
-                Age: <strong className="text-slate-800 dark:text-slate-200">{patientAge ? `${patientAge} yrs` : "N/A"}</strong>
+                {t.patientAge}: <strong className="text-slate-800 dark:text-slate-200">{patientAge ? `${patientAge} ${language === "bn" ? "বছর" : "yrs"}` : "N/A"}</strong>
               </span>
               {currentPatient?.user.phone && (
                 <span className="flex items-center gap-1">
@@ -1024,11 +1027,11 @@ export function PrescriptionEditor({
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-bold hover:bg-blue-100 transition cursor-pointer shadow-2xs"
               >
                 <Paperclip className="w-3.5 h-3.5 text-blue-600" />
-                <span>Lab Reports ({patientReports.length})</span>
+                <span>{t.labReportsCount} ({patientReports.length})</span>
               </button>
             ) : (
               <span className="text-[11px] text-slate-400 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800">
-                No lab reports uploaded
+                {t.noLabReportsUploaded}
               </span>
             )}
 
@@ -1038,7 +1041,7 @@ export function PrescriptionEditor({
                 onClick={onBackToQueue}
                 className="text-xs text-[var(--brand-text)] hover:underline font-semibold cursor-pointer"
               >
-                Switch Patient
+                {t.switchPatient}
               </button>
             )}
           </div>
@@ -1288,16 +1291,16 @@ export function PrescriptionEditor({
           <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)] flex items-center gap-1.5">
               <Stethoscope className="w-3.5 h-3.5" />
-              <span>1. Chief Complaints & Clinical Diagnosis</span>
+              <span>1. {t.chiefComplaints} & {t.clinicalDiagnosis}</span>
             </span>
-            <span className="text-[11px] text-slate-400 font-medium">Use `- ` for manual entries</span>
+            <span className="text-[11px] text-slate-400 font-medium">{language === "bn" ? "হাতে লিখতে `- ` ব্যবহার করুন" : "Use `- ` for manual entries"}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Chief Complaints */}
             <div className="space-y-2.5">
               <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-                Chief Complaints & Symptoms
+                {t.chiefComplaints}
               </label>
               <textarea
                 rows={4}
@@ -1337,7 +1340,7 @@ export function PrescriptionEditor({
             {/* Clinical Diagnosis (Dx) */}
             <div className="space-y-2.5">
               <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-                Clinical Diagnosis (Dx)
+                {t.clinicalDiagnosis}
               </label>
               <textarea
                 rows={4}
@@ -1383,10 +1386,10 @@ export function PrescriptionEditor({
               <span className="text-3xl font-serif font-black text-[var(--brand-primary)]">℞</span>
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                  2. Prescribed Medications (Rx)
+                  2. {t.medications}
                 </span>
                 <p className="text-xs text-slate-500">
-                  Select brand or generic to auto-populate dosage & instructions. Add custom entries freely.
+                  {language === "bn" ? "ডোজ এবং সেবনবিধি স্বয়ংক্রিয়ভাবে পেতে ঔষধ নির্বাচন করুন অথবা নতুন যোগ করুন।" : "Select brand or generic to auto-populate dosage & instructions. Add custom entries freely."}
                 </p>
               </div>
             </div>
@@ -1397,7 +1400,7 @@ export function PrescriptionEditor({
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-95 shadow-sm transition cursor-pointer self-start sm:self-auto"
             >
               <Plus className="w-4 h-4" />
-              <span>Add Prescribed Medicine</span>
+              <span>{t.addMedicine}</span>
             </button>
           </div>
 
@@ -1674,14 +1677,14 @@ export function PrescriptionEditor({
         {/* SECTION 6: Advice & Follow-Up */}
         <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
           <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
-            4. Lifestyle Advice & Next Visit Schedule
+            4. {t.adviceAndLifestyle}
           </span>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Advice */}
             <div className="space-y-2.5">
               <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-                Special Advice / Dietary Precautions
+                {t.adviceAndLifestyle}
               </label>
               <textarea
                 rows={4}
@@ -1814,7 +1817,7 @@ export function PrescriptionEditor({
             onClick={() => setShowPreviewModal(true)}
             className="px-5 py-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition shadow-xs cursor-pointer"
           >
-            👁️ Open Live Preview
+            👁️ {t.livePreview}
           </button>
           <button
             type="submit"
@@ -1822,11 +1825,11 @@ export function PrescriptionEditor({
             className="px-8 py-3.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-black shadow-md hover:opacity-95 transition disabled:opacity-60 flex items-center gap-2 cursor-pointer"
           >
             {submitting ? (
-              <span>Saving & Clearing Queue...</span>
+              <span>{t.saving}</span>
             ) : editingPrescription ? (
-              <span>💾 Save as Version {(editingPrescription.version || 1) + 1}</span>
+              <span>💾 {language === "bn" ? `ভার্সন ${(editingPrescription.version || 1) + 1} হিসেবে সংরক্ষণ` : `Save as Version ${(editingPrescription.version || 1) + 1}`}</span>
             ) : (
-              <span>✓ Save & Complete Consultation</span>
+              <span>✓ {t.saveAndComplete}</span>
             )}
           </button>
         </div>

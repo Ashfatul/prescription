@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { Printer, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export interface PreviewDoctorInfo {
   name: string;
@@ -111,6 +112,7 @@ function PrescriptionPageSheet({
   dateStr: string;
   primaryColor: string;
 }) {
+  const { t, language } = useLanguage();
   return (
     <div className="bg-white text-slate-900 rounded-2xl shadow-2xl border border-slate-300 p-6 sm:p-8 min-h-[920px] flex flex-col justify-between print:border-none print:shadow-none print:p-0 print:min-h-0 print:rounded-none">
       <div>
@@ -168,7 +170,7 @@ function PrescriptionPageSheet({
         {/* Revision Note Banner if present on Page 1 */}
         {page.pageNumber === 1 && changeReason && (
           <div className="mb-3 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-center gap-2">
-            <span className="font-bold shrink-0">Revision Reason (v{version || 1}):</span>
+            <span className="font-bold shrink-0">{t.changeReason} (v{version || 1}):</span>
             <span className="text-slate-800 font-medium">{changeReason}</span>
           </div>
         )}
@@ -177,19 +179,19 @@ function PrescriptionPageSheet({
         <div className="p-2.5 rounded-xl bg-slate-100/90 border border-slate-200 mb-4 flex flex-wrap items-center justify-between gap-y-1.5 text-xs">
           <div className="flex items-center gap-5">
             <div>
-              <span className="text-slate-400 font-medium">Patient: </span>
-              <strong className="text-slate-900 font-bold">{patient.name || "Walk-in Patient"}</strong>
+              <span className="text-slate-400 font-medium">{t.patientName}: </span>
+              <strong className="text-slate-900 font-bold">{patient.name || (language === "bn" ? "সাধারণ রোগী" : "Walk-in Patient")}</strong>
             </div>
             {patient.gender && (
               <div>
-                <span className="text-slate-400 font-medium">Gender: </span>
+                <span className="text-slate-400 font-medium">{t.patientGender}: </span>
                 <strong className="text-slate-900">{patient.gender}</strong>
               </div>
             )}
             {patient.age && (
               <div>
-                <span className="text-slate-400 font-medium">Age: </span>
-                <strong className="text-slate-900">{patient.age} Yrs</strong>
+                <span className="text-slate-400 font-medium">{t.patientAge}: </span>
+                <strong className="text-slate-900">{patient.age} {language === "bn" ? "বছর" : "Yrs"}</strong>
               </div>
             )}
           </div>
@@ -197,19 +199,19 @@ function PrescriptionPageSheet({
           <div className="flex items-center gap-3">
             {patient.phone && (
               <div>
-                <span className="text-slate-400 font-medium">Contact: </span>
+                <span className="text-slate-400 font-medium">{t.patientPhone}: </span>
                 <strong className="text-slate-900">{patient.phone}</strong>
               </div>
             )}
             <div>
-              <span className="text-slate-400 font-medium">Date: </span>
+              <span className="text-slate-400 font-medium">{t.date}: </span>
               <strong className="text-slate-900">{dateStr}</strong>
             </div>
             <span className="font-bold px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-200">
               v{version || 1}
             </span>
             <span className="font-semibold px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-200">
-              Page {page.pageNumber} of {totalPages}
+              {t.pageNumberText} {page.pageNumber} {t.ofText} {totalPages}
             </span>
           </div>
         </div>
@@ -222,13 +224,13 @@ function PrescriptionPageSheet({
             {page.pageNumber === 1 && (vitals?.bp || vitals?.pulse || vitals?.temp || vitals?.weight || vitals?.bloodSugar || vitals?.spo2) && (
               <div className="space-y-1 text-xs">
                 <h3 className="font-bold uppercase tracking-wider text-slate-500 text-[11px] pb-1 border-b border-slate-200">
-                  Patient Vitals
+                  {t.patientVitals}
                 </h3>
                 <div className="grid grid-cols-2 gap-x-2 gap-y-1 pt-1 font-medium text-[11px]">
-                  {vitals.bp && <div><span className="text-slate-400">BP:</span> {vitals.bp}</div>}
-                  {vitals.pulse && <div><span className="text-slate-400">Pulse:</span> {vitals.pulse}</div>}
-                  {vitals.temp && <div><span className="text-slate-400">Temp:</span> {vitals.temp}</div>}
-                  {vitals.weight && <div><span className="text-slate-400">Weight:</span> {vitals.weight}</div>}
+                  {vitals.bp && <div><span className="text-slate-400">{t.bloodPressure}:</span> {vitals.bp}</div>}
+                  {vitals.pulse && <div><span className="text-slate-400">{t.pulseRate}:</span> {vitals.pulse}</div>}
+                  {vitals.temp && <div><span className="text-slate-400">{t.temperature}:</span> {vitals.temp}</div>}
+                  {vitals.weight && <div><span className="text-slate-400">{t.weight}:</span> {vitals.weight}</div>}
                   {vitals.bloodSugar && <div><span className="text-slate-400">RBS:</span> {vitals.bloodSugar}</div>}
                   {vitals.spo2 && <div><span className="text-slate-400">SpO2:</span> {vitals.spo2}</div>}
                 </div>
@@ -239,7 +241,7 @@ function PrescriptionPageSheet({
             {page.pageNumber === 1 && clinicalInfo?.medicalHistory && (
               <div className="space-y-1 text-xs">
                 <h3 className="font-bold uppercase tracking-wider text-slate-500 text-[11px] pb-1 border-b border-slate-200 flex items-center justify-between">
-                  <span>Medical History</span>
+                  <span>{t.medicalHistoryHx}</span>
                   <span className="text-[10px] font-mono text-slate-400">Hx</span>
                 </h3>
                 <div className="text-slate-800 leading-relaxed whitespace-pre-line pt-1 font-medium bg-slate-50/70 p-2.5 rounded-xl border border-slate-200/60">
@@ -252,7 +254,7 @@ function PrescriptionPageSheet({
             {page.pageNumber === 1 && clinicalInfo?.allergies && (
               <div className="space-y-1 text-xs">
                 <h3 className="font-bold uppercase tracking-wider text-rose-600 text-[11px] pb-1 border-b border-rose-200 flex items-center justify-between">
-                  <span>Drug Allergies</span>
+                  <span>{t.drugAllergiesAlert}</span>
                   <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-rose-100 text-rose-700">Alert</span>
                 </h3>
                 <div className="text-rose-900 leading-relaxed whitespace-pre-line pt-1 font-medium bg-rose-50/60 p-2.5 rounded-xl border border-rose-200/60">
@@ -265,7 +267,7 @@ function PrescriptionPageSheet({
             {page.pageNumber === 1 && clinicalInfo?.complaints && (
               <div className="space-y-1 text-xs">
                 <h3 className="font-bold uppercase tracking-wider text-slate-500 text-[11px] pb-1 border-b border-slate-200">
-                  Chief Complaints
+                  {t.chiefComplaints}
                 </h3>
                 <p className="text-slate-800 leading-relaxed whitespace-pre-line pt-1">
                   {clinicalInfo.complaints}
@@ -277,7 +279,7 @@ function PrescriptionPageSheet({
             {page.pageNumber === 1 && clinicalInfo?.diagnosis && (
               <div className="space-y-1 text-xs">
                 <h3 className="font-bold uppercase tracking-wider text-slate-500 text-[11px] pb-1 border-b border-slate-200">
-                  Diagnosis (Dx)
+                  {t.clinicalDiagnosis} (Dx)
                 </h3>
                 <p className="font-semibold text-slate-900 pt-1 leading-relaxed whitespace-pre-line">
                   {clinicalInfo.diagnosis}
@@ -289,15 +291,15 @@ function PrescriptionPageSheet({
             {page.tests.length > 0 && (
               <div className="space-y-1 text-xs">
                 <h3 className="font-bold uppercase tracking-wider text-slate-500 text-[11px] pb-1 border-b border-slate-200">
-                  Investigations Advised
+                  {t.investigationsAdvised}
                 </h3>
                 <ol className="list-decimal list-inside space-y-1.5 pt-1 text-slate-800 font-medium">
-                  {page.tests.map((t, idx) => (
+                  {page.tests.map((tItem, idx) => (
                     <li key={idx} className="leading-tight">
-                      <span>{t.name}</span>
-                      {t.instructions && (
+                      <span>{tItem.name}</span>
+                      {tItem.instructions && (
                         <span className="block text-[11px] text-slate-500 italic ml-4">
-                          ({t.instructions})
+                          ({tItem.instructions})
                         </span>
                       )}
                     </li>
@@ -314,14 +316,16 @@ function PrescriptionPageSheet({
                 ℞
               </span>
               <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                Prescribed Medication
+                {t.medications}
               </span>
             </div>
 
             {/* Medicines List */}
             <div className="space-y-4">
               {page.medicines.length === 0 ? (
-                <p className="text-xs text-slate-400 italic">No medicines on this page.</p>
+                <p className="text-xs text-slate-400 italic">
+                  {language === "bn" ? "এই পৃষ্ঠায় কোনো ঔষধ নেই।" : "No medicines on this page."}
+                </p>
               ) : (
                 page.medicines.map((med, idx) => (
                   <div
@@ -365,7 +369,7 @@ function PrescriptionPageSheet({
                 {clinicalInfo?.advice && (
                   <div className="text-xs space-y-1">
                     <h4 className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      Lifestyle & Dietary Advice:
+                      {t.adviceAndLifestyle}:
                     </h4>
                     <p className="text-slate-800 leading-relaxed bg-amber-50/60 border border-amber-200/60 p-3 rounded-xl">
                       {clinicalInfo.advice}
@@ -375,7 +379,7 @@ function PrescriptionPageSheet({
 
                 {clinicalInfo?.followUp && (
                   <div className="text-xs flex items-center gap-2 p-2.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-900 font-semibold">
-                    <span>🗓️ Next Visit / Follow-up:</span>
+                    <span>🗓️ {t.nextVisitRecommendation}:</span>
                     <span>{clinicalInfo.followUp}</span>
                   </div>
                 )}
@@ -390,10 +394,14 @@ function PrescriptionPageSheet({
         <div className="max-w-lg space-y-1">
           <p className="text-[11px] leading-tight">
             {hospitalInfo?.disclaimer ||
-              "This prescription is computer generated and valid for medical consultation. Keep safe for follow-up visits. For emergencies, contact hospital emergency 24/7."}
+              (language === "bn"
+                ? "এই প্রেসক্রিপশনটি কম্পিউটার দ্বারা প্রস্তুতকৃত এবং পরামর্শের জন্য বৈধ। পরবর্তী সাক্ষাতের জন্য প্রেসক্রিপশনটি সংরক্ষণ করুন।"
+                : "This prescription is computer generated and valid for medical consultation. Keep safe for follow-up visits. For emergencies, contact hospital emergency 24/7.")}
           </p>
           <p className="text-[10px] text-slate-400">
-            Printed via PPMS Cloud • Page {page.pageNumber} of {totalPages}
+            {language === "bn"
+              ? `পিপিএমএস ক্লাউড • পৃষ্ঠা ${page.pageNumber} / ${totalPages}`
+              : `Printed via PPMS Cloud • Page ${page.pageNumber} of ${totalPages}`}
           </p>
         </div>
 
@@ -410,12 +418,12 @@ function PrescriptionPageSheet({
               <div className="h-8 border-dashed border-b border-slate-300 w-36" />
             )}
           </div>
-          <p className="font-bold text-slate-900">{doctor.name || "Consultant Physician"}</p>
+          <p className="font-bold text-slate-900">{doctor.name || (language === "bn" ? "বিশেষজ্ঞ চিকিৎসক" : "Consultant Physician")}</p>
           <p className="text-[11px] text-slate-600 leading-tight">{doctor.specialization}</p>
           {doctor.bmdcRegNo && (
             <p className="text-[10px] font-mono text-slate-500">BMDC: {doctor.bmdcRegNo}</p>
           )}
-          <p className="text-[10px] text-slate-400">Authorized Signature & Seal</p>
+          <p className="text-[10px] text-slate-400">{t.doctorSignatureAuthorized}</p>
         </div>
       </div>
     </div>
@@ -441,6 +449,7 @@ export function PrescriptionPreviewModal({
     day: "numeric",
   }),
 }: PrescriptionPreviewModalProps) {
+  const { t, language } = useLanguage();
   const [currentPage, setCurrentPage] = useState(1);
 
   // Pagination calculation: If medicines or tests are extensive, paginate
@@ -552,18 +561,18 @@ export function PrescriptionPreviewModal({
           </span>
           <div className="min-w-0">
             <h3 className="text-sm font-bold text-white truncate leading-tight flex items-center gap-2">
-              <span>Prescription Live Preview</span>
+              <span>{t.livePreview}</span>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)]">
                 v{version}
               </span>
               <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 hidden sm:inline">
-                A4 Standard
+                A4
               </span>
             </h3>
             <p className="text-[11px] text-slate-400 truncate">
               {totalPages > 1
-                ? `Viewing Page ${activePageIndex} of ${totalPages}`
-                : "Single Page Prescription"}
+                ? (language === "bn" ? `পৃষ্ঠা ${activePageIndex} / ${totalPages}` : `Viewing Page ${activePageIndex} of ${totalPages}`)
+                : (language === "bn" ? "এক পাতার প্রেসক্রিপশন" : "Single Page Prescription")}
             </p>
           </div>
         </div>
@@ -576,10 +585,10 @@ export function PrescriptionPreviewModal({
               disabled={activePageIndex <= 1}
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg hover:bg-slate-700 text-slate-200 disabled:opacity-30 disabled:hover:bg-transparent transition cursor-pointer"
-              title="Previous Page"
+              title={t.previous}
             >
               <ChevronLeft className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Prev</span>
+              <span className="hidden sm:inline">{t.previous}</span>
             </button>
             <span className="text-xs font-mono font-bold px-2.5 text-slate-200">
               {activePageIndex} / {totalPages}
@@ -589,9 +598,9 @@ export function PrescriptionPreviewModal({
               disabled={activePageIndex >= totalPages}
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg hover:bg-slate-700 text-slate-200 disabled:opacity-30 disabled:hover:bg-transparent transition cursor-pointer"
-              title="Next Page"
+              title={t.next}
             >
-              <span className="hidden sm:inline">Next</span>
+              <span className="hidden sm:inline">{t.next}</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -605,14 +614,14 @@ export function PrescriptionPreviewModal({
             className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-xl bg-[var(--brand-primary)] hover:opacity-90 transition-all text-white shadow-md cursor-pointer"
           >
             <Printer className="w-3.5 h-3.5" />
-            <span>Print / PDF</span>
+            <span>{t.print}</span>
           </button>
 
           <button
             type="button"
             onClick={handleClose}
             className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer"
-            aria-label="Close Preview"
+            aria-label={t.close}
           >
             <X className="w-5 h-5" />
           </button>

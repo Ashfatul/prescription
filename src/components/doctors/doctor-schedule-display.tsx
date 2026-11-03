@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { Clock, AlertTriangle, CheckCircle2, ShieldAlert } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 import {
   ScheduleData,
   evaluateDoctorSchedule,
@@ -25,6 +26,7 @@ export function DoctorScheduleDisplay({
   compact = false,
   showEmergencyNotice = true,
 }: DoctorScheduleDisplayProps) {
+  const { t, language } = useLanguage();
   const evalResult = useMemo(() => {
     return evaluateDoctorSchedule(schedule, visitingHours, selectedDate, chamber);
   }, [schedule, visitingHours, selectedDate, chamber]);
@@ -37,12 +39,12 @@ export function DoctorScheduleDisplay({
           {evalResult.isAvailableToday ? (
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Available Today
+              {t.availableToday}
             </span>
           ) : (
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
               <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-              Next: {evalResult.nextAvailableDay || "Next Schedule"}
+              {language === "bn" ? "পরবর্তী: " : "Next: "}{evalResult.nextAvailableDay || (language === "bn" ? "পরবর্তী শিডিউল" : "Next Schedule")}
             </span>
           )}
 
@@ -57,7 +59,7 @@ export function DoctorScheduleDisplay({
           {evalResult.dayStatusList.map((d) => (
             <span
               key={d.day}
-              title={`${d.fullDay}: ${d.isActive ? "Visiting Day" : "Off Day"}`}
+              title={`${d.fullDay}: ${d.isActive ? (language === "bn" ? "সাক্ষাতের দিন" : "Visiting Day") : (language === "bn" ? "বন্ধের দিন" : "Off Day")}`}
               className={`w-6 h-5 rounded-md text-[9px] flex items-center justify-center font-bold tracking-tight transition-all ${
                 d.isActive
                   ? "bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] font-extrabold"
@@ -80,12 +82,12 @@ export function DoctorScheduleDisplay({
           {evalResult.isAvailableToday ? (
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Chamber Open Today
+              {t.chamberOpenToday}
             </span>
           ) : (
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
               <span className="w-2 h-2 rounded-full bg-slate-400" />
-              Next: {evalResult.nextAvailableDay || "Next Visiting Day"}
+              {language === "bn" ? "পরবর্তী: " : "Next: "}{evalResult.nextAvailableDay || (language === "bn" ? "পরবর্তী সাক্ষাতের দিন" : "Next Visiting Day")}
             </span>
           )}
         </div>
@@ -99,8 +101,8 @@ export function DoctorScheduleDisplay({
       {/* 7-Day Visual Schedule Strip */}
       <div>
         <div className="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-          <span>Weekly Visiting Days</span>
-          <span className="text-[9px] lowercase font-normal opacity-80">(ring indicates today)</span>
+          <span>{language === "bn" ? "সাপ্তাহিক সাক্ষাতের দিনসমূহ" : "Weekly Visiting Days"}</span>
+          <span className="text-[9px] lowercase font-normal opacity-80">{language === "bn" ? "(রিং নির্দেশ করে আজ)" : "(ring indicates today)"}</span>
         </div>
         <div className="grid grid-cols-7 gap-1">
           {evalResult.dayStatusList.map((d) => (

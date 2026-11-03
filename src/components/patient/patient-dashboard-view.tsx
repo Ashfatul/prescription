@@ -28,6 +28,7 @@ import { ChangePasswordCard } from "@/components/common/change-password-card";
 import { TwoFactorAuthCard } from "@/components/common/two-factor-auth-card";
 import { createGoogleCalendarAppointmentUrl } from "@/lib/calendar";
 import { useAuth } from "@/lib/auth/auth-context";
+import { useLanguage } from "@/lib/i18n/language-context";
 import { DoctorScheduleDisplay } from "@/components/doctors/doctor-schedule-display";
 
 export interface PatientDoctorItem {
@@ -123,6 +124,7 @@ export function PatientDashboardView({
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user: currentUser } = useAuth();
+  const { t, language } = useLanguage();
   const activeTab = searchParams.get("tab") || "overview";
 
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -368,28 +370,28 @@ export function PatientDashboardView({
       {/* Horizontal Dashboard Navigation Bar */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
         {[
-          { id: "overview", label: "📋 Medical Overview" },
-          { id: "reminders", label: "⏰ Medicine Reminders" },
-          { id: "chat", label: "💬 Doctor Chat" },
-          { id: "announcements", label: "📢 Clinic Notices" },
-          { id: "security", label: "🔒 Security & 2FA" },
-        ].map((t) => {
+          { id: "overview", label: `📋 ${t.medicalOverview}` },
+          { id: "reminders", label: `⏰ ${t.medicineReminders}` },
+          { id: "chat", label: `💬 ${t.clinicalChat}` },
+          { id: "announcements", label: `📢 ${t.clinicNotices}` },
+          { id: "security", label: `🔒 ${t.securityAnd2FA}` },
+        ].map((tabItem) => {
           const isActive =
-            t.id === "overview"
+            tabItem.id === "overview"
               ? activeTab === "overview" || activeTab === "main"
-              : activeTab === t.id;
+              : activeTab === tabItem.id;
           return (
             <button
-              key={t.id}
+              key={tabItem.id}
               type="button"
-              onClick={() => router.replace(`/dashboard/patient?tab=${t.id}`)}
+              onClick={() => router.replace(`/dashboard/patient?tab=${tabItem.id}`)}
               className={`shrink-0 rounded-2xl px-4 py-2.5 text-xs font-bold transition cursor-pointer ${
                 isActive
                   ? "bg-[var(--brand-primary)] text-white shadow-sm"
                   : "bg-[var(--bg-surface)] text-[var(--text-secondary)] border border-[var(--border-subtle)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)]"
               }`}
             >
-              {t.label}
+              {tabItem.label}
             </button>
           );
         })}
@@ -418,13 +420,13 @@ export function PatientDashboardView({
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 text-xs font-bold">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            Verified Patient Health Records
+            {t.verifiedPatientBadge}
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-2 leading-tight">
-            Welcome back, {patientName}
+            {language === "bn" ? `স্বাগতম, ${patientName}` : `Welcome back, ${patientName}`}
           </h1>
           <p className="text-xs text-slate-500 mt-1 max-w-xl">
-            Reserve your consultation queue serials, track visiting physician schedules, and review your official digital prescriptions.
+            {language === "bn" ? "আপনার সিরিয়াল বুকিং করুন, ডাক্তারদের সময়সূচী দেখুন এবং ডিজিটাল প্রেসক্রিপশন পর্যালোচনা করুন।" : "Reserve your consultation queue serials, track visiting physician schedules, and review your official digital prescriptions."}
           </p>
         </div>
 
@@ -434,7 +436,7 @@ export function PatientDashboardView({
           className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-90 transition-all shadow-md self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>Book New Consultation</span>
+          <span>{t.bookAppointment}</span>
         </button>
       </div>
 

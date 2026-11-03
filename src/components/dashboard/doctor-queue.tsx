@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type QueueItem = {
   id: string;
@@ -21,6 +22,7 @@ type QueueResponse = {
 
 export function DoctorQueue({ doctorId }: { doctorId: string }) {
   const [data, setData] = useState<QueueResponse | null>(null);
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     let active = true;
@@ -49,7 +51,7 @@ export function DoctorQueue({ doctorId }: { doctorId: string }) {
   if (!data) {
     return (
       <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 text-xs text-slate-400">
-        Loading queue status...
+        {t.loading}
       </div>
     );
   }
@@ -59,13 +61,17 @@ export function DoctorQueue({ doctorId }: { doctorId: string }) {
       <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
         <div>
           <h3 className="text-base font-bold text-slate-900 dark:text-white">
-            Live Consultation Serial
+            {t.currentSerial}
           </h3>
-          <p className="text-xs text-slate-500">Real-time room call sequence</p>
+          <p className="text-xs text-slate-500">
+            {language === "bn" ? "রিয়েল-টাইম চেম্বার কলিং ক্রম" : "Real-time room call sequence"}
+          </p>
         </div>
         <div className="text-right">
-          <span className="text-xs text-slate-400 block font-medium">Now Calling</span>
-          <span className="text-2xl font-black text-[var(--brand-text)]">
+          <span className="text-xs text-slate-400 block font-medium">
+            {language === "bn" ? "চলমান রোগী" : "Now Calling"}
+          </span>
+          <span className="text-2xl font-black text-[var(--brand-text)] font-mono">
             #{data.currentSerial || "1"}
           </span>
         </div>
@@ -74,7 +80,9 @@ export function DoctorQueue({ doctorId }: { doctorId: string }) {
       <div className="space-y-2">
         {data.queue.length === 0 ? (
           <p className="py-6 text-center text-xs text-slate-400">
-            No patients currently queued in the waiting room.
+            {language === "bn"
+              ? "বর্তমানে ওয়েটিং রুমে কোনো রোগী অপেক্ষমান নেই।"
+              : "No patients currently queued in the waiting room."}
           </p>
         ) : (
           data.queue.map((item) => (
@@ -87,7 +95,7 @@ export function DoctorQueue({ doctorId }: { doctorId: string }) {
               }`}
             >
               <div className="flex items-center gap-2.5">
-                <span className="px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold">
+                <span className="px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold font-mono">
                   #{item.serialNumber}
                 </span>
                 <span className="font-semibold">{item.patient.user.name}</span>

@@ -14,6 +14,7 @@ import {
   Stethoscope,
   X,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type NotificationItem = {
   id: string;
@@ -35,6 +36,7 @@ type NotificationPreferences = {
 };
 
 export function NotificationBell() {
+  const { t, language } = useLanguage();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -165,11 +167,11 @@ export function NotificationBell() {
           <div className="p-4 border-b border-[var(--border-subtle)] flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-sm font-bold text-slate-900 dark:text-white">
-                Notifications
+                {t.notifications}
               </span>
               {unreadCount > 0 && (
                 <span className="px-2 py-0.5 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] text-[10px] font-black">
-                  {unreadCount} new
+                  {unreadCount} {t.newBadge}
                 </span>
               )}
             </div>
@@ -180,17 +182,17 @@ export function NotificationBell() {
                   type="button"
                   onClick={markAllRead}
                   className="px-2 py-1 rounded-lg text-[10px] font-bold text-slate-500 hover:text-[var(--brand-primary)] hover:bg-[var(--bg-subtle)] transition flex items-center gap-1 cursor-pointer"
-                  title="Mark all as read"
+                  title={t.markAllRead}
                 >
                   <CheckCheck className="w-3 h-3" />
-                  <span>Mark all read</span>
+                  <span>{t.markAllRead}</span>
                 </button>
               )}
               <button
                 type="button"
                 onClick={openSettings}
                 className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-[var(--bg-subtle)] transition cursor-pointer"
-                title="Notification Alerts Settings"
+                title={t.notificationAlertPrefs}
               >
                 <Settings className="w-4 h-4" />
               </button>
@@ -202,9 +204,9 @@ export function NotificationBell() {
             {notifications.length === 0 ? (
               <div className="p-8 text-center text-xs text-slate-400 space-y-1">
                 <p className="font-semibold text-slate-600 dark:text-slate-300">
-                  All caught up!
+                  {t.allCaughtUp}
                 </p>
-                <p>No recent alerts or notifications.</p>
+                <p>{t.noRecentNotifications}</p>
               </div>
             ) : (
               notifications.map((n) => (
@@ -251,7 +253,7 @@ export function NotificationBell() {
                           }}
                           className="font-bold text-[var(--brand-text)] hover:underline flex items-center gap-0.5"
                         >
-                          <span>Open</span>
+                          <span>{t.openLink}</span>
                           <ExternalLink className="w-2.5 h-2.5" />
                         </Link>
                       )}
@@ -272,7 +274,7 @@ export function NotificationBell() {
               <div className="flex items-center gap-2">
                 <Settings className="w-5 h-5 text-[var(--brand-primary)]" />
                 <h3 className="font-bold text-slate-900 dark:text-white text-base">
-                  Notification Alert Preferences
+                  {t.notificationAlertPrefs}
                 </h3>
               </div>
               <button
@@ -286,17 +288,17 @@ export function NotificationBell() {
 
             <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4 text-xs">
               <p className="text-slate-500">
-                Choose how you wish to receive prescription updates, chamber schedule alerts, and hospital broadcasts.
+                {t.notificationPrefsSubtitle}
               </p>
 
               {/* Prescription Alerts */}
               <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] space-y-2.5">
                 <span className="font-bold text-slate-800 dark:text-slate-200 block">
-                  Prescription Alerts
+                  {t.prescriptionAlerts}
                 </span>
 
                 <label className="flex items-center justify-between cursor-pointer">
-                  <span>System In-App Alert</span>
+                  <span>{t.systemInAppAlert}</span>
                   <input
                     type="checkbox"
                     checked={prefs.systemPrescriptionAlerts}
@@ -306,7 +308,7 @@ export function NotificationBell() {
                 </label>
 
                 <label className="flex items-center justify-between cursor-pointer">
-                  <span>Email Prescription Alert</span>
+                  <span>{t.emailPrescriptionAlert}</span>
                   <input
                     type="checkbox"
                     checked={prefs.emailPrescriptionAlerts}
@@ -319,11 +321,11 @@ export function NotificationBell() {
               {/* Appointment Alerts */}
               <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] space-y-2.5">
                 <span className="font-bold text-slate-800 dark:text-slate-200 block">
-                  Appointment & Chamber Queue
+                  {t.appointmentQueueAlerts}
                 </span>
 
                 <label className="flex items-center justify-between cursor-pointer">
-                  <span>System Queue Alerts</span>
+                  <span>{t.systemQueueAlerts}</span>
                   <input
                     type="checkbox"
                     checked={prefs.systemAppointmentReminders}
@@ -333,7 +335,7 @@ export function NotificationBell() {
                 </label>
 
                 <label className="flex items-center justify-between cursor-pointer">
-                  <span>Email Appointment Confirmations</span>
+                  <span>{t.emailAppointmentConfirmations}</span>
                   <input
                     type="checkbox"
                     checked={prefs.emailAppointmentReminders}
@@ -346,11 +348,11 @@ export function NotificationBell() {
               {/* Medicine & Broadcasts */}
               <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] space-y-2.5">
                 <span className="font-bold text-slate-800 dark:text-slate-200 block">
-                  Medicine Reminders & Announcements
+                  {language === "bn" ? "ঔষধ রিমাইন্ডার ও হাসপাতাল নোটিশ" : "Medicine Reminders & Announcements"}
                 </span>
 
                 <label className="flex items-center justify-between cursor-pointer">
-                  <span>Medicine Reminders</span>
+                  <span>{t.medicineReminders}</span>
                   <input
                     type="checkbox"
                     checked={prefs.emailMedicineReminders}
@@ -360,7 +362,7 @@ export function NotificationBell() {
                 </label>
 
                 <label className="flex items-center justify-between cursor-pointer">
-                  <span>Hospital Announcements</span>
+                  <span>{t.hospitalAnnouncements}</span>
                   <input
                     type="checkbox"
                     checked={prefs.announcements}
@@ -377,7 +379,7 @@ export function NotificationBell() {
                 onClick={() => setSettingsOpen(false)}
                 className="w-full py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white font-bold text-xs shadow-xs hover:opacity-95 transition cursor-pointer"
               >
-                {savingPrefs ? "Saving..." : "Done"}
+                {savingPrefs ? t.saving : t.done}
               </button>
             </div>
           </div>

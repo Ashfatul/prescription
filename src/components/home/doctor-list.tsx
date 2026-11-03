@@ -75,7 +75,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
   const [selectedSpecialty, setSelectedSpecialty] = useState<string>("All");
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     let active = true;
@@ -169,8 +169,8 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
     return (
       <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs">
         <Sparkles className="w-8 h-8 text-slate-400 mx-auto mb-3" />
-        <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">No Consulting Doctors Active</h3>
-        <p className="text-xs text-slate-500 mt-1">Please check back during regular OPD chamber visiting hours.</p>
+        <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">{t.noConsultingDoctors}</h3>
+        <p className="text-xs text-slate-500 mt-1">{t.checkBackVisitingHours}</p>
       </div>
     );
   }
@@ -190,7 +190,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
                 setSearchQuery(e.target.value);
                 setIsExpanded(true); // Auto-expand when searching
               }}
-              placeholder="Search by physician name, department, or degree..."
+              placeholder={language === "bn" ? "ডাক্তারের নাম, বিশেষজ্ঞ বিভাগ বা ডিগ্রি দিয়ে খুঁজুন..." : "Search by physician name, department, or degree..."}
               className="w-full input-icon-left !pl-11 pr-4 py-2.5 rounded-2xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)] transition"
             />
           </div>
@@ -199,12 +199,12 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
           <div className="flex items-center gap-2 text-xs text-slate-500 font-medium px-2">
             <Filter className="w-3.5 h-3.5 text-[var(--brand-primary)] shrink-0" />
             <span>
-              Showing <strong className="text-[var(--text-primary)] font-bold">{displayedDoctors.length}</strong> of{" "}
+              {t.showingPhysicians} <strong className="text-[var(--text-primary)] font-bold">{displayedDoctors.length}</strong> {t.ofText}{" "}
               <strong className="text-[var(--text-primary)] font-bold">{filteredDoctors.length}</strong>
               {filteredDoctors.length !== doctors.length && (
-                <span className="text-slate-400"> (filtered from {doctors.length} total)</span>
+                <span className="text-slate-400"> ({t.filteredFromTotal} {doctors.length})</span>
               )}{" "}
-              Physicians
+              {t.physicians}
             </span>
           </div>
         </div>
@@ -240,7 +240,9 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
       {displayedDoctors.length === 0 ? (
         <div className="p-10 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
           <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">
-            No doctors found matching &ldquo;{searchQuery}&rdquo; in {selectedSpecialty}.
+            {language === "bn"
+              ? `"${searchQuery}" এর জন্য ${selectedSpecialty} বিভাগে কোনো ডাক্তার পাওয়া যায়নি।`
+              : `No doctors found matching "${searchQuery}" in ${selectedSpecialty}.`}
           </p>
           <button
             type="button"
@@ -250,7 +252,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
             }}
             className="mt-3 text-xs font-bold text-[var(--brand-text)] hover:underline"
           >
-            Clear filters and reset
+            {t.clearFiltersAndReset}
           </button>
         </div>
       ) : (
@@ -303,7 +305,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
                                 : "text-slate-400"
                             }`}
                           >
-                            {doctor.available ? "Chamber Open" : "Offline"}
+                            {doctor.available ? t.chamberOpen : t.chamberOffline}
                           </span>
                         </div>
 
@@ -352,7 +354,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
                     <div className="grid grid-cols-3 gap-1.5 p-2 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] mb-3 text-center">
                       <div className="p-1">
                         <span className="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">
-                          1st Visit
+                          {t.firstVisit}
                         </span>
                         <span className="font-black text-xs text-blue-700 dark:text-blue-300 font-mono">
                           ${doctor.newPatientFee ?? 50}
@@ -360,7 +362,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
                       </div>
                       <div className="p-1 border-x border-[var(--border-subtle)]">
                         <span className="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">
-                          Follow-up
+                          {t.followup}
                         </span>
                         <span className="font-black text-xs text-teal-700 dark:text-teal-300 font-mono">
                           ${doctor.followupFee ?? 30}
@@ -368,10 +370,10 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
                       </div>
                       <div className="p-1">
                         <span className="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">
-                          Report
+                          {t.reportReview}
                         </span>
                         <span className="font-black text-xs text-emerald-600 dark:text-emerald-400 font-mono">
-                          Free (${0})
+                          {language === "bn" ? "ফ্রি ($0)" : "Free ($0)"}
                         </span>
                       </div>
                     </div>
@@ -390,15 +392,15 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
                           </span>
                           <span className="text-[10px] text-slate-400">
                             {doctor.currentSerial && doctor.currentSerial > 0
-                              ? "in chamber"
-                              : "Queue waiting"}
+                              ? (language === "bn" ? "চেম্বারে" : "in chamber")
+                              : (language === "bn" ? "কিউ অপেক্ষমান" : "Queue waiting")}
                           </span>
                         </div>
                       </div>
 
                       <span className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[var(--bg-subtle)] text-[11px] font-semibold text-slate-700 dark:text-slate-300 border border-[var(--border-subtle)]">
                         <UserCheck className="w-3.5 h-3.5 text-emerald-500" />
-                        <span>Live Queue</span>
+                        <span>{t.liveQueue}</span>
                       </span>
                     </div>
 
@@ -408,7 +410,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
                         href={`/doctors/${doctor.id}`}
                         className="py-2.5 px-3 rounded-xl border border-[var(--border-default)] hover:border-[var(--brand-border)] bg-[var(--bg-subtle)] text-[var(--text-primary)] text-xs font-semibold text-center transition flex-1 flex items-center justify-center gap-1 cursor-pointer"
                       >
-                        <span>Profile & Info</span>
+                        <span>{t.viewDetails}</span>
                       </Link>
 
                       {!isStaffOrDoctor && (
@@ -421,7 +423,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
                           className="py-2.5 px-3 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-90 transition shadow-xs flex items-center justify-center gap-1 cursor-pointer flex-1"
                         >
                           <Calendar className="w-3.5 h-3.5" />
-                          <span>Book Visit</span>
+                          <span>{t.bookNow}</span>
                         </button>
                       )}
                     </div>
@@ -443,13 +445,15 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
           >
             {isExpanded ? (
               <>
-                <span>Show Less (Show First {initialLimit})</span>
+                <span>{language === "bn" ? `কম দেখান (প্রথম ${initialLimit} জন)` : `Show Less (Show First ${initialLimit})`}</span>
                 <ChevronUp className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
               </>
             ) : (
               <>
                 <span>
-                  Show More (+{filteredDoctors.length - initialLimit} More Physicians)
+                  {language === "bn"
+                    ? `আরও দেখুন (+${filteredDoctors.length - initialLimit} জন অতিরিক্ত ডাক্তার)`
+                    : `Show More (+${filteredDoctors.length - initialLimit} More Physicians)`}
                 </span>
                 <ChevronDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
               </>

@@ -82,6 +82,35 @@ Welcome to the **Patient Prescription Management System (PPMS)** codebase. This 
   </div>
   ```
 
+### 1.5 Strict Standard: 100% Translatable UI (Zero Hardcoded Text Rule - Future & Present)
+- **STRICT PROHIBITION**: Never leave hardcoded English (or Bengali) strings in user-facing components, pages, buttons, navigation items, form labels, placeholders, headers, modals, cards, badges, tabs, alerts, or status chips.
+- **Universal Translation Mandatory**: Any and every text displayed to the user MUST be translatable via `useLanguage()` from `@/lib/i18n/language-context` and backed by `src/lib/i18n/dictionary.ts`.
+- **Dual-Locale Completeness (English & Bengali)**: Every translation key MUST be defined in both `en` and `bn` dictionaries. When adding new keys, screens, modals, or components, always supply accurate, natural, professional medical Bengali (`bn`) translations alongside English (`en`).
+- **Dynamic or Inline Localized Strings**: For components that need quick inline bilingual branching or parameterized strings, always check `language === "bn"` or use `t("key", fallback)`.
+- **Standard Usage Pattern**:
+  ```tsx
+  import { useLanguage } from "@/lib/i18n/language-context";
+
+  export function ClinicalCard() {
+    const { t, language } = useLanguage();
+
+    return (
+      <div>
+        {/* Direct typed property access */}
+        <h2>{t.prescriptionPad}</h2>
+        <button>{t.save}</button>
+
+        {/* Function access with optional fallback */}
+        <label>{t("chiefComplaints", "Chief Complaints")}</label>
+
+        {/* Inline bilingual conditional when needed */}
+        <p>{language === "bn" ? "বিস্তারিত বিবরণ" : "Detailed description"}</p>
+      </div>
+    );
+  }
+  ```
+- **Future Development Requirement**: Any future pull request, agent prompt, or feature branch adding UI without complete `t.` hooks and corresponding Bengali translations in `dictionary.ts` will be rejected. Always update `dictionary.ts` whenever introducing any new UI string.
+
 ---
 
 ## 2. Doctor Ergonomics & Fast Prescribing Principles
@@ -142,3 +171,4 @@ Before completing any task modifying UI or backend:
 3. Confirm zero native `<select>` tags (`git grep "<select"` must return 0 results). Always use `CustomSelect`.
 4. Test both **Light Mode** and **Dark Mode** to ensure no illegible text, unstyled borders, or jarring white/black patches.
 5. Confirm responsive behavior across mobile, tablet, and desktop viewports.
+6. Confirm 100% translatable text: verify that all user-facing strings are hooked up to `useLanguage().t` and defined in both English (`en`) and Bengali (`bn`) in `src/lib/i18n/dictionary.ts`.

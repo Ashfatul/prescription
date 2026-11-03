@@ -20,7 +20,9 @@ import {
 } from "lucide-react";
 import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
+import { LanguageToggle } from "@/components/common/language-toggle";
 import { DemoCountdownTimer } from "@/components/common/demo-countdown-timer";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 const DEMO_ACCOUNTS = [
   {
@@ -78,6 +80,7 @@ const DEMO_ACCOUNTS = [
 export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
   const router = useRouter();
   const { user, login, verify2FALogin, loading: authLoading } = useAuth();
+  const { t, language } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -196,13 +199,14 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
             <span>Secure Enterprise Single Sign-On</span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <LanguageToggle />
             <ThemeCustomizer compact direction="down" align="right" />
             <Link
               href="/"
               className="text-xs font-semibold text-slate-500 hover:text-[var(--brand-primary)] transition flex items-center gap-1"
             >
-              ← Home
+              ← {t.home}
             </Link>
           </div>
         </div>
@@ -214,22 +218,22 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
               <div className="space-y-2">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20 text-xs font-bold">
                   <Shield className="w-3.5 h-3.5" />
-                  <span>Two-Factor Authentication</span>
+                  <span>{t.twoFactorAuthentication}</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-                  Security Check
+                  {t("securityCheck", "Security Check")}
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
                   {useBackupCode
-                    ? "Enter an unused 8-character recovery backup code to access your account."
-                    : `Enter the 6-digit code from your authenticator app for ${maskedEmail || "your account"}.`}
+                    ? (language === "bn" ? "অ্যাকাউন্টে প্রবেশ করতে একটি অব্যবহৃত ৮-সংখ্যার ব্যাকআপ রিকভারি কোড লিখুন।" : "Enter an unused 8-character recovery backup code to access your account.")
+                    : (language === "bn" ? `আপনার অথেনটিকেটর অ্যাপ থেকে ৬-সংখ্যার কোডটি প্রবেশ করান (${maskedEmail || "আপনার অ্যাকাউন্ট"})।` : `Enter the 6-digit code from your authenticator app for ${maskedEmail || "your account"}.`)}
                 </p>
               </div>
 
               <form className="space-y-4" onSubmit={onVerify2FASubmit}>
                 <div>
                   <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    {useBackupCode ? "Recovery Backup Code" : "6-Digit Authenticator Code"}
+                    {useBackupCode ? (language === "bn" ? "ব্যাকআপ রিকভারি কোড" : "Recovery Backup Code") : (language === "bn" ? "৬-সংখ্যার অথেনটিকেটর কোড" : "6-Digit Authenticator Code")}
                   </label>
                   <div className="relative">
                     <input
@@ -263,11 +267,11 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
                   {twoFactorLoading ? (
                     <>
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>Verifying Code...</span>
+                      <span>{t.verifying}</span>
                     </>
                   ) : (
                     <>
-                      <span>Verify & Sign In</span>
+                      <span>{t.verifyAndSignIn}</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
@@ -283,7 +287,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
                     }}
                     className="text-[var(--brand-primary)] font-semibold hover:underline cursor-pointer"
                   >
-                    {useBackupCode ? "Use Authenticator App instead" : "Use backup recovery code"}
+                    {useBackupCode ? t.useTotpCode : t.useBackupCode}
                   </button>
 
                   <button
@@ -292,7 +296,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
                     className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer flex items-center gap-1"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
-                    <span>Back to login</span>
+                    <span>{language === "bn" ? "লগইনে ফিরে যান" : "Back to login"}</span>
                   </button>
                 </div>
               </form>
@@ -302,15 +306,15 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
               <div className="space-y-1.5">
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-[11px] font-bold">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Verified Clinical Access</span>
+              <span>{language === "bn" ? "ভেরিফায়েড ক্লিনিকাল পোর্টাল" : "Verified Clinical Access"}</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-              Welcome back
+              {t.welcomeBack}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
               {isDemoMode
-                ? "Sign in with your email or select an instant demo clinical profile below."
-                : "Sign in with your verified PPMS healthcare credentials."}
+                ? (language === "bn" ? "আপনার ইমেইল দিয়ে লগইন করুন অথবা নিচের ডেমো প্রোফাইল নির্বাচন করুন।" : "Sign in with your email or select an instant demo clinical profile below.")
+                : (language === "bn" ? "আপনার নিবন্ধিত পিপিএমএস অ্যাকাউন্টে লগইন করুন।" : "Sign in with your verified PPMS healthcare credentials.")}
             </p>
           </div>
 
@@ -318,7 +322,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
             {/* Email Field with Icon */}
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Email Address
+                {t.emailAddress}
               </label>
               <div className="relative">
                 <input
@@ -337,13 +341,13 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  Password
+                  {t.password}
                 </label>
                 <Link
                   href="/auth/forgot-password"
                   className="text-xs font-semibold text-[var(--brand-primary)] hover:underline cursor-pointer"
                 >
-                  Forgot Password?
+                  {t.forgotPassword}
                 </Link>
               </div>
               <div className="relative">
@@ -381,11 +385,11 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
               {loading ? (
                 <>
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Authenticating...</span>
+                  <span>{t.pleaseWait}</span>
                 </>
               ) : (
                 <>
-                  <span>Sign in to Dashboard</span>
+                  <span>{t.signIn}</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -448,11 +452,11 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                    PPMS Clinic Demo Evaluation
+                    {t.demoProfilesTitle}
                   </span>
                 </div>
                 <span className="rounded-full bg-[var(--brand-surface)] px-2.5 py-0.5 text-[10px] font-bold text-[var(--brand-text)] border border-[var(--brand-border)]">
-                  Instant Access
+                  {language === "bn" ? "সরাসরি প্রবেশ" : "Instant Access"}
                 </span>
               </div>
 

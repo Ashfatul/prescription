@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { CustomSelect } from "@/components/common/custom-select";
 import { CustomDatePicker } from "@/components/common/custom-date-picker";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type OrgOption = {
   id: string;
@@ -56,6 +57,7 @@ const labelClasses =
 export function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t, language } = useLanguage();
   const initialMode = searchParams.get("type") === "patient" ? "patient" : "clinic";
 
   const { login } = useAuth();
@@ -316,7 +318,7 @@ export function RegisterForm() {
           }`}
         >
           <Building2 className="w-4 h-4 text-[var(--brand-primary)]" />
-          <span>New Clinic (14-Day Free Trial)</span>
+          <span>{language === "bn" ? "নতুন ক্লিনিক (১৪ দিনের ফ্রি ট্রায়াল)" : "New Clinic (14-Day Free Trial)"}</span>
         </button>
 
         <button
@@ -332,7 +334,7 @@ export function RegisterForm() {
           }`}
         >
           <HeartPulse className="w-4 h-4 text-rose-500" />
-          <span>Patient Account</span>
+          <span>{t.rolePatient}</span>
         </button>
       </div>
 
@@ -342,26 +344,30 @@ export function RegisterForm() {
           <div className="space-y-1.5 text-center sm:text-left">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/10 text-teal-700 dark:text-teal-300 text-xs font-bold uppercase tracking-wider border border-teal-500/20">
               <Sparkles className="w-3.5 h-3.5 text-teal-600" />
-              <span>14-Day Free Trial • No Credit Card Required</span>
+              <span>{t.trialNotice}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              Register Your Clinic or Hospital
+              {t.registerClinicTitle}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500">
-              Create your independent clinical tenant. Add doctors, configure receptionist queue, prescribe digitally, and manage clinical formulary.
+              {language === "bn"
+                ? "আপনার নিজস্ব ক্লিনিক তৈরি করুন। ডাক্তার যোগ করুন, রিসেপশন কিউ ম্যানেজ করুন এবং ডিজিটাল প্রেসক্রিপশন লিখুন।"
+                : "Create your independent clinical tenant. Add doctors, configure receptionist queue, prescribe digitally, and manage clinical formulary."}
             </p>
           </div>
         ) : (
           <div className="space-y-1.5 text-center sm:text-left">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-bold uppercase tracking-wider border border-rose-500/20">
               <HeartPulse className="w-3.5 h-3.5" />
-              <span>Patient Portal Registration</span>
+              <span>{t.patientPortalTitle}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              Create Your Health Account
+              {t.createAccount}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500">
-              Access your prescriptions, medicine reminders, and doctor appointments.
+              {language === "bn"
+                ? "প্রেসক্রিপশন দেখুন, ঔষধের রিমাইন্ডার সেট করুন এবং ডাক্তারের সাথে অ্যাপয়েন্টমেন্ট নিন।"
+                : "Access your prescriptions, medicine reminders, and doctor appointments."}
             </p>
           </div>
         )}
@@ -391,7 +397,7 @@ export function RegisterForm() {
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
                     <Building2 className="w-3 h-3 text-[var(--brand-primary)]" />
-                    <span>Clinic / Hospital Name *</span>
+                    <span>{language === "bn" ? "ক্লিনিক বা হাসপাতালের নাম *" : "Clinic / Hospital Name *"}</span>
                   </label>
                   <div className="relative">
                     <input
@@ -399,7 +405,7 @@ export function RegisterForm() {
                       required
                       value={clinicName}
                       onChange={(e) => handleClinicNameChange(e.target.value)}
-                      placeholder="e.g. CareWell Medical Center"
+                      placeholder={language === "bn" ? "যেমন: কেয়ারওয়েল মেডিকেল সেন্টার" : "e.g. CareWell Medical Center"}
                       className={iconInputClasses}
                     />
                     <Building2 className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -410,24 +416,24 @@ export function RegisterForm() {
                   <div className="flex items-center justify-between">
                     <label className={labelClasses}>
                       <Globe className="w-3 h-3 text-[var(--brand-primary)]" />
-                      <span>Clinic Subdomain Slug *</span>
+                      <span>{t.subdomainLabel} *</span>
                     </label>
                     {slugStatus === "checking" && (
                       <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
                         <Loader2 className="w-3 h-3 animate-spin text-[var(--brand-primary)]" />
-                        <span>Validating...</span>
+                        <span>{language === "bn" ? "যাচাই করা হচ্ছে..." : "Validating..."}</span>
                       </span>
                     )}
                     {slugStatus === "available" && (
                       <span className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                         <CheckCircle2 className="w-3 h-3" />
-                        <span>Available</span>
+                        <span>{language === "bn" ? "খালি আছে" : "Available"}</span>
                       </span>
                     )}
                     {slugStatus === "unavailable" && (
                       <span className="text-[10px] font-extrabold text-rose-600 dark:text-rose-400 flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />
-                        <span>Unavailable</span>
+                        <span>{language === "bn" ? "উপলব্ধ নয়" : "Unavailable"}</span>
                       </span>
                     )}
                   </div>
@@ -479,11 +485,11 @@ export function RegisterForm() {
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                     <Globe className="w-3 h-3 text-[var(--brand-primary)]" />
-                    Your Dedicated Clinic URL
+                    {language === "bn" ? "আপনার ডেডিকেটেড ক্লিনিক ইউআরএল" : "Your Dedicated Clinic URL"}
                   </span>
                   {slugStatus === "available" && (
                     <span className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-                      Ready to Claim
+                      {language === "bn" ? "ব্যবহারযোগ্য" : "Ready to Claim"}
                     </span>
                   )}
                 </div>
@@ -503,7 +509,9 @@ export function RegisterForm() {
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-500 pt-0.5">
-                  This subdomain will serve your dedicated clinic profile, patient token booking, and consulting doctor roster.
+                  {language === "bn"
+                    ? "এই সাবডোমেনের মাধ্যমে আপনার রোগী ও ডাক্তাররা সরাসরি আপনার ক্লিনিকের পেজে প্রবেশ করবেন।"
+                    : "This subdomain will serve your dedicated clinic profile, patient token booking, and consulting doctor roster."}
                 </p>
               </div>
 
@@ -511,7 +519,7 @@ export function RegisterForm() {
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
                     <User className="w-3 h-3" />
-                    <span>Administrator Name *</span>
+                    <span>{language === "bn" ? "অ্যাডমিনিস্ট্রেটরের পূর্ণ নাম *" : "Administrator Name *"}</span>
                   </label>
                   <div className="relative">
                     <input
@@ -519,7 +527,7 @@ export function RegisterForm() {
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="e.g. Dr. Rayan Chowdhury"
+                      placeholder={language === "bn" ? "যেমন: ডা. রায়ান চৌধুরী" : "e.g. Dr. Rayan Chowdhury"}
                       className={iconInputClasses}
                     />
                     <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -529,7 +537,7 @@ export function RegisterForm() {
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
                     <Mail className="w-3 h-3" />
-                    <span>Work Email Address *</span>
+                    <span>{language === "bn" ? "অফিসিয়াল ইমেইল *" : "Work Email Address *"}</span>
                   </label>
                   <div className="relative">
                     <input
@@ -549,7 +557,7 @@ export function RegisterForm() {
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
                     <Phone className="w-3 h-3" />
-                    <span>Contact Phone</span>
+                    <span>{t.patientPhone}</span>
                   </label>
                   <div className="relative">
                     <input
@@ -566,7 +574,7 @@ export function RegisterForm() {
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
                     <Lock className="w-3 h-3" />
-                    <span>Password (min. 6 chars) *</span>
+                    <span>{language === "bn" ? "পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর) *" : "Password (min. 6 chars) *"}</span>
                   </label>
                   <div className="relative">
                     <input
@@ -594,14 +602,14 @@ export function RegisterForm() {
               <div className="space-y-1.5">
                 <label className={labelClasses}>
                   <MapPin className="w-3 h-3" />
-                  <span>Chamber / Clinic Physical Address</span>
+                  <span>{t.clinicAddressLabel}</span>
                 </label>
                 <div className="relative">
                   <input
                     type="text"
                     value={clinicAddress}
                     onChange={(e) => setClinicAddress(e.target.value)}
-                    placeholder="e.g. House 45, Road 11, Banani, Dhaka"
+                    placeholder={language === "bn" ? "যেমন: বাড়ি ৪৫, রোড ১১, বনানী, ঢাকা" : "e.g. House 45, Road 11, Banani, Dhaka"}
                     className={iconInputClasses}
                   />
                   <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -612,7 +620,7 @@ export function RegisterForm() {
               <div className="space-y-2 pt-2">
                 <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
                   <Sparkles className="w-3 h-3 text-[var(--brand-primary)]" />
-                  <span>Choose Package for 14-Day Free Trial</span>
+                  <span>{language === "bn" ? "১৪ দিনের ফ্রি ট্রায়ালের জন্য প্যাকেজ নির্বাচন করুন" : "Choose Package for 14-Day Free Trial"}</span>
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   {plans.map((plan) => {
@@ -629,7 +637,7 @@ export function RegisterForm() {
                       >
                         {plan.isPopular && (
                           <span className="absolute -top-2 right-2 px-1.5 py-0.5 rounded-full bg-[var(--brand-primary)] text-white text-[8px] font-bold uppercase tracking-wider">
-                            Popular
+                            {language === "bn" ? "জনপ্রিয়" : "Popular"}
                           </span>
                         )}
                         <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
@@ -657,7 +665,7 @@ export function RegisterForm() {
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
                     <User className="w-3 h-3" />
-                    <span>Full Name *</span>
+                    <span>{t.patientName} *</span>
                   </label>
                   <div className="relative">
                     <input
@@ -665,7 +673,7 @@ export function RegisterForm() {
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="e.g. Fatima Rahman"
+                      placeholder={language === "bn" ? "যেমন: ফাতেমা রহমান" : "e.g. Fatima Rahman"}
                       className={iconInputClasses}
                     />
                     <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -675,7 +683,7 @@ export function RegisterForm() {
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
                     <Mail className="w-3 h-3" />
-                    <span>Email Address *</span>
+                    <span>{t.emailAddress} *</span>
                   </label>
                   <div className="relative">
                     <input
@@ -695,7 +703,7 @@ export function RegisterForm() {
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
                     <Lock className="w-3 h-3" />
-                    <span>Password (min. 6 chars) *</span>
+                    <span>{language === "bn" ? "পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর) *" : "Password (min. 6 chars) *"}</span>
                   </label>
                   <div className="relative">
                     <input
@@ -722,7 +730,7 @@ export function RegisterForm() {
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
                     <Phone className="w-3 h-3" />
-                    <span>Phone Number</span>
+                    <span>{t.patientPhone}</span>
                   </label>
                   <div className="relative">
                     <input
@@ -740,15 +748,15 @@ export function RegisterForm() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
-                    <span>Gender</span>
+                    <span>{t.patientGender}</span>
                   </label>
                   <CustomSelect
                     value={gender}
                     onChange={(val) => setGender(val)}
                     options={[
-                      { value: "Female", label: "Female" },
-                      { value: "Male", label: "Male" },
-                      { value: "Other", label: "Other" },
+                      { value: "Female", label: t.genderFemale },
+                      { value: "Male", label: t.genderMale },
+                      { value: "Other", label: t.genderOther },
                     ]}
                     searchable={false}
                   />
@@ -756,13 +764,13 @@ export function RegisterForm() {
 
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
-                    <span>Date of Birth</span>
+                    <span>{t.dateOfBirthLabel}</span>
                   </label>
                   <CustomDatePicker
                     value={dateOfBirth}
                     onChange={(val) => setDateOfBirth(val)}
                     maxDate={new Date().toISOString().split("T")[0]}
-                    placeholder="Select birth date"
+                    placeholder={language === "bn" ? "জন্মতারিখ নির্বাচন করুন" : "Select birth date"}
                     quickPresets={false}
                   />
                 </div>
@@ -771,26 +779,26 @@ export function RegisterForm() {
               <div className="grid sm:grid-cols-1 gap-4">
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
-                    <span>Primary Clinic</span>
+                    <span>{language === "bn" ? "প্রধান ক্লিনিক বা হাসপাতাল" : "Primary Clinic"}</span>
                   </label>
                   <CustomSelect
                     value={organizationId}
                     onChange={(val) => setOrganizationId(val)}
                     options={orgs.map((org) => ({ value: org.id, label: org.name }))}
-                    placeholder="Select clinic..."
+                    placeholder={language === "bn" ? "ক্লিনিক নির্বাচন করুন..." : "Select clinic..."}
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
                 <label className={labelClasses}>
-                  <span>Known Medical History / Allergies (Optional)</span>
+                  <span>{t.medicalHistoryLabel}</span>
                 </label>
                 <textarea
                   rows={2}
                   value={medicalHistory}
                   onChange={(e) => setMedicalHistory(e.target.value)}
-                  placeholder="e.g. Penicillin allergy, Hypertension, Asthma"
+                  placeholder={language === "bn" ? "যেমন: পেনিসিলিন এলার্জি, উচ্চ রক্তচাপ, এজমা" : "e.g. Penicillin allergy, Hypertension, Asthma"}
                   className={textareaClasses}
                 />
               </div>
@@ -809,7 +817,9 @@ export function RegisterForm() {
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
                 <span>
-                  {mode === "clinic" ? "Creating Clinic Tenant..." : "Creating Account..."}
+                  {mode === "clinic"
+                    ? (language === "bn" ? "ক্লিনিক তৈরি হচ্ছে..." : "Creating Clinic Tenant...")
+                    : (language === "bn" ? "অ্যাকাউন্ট তৈরি হচ্ছে..." : "Creating Account...")}
                 </span>
               </>
             ) : (
@@ -821,8 +831,8 @@ export function RegisterForm() {
                 )}
                 <span>
                   {mode === "clinic"
-                    ? "Start 14-Day Free Trial & Setup Clinic"
-                    : "Complete Registration"}
+                    ? (language === "bn" ? "১৪ দিনের ফ্রি ট্রায়াল ও ক্লিনিক সেটআপ শুরু করুন" : "Start 14-Day Free Trial & Setup Clinic")
+                    : (language === "bn" ? "নিবন্ধন সম্পন্ন করুন" : "Complete Registration")}
                 </span>
               </>
             )}
@@ -830,12 +840,12 @@ export function RegisterForm() {
         </form>
 
         <div className="pt-4 border-t border-[var(--border-subtle)] text-center text-xs text-slate-500">
-          <span>Already registered? </span>
+          <span>{t.alreadyHaveAccount} </span>
           <Link
             href="/auth/login"
             className="font-bold text-[var(--brand-text)] hover:underline inline-flex items-center gap-1"
           >
-            <span>Sign In to Dashboard</span>
+            <span>{t.signIn}</span>
             <ArrowRight className="w-3 h-3" />
           </Link>
         </div>

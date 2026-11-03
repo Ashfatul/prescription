@@ -18,11 +18,14 @@ import {
 } from "lucide-react";
 import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
+import { LanguageToggle } from "@/components/common/language-toggle";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 function ResetPasswordInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token") || "";
+  const { t, language } = useLanguage();
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -82,10 +85,12 @@ function ResetPasswordInner() {
                 <KeyRound className="w-6 h-6" />
               </div>
               <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                Create New Password
+                {language === "bn" ? "নতুন পাসওয়ার্ড তৈরি করুন" : "Create New Password"}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
-                Enter your new password below. Ensure it is at least 8 characters long.
+                {language === "bn"
+                  ? "নিচে আপনার নতুন পাসওয়ার্ড প্রদান করুন। কমপক্ষে ৮ অক্ষরের হতে হবে।"
+                  : "Enter your new password below. Ensure it is at least 8 characters long."}
               </p>
             </div>
 
@@ -93,7 +98,9 @@ function ResetPasswordInner() {
               <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-xs flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                 <span className="leading-relaxed font-medium">
-                  Missing reset token. Please open the link received in your email.
+                  {language === "bn"
+                    ? "রিসেট টোকেন অনুপস্থিত। অনুগ্রহ করে ইমেইলে পাওয়া লিংকে ক্লিক করুন।"
+                    : "Missing reset token. Please open the link received in your email."}
                 </span>
               </div>
             )}
@@ -108,7 +115,7 @@ function ResetPasswordInner() {
             <form onSubmit={(e) => void handleSubmit(e)} className="space-y-3.5">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
-                  New Password (min 8 chars)
+                  {t.newPassword} ({language === "bn" ? "কমপক্ষে ৮ অক্ষর" : "min 8 chars"})
                 </label>
                 <div className="relative">
                   <input
@@ -134,7 +141,7 @@ function ResetPasswordInner() {
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
-                  Confirm New Password
+                  {t.confirmNewPassword}
                 </label>
                 <div className="relative">
                   <input
@@ -166,11 +173,11 @@ function ResetPasswordInner() {
                 {loading ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Updating Password...</span>
+                    <span>{t.saving}</span>
                   </>
                 ) : (
                   <>
-                    <span>Save New Password</span>
+                    <span>{t.updatePassword}</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -182,7 +189,8 @@ function ResetPasswordInner() {
                 href="/auth/forgot-password"
                 className="text-xs font-medium text-slate-500 hover:text-[var(--brand-primary)] transition"
               >
-                Link expired or broken? <span className="font-bold underline">Request a new one</span>
+                {language === "bn" ? "লিংকের মেয়াদ শেষ? " : "Link expired or broken? "}
+                <span className="font-bold underline">{language === "bn" ? "নতুন লিংকের অনুরোধ করুন" : "Request a new one"}</span>
               </Link>
             </div>
           </>
@@ -194,10 +202,12 @@ function ResetPasswordInner() {
 
             <div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                Password Successfully Reset!
+                {language === "bn" ? "পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে!" : "Password Successfully Reset!"}
               </h2>
               <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 max-w-sm mx-auto leading-relaxed">
-                Your account password has been updated. You can now log into your clinical dashboard using your new credentials.
+                {language === "bn"
+                  ? "আপনার অ্যাকাউন্টের পাসওয়ার্ড সফলভাবে আপডেট করা হয়েছে। এখন নতুন পাসওয়ার্ড দিয়ে লগইন করতে পারেন।"
+                  : "Your account password has been updated. You can now log into your clinical dashboard using your new credentials."}
               </p>
             </div>
 
@@ -207,7 +217,7 @@ function ResetPasswordInner() {
                 onClick={() => router.push("/auth/login")}
                 className="w-full min-h-[44px] rounded-xl bg-[var(--brand-primary)] hover:opacity-95 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
               >
-                Sign In to Dashboard
+                {t.signIn}
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -269,7 +279,8 @@ export default function ResetPasswordPage() {
             <span>Cryptographic Credential Reset</span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <LanguageToggle />
             <ThemeCustomizer compact direction="down" align="right" />
             <Link
               href="/auth/login"
