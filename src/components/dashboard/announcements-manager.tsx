@@ -14,6 +14,7 @@ import {
 import { CustomSelect } from "@/components/common/custom-select";
 import { useAuth } from "@/lib/auth/auth-context";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 const inputClasses =
   "w-full px-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]";
@@ -134,12 +135,17 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
         setContent("");
         setTargetRole("ALL");
         setPriority("NORMAL");
+        notifyToast("Announcement posted successfully.", "success");
         fetchAnnouncements();
       } else {
-        setError(data.message || "Failed to post announcement.");
+        const message = data.message || "Failed to post announcement.";
+        setError(message);
+        notifyToast(message, "error");
       }
     } catch {
-      setError("Network error creating announcement.");
+      const message = "Network error creating announcement.";
+      setError(message);
+      notifyToast(message, "error");
     } finally {
       setSubmitting(false);
     }
@@ -153,8 +159,9 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
         body: JSON.stringify({ isActive: !currentState }),
       });
       fetchAnnouncements();
+      notifyToast("Announcement status updated successfully.", "success");
     } catch {
-      // Ignore
+      notifyToast("Failed to update announcement status.", "error");
     }
   };
 
@@ -163,8 +170,9 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
     try {
       await fetch(`/api/announcements/${id}`, { method: "DELETE" });
       setAnnouncements((prev) => prev.filter((a) => a.id !== id));
+      notifyToast("Announcement deleted successfully.", "success");
     } catch {
-      // Ignore
+      notifyToast("Failed to delete announcement.", "error");
     }
   };
 
@@ -173,20 +181,20 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
     if (currentRole === "SUPER_ADMIN" || currentRole === "STAFF") {
       return [
         { value: "ALL", label: t("uiAllAudiences") },
-        { value: "DOCTOR", label: t("roleDoctorsAndPhysicians"), badge: "Doctor" },
-        { value: "PATIENT", label: t("rolePatientsAndPublic"), badge: "Patient" },
+        { value: "DOCTOR", label: t("uiDoctorsPhysicians"), badge: "Doctor" },
+      { value: "PATIENT", label: t("uiPatientsPublic"), badge: "Patient" },
         { value: "STAFF", label: t("uiHospitalFrontDesk"), badge: "Staff" },
       ];
     }
     if (currentRole === "DOCTOR") {
       return [
         { value: "ALL", label: t("uiAllVisibleNotices") },
-        { value: "DOCTOR", label: t("roleDoctorOnlyBulletins"), badge: "Physicians" },
+        { value: "DOCTOR", label: t("uiDoctorOnlyBulletins"), badge: "Physicians" },
       ];
     }
     return [
       { value: "ALL", label: t("uiAllVisibleNotices") },
-      { value: "PATIENT", label: t("rolePatientCareNotices"), badge: "Patients" },
+      { value: "PATIENT", label: t("uiPatientCareNotices"), badge: "Patients" },
     ];
   }, [currentRole, language]);
 
@@ -505,7 +513,7 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
                         { value: "ALL", label: t("uiAllUsersPublic") },
                         { value: "ADMIN", label: t("uiClinicAdministratorsOnly") },
                         { value: "DOCTOR", label: t("uiPhysiciansDoctorsOnly") },
-                        { value: "PATIENT", label: t("rolePatientsOnly") },
+                         { value: "PATIENT", label: t("uiPatientsOnly") },
                         { value: "STAFF", label: t("uiFrontDeskStaffOnly") },
                       ]}
                       searchable={false}

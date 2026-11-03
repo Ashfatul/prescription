@@ -9,7 +9,7 @@ export function assertRole(currentRole: AppRole, allowed: AppRole[]) {
 
 export function canAccessDashboardPath(pathname: string, role: AppRole) {
   if (pathname.startsWith("/dashboard/admin")) {
-    return ["SUPER_ADMIN", "STAFF"].includes(role);
+    return ["SUPER_ADMIN", "ADMIN", "STAFF"].includes(role);
   }
 
   if (pathname.startsWith("/dashboard/doctor")) {

@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { CustomSelect } from "@/components/common/custom-select";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 const inputClasses =
   "w-full px-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]";
@@ -126,7 +127,9 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
   const handleSaveMed = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!medName.trim() || !medDosage.trim()) {
-      setMedError("Please fill out name and dosage");
+      const message = "Please fill out name and dosage";
+      setMedError(message);
+      notifyToast(message, "error");
       return;
     }
     setMedError("");
@@ -148,12 +151,17 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
         const data = await res.json();
         if (data.success) {
           setShowMedModal(false);
+          notifyToast(editingMedId ? "Medicine updated successfully." : "Medicine added successfully.", "success");
           await refreshCatalog();
         } else {
-          setMedError(data.error || "Failed to save medicine");
+          const message = data.error || "Failed to save medicine";
+          setMedError(message);
+          notifyToast(message, "error");
         }
       } catch {
-        setMedError("Network error occurred");
+        const message = "Network error occurred";
+        setMedError(message);
+        notifyToast(message, "error");
       }
     });
   };
@@ -165,11 +173,12 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
       const data = await res.json();
       if (data.success) {
         setMedicines((prev) => prev.filter((m) => m.id !== id));
+        notifyToast("Medicine deleted successfully.", "success");
       } else {
-        alert(data.error || "Failed to delete medicine");
+        notifyToast(data.error || "Failed to delete medicine", "error");
       }
     } catch {
-      alert("Failed to delete medicine");
+      notifyToast("Failed to delete medicine", "error");
     }
   };
 
@@ -192,7 +201,9 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
   const handleSaveTest = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!testName.trim()) {
-      setTestError("Please enter test name");
+      const message = "Please enter test name";
+      setTestError(message);
+      notifyToast(message, "error");
       return;
     }
     setTestError("");
@@ -212,12 +223,17 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
         const data = await res.json();
         if (data.success) {
           setShowTestModal(false);
+          notifyToast(editingTestId ? "Diagnostic test updated successfully." : "Diagnostic test added successfully.", "success");
           await refreshCatalog();
         } else {
-          setTestError(data.error || "Failed to save test");
+          const message = data.error || "Failed to save test";
+          setTestError(message);
+          notifyToast(message, "error");
         }
       } catch {
-        setTestError("Network error occurred");
+        const message = "Network error occurred";
+        setTestError(message);
+        notifyToast(message, "error");
       }
     });
   };
@@ -229,11 +245,12 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
       const data = await res.json();
       if (data.success) {
         setTests((prev) => prev.filter((t) => t.id !== id));
+        notifyToast("Diagnostic test deleted successfully.", "success");
       } else {
-        alert(data.error || "Failed to delete test");
+        notifyToast(data.error || "Failed to delete test", "error");
       }
     } catch {
-      alert("Failed to delete test");
+      notifyToast("Failed to delete test", "error");
     }
   };
 

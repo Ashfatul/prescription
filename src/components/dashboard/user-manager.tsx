@@ -5,6 +5,7 @@ import { Search } from "lucide-react";
 import { useAuth } from "@/lib/auth/auth-context";
 import { CustomSelect } from "@/components/common/custom-select";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 interface UserRecord {
   id: string;
@@ -90,7 +91,9 @@ export function UserManager() {
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!createName.trim() || !createEmail.trim() || !createPassword.trim()) {
-      setCreateError("Name, email, and password are required.");
+      const message = "Name, email, and password are required.";
+      setCreateError(message);
+      notifyToast(message, "error");
       return;
     }
     setCreateError("");
@@ -117,12 +120,17 @@ export function UserManager() {
         const data = await res.json();
         if (data.success) {
           setShowCreateModal(false);
+          notifyToast("User account created successfully.", "success");
           await fetchUsers();
         } else {
-          setCreateError(data.error || data.message || "Failed to create user account.");
+          const message = data.error || data.message || "Failed to create user account.";
+          setCreateError(message);
+          notifyToast(message, "error");
         }
       } catch {
-        setCreateError("Network error occurred. Please try again.");
+        const message = "Network error occurred. Please try again.";
+        setCreateError(message);
+        notifyToast(message, "error");
       }
     });
   };
@@ -141,7 +149,9 @@ export function UserManager() {
     e.preventDefault();
     if (!editingUser) return;
     if (!editName.trim() || !editEmail.trim()) {
-      setEditError("Name and email are required.");
+      const message = "Name and email are required.";
+      setEditError(message);
+      notifyToast(message, "error");
       return;
     }
     setEditError("");
@@ -165,19 +175,24 @@ export function UserManager() {
         const data = await res.json();
         if (data.success) {
           setEditingUser(null);
+          notifyToast("User account updated successfully.", "success");
           await fetchUsers();
         } else {
-          setEditError(data.error || data.message || "Failed to update user.");
+          const message = data.error || data.message || "Failed to update user.";
+          setEditError(message);
+          notifyToast(message, "error");
         }
       } catch {
-        setEditError("Network error occurred.");
+        const message = "Network error occurred.";
+        setEditError(message);
+        notifyToast(message, "error");
       }
     });
   };
 
   const handleDeleteUser = async (id: string, name: string) => {
     if (currentUser?.id === id) {
-      alert("You cannot delete your own active administrative account.");
+      notifyToast("You cannot delete your own active administrative account.", "error");
       return;
     }
 
@@ -190,11 +205,12 @@ export function UserManager() {
       const data = await res.json();
       if (data.success) {
         setUsers((prev) => prev.filter((u) => u.id !== id));
+        notifyToast("User account deleted successfully.", "success");
       } else {
-        alert(data.error || data.message || "Failed to delete user");
+        notifyToast(data.error || data.message || "Failed to delete user", "error");
       }
     } catch {
-      alert("Network error occurred while deleting user.");
+      notifyToast("Network error occurred while deleting user.", "error");
     }
   };
 

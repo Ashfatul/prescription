@@ -338,10 +338,10 @@ export function HomeView({
               </div>
               <div className="space-y-1.5 flex-grow-1">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                  {t("rolePatientElectronicPrescriptionsAndMedicationReminders")}
+                  {t("uiPatientElectronicPrescriptionsMedicationReminders")}
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                  {t("rolePatientsSecurelyAccessDigitalPrescriptionsReviewRevisionHistoriesAndConfigureAutomatedMedicineDosageSchedule")}
+                  {t("uiPatientsSecurelyAccessDigitalPrescriptions")}
                 </p>
               </div>
               <div className="pt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400">
@@ -418,10 +418,10 @@ export function HomeView({
                 </span>
               </div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white pt-2">
-                {t("rolePatientIntakeAndSerialAllocation")}
+                  {t("uiPatientIntakeSerialAllocation")}
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                {t("rolePatientsBookOnlineOrCheckInWithFrontDeskReceptionistsASerialTicketIsAutomaticallyGenerated")}
+                  {t("uiPatientsBookOnlineOrCheck")}
               </p>
             </div>
 
@@ -450,14 +450,14 @@ export function HomeView({
                   03
                 </span>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  {t("roleDoctorPrescribing")}
+                  {t("uiDoctorPrescribing")}
                 </span>
               </div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white pt-2">
                 {t("uiRapidClickPrescribing")}
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                {t("roleDoctorChoosesChiefComplaintsAndDiagnosisPresetsWithClickMedicinesAutoPopulateDoseFrequenciesAndInstructions")}
+                {t("uiDoctorChoosesChiefComplaintsAnd")}
               </p>
             </div>
 

@@ -11,6 +11,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 export interface CustomTextBlock {
   id: string;
@@ -464,11 +465,14 @@ export function TemplateManager() {
       setSaving(false);
 
       if (!res.ok || !data.success) {
-        setStatusMsg({ type: "error", text: data.message || "Failed to save template." });
+        const message = data.message || "Failed to save template.";
+        setStatusMsg({ type: "error", text: message });
+        notifyToast(message, "error");
         return;
       }
 
       setStatusMsg({ type: "success", text: "Master template saved successfully!" });
+      notifyToast("Master template saved successfully!", "success");
       setShowDesigner(false);
       await loadTemplates();
     } catch {
@@ -484,11 +488,12 @@ export function TemplateManager() {
       const data = await res.json();
       if (data.success) {
         setTemplates((prev) => prev.filter((t) => t.id !== id));
+        notifyToast("Template deleted successfully.", "success");
       } else {
-        alert(data.message || "Failed to delete template");
+        notifyToast(data.message || "Failed to delete template", "error");
       }
     } catch {
-      alert("Failed to delete template");
+      notifyToast("Failed to delete template", "error");
     }
   };
 
@@ -1761,7 +1766,7 @@ export function TemplateManager() {
                         <span>BP: <strong>120/80 mmHg</strong></span>
                         <span>{t("uiPulse")} <strong>76 bpm</strong></span>
                         <span>{t("uiWeight")} <strong>62 kg</strong></span>
-                        <span>{t("tempVariant2")} <strong>98.6 °F</strong></span>
+                        <span>{t("uiTemp")} <strong>98.6 °F</strong></span>
                       </div>
                     )}
 

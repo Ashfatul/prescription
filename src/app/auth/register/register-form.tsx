@@ -25,6 +25,7 @@ import {
 import { CustomSelect } from "@/components/common/custom-select";
 import { CustomDatePicker } from "@/components/common/custom-date-picker";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 type OrgOption = {
   id: string;
@@ -222,7 +223,7 @@ export function RegisterForm() {
         if (!email.trim() || !email.includes("@")) {
           throw new Error(t("uiValidWorkEmailAddressIs"));
         }
-        if (password.length < 6) {
+        if (password.length < 8) {
           throw new Error(t("uiPasswordMustBeAtLeast"));
         }
 
@@ -250,6 +251,7 @@ export function RegisterForm() {
         setSuccess(true);
 
         if (data.requireVerification) {
+          notifyToast(data.message || t("uiRegistrationSuccessful"), "success");
           router.push(`/auth/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}`);
           return;
         }
@@ -257,16 +259,18 @@ export function RegisterForm() {
         // Auto login administrator
         const loginRes = await login(email.trim().toLowerCase(), password);
         if (loginRes.success) {
+          notifyToast(t("uiRegistrationSuccessful"), "success");
           router.refresh();
           router.push("/dashboard/admin");
         } else {
+          notifyToast(loginRes.error || t("uiRegistrationSuccessfulButLogin"), "info");
           router.push("/auth/login?registered=true");
         }
       } else {
         // Patient registration
         if (!name.trim()) throw new Error(t("uiFullNameIsRequired"));
         if (!email.trim() || !email.includes("@")) throw new Error(t("uiValidEmailAddressIsRequired"));
-        if (password.length < 6) throw new Error(t("uiPasswordMustBeAtLeast"));
+        if (password.length < 8) throw new Error(t("uiPasswordMustBeAtLeast"));
 
         const res = await fetch("/api/auth/register", {
           method: "POST",
@@ -292,24 +296,25 @@ export function RegisterForm() {
         setSuccess(true);
 
         if (data.requireVerification) {
+          notifyToast(data.message || t("uiRegistrationSuccessful"), "success");
           router.push(`/auth/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}`);
           return;
         }
 
         const loginRes = await login(email.trim().toLowerCase(), password);
         if (loginRes.success) {
+          notifyToast(t("uiRegistrationSuccessful"), "success");
           router.refresh();
           router.push("/dashboard/patient");
         } else {
+          notifyToast(loginRes.error || t("uiRegistrationSuccessfulButLogin"), "info");
           router.push("/auth/login?registered=true");
         }
       }
     } catch (err: unknown) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : t("uiRegistrationFailed")
-      );
+      const message = err instanceof Error ? err.message : t("uiRegistrationFailed");
+      setError(message);
+      notifyToast(message, "error");
     } finally {
       setLoading(false);
     }
@@ -588,7 +593,7 @@ export function RegisterForm() {
                     <input
                       type={showPassword ? "text" : "password"}
                       required
-                      minLength={6}
+                      minLength={8}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
@@ -717,7 +722,7 @@ export function RegisterForm() {
                     <input
                       type={showPassword ? "text" : "password"}
                       required
-                      minLength={6}
+                      minLength={8}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"

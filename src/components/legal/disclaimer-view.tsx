@@ -115,10 +115,10 @@ export function DisclaimerView({ settings }: { settings: HospitalSettings }) {
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <AlertCircle className="w-5 h-5 text-amber-500" />
-              <span>{t("rolePatientAdherenceAndAdverseDrugReactionProtocol")}</span>
+              <span>{t("uiPatientAdherenceAdverseDrugReaction")}</span>
             </h2>
             <p>
-              {t("rolePatientsReceivingPrescriptionsGeneratedViaPPMSAreAdvisedTo")}
+              {t("uiPatientsReceivingPrescriptionsGeneratedVia")}
             </p>
             <ul className="list-disc pl-5 space-y-1.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               <li>

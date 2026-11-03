@@ -1071,7 +1071,7 @@ export function PatientDashboardView({
                   })}
                 </p>
                 <p className="text-[11px] text-slate-400">
-                  {t.chamberLocation}: {selectedSlip.doctor.chamberAddress || (t("roleDoctorConsultationChamber"))}
+                  {t.chamberLocation}: {selectedSlip.doctor.chamberAddress || (t("uiDoctorConsultationChamber"))}
                 </p>
 
                 {/* Consultation Fee & Visit Type */}

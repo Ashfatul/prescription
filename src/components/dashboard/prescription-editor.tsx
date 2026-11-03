@@ -993,7 +993,7 @@ export function PrescriptionEditor({
             </div>
 
             <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
-              {currentPatient?.user.name || (t("rolePatientRecord"))}
+              {currentPatient?.user.name || (t("uiPatientRecord"))}
             </h3>
 
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">

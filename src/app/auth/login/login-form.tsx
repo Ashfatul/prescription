@@ -23,6 +23,7 @@ import { ThemeCustomizer } from "@/components/common/theme-customizer";
 import { LanguageToggle } from "@/components/common/language-toggle";
 import { DemoCountdownTimer } from "@/components/common/demo-countdown-timer";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 const DEMO_ACCOUNTS = [
   {
@@ -122,13 +123,16 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
 
     if (!res.success) {
       if (res.requireVerification) {
+        notifyToast(res.error || t("uiPleaseVerifyYourEmail"), "error");
         router.push(`/auth/verify-email?email=${encodeURIComponent(res.email || loginEmail)}`);
         return;
       }
       setError(res.error || "Login failed");
+      notifyToast(res.error || "Login failed", "error");
       return;
     }
 
+    notifyToast(t("uiLoginSuccessful"), "success");
     router.push("/dashboard");
     router.refresh();
   };
@@ -150,9 +154,11 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
 
     if (!res.success) {
       setError(res.error || "Invalid verification code.");
+      notifyToast(res.error || "Invalid verification code.", "error");
       return;
     }
 
+    notifyToast(t("uiLoginSuccessful"), "success");
     router.push("/dashboard");
     router.refresh();
   };
@@ -433,7 +439,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-rose-500 transition truncate">
-                      {t("rolePatientPortal")}
+                      {t("uiPatientPortal")}
                     </span>
                     <ArrowRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0 ml-1" />
                   </div>

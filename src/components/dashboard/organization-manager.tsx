@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { CustomSelect } from "@/components/common/custom-select";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 const inputClasses =
   "w-full px-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]";
@@ -100,12 +101,14 @@ export function OrganizationManager() {
               : o
           )
         );
-        setApprovalSuccess(`Clinic "${orgName}" approved & activated successfully! A confirmation email has been dispatched.`);
-      } else {
-        alert(data.message || "Failed to approve clinic");
-      }
-    } catch {
-      alert("Network error approving clinic");
+         const message = `${orgName}: ${t.clinicApprovedSuccess}`;
+         setApprovalSuccess(message);
+         notifyToast(message, "success");
+       } else {
+         notifyToast(data.message || t.clinicApprovalError, "error");
+       }
+     } catch {
+       notifyToast(t.clinicApprovalError, "error");
     } finally {
       setApprovingId(null);
     }
@@ -204,13 +207,18 @@ export function OrganizationManager() {
 
       const data = await res.json();
       if (data.success) {
-        setModalOpen(false);
+       setModalOpen(false);
+        notifyToast(editingOrg ? t.clinicUpdatedSuccess : t.clinicCreatedSuccess, "success");
         fetchData();
       } else {
-        setError(data.message || "Failed to save organization.");
+        const message = data.message || t.clinicSaveError;
+        setError(message);
+        notifyToast(message, "error");
       }
     } catch {
-      setError("Network error saving clinic organization.");
+      const message = t.clinicNetworkError;
+      setError(message);
+      notifyToast(message, "error");
     } finally {
       setSubmitting(false);
     }
@@ -410,7 +418,7 @@ export function OrganizationManager() {
                   <th className="py-3.5 px-4">{t("uiIdentifierSlug")}</th>
                   <th className="py-3.5 px-4">{t("uiSaasTierPlan")}</th>
                   <th className="py-3.5 px-4">{t.statusLabel}</th>
-                  <th className="py-3.5 px-4">{t("roleDoctorsUsers")}</th>
+                  <th className="py-3.5 px-4">{t("uiDoctorsUsers")}</th>
                   <th className="py-3.5 px-4">{t.prescriptions}</th>
                   <th className="py-3.5 px-4 text-right">{t.actions}</th>
                 </tr>

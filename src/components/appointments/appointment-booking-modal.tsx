@@ -911,8 +911,8 @@ export function AppointmentBookingModal({
                         <div className="space-y-1">
                           <span className="font-bold block">
                             {effectiveBreakdown.followupEligible
-                              ? (t("followUpConsultationVerified"))
-                              : (t("followUpRateIneligible"))}
+                              ? (t("uiFollowUpConsultationVerified"))
+                              : (t("uiFollowUpRateIneligible"))}
                           </span>
                           <p className="text-[11px] leading-relaxed">
                             {effectiveBreakdown.followupEligible

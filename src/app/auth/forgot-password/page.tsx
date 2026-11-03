@@ -7,6 +7,7 @@ import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
 import { LanguageToggle } from "@/components/common/language-toggle";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 export default function ForgotPasswordPage() {
   const { t, language } = useLanguage();
@@ -32,11 +33,16 @@ export default function ForgotPasswordPage() {
 
       if (res.ok && data.success) {
         setSubmitted(true);
+        notifyToast(data.message || t("uiPasswordResetLinkSent"), "success");
       } else {
-        setError(data.message || "Failed to process password reset request.");
+        const message = data.message || "Failed to process password reset request.";
+        setError(message);
+        notifyToast(message, "error");
       }
     } catch {
-      setError("Network error while submitting request. Please try again.");
+      const message = "Network error while submitting request. Please try again.";
+      setError(message);
+      notifyToast(message, "error");
     } finally {
       setLoading(false);
     }

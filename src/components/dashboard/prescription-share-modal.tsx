@@ -14,6 +14,7 @@ import {
   Lock,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 type PrescriptionShareModalProps = {
   prescriptionId: string;
@@ -58,7 +59,10 @@ export function PrescriptionShareModal({
         }
       })
       .catch(() => {
-        if (isMounted) setError("Failed to load prescription sharing details.");
+        if (isMounted) {
+          setError("Failed to load prescription sharing details.");
+          notifyToast("Failed to load prescription sharing details.", "error");
+        }
       })
       .finally(() => {
         if (isMounted) setLoading(false);
@@ -86,10 +90,14 @@ export function PrescriptionShareModal({
         setShareUrl(data.data.shareUrl || "");
         setQrDataUrl(data.data.qrDataUrl || "");
       } else {
-        setError(data.message || "Failed to update sharing preference.");
+        const message = data.message || "Failed to update sharing preference.";
+        setError(message);
+        notifyToast(message, "error");
       }
     } catch {
-      setError("An unexpected network error occurred.");
+      const message = "An unexpected network error occurred.";
+      setError(message);
+      notifyToast(message, "error");
     } finally {
       setLoading(false);
     }
@@ -98,7 +106,8 @@ export function PrescriptionShareModal({
   function handleCopy() {
     if (!shareUrl) return;
     navigator.clipboard.writeText(shareUrl);
-    setCopied(true);
+      setCopied(true);
+      notifyToast(t.copied, "success");
     setTimeout(() => setCopied(false), 2000);
   }
 
@@ -134,11 +143,16 @@ export function PrescriptionShareModal({
         setPersonalNote("");
         setIsPublic(true);
         if (data.data?.shareUrl) setShareUrl(data.data.shareUrl);
+        notifyToast(t.emailSentSuccess, "success");
       } else {
-        setError(data.message || "Failed to send email.");
+        const message = data.message || "Failed to send email.";
+        setError(message);
+        notifyToast(message, "error");
       }
     } catch {
-      setError("Failed to send email alert.");
+      const message = "Failed to send email alert.";
+      setError(message);
+      notifyToast(message, "error");
     } finally {
       setSendingEmail(false);
     }

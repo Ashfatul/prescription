@@ -350,7 +350,7 @@ export function PrintablePrescriptionView({
 
                 <div>
                   <span className="text-[11px] font-medium opacity-65">
-                    {t("uiDateSerialVariant2")}
+                    {t("uiDateSerial2")}
                   </span>
                   <p className="text-sm font-semibold">
                     {formattedDate} {appointment ? `• #${appointment.serialNumber}` : ""}

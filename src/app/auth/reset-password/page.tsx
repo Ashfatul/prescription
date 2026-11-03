@@ -20,6 +20,7 @@ import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
 import { LanguageToggle } from "@/components/common/language-toggle";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 function ResetPasswordInner() {
   const router = useRouter();
@@ -38,17 +39,23 @@ function ResetPasswordInner() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) {
-      setError("Password reset token is missing from the URL. Please use the link sent to your email.");
+      const message = "Password reset token is missing from the URL. Please use the link sent to your email.";
+      setError(message);
+      notifyToast(message, "error");
       return;
     }
 
     if (password.length < 8) {
-      setError("Password must be at least 8 characters long.");
+      const message = "Password must be at least 8 characters long.";
+      setError(message);
+      notifyToast(message, "error");
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match. Please re-enter.");
+      const message = "Passwords do not match. Please re-enter.";
+      setError(message);
+      notifyToast(message, "error");
       return;
     }
 
@@ -65,11 +72,16 @@ function ResetPasswordInner() {
 
       if (res.ok && data.success) {
         setSuccess(true);
+        notifyToast(data.message || t("uiPasswordSuccessfullyReset"), "success");
       } else {
-        setError(data.message || "Failed to reset password. The link may have expired.");
+        const message = data.message || "Failed to reset password. The link may have expired.";
+        setError(message);
+        notifyToast(message, "error");
       }
     } catch {
-      setError("Network error occurred while resetting password. Please try again.");
+      const message = "Network error occurred while resetting password. Please try again.";
+      setError(message);
+      notifyToast(message, "error");
     } finally {
       setLoading(false);
     }

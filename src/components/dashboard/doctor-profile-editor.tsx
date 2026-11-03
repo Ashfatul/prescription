@@ -6,6 +6,7 @@ import { ChangePasswordCard } from "@/components/common/change-password-card";
 import { TwoFactorAuthCard } from "@/components/common/two-factor-auth-card";
 import { CustomSelect } from "@/components/common/custom-select";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 export type DoctorProfile = {
   id: string;
@@ -76,12 +77,16 @@ export function DoctorProfileEditor({
 
     // Validate image file type
     if (!file.type.startsWith("image/")) {
-      setMessage({ type: "error", text: "Please upload a valid image file (PNG, JPG, or WEBP)." });
+      const message = "Please upload a valid image file (PNG, JPG, or WEBP).";
+      setMessage({ type: "error", text: message });
+      notifyToast(message, "error");
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      setMessage({ type: "error", text: "Signature file size exceeds 5MB limit." });
+      const message = "Signature file size exceeds 5MB limit.";
+      setMessage({ type: "error", text: message });
+      notifyToast(message, "error");
       return;
     }
 
@@ -101,7 +106,9 @@ export function DoctorProfileEditor({
       setUploadingSignature(false);
 
       if (!res.ok || !data.success || !data.data?.url) {
-        setMessage({ type: "error", text: data.message || "Failed to upload signature image." });
+        const message = data.message || "Failed to upload signature image.";
+        setMessage({ type: "error", text: message });
+        notifyToast(message, "error");
         return;
       }
 
@@ -110,9 +117,12 @@ export function DoctorProfileEditor({
         type: "success",
         text: "Signature image uploaded successfully! Click 'Save Changes' to update your credentials.",
       });
+      notifyToast("Signature image uploaded successfully!", "success");
     } catch {
       setUploadingSignature(false);
-      setMessage({ type: "error", text: "Network error while uploading signature. Please try again." });
+      const message = "Network error while uploading signature. Please try again.";
+      setMessage({ type: "error", text: message });
+      notifyToast(message, "error");
     }
   };
 
@@ -210,7 +220,9 @@ export function DoctorProfileEditor({
       setSaving(false);
 
       if (!res.ok || !data.success) {
-        setMessage({ type: "error", text: data.message || "Failed to update profile." });
+        const message = data.message || "Failed to update profile.";
+        setMessage({ type: "error", text: message });
+        notifyToast(message, "error");
         return;
       }
 
@@ -218,6 +230,7 @@ export function DoctorProfileEditor({
         type: "success",
         text: t.profileUpdatedSuccess,
       });
+      notifyToast(t.profileUpdatedSuccess, "success");
 
       onSaved?.({
         specialization,
@@ -240,7 +253,9 @@ export function DoctorProfileEditor({
       });
     } catch {
       setSaving(false);
-      setMessage({ type: "error", text: "Network error. Please try again." });
+      const message = "Network error. Please try again.";
+      setMessage({ type: "error", text: message });
+      notifyToast(message, "error");
     }
   };
 
@@ -588,9 +603,9 @@ export function DoctorProfileEditor({
             <div className="space-y-0.5">
               <span className="font-bold block">{t.summaryOfChamberPolicy}</span>
               <p className="text-[11px] leading-relaxed opacity-90">
-                • <strong>{t("firstVisitFees")}</strong> {language === "bn" ? `প্রথম পরামর্শে ফি $${newPatientFee}।` : `Charged $${newPatientFee} for first consultation.`}<br />
+                • <strong>{t("uiFirstVisitConsultationRate")}</strong> {language === "bn" ? `প্রথম পরামর্শে ফি $${newPatientFee}।` : `Charged $${newPatientFee} for first consultation.`}<br />
                 • <strong>{t("uiDiagnosticReportShowing")}</strong> {language === "bn" ? `ভিজিটের ${reportFreeDays} দিনের মধ্যে বিনামূল্যে ($০.০০)।` : `Free ($0.00) within ${reportFreeDays} days of initial visit.`}<br />
-                • <strong>{t("followUpVisits")}</strong> {language === "bn" ? `পূর্বের প্রেসক্রিপশনসহ ${followupValidityDays} দিনের মধ্যে আসলে ফি $${followupFee}।` : `Charged $${followupFee} if presenting within ${followupValidityDays} days with verified previous prescription.`}
+                • <strong>{t("uiFollowUpVisits")}</strong> {language === "bn" ? `পূর্বের প্রেসক্রিপশনসহ ${followupValidityDays} দিনের মধ্যে আসলে ফি $${followupFee}।` : `Charged $${followupFee} if presenting within ${followupValidityDays} days with verified previous prescription.`}
               </p>
             </div>
           </div>

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, Languages, Loader2, Plus, Save, Trash2 } from "lucide-react";
 import { CustomSelect } from "@/components/common/custom-select";
 import { useLanguage, LanguageOption } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 type TranslationResponse = {
   languages: LanguageOption[];
@@ -48,7 +49,9 @@ export function TranslationManager() {
       setValues(selectedLanguage?.isSystem ? payload.data.translations : payload.data.overrides);
       setCustomEnglishValues({});
     } catch (err) {
-      setError(err instanceof Error ? err.message : t.translationSaveError);
+      const message = err instanceof Error ? err.message : t.translationSaveError;
+      setError(message);
+      notifyToast(message, "error");
     } finally {
       setLoading(false);
     }
@@ -86,10 +89,13 @@ export function TranslationManager() {
       const payload = await response.json();
       if (!response.ok || !payload.success) throw new Error(payload.message || t.translationSaveError);
       if (selectedCode === "en") setEnglishValues(values);
-      setMessage(t.translationsSaved);
+       setMessage(t.translationsSaved);
+       notifyToast(t.translationsSaved, "success");
       await refreshTranslations();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t.translationSaveError);
+      const message = err instanceof Error ? err.message : t.translationSaveError;
+      setError(message);
+      notifyToast(message, "error");
     } finally {
       setSaving(false);
     }
@@ -109,11 +115,14 @@ export function TranslationManager() {
       const payload = await response.json();
       if (!response.ok || !payload.success) throw new Error(payload.message || t.languageCreateError);
       setNewLanguage({ code: "", name: "", nativeName: "", direction: "ltr" });
-      setMessage(t.languageCreated);
+       setMessage(t.languageCreated);
+       notifyToast(t.languageCreated, "success");
       setSelectedCode(payload.data.language || newLanguage.code.trim());
       await refreshTranslations();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t.languageCreateError);
+      const message = err instanceof Error ? err.message : t.languageCreateError;
+      setError(message);
+      notifyToast(message, "error");
     } finally {
       setSaving(false);
     }
@@ -130,7 +139,9 @@ export function TranslationManager() {
       setSelectedCode("en");
       await refreshTranslations();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t.translationSaveError);
+      const message = err instanceof Error ? err.message : t.translationSaveError;
+      setError(message);
+      notifyToast(message, "error");
     } finally {
       setSaving(false);
     }

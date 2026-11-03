@@ -441,7 +441,7 @@ export function HospitalQueueDisplay({
           {/* Patient Instruction Card */}
           <div className="p-3.5 rounded-2xl bg-[var(--bg-app)] border border-[var(--border-subtle)] text-[11px] text-slate-500 space-y-1">
             <span className="font-bold text-slate-700 dark:text-slate-300 block">
-              {t("rolePatientGuidance")}
+              {t("uiPatientGuidance")}
             </span>
             <p className="leading-relaxed">
               {t("uiThisDisplayRotatesAutomaticallyThrough")}
@@ -523,7 +523,7 @@ export function HospitalQueueDisplay({
                   </div>
 
                   <p className="text-xs sm:text-sm text-slate-500 font-semibold">
-                    {t.pleaseProceedTo} {selectedDoctor.chamberAddress || (t("roleDoctorConsultationChamber"))}
+                    {t.pleaseProceedTo} {selectedDoctor.chamberAddress || (t("uiDoctorConsultationChamber"))}
                   </p>
                 </>
               ) : (

@@ -203,7 +203,7 @@ export function ClinicDetailsView({
                 {t.enrolledPatients}
               </span>
               <p className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
-                {clinic._count.patients} {t("rolePatientsVariant2")}
+                {clinic._count.patients} {t("uiPatients2")}
               </p>
             </div>
 
@@ -374,8 +374,8 @@ export function ClinicDetailsView({
                       </p>
                       <p>
                         {isStaff
-                          ? (t("rolePatientCheckInVitalSignsTriageChamberCallingTokensAndReceptionistDuties"))
-                          : (t("roleDoctorOnboardingClinicScheduleManagementAndOperationalOversight"))}
+                          ? (t("uiPatientCheckInVitalSigns"))
+                          : (t("uiDoctorOnboardingClinicScheduleManagement"))}
                       </p>
                     </div>
 

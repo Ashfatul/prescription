@@ -437,7 +437,7 @@ export function DoctorDashboardView({
                     {t("uiTodaySChamberWaitingQueue").replace("{count}", String(waitingAppointments.length))}
                   </h2>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    {t("rolePatientDemographicsTriageVitalsAndMedicalHistoryArePreparedByTriageStaffClickStartConsultationTo")}
+                    {t("uiPatientDemographicsTriageVitalsAnd2")}
                   </p>
                 </div>
 
@@ -613,7 +613,7 @@ export function DoctorDashboardView({
                 <p className="text-xs text-slate-500">{t("uiLivePatientTurnSequence")}</p>
               </div>
               <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                {waitingAppointments.length} {t("rolePatientsWaiting")}
+                          {waitingAppointments.length} {t("uiPatientsWaiting")}
               </span>
             </div>
 

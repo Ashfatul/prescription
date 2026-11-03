@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 type PricingPlanItem = {
   id: string;
@@ -138,12 +139,17 @@ export function SaasPricingManager() {
       const data = await res.json();
       if (data.success) {
         setModalOpen(false);
+        notifyToast(editingPlan ? t.pricingPlanUpdatedSuccess : t.pricingPlanCreatedSuccess, "success");
         fetchPlans();
       } else {
-        setError(data.message || "Failed to save pricing plan.");
+        const message = data.message || t.pricingPlanSaveError;
+        setError(message);
+        notifyToast(message, "error");
       }
     } catch {
-      setError("Network error saving pricing plan.");
+      const message = t.pricingPlanNetworkError;
+      setError(message);
+      notifyToast(message, "error");
     } finally {
       setSubmitting(false);
     }
@@ -156,11 +162,12 @@ export function SaasPricingManager() {
       const data = await res.json();
       if (data.success) {
         setPlans((prev) => prev.filter((p) => p.id !== id));
+        notifyToast(t.pricingPlanDeletedSuccess, "success");
       } else {
-        alert(data.message || "Cannot delete plan.");
+        notifyToast(data.message || t.pricingPlanDeleteError, "error");
       }
     } catch {
-      // Ignore
+      notifyToast(t.pricingPlanDeleteNetworkError, "error");
     }
   };
 

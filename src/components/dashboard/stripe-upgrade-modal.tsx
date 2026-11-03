@@ -15,6 +15,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 interface PricingPlan {
   id: string;
@@ -139,7 +140,9 @@ export function StripeUpgradeModal({
 
   const handleOfficialStripeCheckout = async () => {
     if (!selectedPlanId) {
-      setError("Please select a plan to upgrade.");
+      const message = "Please select a plan to upgrade.";
+      setError(message);
+      notifyToast(message, "error");
       return;
     }
     setInitiatingStripe(true);
@@ -162,12 +165,18 @@ export function StripeUpgradeModal({
       }
 
       if (!data.isRealStripe) {
-        setError(data.message || "To use live Stripe Checkout, set STRIPE_SECRET_KEY in .env. You can use direct Sandbox card below.");
+        const message = data.message || "To use live Stripe Checkout, set STRIPE_SECRET_KEY in .env. You can use direct Sandbox card below.";
+        setError(message);
+        notifyToast(message, "error");
       } else {
-        setError(data.message || "Failed to create Stripe Checkout session.");
+        const message = data.message || "Failed to create Stripe Checkout session.";
+        setError(message);
+        notifyToast(message, "error");
       }
     } catch {
-      setError("Network error while connecting to Stripe API.");
+      const message = "Network error while connecting to Stripe API.";
+      setError(message);
+      notifyToast(message, "error");
     } finally {
       setInitiatingStripe(false);
     }
@@ -176,19 +185,27 @@ export function StripeUpgradeModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedPlanId) {
-      setError("Please select a plan to upgrade.");
+      const message = "Please select a plan to upgrade.";
+      setError(message);
+      notifyToast(message, "error");
       return;
     }
     if (!cardNumber.trim() || cardNumber.replace(/\s+/g, "").length < 15) {
-      setError("Please enter a valid 16-digit card number.");
+      const message = "Please enter a valid 16-digit card number.";
+      setError(message);
+      notifyToast(message, "error");
       return;
     }
     if (!expiry.trim() || expiry.length < 5) {
-      setError("Please enter card expiry in MM/YY format.");
+      const message = "Please enter card expiry in MM/YY format.";
+      setError(message);
+      notifyToast(message, "error");
       return;
     }
     if (!cvc.trim() || cvc.length < 3) {
-      setError("Please enter a valid 3 or 4-digit CVC security code.");
+      const message = "Please enter a valid 3 or 4-digit CVC security code.";
+      setError(message);
+      notifyToast(message, "error");
       return;
     }
 
@@ -212,15 +229,20 @@ export function StripeUpgradeModal({
         const data = await res.json();
         if (data.success) {
           setSuccess(true);
+          notifyToast(data.message || t("uiSubscriptionUpgradeSuccessful"), "success");
           setTimeout(() => {
             onSuccess?.();
             onClose();
           }, 2400);
         } else {
-          setError(data.error || data.message || "Stripe sandbox transaction failed.");
+          const message = data.error || data.message || "Stripe sandbox transaction failed.";
+          setError(message);
+          notifyToast(message, "error");
         }
       } catch {
-        setError("Network communication error. Please try again.");
+        const message = "Network communication error. Please try again.";
+        setError(message);
+        notifyToast(message, "error");
       }
     });
   };

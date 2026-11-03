@@ -39,8 +39,8 @@ export async function POST(req: NextRequest) {
       if (!email || !email.includes("@")) {
         throw new AppError("A valid work email is required", 400);
       }
-      if (!password || password.length < 6) {
-        throw new AppError("Password must be at least 6 characters", 400);
+      if (!password || password.length < 8) {
+        throw new AppError("Password must be at least 8 characters", 400);
       }
 
       // Validate clinic subdomain slug format, reservation, and availability

@@ -86,7 +86,7 @@ export function TermsView() {
               <span>{t("uiAppointmentsSerialTokensChamberQueue")}</span>
             </h2>
             <p>
-              {t("rolePatientsAndHospitalReceptionistsUtilizingTheAppointmentSchedulingModuleAgreeToTheFollowingOperationalTerms")}
+              {t("uiPatientsAndHospitalReceptionistsUtilizing")}
             </p>
             <div className="grid gap-3 sm:grid-cols-2 text-xs">
               <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
@@ -110,7 +110,7 @@ export function TermsView() {
                   {t("uiTimelyArrival")}
                 </span>
                 <p className="text-slate-500">
-                  {t("rolePatientsAreAdvisedToCheckInAtTheReceptionDeskAtLeastMinutesBeforeTheirEstimated")}
+                  {t("uiPatientsAreAdvisedToCheck")}
                 </p>
               </div>
               <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">

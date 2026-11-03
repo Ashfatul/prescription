@@ -52,7 +52,7 @@ export function PrivacyView({ settings }: { settings: HospitalSettings }) {
             <ul className="list-disc pl-5 space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               <li>
                 <strong className="text-slate-800 dark:text-slate-200">
-                  {t("rolePatientDemographics")}
+                  {t("uiPatientDemographics")}
                 </strong>{" "}
                 {t("uiFullLegalNameContactTelephone")}
               </li>
@@ -139,7 +139,7 @@ export function PrivacyView({ settings }: { settings: HospitalSettings }) {
             </p>
             <ul className="list-disc pl-5 space-y-1.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               <li>
-                <strong>{t("roleDoctors")}</strong>{" "}
+                <strong>{t("uiDoctors")}</strong>{" "}
                 {t("uiFullAccessToPrescribeReview")}
               </li>
               <li>
@@ -147,7 +147,7 @@ export function PrivacyView({ settings }: { settings: HospitalSettings }) {
                 {t("uiRestrictedToRegisteringWalkIns")}
               </li>
               <li>
-                <strong>{t("rolePatients")}</strong>{" "}
+                  <strong>{t("uiPatients")}</strong>{" "}
                 {t("uiAuthenticatedAccessOnlyToTheir")}
               </li>
               <li>
@@ -186,7 +186,7 @@ export function PrivacyView({ settings }: { settings: HospitalSettings }) {
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <FileCheck className="w-5 h-5 text-[var(--brand-primary)]" />
-              <span>{t("rolePatientRightsAndDataControl")}</span>
+              <span>{t("uiPatientRightsDataControl")}</span>
             </h2>
             <p>
               {t("uiUnderMedicalEthicsAndData")}

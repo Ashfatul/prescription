@@ -26,6 +26,7 @@ import {
   FileText,
   Upload,
 } from "lucide-react";
+import { notifyToast } from "@/lib/toast";
 import { PublicDoctorItem, FeeBreakdown } from "@/components/appointments/appointment-booking-modal";
 import { CustomSelect } from "@/components/common/custom-select";
 import {
@@ -251,11 +252,12 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
           )
         );
         setPatientVerifySuccess(`Patient "${patientName}" has been successfully verified & activated! Confirmation email sent.`);
+        notifyToast(`Patient "${patientName}" has been successfully verified & activated!`, "success");
       } else {
-        alert(data.message || "Failed to verify patient");
+        notifyToast(data.message || "Failed to verify patient", "error");
       }
     } catch {
-      alert("Network error verifying patient");
+      notifyToast("Network error verifying patient", "error");
     } finally {
       setVerifyingPatientId(null);
     }
@@ -929,7 +931,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
             label: t("uiAllClinicAppointments"),
             icon: Calendar,
           },
-          { id: "patients", label: t("rolePatientDirectory"), icon: Users },
+          { id: "patients", label: t("uiPatientDirectory"), icon: Users },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -2140,7 +2142,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 )}
               </h2>
               <p className="text-xs text-slate-500">
-                {t("rolePatientDirectoryAndAccountVerificationGovernanceVerifyRegisteredPatientsToEnableTheirPatientPortalAccess")}
+                {t("uiPatientDirectoryAndAccountVerification")}
               </p>
             </div>
             <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 self-start sm:self-auto">

@@ -12,6 +12,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 export interface EmailTemplateItem {
   id: string;
@@ -148,7 +149,9 @@ export function EmailTemplateManager() {
     setFormSuccess(null);
 
     if (!name.trim() || !subject.trim() || !bodyHtml.trim()) {
-      setFormError("Template name, subject, and HTML body are required.");
+      const message = "Template name, subject, and HTML body are required.";
+      setFormError(message);
+      notifyToast(message, "error");
       return;
     }
 
@@ -181,15 +184,20 @@ export function EmailTemplateManager() {
         const json = await res.json();
         if (json.success) {
           setFormSuccess("Template saved successfully.");
+          notifyToast("Template saved successfully.", "success");
           setTimeout(() => {
             setModalOpen(false);
             fetchTemplates();
           }, 800);
         } else {
-          setFormError(json.error || json.message || "Failed to save template.");
+          const message = json.error || json.message || "Failed to save template.";
+          setFormError(message);
+          notifyToast(message, "error");
         }
       } catch {
-        setFormError("Network error occurred while saving template.");
+        const message = "Network error occurred while saving template.";
+        setFormError(message);
+        notifyToast(message, "error");
       }
     });
   };
@@ -204,11 +212,12 @@ export function EmailTemplateManager() {
       const json = await res.json();
       if (json.success) {
         setTemplates((prev) => prev.filter((t) => t.id !== id));
+        notifyToast("Template deleted successfully.", "success");
       } else {
-        alert(json.error || json.message || "Failed to delete template.");
+        notifyToast(json.error || json.message || "Failed to delete template.", "error");
       }
     } catch {
-      alert("Network error occurred.");
+      notifyToast("Network error occurred.", "error");
     }
   };
 
@@ -239,17 +248,22 @@ export function EmailTemplateManager() {
           success: true,
           message: json.message || `Test email dispatched to ${testRecipient.trim()} via SMTP.`,
         });
+        notifyToast(json.message || `Test email dispatched to ${testRecipient.trim()} via SMTP.`, "success");
       } else {
+        const message = json.error || json.message || "Failed to send test email.";
         setTestResult({
           success: false,
-          message: json.error || json.message || "Failed to send test email.",
+          message,
         });
+        notifyToast(message, "error");
       }
     } catch {
+      const message = "Network error occurred while communicating with SMTP service.";
       setTestResult({
         success: false,
-        message: "Network error occurred while communicating with SMTP service.",
+        message,
       });
+      notifyToast(message, "error");
     } finally {
       setTestSending(false);
     }

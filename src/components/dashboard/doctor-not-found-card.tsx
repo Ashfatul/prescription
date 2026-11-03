@@ -14,7 +14,7 @@ export function DoctorNotFoundCard() {
       </div>
       <div>
         <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-          {t("roleDoctorProfileNotFound")}
+          {t("uiDoctorProfileNotFound")}
         </h2>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
           {t("uiYourUserAccountIsNot")}

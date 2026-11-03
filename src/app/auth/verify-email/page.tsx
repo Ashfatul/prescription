@@ -21,6 +21,7 @@ import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
 import { LanguageToggle } from "@/components/common/language-toggle";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 function VerifyEmailInner() {
   const router = useRouter();
@@ -64,12 +65,17 @@ function VerifyEmailInner() {
           setVerified(true);
           setPendingApproval(Boolean(data.pendingApproval));
           setSuccessMsg(data.message || "Email verified successfully!");
+          notifyToast(data.message || "Email verified successfully!", "success");
         } else {
-          setError(data.message || "Verification link is invalid or has expired.");
+          const message = data.message || "Verification link is invalid or has expired.";
+          setError(message);
+          notifyToast(message, "error");
         }
       } catch {
         if (mounted) {
-          setError("Network error while verifying email. Please try again.");
+          const message = "Network error while verifying email. Please try again.";
+          setError(message);
+          notifyToast(message, "error");
         }
       } finally {
         if (mounted) setVerifying(false);
@@ -112,13 +118,18 @@ function VerifyEmailInner() {
           setSuccessMsg("This email is already verified. You can log into your account now.");
         } else {
           setSuccessMsg(data.message || "A fresh verification link has been sent to your email!");
+          notifyToast(data.message || "A fresh verification link has been sent to your email!", "success");
           setCooldown(60); // 60s cooldown
         }
       } else {
-        setError(data.message || "Failed to resend verification email.");
+        const message = data.message || "Failed to resend verification email.";
+        setError(message);
+        notifyToast(message, "error");
       }
     } catch {
-      setError("Network error while sending verification email.");
+      const message = "Network error while sending verification email.";
+      setError(message);
+      notifyToast(message, "error");
     } finally {
       setResending(false);
     }
@@ -148,15 +159,20 @@ function VerifyEmailInner() {
       if (res.ok && data.success) {
         setEmail(newEmail);
         setSuccessMsg(data.message || `Email updated to ${newEmail}. Verification link dispatched.`);
+        notifyToast(data.message || `Email updated to ${newEmail}. Verification link dispatched.`, "success");
         setShowChangeEmail(false);
         setPassword("");
         setNewEmail("");
         setCooldown(60);
       } else {
-        setError(data.message || "Failed to change email address.");
+        const message = data.message || "Failed to change email address.";
+        setError(message);
+        notifyToast(message, "error");
       }
     } catch {
-      setError("Network error while updating email address.");
+      const message = "Network error while updating email address.";
+      setError(message);
+      notifyToast(message, "error");
     } finally {
       setChangingEmail(false);
     }
@@ -514,7 +530,7 @@ export default function VerifyEmailPage() {
 
         {/* Bottom Footer */}
         <div className="pt-4 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
-          <span>{t("uiProtectedByHIPAABMDCCompliantVariant2")}</span>
+          <span>{t("uiProtectedByHIPAABMDCCompliant2")}</span>
           <div className="flex items-center gap-3">
             <Link href="/privacy" className="hover:text-[var(--brand-primary)] transition font-medium">
               {t.privacyPolicy}

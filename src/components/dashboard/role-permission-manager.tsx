@@ -25,6 +25,7 @@ import {
   DEFAULT_ROLE_PERMISSIONS,
 } from "@/lib/auth/permissions";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 interface RolePermissionsData {
   categories: string[];
@@ -106,6 +107,7 @@ export function RolePermissionManager() {
       .catch((err: unknown) => {
         const errMsg = err instanceof Error ? err.message : "Error fetching permissions";
         setMessage({ type: "error", text: errMsg });
+        notifyToast(errMsg, "error");
       })
       .finally(() => {
         setLoading(false);
@@ -187,10 +189,12 @@ export function RolePermissionManager() {
       setRolePermissions(json.data.roles);
       setInitialRolePermissions(JSON.parse(JSON.stringify(json.data.roles)));
       setMessage({ type: "success", text: "Role permissions saved and committed successfully!" });
+      notifyToast("Role permissions saved and committed successfully!", "success");
       setTimeout(() => setMessage(null), 4000);
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : "Error saving permissions";
       setMessage({ type: "error", text: errMsg });
+      notifyToast(errMsg, "error");
     } finally {
       setSaving(false);
     }
