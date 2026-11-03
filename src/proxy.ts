@@ -37,7 +37,7 @@ function extractSubdomain(req: NextRequest): string | null {
   return null;
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const subdomain = extractSubdomain(req);
 
@@ -118,6 +118,7 @@ export async function middleware(req: NextRequest) {
   if (pathname.startsWith("/api")) {
     const isPublicApi =
       pathname === "/api/auth/login" ||
+      pathname === "/api/auth/login/2fa" ||
       pathname === "/api/auth/logout" ||
       pathname === "/api/auth/register" ||
       pathname === "/api/auth/verify-email" ||
@@ -130,7 +131,8 @@ export async function middleware(req: NextRequest) {
       pathname === "/api/pricing-plans" ||
       pathname === "/api/organizations" ||
       pathname === "/api/organizations/check-slug" ||
-      pathname.startsWith("/api/public/");
+      pathname.startsWith("/api/public/") ||
+      pathname.startsWith("/api/demo/");
 
     if (!isPublicApi && !payload) {
       return NextResponse.json(

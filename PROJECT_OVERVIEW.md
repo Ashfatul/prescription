@@ -24,7 +24,7 @@ A production-grade, multi-tenant clinical operating system and electronic prescr
 - [x] **Multi-Tenant Organization Isolation**: Scopes clinics, staff, patients, and financial metrics by `organizationId`.
 - [x] **Instant Demo Evaluation Profiles**: 1-click test authorization buttons on `/auth/login` for all 5 roles (`Super Admin`, `Clinic Admin`, `Doctor`, `Staff`, `Patient`).
 - [x] **Email Verification & Password Reset Flows**: Tokenized verification links with configurable expiration and secure password hashing (`bcryptjs`).
-- [x] **Protected Server & Client Route Guards**: Automatic redirection based on user credentials and roles via middleware and session cookies.
+- [x] **Protected Server & Client Route Guards**: Automatic redirection based on user credentials and roles via proxy (`src/proxy.ts`) and session cookies.
 
 ### 2.2 Doctor Clinical Workspace & Prescription Writer
 - [x] **Fast Prescribing with 1-Click Clinical Chips**:

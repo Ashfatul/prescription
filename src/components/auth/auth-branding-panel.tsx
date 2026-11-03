@@ -24,7 +24,7 @@ export function AuthBrandingPanel({
   description,
   features,
 }: AuthBrandingPanelProps) {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
 
   const defaultBadge = badge || (language === "bn" ? "ক্লিনিকাল অপারেটিং সিস্টেম" : "Clinical Operating System");
   const defaultTitle = title || (language === "bn" ? "আধুনিক স্বাস্থ্যসেবার ডিজিটাল প্ল্যাটফর্ম" : "Unified Platform for Healthcare Practice");

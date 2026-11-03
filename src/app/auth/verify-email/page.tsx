@@ -20,15 +20,12 @@ import {
 import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
 import { LanguageToggle } from "@/components/common/language-toggle";
-import { useLanguage } from "@/lib/i18n/language-context";
 
 function VerifyEmailInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const emailParam = searchParams.get("email");
-  const { t, language } = useLanguage();
-
   const [email, setEmail] = useState(emailParam || "");
   const [verifying, setVerifying] = useState(Boolean(token));
   const [verified, setVerified] = useState(false);
