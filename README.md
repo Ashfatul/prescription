@@ -89,10 +89,14 @@ npm run prisma:seed
 
 ## Seed Credentials
 
-- `admin@ppms.local` / `Pass1234!`
+- `ashfatul.islam@gmail.com` / `aniyasfather`
 - `doctor@ppms.local` / `Pass1234!`
 - `patient@ppms.local` / `Pass1234!`
 - `staff@ppms.local` / `Pass1234!`
+
+## Secure Demo Database Reset
+
+When Demo Mode is enabled, the Super Admin dashboard exposes a re-authenticated reset action. It requires the Super Admin password, an acknowledgement, and the exact phrase `RESET DEMO DATA`. It removes non-demo users, clinics, and clinical activity while retaining the PPMS Clinic demo accounts plus roles, plans, catalogs, templates, email templates, settings, and translations. The reset also removes all prescriptions.
 
 ## Run Development Server
 
@@ -126,6 +130,9 @@ Open `http://localhost:3000`.
 
 ## Production Notes
 
+- **Vercel environment variables:** Add `DATABASE_URL` and `JWT_SECRET` in Vercel under **Project Settings → Environment Variables**. Select **Production** (and **Preview** if preview deployments should work), then redeploy. `DATABASE_URL` must be a hosted PostgreSQL URL; `localhost` or `127.0.0.1` will not work from Vercel.
+- **Initialize the production database:** This repository does not currently contain Prisma migration files. After setting the production URL, run `DATABASE_URL="<production-url>" npx prisma db push` from a trusted environment, then optionally run `DATABASE_URL="<production-url>" npm run prisma:seed` for demo data. Use `prisma migrate deploy` once migrations are added.
+- **Deploy check:** `npm run build` validates `DATABASE_URL` and `JWT_SECRET` before building. A missing or local-only URL now stops the Vercel build with an actionable message instead of deploying a broken server.
 - Replace in-memory rate limiter with Redis/Upstash for multi-instance deployments
 - Use signed/private access patterns for sensitive file access
 - Add audit logs and structured monitoring

@@ -1,13 +1,19 @@
 import bcrypt from "bcryptjs";
-import { AppointmentStatus, PrismaClient, RoleName } from "@prisma/client";
+import { AppointmentStatus, Prisma, PrismaClient, RoleName } from "@prisma/client";
 import { db } from "@/lib/db";
+import { AppError } from "@/lib/errors";
+import { DEMO_SUPER_ADMIN_EMAIL } from "@/features/demo/demo-reset.constants";
 
 export const DEMO_CLINIC_SLUG = "ppms-clinic";
 export const DEMO_CLINIC_NAME = "PPMS Clinic";
 export const DEMO_RESET_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
+export const SUPER_ADMIN_EMAIL = DEMO_SUPER_ADMIN_EMAIL;
+export const LEGACY_SUPER_ADMIN_EMAIL = "admin@ppms.local";
+export const DEMO_SUPER_ADMIN_PASSWORD = "aniyasfather";
+export const DEMO_USER_PASSWORD = "Pass1234!";
 
 export const DEMO_ACCOUNT_EMAILS = [
-  "admin@ppms.local",
+  SUPER_ADMIN_EMAIL,
   "clinic.admin@ppms.local",
   "doctor@ppms.local",
   "staff@ppms.local",
@@ -20,11 +26,19 @@ export function isDemoModeActive(): boolean {
   return process.env.NEXT_PUBLIC_DEMO_MODE === "true" || process.env.DEMO_MODE === "true";
 }
 
+type DemoDbClient = PrismaClient | Prisma.TransactionClient;
+type DemoSeedOptions = { seedSampleData?: boolean };
+
 /**
  * Seeds or resets the dedicated PPMS Clinic organization and its clean baseline demo accounts.
  */
-export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = db) {
-  const passwordHash = await bcrypt.hash("Pass1234!", 10);
+export async function seedOrResetDemoClinic(
+  client: DemoDbClient = db,
+  options: DemoSeedOptions = {},
+) {
+  const seedSampleData = options.seedSampleData ?? true;
+  const passwordHash = await bcrypt.hash(DEMO_USER_PASSWORD, 12);
+  const superAdminPasswordHash = await bcrypt.hash(DEMO_SUPER_ADMIN_PASSWORD, 12);
 
   // 1. Ensure Roles exist
   const roleRecords = await Promise.all(
@@ -62,6 +76,20 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
     });
   }
 
+  // Migrate the original demo Super Admin address before the canonical account is upserted.
+  const existingCanonicalAdmin = await client.user.findUnique({
+    where: { email: SUPER_ADMIN_EMAIL },
+  });
+  const legacyAdmin = await client.user.findUnique({
+    where: { email: LEGACY_SUPER_ADMIN_EMAIL },
+  });
+  if (!existingCanonicalAdmin && legacyAdmin) {
+    await client.user.update({
+      where: { id: legacyAdmin.id },
+      data: { email: SUPER_ADMIN_EMAIL },
+    });
+  }
+
   // 3. Upsert PPMS Clinic (Demo Sandbox Facility)
   const now = new Date();
   const demoOrg = await client.organization.upsert({
@@ -96,6 +124,9 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
   await client.testReport.deleteMany({
     where: { organizationId: demoOrg.id },
   });
+  await client.prescriptionAttachment.deleteMany({
+    where: { prescription: { organizationId: demoOrg.id } },
+  });
   await client.prescription.deleteMany({
     where: { organizationId: demoOrg.id },
   });
@@ -112,10 +143,11 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
   // 5. Seed Core Demo Users (All assigned strictly to PPMS Clinic)
   // 5a. Super Admin
   const adminUser = await client.user.upsert({
-    where: { email: "admin@ppms.local" },
+    where: { email: SUPER_ADMIN_EMAIL },
     update: {
       name: "Super Admin",
-      passwordHash,
+      passwordHash: superAdminPasswordHash,
+      roleId: roleByName.SUPER_ADMIN,
       organizationId: demoOrg.id,
       isDemo: true,
       emailVerified: now,
@@ -126,8 +158,8 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
     },
     create: {
       name: "Super Admin",
-      email: "admin@ppms.local",
-      passwordHash,
+      email: SUPER_ADMIN_EMAIL,
+      passwordHash: superAdminPasswordHash,
       roleId: roleByName.SUPER_ADMIN,
       organizationId: demoOrg.id,
       isDemo: true,
@@ -416,6 +448,10 @@ export async function seedOrResetDemoClinic(client: PrismaClient | typeof db = d
     },
   });
 
+  if (!seedSampleData) {
+    return demoOrg;
+  }
+
   // 6. Seed Today's Active Consultation Queue for PPMS Clinic
   const todayAtNine = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 30, 0);
 
@@ -611,16 +647,186 @@ export async function getDemoResetStatus() {
 }
 
 /**
- * Manually triggers an immediate reset of PPMS Clinic to clean baseline.
+ * Clears application data while retaining the demo facility, demo accounts, and
+ * platform reference data. The route performs authentication and re-authentication
+ * before calling this function; the mode check remains here as a second server-side
+ * boundary so this operation cannot be enabled by a client request.
  */
-export async function performManualDemoReset() {
+export async function performSecureDatabaseReset(actorId: string) {
   if (!isDemoModeActive()) {
-    throw new Error("Demo reset is only available when Demo Mode is enabled.");
+    throw new AppError("Database reset is only available when Demo Mode is enabled.", 403);
   }
-  const org = await seedOrResetDemoClinic(db);
+
+  const actor = await db.user.findUnique({
+    where: { id: actorId },
+    include: { role: true },
+  });
+  if (!actor || actor.role.name !== RoleName.SUPER_ADMIN) {
+    throw new AppError("Only a Super Admin can reset the demo database.", 403);
+  }
+
+  const conflictingAdmin = await db.user.findUnique({
+    where: { email: SUPER_ADMIN_EMAIL },
+    select: { id: true },
+  });
+  if (conflictingAdmin && conflictingAdmin.id !== actorId) {
+    throw new AppError(
+      "The requested Super Admin email is already assigned to another account.",
+      409,
+    );
+  }
+
+  const passwordHash = await bcrypt.hash(DEMO_SUPER_ADMIN_PASSWORD, 12);
+  const resetAt = new Date();
+
+  const result = await db.$transaction(async (tx) => {
+    // Restore the protected demo facility and accounts inside the same transaction.
+    // The cleanup below then removes the seeded transactional sample data as well.
+    const demoOrg = await seedOrResetDemoClinic(tx, { seedSampleData: false });
+    const seededSuperAdmin = await tx.user.findUnique({
+      where: { email: SUPER_ADMIN_EMAIL },
+      select: { id: true },
+    });
+    if (!seededSuperAdmin || seededSuperAdmin.id !== actorId) {
+      throw new AppError(
+        "Sign in with the canonical Super Admin account before resetting the demo database.",
+        409,
+      );
+    }
+
+    await tx.user.update({
+      where: { id: actorId },
+      data: {
+        email: SUPER_ADMIN_EMAIL,
+        name: "Super Admin",
+        passwordHash,
+        role: { connect: { name: RoleName.SUPER_ADMIN } },
+        organization: { connect: { id: demoOrg.id } },
+        isDemo: true,
+        emailVerified: resetAt,
+        isApproved: true,
+        passwordResetToken: null,
+        passwordResetTokenExpiresAt: null,
+        emailVerificationToken: null,
+        emailVerificationTokenExpiresAt: null,
+      },
+    });
+
+    const protectedUsers = await tx.user.findMany({
+      where: {
+        OR: [
+          { id: actorId },
+          { isDemo: true, role: { name: { not: RoleName.SUPER_ADMIN } } },
+        ],
+      },
+      select: { id: true },
+    });
+    const protectedUserIds = protectedUsers.map((user) => user.id);
+
+    // Preserve reference assets, but make templates owned by removed users safe to keep.
+    await tx.template.updateMany({
+      where: { createdById: { notIn: protectedUserIds } },
+      data: { createdById: actorId },
+    });
+
+    // Remove clinical, communication, uploaded-file, and audit records first so all
+    // foreign-key paths are cleared before users and organizations are removed.
+    await tx.prescriptionAttachment.deleteMany({});
+    await tx.prescriptionVersion.deleteMany({});
+    await tx.medicineReminder.deleteMany({});
+    await tx.testReport.deleteMany({});
+    await tx.prescription.deleteMany({});
+    await tx.appointment.deleteMany({});
+    await tx.chatMessage.deleteMany({});
+    await tx.chatConnection.deleteMany({});
+    await tx.notification.deleteMany({});
+    await tx.file.deleteMany({});
+    await tx.activityLog.deleteMany({});
+    await tx.announcement.deleteMany({});
+
+    // Global catalog and communication assets remain useful after a demo reset;
+    // detach them from clinics that are about to be removed.
+    await tx.medicine.updateMany({ data: { organizationId: null } });
+    await tx.diagnosticTest.updateMany({ data: { organizationId: null } });
+    await tx.template.updateMany({ data: { organizationId: null } });
+    await tx.emailTemplate.updateMany({ data: { organizationId: null } });
+
+    const deletedDoctors = await tx.doctor.deleteMany({
+      where: { userId: { notIn: protectedUserIds } },
+    });
+    const deletedPatients = await tx.patient.deleteMany({
+      where: { userId: { notIn: protectedUserIds } },
+    });
+    const deletedUsers = await tx.user.deleteMany({
+      where: { id: { notIn: protectedUserIds } },
+    });
+
+    // Keep every protected account usable inside the retained demo facility.
+    await tx.user.updateMany({
+      where: { id: { in: protectedUserIds } },
+      data: { organizationId: demoOrg.id },
+    });
+    await tx.doctor.updateMany({
+      where: { userId: { in: protectedUserIds } },
+      data: { organizationId: demoOrg.id },
+    });
+    await tx.patient.updateMany({
+      where: { userId: { in: protectedUserIds } },
+      data: { organizationId: demoOrg.id },
+    });
+
+    const deletedOrganizations = await tx.organization.deleteMany({
+      where: { id: { not: demoOrg.id } },
+    });
+
+    const resetDemoOrg = await tx.organization.update({
+      where: { id: demoOrg.id },
+      data: { isDemo: true, lastDemoResetAt: resetAt, status: "ACTIVE" },
+    });
+
+    // Retain one immutable security record for the destructive operation itself.
+    await tx.activityLog.create({
+      data: {
+        organizationId: resetDemoOrg.id,
+        userId: actorId,
+        userName: "Super Admin",
+        userRole: RoleName.SUPER_ADMIN,
+        action: "DEMO_DATABASE_RESET",
+        entityType: "Database",
+        detailsJson: {
+          preservedDemoFacility: DEMO_CLINIC_SLUG,
+          retainedReferenceData: [
+            "roles",
+            "pricingPlans",
+            "medicines",
+            "diagnosticTests",
+            "templates",
+            "emailTemplates",
+            "settings",
+            "translations",
+          ],
+          deletedUsers: deletedUsers.count,
+          deletedDoctors: deletedDoctors.count,
+          deletedPatients: deletedPatients.count,
+          deletedOrganizations: deletedOrganizations.count,
+        } satisfies Prisma.InputJsonObject,
+      },
+    });
+
+    return {
+      deletedUsers: deletedUsers.count,
+      deletedDoctors: deletedDoctors.count,
+      deletedPatients: deletedPatients.count,
+      deletedOrganizations: deletedOrganizations.count,
+      retainedDemoUsers: protectedUserIds.length,
+      resetAt: resetAt.toISOString(),
+    };
+  });
+
   return {
     success: true,
-    resetAt: org.lastDemoResetAt ? org.lastDemoResetAt.toISOString() : new Date().toISOString(),
-    message: "PPMS Clinic sandbox has been restored to default baseline.",
+    ...result,
+    superAdminEmail: SUPER_ADMIN_EMAIL,
+    message: "Demo database cleared and the PPMS Clinic demo baseline was preserved.",
   };
 }

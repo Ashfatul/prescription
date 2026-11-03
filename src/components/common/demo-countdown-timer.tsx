@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback, useTransition } from "react";
-import { Clock, RotateCcw, Sparkles, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
+import { Clock, Sparkles } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
 
 type DemoStatus = {
@@ -23,13 +23,9 @@ interface DemoCountdownTimerProps {
 }
 
 export function DemoCountdownTimer({ variant = "floating", className = "" }: DemoCountdownTimerProps) {
-  const { t, language } = useLanguage();
-  const isBn = language === "bn";
+  const { t } = useLanguage();
   const [status, setStatus] = useState<DemoStatus | null>(null);
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
-  const [isPending, startTransition] = useTransition();
-  const [resetMessage, setResetMessage] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Fetch demo status asynchronously
   const loadStatus = useCallback(() => {
@@ -70,36 +66,6 @@ export function DemoCountdownTimer({ variant = "floating", className = "" }: Dem
     return () => clearInterval(timer);
   }, [secondsLeft, loadStatus]);
 
-  // Handle manual trigger reset
-  const handleReset = () => {
-    if (isPending) return;
-    setResetMessage(null);
-    setErrorMessage(null);
-
-    startTransition(async () => {
-      try {
-        const res = await fetch("/api/demo/reset", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        });
-        const json = await res.json();
-        if (json.success) {
-          setResetMessage(t("uiSandboxRestoredToInitialDefault"));
-          await loadStatus();
-          setTimeout(() => {
-            setResetMessage(null);
-            window.location.reload();
-          }, 1200);
-        } else {
-          setErrorMessage(json.message || (t("uiFailedToResetDemoData")));
-        }
-      } catch (err) {
-        console.error("Manual demo reset failed:", err);
-        setErrorMessage(t("uiNetworkErrorOccurredDuringReset"));
-      }
-    });
-  };
-
   // If demo mode is not enabled or not yet loaded, render nothing
   if (!status || !status.isDemoMode) {
     return null;
@@ -134,23 +100,8 @@ export function DemoCountdownTimer({ variant = "floating", className = "" }: Dem
               <span>{t("uiResetsIn")} {formattedCountdown}</span>
             </div>
 
-            <button
-              onClick={handleReset}
-              disabled={isPending}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[var(--brand-primary)] hover:opacity-90 text-white font-bold text-xs transition shadow-2xs disabled:opacity-60 cursor-pointer"
-            >
-              <RotateCcw className={`w-3 h-3 ${isPending ? "animate-spin" : ""}`} />
-              <span>{isPending ? (t("uiResetting")) : (t("uiResetNow"))}</span>
-            </button>
           </div>
         </div>
-
-        {resetMessage && (
-          <div className="mt-1.5 text-center text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center justify-center gap-1">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>{resetMessage}</span>
-          </div>
-        )}
       </div>
     );
   }
@@ -182,29 +133,7 @@ export function DemoCountdownTimer({ variant = "floating", className = "" }: Dem
             <span>{t("uiResetsIn")} <strong className="text-[var(--brand-text)]">{formattedCountdown}</strong></span>
           </div>
 
-          <button
-            type="button"
-            onClick={handleReset}
-            disabled={isPending}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[var(--brand-primary)] text-white hover:opacity-90 font-bold text-[11px] transition disabled:opacity-60 cursor-pointer shadow-2xs"
-          >
-            <RotateCcw className={`w-3 h-3 ${isPending ? "animate-spin" : ""}`} />
-            <span>{isPending ? (t("uiRestoring")) : (t("uiResetToDefault"))}</span>
-          </button>
         </div>
-
-        {resetMessage && (
-          <p className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>{resetMessage}</span>
-          </p>
-        )}
-        {errorMessage && (
-          <p className="text-[11px] font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1">
-            <AlertCircle className="w-3.5 h-3.5" />
-            <span>{errorMessage}</span>
-          </p>
-        )}
       </div>
     );
   }
@@ -235,24 +164,7 @@ export function DemoCountdownTimer({ variant = "floating", className = "" }: Dem
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={handleReset}
-          disabled={isPending}
-          title={t("uiResetPPMSClinicDemoData")}
-          className="px-2.5 py-1.5 rounded-xl bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] border border-[var(--border-default)] font-bold text-[11px] text-[var(--text-primary)] transition flex items-center gap-1.5 disabled:opacity-60 cursor-pointer shrink-0"
-        >
-          <RotateCcw className={`w-3 h-3 ${isPending ? "animate-spin" : ""}`} />
-          <span>{isPending ? "..." : (t("uiReset"))}</span>
-        </button>
       </div>
-
-      {resetMessage && (
-        <div className="mt-2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 border-t border-[var(--border-subtle)] pt-1.5">
-          <CheckCircle2 className="w-3 h-3" />
-          <span>{resetMessage}</span>
-        </div>
-      )}
     </aside>
   );
 }

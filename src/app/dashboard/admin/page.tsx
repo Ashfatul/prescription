@@ -3,6 +3,7 @@ import { AdminDashboardView } from "@/components/dashboard/admin-dashboard-view"
 import { requirePageUser } from "@/lib/auth/page-auth";
 import { getDashboardStats } from "@/features/stats.service";
 import { listUsers } from "@/features/users/user.service";
+import { isDemoModeActive } from "@/features/demo/demo-reset.service";
 
 export default async function AdminDashboardPage() {
   const user = await requirePageUser([RoleName.SUPER_ADMIN, RoleName.ADMIN, RoleName.STAFF]);
@@ -10,5 +11,5 @@ export default async function AdminDashboardPage() {
   const stats = await getDashboardStats(orgId);
   const users = await listUsers(orgId);
 
-  return <AdminDashboardView stats={stats} users={users} />;
+  return <AdminDashboardView stats={stats} users={users} isDemoMode={isDemoModeActive()} />;
 }
