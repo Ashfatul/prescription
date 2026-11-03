@@ -12,11 +12,13 @@ import { isEmailVerificationRequired } from "@/features/settings/settings.servic
 import {
   isDemoModeActive,
   DEMO_ACCOUNT_EMAILS,
+  repairDemoSuperAdmin,
   seedOrResetDemoClinic,
+  SUPER_ADMIN_EMAIL,
 } from "@/features/demo/demo-reset.service";
 
 const loginSchema = z.object({
-  email: z.email(),
+  email: z.string().trim().toLowerCase().pipe(z.email()),
   password: z.string().min(8),
 });
 
@@ -29,8 +31,18 @@ export async function POST(req: NextRequest) {
       include: { role: true, organization: true },
     });
 
-    // Auto-heal demo clinic baseline if demo mode is enabled and a demo user is missing
-    if (!user && isDemoModeActive() && DEMO_ACCOUNT_EMAILS.includes(body.email)) {
+    // Repair the renamed Super Admin account in place so login does not need to
+    // clear the entire demo clinic just to migrate existing credentials.
+    if (!user && isDemoModeActive() && body.email === SUPER_ADMIN_EMAIL) {
+      const repaired = await repairDemoSuperAdmin(db);
+      if (!repaired && DEMO_ACCOUNT_EMAILS.includes(body.email)) {
+        await seedOrResetDemoClinic(db);
+      }
+      user = await db.user.findUnique({
+        where: { email: body.email },
+        include: { role: true, organization: true },
+      });
+    } else if (!user && isDemoModeActive() && DEMO_ACCOUNT_EMAILS.includes(body.email)) {
       await seedOrResetDemoClinic(db);
       user = await db.user.findUnique({
         where: { email: body.email },

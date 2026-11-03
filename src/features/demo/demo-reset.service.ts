@@ -30,6 +30,51 @@ type DemoDbClient = PrismaClient | Prisma.TransactionClient;
 type DemoSeedOptions = { seedSampleData?: boolean };
 
 /**
+ * Repairs the canonical demo Super Admin account without clearing demo data.
+ * Existing databases may still contain the legacy account from before the
+ * canonical credentials were introduced.
+ */
+export async function repairDemoSuperAdmin(client: DemoDbClient = db) {
+  const canonicalAdmin = await client.user.findUnique({
+    where: { email: SUPER_ADMIN_EMAIL },
+  });
+  const legacyAdmin = canonicalAdmin
+    ? null
+    : await client.user.findUnique({
+        where: { email: LEGACY_SUPER_ADMIN_EMAIL },
+      });
+  const admin = canonicalAdmin || legacyAdmin;
+
+  // A canonical account is already migrated. Never overwrite its password on
+  // every login; Super Admins may have changed it after the initial migration.
+  if (!admin || canonicalAdmin) return false;
+
+  const superAdminRole = await client.role.upsert({
+    where: { name: RoleName.SUPER_ADMIN },
+    update: {},
+    create: { name: RoleName.SUPER_ADMIN },
+  });
+
+  await client.user.update({
+    where: { id: admin.id },
+    data: {
+      name: "Super Admin",
+      email: SUPER_ADMIN_EMAIL,
+      passwordHash: await bcrypt.hash(DEMO_SUPER_ADMIN_PASSWORD, 12),
+      roleId: superAdminRole.id,
+      isDemo: true,
+      emailVerified: new Date(),
+      isApproved: true,
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: [],
+    },
+  });
+
+  return true;
+}
+
+/**
  * Seeds or resets the dedicated PPMS Clinic organization and its clean baseline demo accounts.
  */
 export async function seedOrResetDemoClinic(

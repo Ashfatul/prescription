@@ -116,7 +116,7 @@ export function SecureDemoResetPanel({ isSuperAdmin }: { isSuperAdmin: boolean }
 
       {isOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/65 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-950/65 p-4 backdrop-blur-sm sm:items-center"
           role="presentation"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) closeDialog();
@@ -126,9 +126,9 @@ export function SecureDemoResetPanel({ isSuperAdmin }: { isSuperAdmin: boolean }
             role="dialog"
             aria-modal="true"
             aria-labelledby="secure-demo-reset-title"
-            className="w-full max-w-xl rounded-3xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-6 shadow-2xl sm:p-8"
+            className="flex max-h-[calc(100dvh-2rem)] w-full max-w-xl flex-col rounded-3xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-6 shadow-2xl sm:p-8"
           >
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex shrink-0 items-start justify-between gap-4">
               <div>
                 <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
                   <AlertTriangle className="h-5 w-5" />
@@ -151,7 +151,7 @@ export function SecureDemoResetPanel({ isSuperAdmin }: { isSuperAdmin: boolean }
               </button>
             </div>
 
-            <div className="mt-6 space-y-5">
+            <div className="mt-6 min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain pr-1">
               <div className="rounded-2xl border border-rose-300/60 bg-rose-500/5 p-4 text-xs leading-relaxed text-[var(--text-secondary)] dark:border-rose-900/70">
                 <p className="font-bold text-rose-700 dark:text-rose-300">{t("uiDataToBeRemoved")}</p>
                 <p className="mt-1">{t("uiResetDeletesUsersAndClinicalData")}</p>
@@ -215,7 +215,9 @@ export function SecureDemoResetPanel({ isSuperAdmin }: { isSuperAdmin: boolean }
                 </p>
               )}
 
-              <div className="flex flex-col-reverse gap-3 pt-1 sm:flex-row sm:justify-end">
+            </div>
+
+            <div className="mt-5 flex shrink-0 flex-col-reverse gap-3 border-t border-[var(--border-subtle)] pt-5 sm:flex-row sm:justify-end">
                 <button
                   type="button"
                   onClick={closeDialog}
@@ -233,7 +235,6 @@ export function SecureDemoResetPanel({ isSuperAdmin }: { isSuperAdmin: boolean }
                   <DatabaseZap className="h-4 w-4" />
                   {isSubmitting ? t("uiResetting") : t("uiClearDemoDatabase")}
                 </button>
-              </div>
             </div>
           </div>
         </div>

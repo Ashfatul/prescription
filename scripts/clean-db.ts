@@ -1,5 +1,9 @@
 import { PrismaClient, RoleName } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import {
+  SUPER_ADMIN_EMAIL,
+  DEMO_SUPER_ADMIN_PASSWORD,
+} from "../src/features/demo/demo-reset.service";
 
 const prisma = new PrismaClient();
 
@@ -183,9 +187,9 @@ async function cleanDatabase() {
 
   // 4. Ensure Master Super Admin User exists
   console.log("Setting up Super Admin Account...");
-  const passwordHash = await bcrypt.hash("Pass1234!", 10);
+  const passwordHash = await bcrypt.hash(DEMO_SUPER_ADMIN_PASSWORD, 12);
   const superAdmin = await prisma.user.upsert({
-    where: { email: "admin@ppms.local" },
+    where: { email: SUPER_ADMIN_EMAIL },
     update: {
       name: "Super Admin",
       organizationId: null,
@@ -194,7 +198,7 @@ async function cleanDatabase() {
     },
     create: {
       name: "Super Admin",
-      email: "admin@ppms.local",
+      email: SUPER_ADMIN_EMAIL,
       passwordHash,
       roleId: roleByName.SUPER_ADMIN,
       organizationId: null,
@@ -225,7 +229,7 @@ async function cleanDatabase() {
   console.log("==================================================");
   console.log(JSON.stringify(summary, null, 2));
   console.log("==================================================");
-  console.log(`Master Login: ${superAdmin.email} / Pass1234!`);
+  console.log(`Master Login: ${superAdmin.email} / ${DEMO_SUPER_ADMIN_PASSWORD}`);
   console.log("Ready for custom clinic registration and testing!");
 }
 
@@ -238,4 +242,3 @@ cleanDatabase()
     await prisma.$disconnect();
   });
 
-  
