@@ -25,6 +25,17 @@ function extractSubdomain(req: NextRequest): string | null {
     return null;
   }
 
+  // Vercel deployment URLs contain a project/deployment subdomain, but they
+  // are still the application's public host and must not be treated as a
+  // clinic tenant (for example, ppms.vercel.app -> /clinics/ppms).
+  if (
+    hostname.endsWith(".vercel.app") ||
+    hostname.endsWith(".vercel.sh") ||
+    hostname.endsWith(".now.sh")
+  ) {
+    return null;
+  }
+
   // For domains like metro-hospital.ppms.local or clinic.example.com
   const parts = hostname.split(".");
   if (parts.length > 2) {
