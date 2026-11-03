@@ -14,6 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { CustomSelect } from "@/components/common/custom-select";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 const inputClasses =
   "w-full px-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]";
@@ -59,6 +60,7 @@ type PlanOption = {
 };
 
 export function OrganizationManager() {
+  const { t, language } = useLanguage();
   const [orgs, setOrgs] = useState<OrgItem[]>([]);
   const [metrics, setMetrics] = useState<SaaSMetrics | null>(null);
   const [plans, setPlans] = useState<PlanOption[]>([]);
@@ -221,47 +223,57 @@ export function OrganizationManager() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="p-5 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
             <div className="flex items-center justify-between text-slate-400">
-              <span className="text-xs font-bold uppercase tracking-wider">Clinics & Hospitals</span>
+              <span className="text-xs font-bold uppercase tracking-wider">{t.clinicsAndHospitals}</span>
               <Building2 className="w-4 h-4 text-[var(--brand-primary)]" />
             </div>
             <div className="text-3xl font-black text-slate-900 dark:text-white">
               {metrics.totalOrganizations}
             </div>
-            <p className="text-[11px] text-slate-400">Partitioned multi-tenant clinics</p>
+            <p className="text-[11px] text-slate-400">
+              {language === "bn" ? "পৃথক মাল্টি-টেন্যান্ট ক্লিনিকসমূহ" : "Partitioned multi-tenant clinics"}
+            </p>
           </div>
 
           <div className="p-5 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
             <div className="flex items-center justify-between text-slate-400">
-              <span className="text-xs font-bold uppercase tracking-wider">Physicians & Staff</span>
+              <span className="text-xs font-bold uppercase tracking-wider">{t.physiciansAndStaff}</span>
               <Stethoscope className="w-4 h-4 text-sky-500" />
             </div>
             <div className="text-3xl font-black text-slate-900 dark:text-white">
-              {metrics.totalDoctors} <span className="text-xs font-normal text-slate-400">Docs / {metrics.totalStaff} Staff</span>
+              {metrics.totalDoctors} <span className="text-xs font-normal text-slate-400">
+                {language === "bn" ? "ডাক্তার" : "Docs"} / {metrics.totalStaff} {language === "bn" ? "স্টাফ" : "Staff"}
+              </span>
             </div>
-            <p className="text-[11px] text-slate-400">Active medical professionals</p>
+            <p className="text-[11px] text-slate-400">
+              {language === "bn" ? "সক্রিয় চিকিৎসা পেশাজীবী" : "Active medical professionals"}
+            </p>
           </div>
 
           <div className="p-5 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
             <div className="flex items-center justify-between text-slate-400">
-              <span className="text-xs font-bold uppercase tracking-wider">Total Prescriptions</span>
+              <span className="text-xs font-bold uppercase tracking-wider">{t.totalPrescriptionsCount}</span>
               <Layers className="w-4 h-4 text-emerald-500" />
             </div>
             <div className="text-3xl font-black text-slate-900 dark:text-white">
               {metrics.totalPrescriptions}
             </div>
-            <p className="text-[11px] text-slate-400">Across all connected clinics</p>
+            <p className="text-[11px] text-slate-400">
+              {language === "bn" ? "সকল সংযুক্ত ক্লিনিক জুড়ে" : "Across all connected clinics"}
+            </p>
           </div>
 
           <div className="p-5 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
             <div className="flex items-center justify-between text-slate-400">
-              <span className="text-xs font-bold uppercase tracking-wider">SaaS Active MRR</span>
+              <span className="text-xs font-bold uppercase tracking-wider">{t.saasActiveMrr}</span>
               <DollarSign className="w-4 h-4 text-teal-600" />
             </div>
             <div className="text-3xl font-black text-[var(--brand-text)]">
               ${metrics.estimatedMrr}
               <span className="text-xs font-normal text-slate-400">/mo</span>
             </div>
-            <p className="text-[11px] text-slate-400">Estimated recurring software revenue</p>
+            <p className="text-[11px] text-slate-400">
+              {language === "bn" ? "আনুমানিক নিয়মিত মাসিক সফটওয়্যার আয়" : "Estimated recurring software revenue"}
+            </p>
           </div>
         </div>
       )}
@@ -274,11 +286,11 @@ export function OrganizationManager() {
               <Building2 className="w-5 h-5" />
             </div>
             <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-              SaaS Multi-Clinic Management Hub
+              {t.multiClinicHubTitle}
             </h2>
           </div>
           <p className="text-xs text-slate-500">
-            Super Administrator console to provision, partition, review pending registrations, and monitor clinics.
+            {t.multiClinicHubSubtitle}
           </p>
         </div>
 
@@ -288,7 +300,7 @@ export function OrganizationManager() {
           className="px-4 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>Provision New Clinic</span>
+          <span>{t.provisionNewClinic}</span>
         </button>
       </div>
 
@@ -304,7 +316,7 @@ export function OrganizationManager() {
             onClick={() => setApprovalSuccess(null)}
             className="text-emerald-600 hover:text-emerald-800 dark:hover:text-emerald-200 cursor-pointer text-xs"
           >
-            Dismiss
+            {language === "bn" ? "বন্ধ করুন" : "Dismiss"}
           </button>
         </div>
       )}
@@ -320,7 +332,7 @@ export function OrganizationManager() {
               : "bg-[var(--bg-surface)] border border-[var(--border-default)] text-slate-600 dark:text-slate-300 hover:bg-[var(--bg-subtle)]"
           }`}
         >
-          All Clinics ({orgs.length})
+          {language === "bn" ? "সকল ক্লিনিক" : "All Clinics"} ({orgs.length})
         </button>
 
         <button
@@ -333,7 +345,7 @@ export function OrganizationManager() {
           }`}
         >
           <Clock className="w-3.5 h-3.5 text-amber-500" />
-          <span>Pending Approval</span>
+          <span>{t.approvalRequiredBadge}</span>
           {orgs.filter((o) => o.status === "PENDING_APPROVAL" || o.isApproved === false).length > 0 && (
             <span className="px-1.5 py-0.2 rounded-full text-[10px] font-black bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
               {orgs.filter((o) => o.status === "PENDING_APPROVAL" || o.isApproved === false).length}
@@ -350,7 +362,7 @@ export function OrganizationManager() {
               : "bg-[var(--bg-surface)] border border-[var(--border-default)] text-slate-600 dark:text-slate-300 hover:bg-[var(--bg-subtle)]"
           }`}
         >
-          Active ({orgs.filter((o) => o.status === "ACTIVE" && o.isApproved !== false).length})
+          {t.activeStatus} ({orgs.filter((o) => o.status === "ACTIVE" && o.isApproved !== false).length})
         </button>
 
         <button
@@ -362,7 +374,7 @@ export function OrganizationManager() {
               : "bg-[var(--bg-surface)] border border-[var(--border-default)] text-slate-600 dark:text-slate-300 hover:bg-[var(--bg-subtle)]"
           }`}
         >
-          Free Trial ({orgs.filter((o) => o.status === "TRIAL").length})
+          {language === "bn" ? "ফ্রি ট্রায়াল" : "Free Trial"} ({orgs.filter((o) => o.status === "TRIAL").length})
         </button>
 
         <button
@@ -374,7 +386,7 @@ export function OrganizationManager() {
               : "bg-[var(--bg-surface)] border border-[var(--border-default)] text-slate-600 dark:text-slate-300 hover:bg-[var(--bg-subtle)]"
           }`}
         >
-          Suspended ({orgs.filter((o) => o.status === "SUSPENDED").length})
+          {t.suspendedStatus} ({orgs.filter((o) => o.status === "SUSPENDED").length})
         </button>
       </div>
 
@@ -383,24 +395,24 @@ export function OrganizationManager() {
         {loading ? (
           <div className="p-12 text-center text-xs text-slate-400">
             <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--brand-primary)] mb-2" />
-            <span>Loading SaaS clinic tenants...</span>
+            <span>{language === "bn" ? "ক্লিনিক ডেটা লোড হচ্ছে..." : "Loading SaaS clinic tenants..."}</span>
           </div>
         ) : orgs.length === 0 ? (
           <div className="p-12 text-center text-xs text-slate-400">
-            No clinics configured yet. Click Provision New Clinic to get started.
+            {language === "bn" ? "কোনো ক্লিনিক পাওয়া যায়নি।" : "No clinics configured yet. Click Provision New Clinic to get started."}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-[var(--border-subtle)] bg-[var(--bg-subtle)]/50 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                  <th className="py-3.5 px-4 sm:px-6">Clinic / Organization</th>
-                  <th className="py-3.5 px-4">Identifier Slug</th>
-                  <th className="py-3.5 px-4">SaaS Tier Plan</th>
-                  <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-4">Doctors / Users</th>
-                  <th className="py-3.5 px-4">Prescriptions</th>
-                  <th className="py-3.5 px-4 text-right">Actions</th>
+                  <th className="py-3.5 px-4 sm:px-6">{language === "bn" ? "ক্লিনিক / সংস্থা" : "Clinic / Organization"}</th>
+                  <th className="py-3.5 px-4">{language === "bn" ? "আইডেন্টিফায়ার স্ল্যাগ" : "Identifier Slug"}</th>
+                  <th className="py-3.5 px-4">{language === "bn" ? "প্যাকেজ প্ল্যান" : "SaaS Tier Plan"}</th>
+                  <th className="py-3.5 px-4">{t.statusLabel}</th>
+                  <th className="py-3.5 px-4">{language === "bn" ? "ডাক্তার / ব্যবহারকারী" : "Doctors / Users"}</th>
+                  <th className="py-3.5 px-4">{t.prescriptions}</th>
+                  <th className="py-3.5 px-4 text-right">{t.actions}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border-subtle)]">
@@ -420,7 +432,7 @@ export function OrganizationManager() {
                           {org.name}
                         </strong>
                         <span className="text-[11px] text-slate-400">
-                          {org.contactEmail || org.contactPhone || "No contact info"}
+                          {org.contactEmail || org.contactPhone || (language === "bn" ? "কোনো তথ্য নেই" : "No contact info")}
                         </span>
                       </div>
                     </td>
@@ -433,14 +445,14 @@ export function OrganizationManager() {
                           {org.plan.name} (${org.plan.price}/mo)
                         </span>
                       ) : (
-                        <span className="text-slate-400 italic">No plan</span>
+                        <span className="text-slate-400 italic">{language === "bn" ? "কোনো প্ল্যান নেই" : "No plan"}</span>
                       )}
                     </td>
                     <td className="py-3.5 px-4 whitespace-nowrap">
                       {org.status === "PENDING_APPROVAL" || org.isApproved === false ? (
                         <span className="px-2.5 py-1 rounded-full font-bold text-[10px] bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1.5 w-fit">
                           <Clock className="w-3 h-3 text-amber-500 shrink-0" />
-                          <span>Pending Approval</span>
+                          <span>{t.approvalRequiredBadge}</span>
                         </span>
                       ) : (
                         <span
@@ -457,10 +469,10 @@ export function OrganizationManager() {
                       )}
                     </td>
                     <td className="py-3.5 px-4 whitespace-nowrap text-slate-700 dark:text-slate-300">
-                      <strong>{org._count.users}</strong> members
+                      <strong>{org._count.users}</strong> {language === "bn" ? "জন সদস্য" : "members"}
                     </td>
                     <td className="py-3.5 px-4 whitespace-nowrap text-slate-700 dark:text-slate-300">
-                      <strong>{org._count.prescriptions}</strong> generated
+                      <strong>{org._count.prescriptions}</strong> {language === "bn" ? "টি তৈরি হয়েছে" : "generated"}
                     </td>
                     <td className="py-3.5 px-4 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1.5">
@@ -476,7 +488,7 @@ export function OrganizationManager() {
                             ) : (
                               <CheckCircle2 className="w-3.5 h-3.5" />
                             )}
-                            <span>Approve & Activate</span>
+                            <span>{language === "bn" ? "অনুমোদন ও সক্রিয় করুন" : "Approve & Activate"}</span>
                           </button>
                         )}
                         <button
@@ -485,7 +497,7 @@ export function OrganizationManager() {
                           className="px-3 py-1.5 rounded-xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-300 font-semibold text-xs transition inline-flex items-center gap-1 cursor-pointer"
                         >
                           <Edit className="w-3.5 h-3.5" />
-                          <span>Manage</span>
+                          <span>{t.edit}</span>
                         </button>
                       </div>
                     </td>
@@ -503,7 +515,7 @@ export function OrganizationManager() {
           <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="font-bold text-slate-900 dark:text-white text-base">
-                {editingOrg ? `Manage Clinic: ${editingOrg.name}` : "Provision New Clinic Organization"}
+                {editingOrg ? `${language === "bn" ? "ক্লিনিক পরিচালনা" : "Manage Clinic"}: ${editingOrg.name}` : (language === "bn" ? "নতুন ক্লিনিক যুক্ত করুন" : "Provision New Clinic Organization")}
               </h3>
               <button
                 type="button"
@@ -525,7 +537,7 @@ export function OrganizationManager() {
                 <div className="grid sm:grid-cols-1 gap-3">
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      Clinic / Hospital Name *
+                      {language === "bn" ? "ক্লিনিক / হাসপাতালের নাম *" : "Clinic / Hospital Name *"}
                     </label>
                     <input
                       type="text"
@@ -544,7 +556,7 @@ export function OrganizationManager() {
 
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      Tenant Slug Identifier *
+                      {language === "bn" ? "টেন্যান্ট স্ল্যাগ *" : "Tenant Slug Identifier *"}
                     </label>
                     <input
                       type="text"
@@ -560,7 +572,7 @@ export function OrganizationManager() {
                 <div className="grid sm:grid-cols-1 gap-3">
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      SaaS Pricing Plan
+                      {language === "bn" ? "প্যাকেজ প্ল্যান" : "SaaS Pricing Plan"}
                     </label>
                     <CustomSelect
                       value={planId}
@@ -569,23 +581,23 @@ export function OrganizationManager() {
                         value: p.id,
                         label: `${p.name} ($${p.price}/mo)`,
                       }))}
-                      placeholder="Select pricing plan..."
+                      placeholder={language === "bn" ? "প্যাকেজ নির্বাচন..." : "Select pricing plan..."}
                       searchable={false}
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      Tenant Status
+                      {t.statusLabel}
                     </label>
                     <CustomSelect
                       value={status}
                       onChange={(val) => setStatus(val as "ACTIVE" | "TRIAL" | "SUSPENDED" | "PENDING_APPROVAL")}
                       options={[
-                        { value: "ACTIVE", label: "ACTIVE", badge: "Live" },
-                        { value: "TRIAL", label: "TRIAL (14 Days)", badge: "Trial" },
-                        { value: "PENDING_APPROVAL", label: "PENDING_APPROVAL", badge: "Review" },
-                        { value: "SUSPENDED", label: "SUSPENDED", badge: "Locked" },
+                        { value: "ACTIVE", label: language === "bn" ? "সক্রিয় (ACTIVE)" : "ACTIVE", badge: "Live" },
+                        { value: "TRIAL", label: language === "bn" ? "ট্রায়াল (TRIAL)" : "TRIAL (14 Days)", badge: "Trial" },
+                        { value: "PENDING_APPROVAL", label: language === "bn" ? "অনুমোদন অপেক্ষমান" : "PENDING_APPROVAL", badge: "Review" },
+                        { value: "SUSPENDED", label: language === "bn" ? "স্থগিত (SUSPENDED)" : "SUSPENDED", badge: "Locked" },
                       ]}
                       searchable={false}
                     />
@@ -595,7 +607,7 @@ export function OrganizationManager() {
                 <div className="grid sm:grid-cols-1 gap-3">
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      Official Contact Email
+                      {t.emailColumn}
                     </label>
                     <input
                       type="email"
@@ -608,7 +620,7 @@ export function OrganizationManager() {
 
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      Chamber Phone
+                      {t.phoneColumn}
                     </label>
                     <input
                       type="tel"
@@ -622,7 +634,7 @@ export function OrganizationManager() {
 
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Physical Address & Location
+                    {t.fullPhysicalAddress}
                   </label>
                   <input
                     type="text"
@@ -640,14 +652,14 @@ export function OrganizationManager() {
                   onClick={() => setModalOpen(false)}
                   className="px-4 py-2 rounded-xl border border-[var(--border-default)] text-slate-600 dark:text-slate-300 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
                   className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold cursor-pointer hover:opacity-90 disabled:opacity-50 transition shadow-xs"
                 >
-                  {submitting ? "Saving..." : editingOrg ? "Update Clinic" : "Create Organization"}
+                  {submitting ? (language === "bn" ? "সংরক্ষণ হচ্ছে..." : "Saving...") : editingOrg ? (language === "bn" ? "হালনাগাদ করুন" : "Update Clinic") : (language === "bn" ? "ক্লিনিক তৈরি করুন" : "Create Organization")}
                 </button>
               </div>
             </form>

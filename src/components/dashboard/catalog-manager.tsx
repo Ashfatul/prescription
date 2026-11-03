@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { CustomSelect } from "@/components/common/custom-select";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 const inputClasses =
   "w-full px-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]";
@@ -27,6 +28,7 @@ interface CatalogManagerProps {
 }
 
 export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps = {}) {
+  const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState<"medicines" | "tests">(initialTab);
   const [prevInitialTab, setPrevInitialTab] = useState(initialTab);
 
@@ -265,11 +267,11 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
               </svg>
             </span>
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              Clinical Catalog Hub
+              {t.catalogTitle}
             </h2>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Centralized inventory for medicines and lab investigations used across prescriptions.
+            {t.catalogSubtitle}
           </p>
         </div>
 
@@ -277,24 +279,24 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
           <div className="flex items-center gap-3 px-4 py-2 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
             <div className="text-center">
               <span className="text-lg font-bold text-slate-900 dark:text-white">{medicines.length}</span>
-              <p className="text-[10px] uppercase font-semibold text-slate-400">Medicines</p>
+              <p className="text-[10px] uppercase font-semibold text-slate-400">{t.medications}</p>
             </div>
             <div className="w-px h-8 bg-slate-200 dark:bg-slate-700" />
             <div className="text-center">
               <span className="text-lg font-bold text-slate-900 dark:text-white">{tests.length}</span>
-              <p className="text-[10px] uppercase font-semibold text-slate-400">Lab Tests</p>
+              <p className="text-[10px] uppercase font-semibold text-slate-400">{t.diagnosticLabTests}</p>
             </div>
           </div>
 
           <button
             type="button"
             onClick={activeTab === "medicines" ? handleOpenAddMed : handleOpenAddTest}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-semibold hover:opacity-90 shadow-sm transition-all"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-semibold hover:opacity-90 shadow-sm transition-all cursor-pointer"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
             </svg>
-            <span>{activeTab === "medicines" ? "Add Medicine" : "Add Lab Test"}</span>
+            <span>{activeTab === "medicines" ? t.addMedicineBtn : t.addTestBtn}</span>
           </button>
         </div>
       </div>
@@ -306,24 +308,24 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
           <button
             type="button"
             onClick={() => setActiveTab("medicines")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
               activeTab === "medicines"
                 ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            <span>💊 Pharmaceuticals ({medicines.length})</span>
+            <span>💊 {t.pharmaceuticalDrugs} ({medicines.length})</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("tests")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
               activeTab === "tests"
                 ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            <span>🔬 Diagnostic Tests ({tests.length})</span>
+            <span>🔬 {t.diagnosticLabTests} ({tests.length})</span>
           </button>
         </div>
 
@@ -342,7 +344,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={activeTab === "medicines" ? "Search by brand, strength, or use..." : "Search tests or preparation instructions..."}
+              placeholder={activeTab === "medicines" ? t.searchMedicinesPlaceholder : t.searchTestsPlaceholder}
               className="w-full input-icon-left !pl-11 pr-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
             />
           </div>
@@ -352,9 +354,9 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
               <CustomSelect
                 value={selectedType}
                 onChange={(val) => setSelectedType(val)}
-                options={medicineTypes.map((t) => ({
-                  value: t,
-                  label: t === "ALL" ? "All Forms" : t,
+                options={medicineTypes.map((tName) => ({
+                  value: tName,
+                  label: tName === "ALL" ? (language === "bn" ? "সকল ধরন" : "All Forms") : tName,
                 }))}
                 searchable={false}
               />
@@ -365,12 +367,12 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
 
       {/* Catalog Content */}
       {loading ? (
-        <div className="p-12 text-center text-slate-400">Loading catalog items...</div>
+        <div className="p-12 text-center text-slate-400">{t.loading}</div>
       ) : activeTab === "medicines" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredMedicines.length === 0 ? (
             <div className="col-span-full p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800">
-              <p className="text-sm text-slate-500">No medicines found matching your criteria.</p>
+              <p className="text-sm text-slate-500">{language === "bn" ? "কোনো ঔষধ পাওয়া যায়নি।" : "No medicines found matching your criteria."}</p>
             </div>
           ) : (
             filteredMedicines.map((med) => (
@@ -401,16 +403,16 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                   <button
                     type="button"
                     onClick={() => handleOpenEditMed(med)}
-                    className="px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-[var(--brand-text)] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all"
+                    className="px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-[var(--brand-text)] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all cursor-pointer"
                   >
-                    Edit
+                    {t.edit}
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDeleteMed(med.id, med.name)}
-                    className="px-2.5 py-1 text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-all"
+                    className="px-2.5 py-1 text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-all cursor-pointer"
                   >
-                    Delete
+                    {t.delete}
                   </button>
                 </div>
               </div>
@@ -421,7 +423,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredTests.length === 0 ? (
             <div className="col-span-full p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800">
-              <p className="text-sm text-slate-500">No diagnostic tests found matching your criteria.</p>
+              <p className="text-sm text-slate-500">{language === "bn" ? "কোনো ডায়াগনস্টিক টেস্ট পাওয়া যায়নি।" : "No diagnostic tests found matching your criteria."}</p>
             </div>
           ) : (
             filteredTests.map((test) => (
@@ -432,7 +434,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400">
-                      Investigation
+                      {language === "bn" ? "পরীক্ষা" : "Investigation"}
                     </span>
                   </div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1.5">
@@ -440,7 +442,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                   </h3>
                   {test.instructions && (
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      📋 Instructions: {test.instructions}
+                      📋 {language === "bn" ? "নির্দেশনা:" : "Instructions:"} {test.instructions}
                     </p>
                   )}
                 </div>
@@ -449,16 +451,16 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                   <button
                     type="button"
                     onClick={() => handleOpenEditTest(test)}
-                    className="px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-[var(--brand-text)] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all"
+                    className="px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-[var(--brand-text)] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all cursor-pointer"
                   >
-                    Edit
+                    {t.edit}
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDeleteTest(test.id, test.name)}
-                    className="px-2.5 py-1 text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-all"
+                    className="px-2.5 py-1 text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-all cursor-pointer"
                   >
-                    Delete
+                    {t.delete}
                   </button>
                 </div>
               </div>
@@ -473,7 +475,9 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
           <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-elevated)] border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                {editingMedId ? "Edit Pharmaceutical" : "Add New Pharmaceutical"}
+                {editingMedId
+                  ? (language === "bn" ? "ঔষধের তথ্য সম্পাদনা" : "Edit Pharmaceutical")
+                  : (language === "bn" ? "নতুন ঔষধ যুক্ত করুন" : "Add New Pharmaceutical")}
               </h3>
               <button
                 type="button"
@@ -495,33 +499,33 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2 sm:col-span-1">
                     <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
-                      Brand Name *
+                      {t.brandName} *
                     </label>
                     <input
                       type="text"
                       required
                       value={medName}
                       onChange={(e) => setMedName(e.target.value)}
-                      placeholder="e.g. Maxpro, Napa Extra"
+                      placeholder={language === "bn" ? "যেমন: Maxpro, Napa Extra" : "e.g. Maxpro, Napa Extra"}
                       className={inputClasses}
                     />
                   </div>
                   <div className="col-span-2 sm:col-span-1">
                     <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
-                      Formulation Type
+                      {t.dosageForm}
                     </label>
                     <CustomSelect
                       value={medType}
                       onChange={(val) => setMedType(val)}
                       options={[
-                        { value: "Tablet", label: "Tablet" },
-                        { value: "Capsule", label: "Capsule" },
-                        { value: "Syrup", label: "Syrup" },
-                        { value: "Suspension", label: "Suspension" },
-                        { value: "Injection", label: "Injection" },
-                        { value: "Inhaler", label: "Inhaler" },
-                        { value: "Eye Drops", label: "Eye Drops" },
-                        { value: "Ointment", label: "Ointment" },
+                        { value: "Tablet", label: language === "bn" ? "ট্যাবলেট" : "Tablet" },
+                        { value: "Capsule", label: language === "bn" ? "ক্যাপসুল" : "Capsule" },
+                        { value: "Syrup", label: language === "bn" ? "সিরাপ" : "Syrup" },
+                        { value: "Suspension", label: language === "bn" ? "সাসপেনশন" : "Suspension" },
+                        { value: "Injection", label: language === "bn" ? "ইনজেকশন" : "Injection" },
+                        { value: "Inhaler", label: language === "bn" ? "ইনহেলার" : "Inhaler" },
+                        { value: "Eye Drops", label: language === "bn" ? "আই ড্রপস" : "Eye Drops" },
+                        { value: "Ointment", label: language === "bn" ? "মলম (Ointment)" : "Ointment" },
                       ]}
                       searchable={false}
                     />
@@ -530,7 +534,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
 
                 <div>
                   <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
-                    Strength / Dosage *
+                    {t.strengthDosageLabel} *
                   </label>
                   <input
                     type="text"
@@ -544,13 +548,13 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
 
                 <div>
                   <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
-                    Default Intake Instructions
+                    {language === "bn" ? "ডিফল্ট সেবনবিধি" : "Default Intake Instructions"}
                   </label>
                   <textarea
                     rows={2}
                     value={medInstructions}
                     onChange={(e) => setMedInstructions(e.target.value)}
-                    placeholder="e.g. 1 capsule 30 minutes before breakfast & dinner"
+                    placeholder={language === "bn" ? "যেমন: ১টি করে ক্যাপসুল দিনে ২ বার খাওয়ার ৩০ মিনিট পূর্বে" : "e.g. 1 capsule 30 minutes before breakfast & dinner"}
                     className={textareaClasses}
                   />
                 </div>
@@ -562,14 +566,14 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                   onClick={() => setShowMedModal(false)}
                   className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
                   className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-semibold hover:opacity-90 disabled:opacity-50 cursor-pointer shadow-xs"
                 >
-                  {isPending ? "Saving..." : editingMedId ? "Update Medicine" : "Save to Catalog"}
+                  {isPending ? t.saving : editingMedId ? (language === "bn" ? "আপডেট করুন" : "Update Medicine") : (language === "bn" ? "সংরক্ষণ করুন" : "Save to Catalog")}
                 </button>
               </div>
             </form>
@@ -583,7 +587,9 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
           <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-elevated)] border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                {editingTestId ? "Edit Diagnostic Test" : "Add New Diagnostic Test"}
+                {editingTestId
+                  ? (language === "bn" ? "ডায়াগনস্টিক টেস্ট সম্পাদনা" : "Edit Diagnostic Test")
+                  : (language === "bn" ? "নতুন টেস্ট যুক্ত করুন" : "Add New Diagnostic Test")}
               </h3>
               <button
                 type="button"
@@ -604,7 +610,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
 
                 <div>
                   <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
-                    Investigation Name *
+                    {language === "bn" ? "পরীক্ষার নাম *" : "Investigation Name *"}
                   </label>
                   <input
                     type="text"
@@ -618,13 +624,13 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
 
                 <div>
                   <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
-                    Preparation Instructions
+                    {language === "bn" ? "প্রস্তুতিমূলক নির্দেশনা" : "Preparation Instructions"}
                   </label>
                   <textarea
                     rows={2}
                     value={testInstructions}
                     onChange={(e) => setTestInstructions(e.target.value)}
-                    placeholder="e.g. 10-12 hours overnight fasting mandatory, clean catch mid-stream urine"
+                    placeholder={language === "bn" ? "যেমন: ১০-১২ ঘণ্টা খালি পেটে থাকতে হবে" : "e.g. 10-12 hours overnight fasting mandatory, clean catch mid-stream urine"}
                     className={textareaClasses}
                   />
                 </div>
@@ -636,14 +642,14 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                   onClick={() => setShowTestModal(false)}
                   className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
                   className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-semibold hover:opacity-90 disabled:opacity-50 cursor-pointer shadow-xs"
                 >
-                  {isPending ? "Saving..." : editingTestId ? "Update Test" : "Save Test"}
+                  {isPending ? t.saving : editingTestId ? (language === "bn" ? "আপডেট করুন" : "Update Test") : (language === "bn" ? "টেস্ট সংরক্ষণ" : "Save Test")}
                 </button>
               </div>
             </form>

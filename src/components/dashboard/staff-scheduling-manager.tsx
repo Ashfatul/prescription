@@ -14,6 +14,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { createGoogleCalendarAppointmentUrl } from "@/lib/calendar";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type DoctorItem = {
   id: string;
@@ -40,6 +41,7 @@ type DoctorItem = {
 };
 
 export function StaffSchedulingManager() {
+  const { t, language } = useLanguage();
   const [doctors, setDoctors] = useState<DoctorItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -166,18 +168,18 @@ export function StaffSchedulingManager() {
               <Calendar className="w-5 h-5" />
             </div>
             <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-              Physician Scheduling & Chamber Rosters
+              {t.physicianSchedulingTitle}
             </h2>
           </div>
           <p className="text-xs text-slate-500">
-            Control doctor duty status, modify chamber hours, reschedule consultations, and manage daily queue slots.
+            {t.physicianSchedulingSubtitle}
           </p>
         </div>
 
         <div className="w-full sm:w-64">
           <input
             type="text"
-            placeholder="Search physician or chamber..."
+            placeholder={t.searchPhysicianOrChamber}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full px-3.5 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
@@ -189,11 +191,11 @@ export function StaffSchedulingManager() {
       {loading ? (
         <div className="p-12 text-center text-xs text-slate-400">
           <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--brand-primary)] mb-2" />
-          <span>Loading physician rosters...</span>
+          <span>{t.loadingPhysicianRosters}</span>
         </div>
       ) : filteredDoctors.length === 0 ? (
         <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs text-slate-400">
-          No doctors match search query.
+          {t.noDoctorsMatchSearch}
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2">
@@ -235,7 +237,7 @@ export function StaffSchedulingManager() {
                       }`}
                     >
                       <Power className="w-3.5 h-3.5" />
-                      <span>{doc.available ? "On Duty" : "Off Duty"}</span>
+                      <span>{doc.available ? t.onDuty : t.offDuty}</span>
                     </button>
                   </div>
 
@@ -243,16 +245,16 @@ export function StaffSchedulingManager() {
                   <div className="p-3 rounded-2xl bg-[var(--bg-subtle)] space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
                     <div className="flex items-center gap-2">
                       <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>Visiting Hours: <strong>{doc.visitingHours || "Not specified"}</strong></span>
+                      <span>{t.visitingHoursLabel}: <strong>{doc.visitingHours || (language === "bn" ? "নির্দিষ্ট নয়" : "Not specified")}</strong></span>
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>Chamber: <strong>{doc.chamberAddress || "Main OPD"}</strong></span>
+                      <span>{t.chamberLabel}: <strong>{doc.chamberAddress || (language === "bn" ? "মূল ওপিডি" : "Main OPD")}</strong></span>
                     </div>
                     {doc.contactNumber && (
                       <div className="flex items-center gap-2">
                         <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                        <span>Chamber Phone: <strong>{doc.contactNumber}</strong></span>
+                        <span>{t.chamberPhoneLabel}: <strong>{doc.contactNumber}</strong></span>
                       </div>
                     )}
                   </div>
@@ -261,16 +263,16 @@ export function StaffSchedulingManager() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-bold text-slate-700 dark:text-slate-300">
-                        Booked Patient Consultations ({bookedToday.length})
+                        {t.bookedPatientConsultations} ({bookedToday.length})
                       </span>
                       <span className="text-[10px] text-teal-600 font-semibold">
-                        Live Chamber Roster
+                        {t.liveChamberRoster}
                       </span>
                     </div>
 
                     {bookedToday.length === 0 ? (
                       <p className="text-[11px] text-slate-400 italic p-2 rounded-xl bg-[var(--bg-app)] text-center">
-                        No appointments currently scheduled for today.
+                        {t.noAppointmentsToday}
                       </p>
                     ) : (
                       <div className="space-y-1.5 max-h-36 overflow-y-auto">
@@ -369,7 +371,7 @@ export function StaffSchedulingManager() {
                 {/* Footer Edit Button */}
                 <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between">
                   <span className="text-[11px] text-slate-400">
-                    Status: {doc.available ? "Accepting Patients" : "Chamber Paused"}
+                    {t.status}: {doc.available ? t.acceptingPatients : t.chamberPaused}
                   </span>
                   <button
                     type="button"
@@ -377,7 +379,7 @@ export function StaffSchedulingManager() {
                     className="px-3 py-1.5 rounded-xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-xs font-bold text-slate-700 dark:text-slate-300 transition flex items-center gap-1 cursor-pointer"
                   >
                     <Edit className="w-3 h-3" />
-                    <span>Edit Roster Hours</span>
+                    <span>{t.editRosterHours}</span>
                   </button>
                 </div>
               </div>
@@ -393,7 +395,7 @@ export function StaffSchedulingManager() {
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <div>
                 <h3 className="font-bold text-slate-900 dark:text-white text-base">
-                  Edit Chamber Schedule
+                  {t.editChamberSchedule}
                 </h3>
                 <p className="text-xs text-slate-500">{editingDoctor.user.name}</p>
               </div>
@@ -410,7 +412,7 @@ export function StaffSchedulingManager() {
               <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4 text-xs">
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Visiting Hours & Days
+                    {t.visitingHoursDays}
                   </label>
                   <input
                     type="text"
@@ -424,7 +426,7 @@ export function StaffSchedulingManager() {
 
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Chamber Room & Location
+                    {t.chamberRoomLocation}
                   </label>
                   <input
                     type="text"
@@ -438,7 +440,7 @@ export function StaffSchedulingManager() {
 
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Chamber Contact Phone
+                    {t.chamberContactPhone}
                   </label>
                   <input
                     type="tel"
@@ -456,14 +458,14 @@ export function StaffSchedulingManager() {
                   onClick={() => setEditingDoctor(null)}
                   className="px-4 py-2 rounded-xl border border-[var(--border-default)] text-slate-600 dark:text-slate-300 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
                   className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold cursor-pointer hover:opacity-90 disabled:opacity-50 transition shadow-xs"
                 >
-                  {saving ? "Saving..." : "Update Schedule"}
+                  {saving ? t.saving : t.updateSchedule}
                 </button>
               </div>
             </form>

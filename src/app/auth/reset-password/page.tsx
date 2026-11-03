@@ -229,27 +229,31 @@ function ResetPasswordInner() {
 }
 
 export default function ResetPasswordPage() {
+  const { t, language } = useLanguage();
+
   return (
     <main className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-12 bg-[var(--bg-app)] text-[var(--text-primary)]">
       {/* Desktop Informative Hero Panel (Left 5 Columns, Fixed / Sticky, Guaranteed No Scroll) */}
       <div className="lg:col-span-5 xl:col-span-5 hidden lg:flex flex-col sticky top-0 h-screen max-h-screen overflow-hidden">
         <AuthBrandingPanel
-          badge="Credentials Security"
-          title="Update Account Credentials Securely"
-          highlightText="Zero Compromise."
-          description="Configure a resilient password for your clinical user account to protect sensitive patient records."
+          badge={language === "bn" ? "ক্রেডেনশিয়াল নিরাপত্তা" : "Credentials Security"}
+          title={language === "bn" ? "অ্যাকাউন্টের পাসওয়ার্ড নিরাপদভাবে আপডেট করুন" : "Update Account Credentials Securely"}
+          highlightText={language === "bn" ? "সর্বোচ্চ নিরাপত্তা।" : "Zero Compromise."}
+          description={language === "bn"
+            ? "সংবেদনশীল রোগীর রেকর্ড সুরক্ষিত রাখতে আপনার ক্লিনিকাল অ্যাকাউন্টের জন্য একটি শক্তিশালী পাসওয়ার্ড কনফিগার করুন।"
+            : "Configure a resilient password for your clinical user account to protect sensitive patient records."}
           features={[
             {
               icon: <Lock className="w-4 h-4 text-teal-400" />,
-              title: "Modern Cryptographic Hashing Protection",
+              title: language === "bn" ? "আধুনিক ক্রিপ্টোগ্রাফিক হ্যাশিং সুরক্ষা" : "Modern Cryptographic Hashing Protection",
             },
             {
               icon: <ShieldCheck className="w-4 h-4 text-emerald-400" />,
-              title: "Automatic Legacy Session Invalidation",
+              title: language === "bn" ? "স্বয়ংক্রিয় লিগ্যাসি সেশন বাতিলকরণ" : "Automatic Legacy Session Invalidation",
             },
             {
               icon: <Sparkles className="w-4 h-4 text-sky-400" />,
-              title: "Instant Multi-Chamber Credential Sync",
+              title: language === "bn" ? "তাৎক্ষণিক মাল্টি-চেম্বার ক্রেডেনশিয়াল সিঙ্ক" : "Instant Multi-Chamber Credential Sync",
             },
           ]}
         />
@@ -276,7 +280,7 @@ export default function ResetPasswordPage() {
 
           <div className="hidden lg:flex items-center gap-2 text-xs text-slate-500 font-medium">
             <KeyRound className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-            <span>Cryptographic Credential Reset</span>
+            <span>{language === "bn" ? "ক্রিপ্টোগ্রাফিক ক্রেডেনশিয়াল রিসেট" : "Cryptographic Credential Reset"}</span>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
@@ -287,7 +291,7 @@ export default function ResetPasswordPage() {
               className="text-xs font-semibold text-slate-500 hover:text-[var(--brand-primary)] transition flex items-center gap-1"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Login</span>
+              <span>{t.signIn}</span>
             </Link>
           </div>
         </div>
@@ -298,7 +302,7 @@ export default function ResetPasswordPage() {
             fallback={
               <div className="p-6 max-w-md mx-auto rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-xs text-slate-500 text-center">
                 <RefreshCw className="w-4 h-4 animate-spin mx-auto mb-2 text-[var(--brand-primary)]" />
-                Loading reset interface...
+                {language === "bn" ? "রিসেট ইন্টারফেস লোড হচ্ছে..." : "Loading reset interface..."}
               </div>
             }
           >
@@ -308,14 +312,14 @@ export default function ResetPasswordPage() {
 
         {/* Bottom Footer */}
         <div className="pt-4 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
-          <span>Protected by HIPAA & BMDC compliant security standards.</span>
+          <span>{language === "bn" ? "বিএমডিসি ও স্বাস্থ্য নিরাপত্তা মানদণ্ড দ্বারা সুরক্ষিত।" : "Protected by HIPAA & BMDC compliant security standards."}</span>
           <div className="flex items-center gap-3">
-            <Link href="/" className="hover:text-[var(--brand-primary)] transition font-medium">
-              Privacy Policy
+            <Link href="/privacy" className="hover:text-[var(--brand-primary)] transition font-medium">
+              {t.footerPrivacyPolicy}
             </Link>
             <span>•</span>
-            <Link href="/" className="hover:text-[var(--brand-primary)] transition font-medium">
-              Security Overview
+            <Link href="/terms" className="hover:text-[var(--brand-primary)] transition font-medium">
+              {t.footerTermsOfService}
             </Link>
           </div>
         </div>

@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { CustomSelect } from "@/components/common/custom-select";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type ActivityLogItem = {
   id: string;
@@ -29,6 +30,7 @@ type ActivityLogItem = {
 };
 
 export function ActivityLogViewer() {
+  const { t } = useLanguage();
   const [logs, setLogs] = useState<ActivityLogItem[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -137,17 +139,17 @@ export function ActivityLogViewer() {
                 <Shield className="w-5 h-5" />
               </div>
               <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                System Activity Audit Log
+                {t.systemActivityAuditLog}
               </h2>
             </div>
             <p className="text-xs text-slate-500">
-              Immutable chronological record of logins, prescription creations, user registrations, and administrative events.
+              {t.systemActivitySubtitle}
             </p>
           </div>
 
           <div className="flex items-center gap-2">
             <span className="px-3 py-1.5 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs font-bold text-slate-600 dark:text-slate-400">
-              Total Recorded: <strong>{total}</strong>
+              {t.totalRecorded} <strong>{total}</strong>
             </span>
             <button
               type="button"
@@ -166,7 +168,7 @@ export function ActivityLogViewer() {
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
-              placeholder="Search by action, user name, or entity..."
+              placeholder={t.searchActivityPlaceholder}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full input-icon-left !pl-11 pr-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
@@ -178,7 +180,7 @@ export function ActivityLogViewer() {
               value={roleFilter}
               onChange={(val) => setRoleFilter(val)}
               options={[
-                { value: "ALL", label: "All Roles" },
+                { value: "ALL", label: t.allRoles },
                 { value: "SUPER_ADMIN", label: "Super Admin" },
                 { value: "DOCTOR", label: "Doctor" },
                 { value: "STAFF", label: "Staff" },
@@ -193,7 +195,7 @@ export function ActivityLogViewer() {
               value={actionFilter}
               onChange={(val) => setActionFilter(val)}
               options={[
-                { value: "ALL", label: "All Event Types" },
+                { value: "ALL", label: t.allEventTypes },
                 { value: "USER_LOGIN", label: "User Logins" },
                 { value: "PRESCRIPTION_CREATED", label: "Prescription Created" },
                 { value: "PATIENT_REGISTERED", label: "Patient Registrations" },
@@ -213,23 +215,23 @@ export function ActivityLogViewer() {
         {loading ? (
           <div className="p-12 text-center text-xs text-slate-400">
             <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--brand-primary)] mb-2" />
-            <span>Loading audit log entries...</span>
+            <span>{t.loadingAuditLogEntries}</span>
           </div>
         ) : logs.length === 0 ? (
           <div className="p-12 text-center text-xs text-slate-400">
-            No audit records match the current filter criteria.
+            {t.noAuditRecordsMatch}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-[var(--border-subtle)] bg-[var(--bg-subtle)]/50 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                  <th className="py-3.5 px-4 sm:px-6">Timestamp</th>
-                  <th className="py-3.5 px-4">Action Event</th>
-                  <th className="py-3.5 px-4">Actor & Role</th>
-                  <th className="py-3.5 px-4">Entity</th>
-                  <th className="py-3.5 px-4">Clinic / Organization</th>
-                  <th className="py-3.5 px-4 text-right">Details</th>
+                  <th className="py-3.5 px-4 sm:px-6">{t.timestamp}</th>
+                  <th className="py-3.5 px-4">{t.actionEvent}</th>
+                  <th className="py-3.5 px-4">{t.actorAndRole}</th>
+                  <th className="py-3.5 px-4">{t.entity}</th>
+                  <th className="py-3.5 px-4">{t.clinicOrOrganization}</th>
+                  <th className="py-3.5 px-4 text-right">{t.viewDetails}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border-subtle)]">
@@ -277,7 +279,7 @@ export function ActivityLogViewer() {
                           className="px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] text-[var(--brand-text)] font-semibold text-[11px] transition inline-flex items-center gap-1 cursor-pointer"
                         >
                           <Code className="w-3 h-3" />
-                          <span>Inspect</span>
+                          <span>{t.inspect}</span>
                         </button>
                       ) : (
                         <span className="text-slate-300 dark:text-slate-700">—</span>
@@ -298,7 +300,7 @@ export function ActivityLogViewer() {
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <div>
                 <h3 className="font-bold text-slate-900 dark:text-white text-base">
-                  Event Metadata Payload
+                  {t.eventMetadataPayload}
                 </h3>
                 <p className="text-xs text-slate-500 font-mono">
                   {selectedLog.action} • {new Date(selectedLog.createdAt).toLocaleString()}
@@ -325,7 +327,7 @@ export function ActivityLogViewer() {
                 onClick={() => setSelectedLog(null)}
                 className="px-5 py-2.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold cursor-pointer hover:opacity-90 transition shadow-xs"
               >
-                Close
+                {t.close}
               </button>
             </div>
           </div>

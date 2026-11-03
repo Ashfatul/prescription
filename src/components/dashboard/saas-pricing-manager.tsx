@@ -11,6 +11,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type PricingPlanItem = {
   id: string;
@@ -25,6 +26,7 @@ type PricingPlanItem = {
 };
 
 export function SaasPricingManager() {
+  const { t, language } = useLanguage();
   const [plans, setPlans] = useState<PricingPlanItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -172,11 +174,11 @@ export function SaasPricingManager() {
               <CreditCard className="w-5 h-5" />
             </div>
             <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-              SaaS Pricing & Product Plans
+              {t.saasPricingTitle}
             </h2>
           </div>
           <p className="text-xs text-slate-500">
-            Configure subscription tiers, monthly pricing, feature checklists, and landing page highlights.
+            {t.saasPricingSubtitle}
           </p>
         </div>
 
@@ -186,7 +188,7 @@ export function SaasPricingManager() {
           className="px-4 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>Add Pricing Tier</span>
+          <span>{t.addPricingTier}</span>
         </button>
       </div>
 
@@ -194,11 +196,11 @@ export function SaasPricingManager() {
       {loading ? (
         <div className="p-12 text-center text-xs text-slate-400">
           <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--brand-primary)] mb-2" />
-          <span>Loading SaaS plans...</span>
+          <span>{language === "bn" ? "প্যাকেজ লোড হচ্ছে..." : "Loading SaaS plans..."}</span>
         </div>
       ) : plans.length === 0 ? (
         <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs text-slate-400">
-          No pricing plans configured.
+          {language === "bn" ? "কোনো প্যাকেজ তৈরি করা হয়নি।" : "No pricing plans configured."}
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-3">
@@ -214,7 +216,7 @@ export function SaasPricingManager() {
               {plan.isPopular && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-[var(--brand-primary)] text-white font-bold text-[10px] tracking-wide uppercase flex items-center gap-1 shadow-sm">
                   <Sparkles className="w-3 h-3" />
-                  <span>Most Popular Tier</span>
+                  <span>{t.mostPopularTier}</span>
                 </div>
               )}
 
@@ -230,7 +232,7 @@ export function SaasPricingManager() {
                         : "bg-slate-200 text-slate-600"
                     }`}
                   >
-                    {plan.isActive ? "Active on Landing Page" : "Hidden"}
+                    {plan.isActive ? (language === "bn" ? "ল্যান্ডিং পেজে সক্রিয়" : "Active on Landing Page") : (language === "bn" ? "লুকায়িত" : "Hidden")}
                   </span>
                 </div>
 
@@ -240,7 +242,7 @@ export function SaasPricingManager() {
                       ${plan.price}
                     </span>
                     <span className="text-xs text-slate-400 font-semibold">
-                      /{plan.billingCycle || "month"}
+                      /{plan.billingCycle || (language === "bn" ? "মাস" : "month")}
                     </span>
                   </div>
                   {plan.description && (
@@ -253,7 +255,7 @@ export function SaasPricingManager() {
                 {/* Features list */}
                 <div className="pt-2 border-t border-[var(--border-subtle)] space-y-2 text-xs">
                   <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">
-                    Included Features
+                    {language === "bn" ? "প্যাকেজের অন্তর্ভুক্ত সুবিধা" : "Included Features"}
                   </span>
                   <ul className="space-y-1.5">
                     {Array.isArray(plan.features) &&
@@ -275,7 +277,7 @@ export function SaasPricingManager() {
                   className="px-3.5 py-1.5 rounded-xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-xs font-bold text-slate-700 dark:text-slate-300 transition flex items-center gap-1 cursor-pointer"
                 >
                   <Edit className="w-3.5 h-3.5" />
-                  <span>Edit Plan</span>
+                  <span>{language === "bn" ? "প্যাকেজ সম্পাদনা" : "Edit Plan"}</span>
                 </button>
 
                 <button
@@ -298,7 +300,7 @@ export function SaasPricingManager() {
           <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="font-bold text-slate-900 dark:text-white text-base">
-                {editingPlan ? `Edit Plan: ${editingPlan.name}` : "Create SaaS Pricing Plan"}
+                {editingPlan ? `${language === "bn" ? "প্যাকেজ সম্পাদনা" : "Edit Plan"}: ${editingPlan.name}` : (language === "bn" ? "নতুন প্রাইসিং প্ল্যান তৈরি করুন" : "Create SaaS Pricing Plan")}
               </h3>
               <button
                 type="button"
@@ -320,7 +322,7 @@ export function SaasPricingManager() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      Plan Name *
+                      {language === "bn" ? "প্যাকেজের নাম *" : "Plan Name *"}
                     </label>
                     <input
                       type="text"
@@ -334,7 +336,7 @@ export function SaasPricingManager() {
 
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      Price (USD / mo) *
+                      {language === "bn" ? "মূল্য (USD / মাস) *" : "Price (USD / mo) *"}
                     </label>
                     <input
                       type="number"
@@ -350,7 +352,7 @@ export function SaasPricingManager() {
 
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Short Description
+                    {language === "bn" ? "সংক্ষিপ্ত বিবরণ" : "Short Description"}
                   </label>
                   <input
                     type="text"
@@ -363,7 +365,7 @@ export function SaasPricingManager() {
 
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Feature Checklist (1 Feature per line) *
+                    {language === "bn" ? "ফিচার তালিকা (প্রতি লাইনে একটি) *" : "Feature Checklist (1 Feature per line) *"}
                   </label>
                   <textarea
                     required
@@ -384,7 +386,7 @@ export function SaasPricingManager() {
                       className="w-4 h-4 accent-[var(--brand-primary)]"
                     />
                     <span className="font-bold text-slate-800 dark:text-slate-200">
-                      Badge as Popular
+                      {t.mostPopularTier}
                     </span>
                   </label>
 
@@ -396,7 +398,7 @@ export function SaasPricingManager() {
                       className="w-4 h-4 accent-[var(--brand-primary)]"
                     />
                     <span className="font-bold text-slate-800 dark:text-slate-200">
-                      Live on Landing Page
+                      {language === "bn" ? "ল্যান্ডিং পেজে প্রদর্শন করুন" : "Live on Landing Page"}
                     </span>
                   </label>
                 </div>
@@ -408,14 +410,14 @@ export function SaasPricingManager() {
                   onClick={() => setModalOpen(false)}
                   className="px-4 py-2 rounded-xl border border-[var(--border-default)] text-slate-600 dark:text-slate-300 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
                   className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold cursor-pointer hover:opacity-90 disabled:opacity-50 transition shadow-xs"
                 >
-                  {submitting ? "Saving..." : "Save Plan"}
+                  {submitting ? (language === "bn" ? "সংরক্ষণ হচ্ছে..." : "Saving...") : t.save}
                 </button>
               </div>
             </form>

@@ -16,6 +16,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { StripeUpgradeModal } from "./stripe-upgrade-modal";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 interface PricingPlan {
   id: string;
@@ -54,6 +55,7 @@ interface SubscriptionData {
 }
 
 export function ClinicSubscriptionView() {
+  const { t, language } = useLanguage();
   const searchParams = useSearchParams();
   const sessionId = searchParams?.get("session_id");
   const isSuccess = searchParams?.get("success");
@@ -140,10 +142,10 @@ export function ClinicSubscriptionView() {
       <div className="p-8 text-center bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl">
         <AlertTriangle className="w-8 h-8 text-amber-500 mx-auto mb-2" />
         <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">
-          No Clinic Subscription Record Found
+          {t.noClinicSubscriptionFound}
         </h4>
         <p className="text-xs text-slate-500 mt-1">
-          Create or select an organization to manage SaaS subscriptions.
+          {t.noClinicSubscriptionDesc}
         </p>
       </div>
     );
@@ -155,7 +157,7 @@ export function ClinicSubscriptionView() {
       {verifyingSession && (
         <div className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-xs font-semibold flex items-center gap-2.5 animate-pulse">
           <Loader2 className="w-4 h-4 animate-spin shrink-0" />
-          <span>Verifying your Stripe Checkout payment with Stripe API. Please wait...</span>
+          <span>{t.verifyingStripePayment}</span>
         </div>
       )}
 
@@ -169,7 +171,7 @@ export function ClinicSubscriptionView() {
       {isCanceled && !stripeNotice && (
         <div className="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-[var(--border-subtle)] text-slate-700 dark:text-slate-300 text-xs font-medium flex items-center gap-2.5">
           <AlertTriangle className="w-4 h-4 text-slate-400 shrink-0" />
-          <span>Stripe checkout was canceled. Your clinic remains on its current plan without charges.</span>
+          <span>{t.stripeCheckoutCanceled}</span>
         </div>
       )}
 
@@ -185,7 +187,7 @@ export function ClinicSubscriptionView() {
                     : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
                 }`}
               >
-                {sub.isTrial ? "14-Day Free Trial" : "Active Subscription"}
+                {sub.isTrial ? t.trialActiveBadge : t.activeSubscription}
               </span>
               <span className="text-xs text-slate-400">•</span>
               <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
@@ -196,7 +198,7 @@ export function ClinicSubscriptionView() {
 
             <div>
               <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-baseline gap-2">
-                <span>{sub.plan?.name || "Free Trial Package"}</span>
+                <span>{sub.plan?.name || t.freeTrialPackage}</span>
                 {sub.plan && (
                   <span className="text-sm font-semibold text-slate-400">
                     (${sub.plan.price}/{sub.plan.billingCycle})
@@ -205,8 +207,12 @@ export function ClinicSubscriptionView() {
               </h2>
               <p className="text-xs text-slate-500 mt-1 max-w-xl">
                 {sub.isTrial
-                  ? "Your clinic is operating under the 14-day zero-card trial. Experience complete multi-doctor prescribing, queue dispensing, and patient management."
-                  : "Your clinic has full active access with encrypted prescription storage, automated alerts, and unlimited clinical workflows."}
+                  ? (language === "bn"
+                      ? "আপনার ক্লিনিক ১৪ দিনের ফ্রি ট্রায়াল মোডে পরিচালিত হচ্ছে। সম্পূর্ণ মাল্টি-ডাক্তার প্রেসক্রিপশন ও কিউ সুবিধা গ্রহণ করুন।"
+                      : "Your clinic is operating under the 14-day zero-card trial. Experience complete multi-doctor prescribing, queue dispensing, and patient management.")
+                  : (language === "bn"
+                      ? "আপনার ক্লিনিকের সাবস্ক্রিপশন সক্রিয় রয়েছে। এনক্রিপ্ট করা স্টোরেজ, সতর্কতা ও সীমাহীন ওয়ার্কফ্লো সুবিধা চালু।"
+                      : "Your clinic has full active access with encrypted prescription storage, automated alerts, and unlimited clinical workflows.")}
               </p>
             </div>
 
@@ -214,13 +220,13 @@ export function ClinicSubscriptionView() {
               <div className="inline-flex items-center gap-2 p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-800 dark:text-amber-300">
                 <Clock className="w-4 h-4 text-amber-600 shrink-0" />
                 <span>
-                  Trial Ends:{" "}
-                  {new Date(sub.trialEndsAt).toLocaleDateString("en-US", {
+                  {language === "bn" ? "মেয়াদ শেষ হবে:" : "Trial Ends:"}{" "}
+                  {new Date(sub.trialEndsAt).toLocaleDateString(language === "bn" ? "bn-BD" : "en-US", {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
                   })}{" "}
-                  ({sub.daysLeft} days, {sub.hoursLeft} hours remaining)
+                  ({sub.daysLeft} {t.days}, {sub.hoursLeft} {t.hours} {language === "bn" ? "বাকি" : "remaining"})
                 </span>
               </div>
             )}
@@ -233,7 +239,7 @@ export function ClinicSubscriptionView() {
               className="px-6 py-3 rounded-2xl bg-[var(--brand-primary)] hover:opacity-95 text-white text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
             >
               <Sparkles className="w-4 h-4" />
-              <span>{sub.isTrial ? "Upgrade with Stripe Sandbox" : "Change Package"}</span>
+              <span>{sub.isTrial ? t.upgradeWithStripeSandbox : t.changePackage}</span>
             </button>
           </div>
         </div>
@@ -243,40 +249,40 @@ export function ClinicSubscriptionView() {
           <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)]">
             <div className="flex items-center gap-2 text-slate-400 mb-1">
               <Users className="w-3.5 h-3.5" />
-              <span className="text-[11px] font-semibold uppercase">Doctors</span>
+              <span className="text-[11px] font-semibold uppercase">{t.doctors}</span>
             </div>
             <p className="text-lg font-black text-slate-900 dark:text-white">
-              {sub.counts.doctors} <span className="text-xs font-normal text-slate-400">active</span>
+              {sub.counts.doctors} <span className="text-xs font-normal text-slate-400">{t.activeStatus}</span>
             </p>
           </div>
 
           <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)]">
             <div className="flex items-center gap-2 text-slate-400 mb-1">
               <Users className="w-3.5 h-3.5" />
-              <span className="text-[11px] font-semibold uppercase">Staff / Desk</span>
+              <span className="text-[11px] font-semibold uppercase">{language === "bn" ? "স্টাফ / ফ্রন্ট ডেস্ক" : "Staff / Desk"}</span>
             </div>
             <p className="text-lg font-black text-slate-900 dark:text-white">
-              {sub.counts.staff} <span className="text-xs font-normal text-slate-400">members</span>
+              {sub.counts.staff} <span className="text-xs font-normal text-slate-400">{language === "bn" ? "জন" : "members"}</span>
             </p>
           </div>
 
           <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)]">
             <div className="flex items-center gap-2 text-slate-400 mb-1">
               <FileText className="w-3.5 h-3.5" />
-              <span className="text-[11px] font-semibold uppercase">Prescriptions</span>
+              <span className="text-[11px] font-semibold uppercase">{t.prescriptions}</span>
             </div>
             <p className="text-lg font-black text-slate-900 dark:text-white">
-              {sub.counts.prescriptions} <span className="text-xs font-normal text-slate-400">issued</span>
+              {sub.counts.prescriptions} <span className="text-xs font-normal text-slate-400">{language === "bn" ? "প্রদত্ত" : "issued"}</span>
             </p>
           </div>
 
           <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)]">
             <div className="flex items-center gap-2 text-slate-400 mb-1">
               <Calendar className="w-3.5 h-3.5" />
-              <span className="text-[11px] font-semibold uppercase">Appointments</span>
+              <span className="text-[11px] font-semibold uppercase">{t.appointments}</span>
             </div>
             <p className="text-lg font-black text-slate-900 dark:text-white">
-              {sub.counts.appointments} <span className="text-xs font-normal text-slate-400">booked</span>
+              {sub.counts.appointments} <span className="text-xs font-normal text-slate-400">{language === "bn" ? "বুকিং" : "booked"}</span>
             </p>
           </div>
         </div>
@@ -286,10 +292,10 @@ export function ClinicSubscriptionView() {
       <div className="space-y-4">
         <div>
           <h3 className="text-base font-bold text-slate-900 dark:text-white">
-            Available Clinic SaaS Packages
+            {t.availableClinicSaaS}
           </h3>
           <p className="text-xs text-slate-500">
-            Compare packages and upgrade anytime with Stripe Sandbox test payment.
+            {t.comparePackagesDesc}
           </p>
         </div>
 
@@ -307,7 +313,7 @@ export function ClinicSubscriptionView() {
               >
                 {plan.isPopular && (
                   <span className="absolute -top-3 right-6 px-3 py-1 rounded-full bg-[var(--brand-primary)] text-white text-[10px] font-bold uppercase tracking-wider shadow-xs">
-                    Most Popular
+                    {t.mostPopular}
                   </span>
                 )}
 
@@ -343,7 +349,7 @@ export function ClinicSubscriptionView() {
                   {isCurrent ? (
                     <div className="w-full py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-center gap-1.5">
                       <ShieldCheck className="w-4 h-4" />
-                      <span>Current Active Plan</span>
+                      <span>{t.currentActivePlan}</span>
                     </div>
                   ) : (
                     <button
@@ -352,7 +358,7 @@ export function ClinicSubscriptionView() {
                       className="w-full py-2.5 rounded-xl bg-[var(--brand-primary)] hover:opacity-95 text-white text-xs font-bold transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <CreditCard className="w-3.5 h-3.5" />
-                      <span>Upgrade to {plan.name}</span>
+                      <span>{t.upgradeToPlan} {plan.name}</span>
                     </button>
                   )}
                 </div>

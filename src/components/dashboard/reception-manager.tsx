@@ -34,6 +34,7 @@ import {
 } from "@/components/appointments/clinical-intake-form";
 import { evaluateDoctorSchedule, ScheduleData } from "@/lib/doctor-schedule";
 import { useAuth } from "@/lib/auth/auth-context";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 const inputClasses =
   "w-full px-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]";
@@ -111,6 +112,7 @@ interface ReceptionManagerProps {
 
 export function ReceptionManager({ initialTab = "verifications" }: ReceptionManagerProps) {
   const { user } = useAuth();
+  const { t, language } = useLanguage();
 
   // Navigation tabs within Reception
   const [activeTab, setActiveTab] = useState<
@@ -841,14 +843,13 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-xs font-bold uppercase tracking-wider">
             <ShieldCheck className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-            Clinic Verification & Front Desk Operations
+            {language === "bn" ? "ক্লিনিক ভেরিফিকেশন ও ফ্রন্ট ডেস্ক কার্যক্রম" : "Clinic Verification & Front Desk Operations"}
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-2 leading-tight">
-            Appointment Verification & Front Desk
+            {t.receptionTitle}
           </h1>
           <p className="text-xs text-slate-500 mt-1 max-w-xl">
-            Verify doctor duty availability, patient payment status, and chamber visiting schedule.
-            Confirm to activate patient turns in chamber queue, handle walk-ins, and process cancellations.
+            {t.receptionSubtitle}
           </p>
         </div>
 
@@ -864,7 +865,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
             }`}
           >
             <span className="text-[10px] text-slate-400 block uppercase font-semibold">
-              Pending Verification
+              {language === "bn" ? "যাচাই অপেক্ষমান" : "Pending Verification"}
             </span>
             <span
               className={`text-base font-extrabold flex items-center gap-1.5 ${
@@ -884,7 +885,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
             className="px-4 py-2.5 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 text-xs text-left hover:border-[var(--brand-primary)] transition cursor-pointer"
           >
             <span className="text-[10px] text-slate-400 block uppercase font-semibold">
-              Active Queue Today
+              {language === "bn" ? "আজকের সক্রিয় সিরিয়াল" : "Active Queue Today"}
             </span>
             <span className="text-base font-extrabold text-[var(--brand-text)]">
               {todayAppointments.length}
@@ -893,7 +894,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
 
           <div className="px-4 py-2.5 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 text-xs text-left">
             <span className="text-[10px] text-slate-400 block uppercase font-semibold">
-              Active Physicians
+              {language === "bn" ? "উপস্থিত চিকিৎসক" : "Active Physicians"}
             </span>
             <span className="text-base font-extrabold text-slate-900 dark:text-white">
               {doctors.length}
@@ -904,7 +905,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
             type="button"
             onClick={() => void loadData()}
             disabled={loading}
-            title="Refresh All Records"
+            title={language === "bn" ? "সকল তথ্য রিফ্রেশ করুন" : "Refresh All Records"}
             className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
@@ -917,18 +918,18 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
         {[
           {
             id: "verifications",
-            label: "Verify & Confirm",
+            label: language === "bn" ? "যাচাই ও নিশ্চিতকরণ" : "Verify & Confirm",
             icon: ShieldCheck,
             badge: pendingAppointments.length > 0 ? pendingAppointments.length : undefined,
           },
-          { id: "checkin", label: "Fast Walk-in Check-In", icon: Plus },
-          { id: "queue", label: "Today's Live Queue Board", icon: Clock },
+          { id: "checkin", label: t.walkInCheckIn, icon: Plus },
+          { id: "queue", label: language === "bn" ? "লাইভ সিরিয়াল বোর্ড" : "Today's Live Queue Board", icon: Clock },
           {
             id: "appointments",
-            label: "All Clinic Appointments",
+            label: language === "bn" ? "ক্লিনিকের সকল অ্যাপয়েন্টমেন্ট" : "All Clinic Appointments",
             icon: Calendar,
           },
-          { id: "patients", label: "Patient Directory", icon: Users },
+          { id: "patients", label: language === "bn" ? "রোগী তালিকা ও রেকর্ড" : "Patient Directory", icon: Users },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -1069,7 +1070,9 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                       <div className="flex items-center gap-3.5">
                         <div className="w-14 h-14 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-primary)] border border-[var(--brand-border)] flex flex-col items-center justify-center font-black">
-                          <span className="text-[9px] uppercase tracking-wider opacity-70">Serial</span>
+                          <span className="text-[9px] uppercase tracking-wider opacity-70">
+                            {language === "bn" ? "সিরিয়াল" : "Serial"}
+                          </span>
                           <span className="text-xl font-mono leading-none">#{appt.serialNumber}</span>
                         </div>
                         <div>
@@ -1081,7 +1084,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                               {appt.patient.gender || "Patient"}
                             </span>
                             <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 uppercase tracking-wide">
-                              Pending Verification
+                              {language === "bn" ? "যাচাই অপেক্ষমান" : "Pending Verification"}
                             </span>
                           </div>
                           <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mt-1">
@@ -1345,7 +1348,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                           className="px-4 py-2.5 rounded-2xl border border-rose-200 dark:border-rose-900/40 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
                         >
                           <XCircle className="w-3.5 h-3.5" />
-                          <span>Reject / Cancel</span>
+                          <span>{language === "bn" ? "প্রত্যাখ্যান / বাতিল" : "Reject / Cancel"}</span>
                         </button>
 
                         {/* If payment is not made yet, provide 1-click Cash & Confirm */}
@@ -1371,12 +1374,12 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                           {confirmingId === appt.id ? (
                             <>
                               <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                              <span>Activating...</span>
+                              <span>{language === "bn" ? "সক্রিয় করা হচ্ছে..." : "Activating..."}</span>
                             </>
                           ) : (
                             <>
                               <CheckCircle2 className="w-4 h-4" />
-                              <span>Confirm & Activate Turn</span>
+                              <span>{language === "bn" ? "নিশ্চিত ও সক্রিয় করুন" : "Confirm & Activate Turn"}</span>
                             </>
                           )}
                         </button>
@@ -1640,7 +1643,9 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                           : "bg-[var(--bg-surface)] border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400"
                       }`}
                     >
-                      <span className="text-[10px] uppercase font-bold block">First Visit</span>
+                      <span className="text-[10px] uppercase font-bold block">
+                        {language === "bn" ? "প্রথম ভিজিট" : "First Visit"}
+                      </span>
                       <span className="text-base font-black font-mono block text-slate-900 dark:text-white">
                         ${staffEffectiveBreakdown.newPatientFee}
                       </span>
@@ -1655,7 +1660,9 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                           : "bg-[var(--bg-surface)] border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400"
                       }`}
                     >
-                      <span className="text-[10px] uppercase font-bold block">Follow-up</span>
+                      <span className="text-[10px] uppercase font-bold block">
+                        {language === "bn" ? "ফলো-আপ" : "Follow-up"}
+                      </span>
                       <span className="text-base font-black font-mono block text-slate-900 dark:text-white">
                         ${staffEffectiveBreakdown.followupFee}
                       </span>
@@ -1670,9 +1677,11 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                           : "bg-[var(--bg-surface)] border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400"
                       }`}
                     >
-                      <span className="text-[10px] uppercase font-bold block">Report Review</span>
+                      <span className="text-[10px] uppercase font-bold block">
+                        {language === "bn" ? "রিপোর্ট রিভিউ" : "Report Review"}
+                      </span>
                       <span className="text-base font-black font-mono block text-emerald-600 dark:text-emerald-400">
-                        FREE ($0)
+                        {language === "bn" ? "ফ্রি ($০)" : "FREE ($0)"}
                       </span>
                     </button>
                   </div>
@@ -1681,7 +1690,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                   {staffVisitType !== "REPORT_REVIEW" && (
                     <div className="pt-2 flex items-center justify-between text-xs">
                       <span className="font-semibold text-slate-600 dark:text-slate-400">
-                        Payment Collected:
+                        {language === "bn" ? "সংগৃহীত ফি:" : "Payment Collected:"}
                       </span>
                       <div className="flex gap-2">
                         {(["CASH", "CARD_POS", "WAIVED"] as const).map((m) => (
@@ -1721,12 +1730,12 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                   {submitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Issuing Serial Ticket & Confirming...</span>
+                      <span>{language === "bn" ? "সিরিয়াল টিকিট ইস্যু ও কনফার্ম হচ্ছে..." : "Issuing Serial Ticket & Confirming..."}</span>
                     </>
                   ) : (
                     <>
                       <CheckCircle2 className="w-4 h-4" />
-                      <span>Issue Confirmed Queue Ticket (Active)</span>
+                      <span>{language === "bn" ? "নিশ্চিত সিরিয়াল টিকিট ইস্যু করুন (সক্রিয়)" : "Issue Confirmed Queue Ticket (Active)"}</span>
                     </>
                   )}
                 </button>
@@ -1739,7 +1748,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
             <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
                 <h3 className="font-bold text-xs uppercase tracking-wider text-slate-500">
-                  Last Issued Serial Slip
+                  {language === "bn" ? "সর্বশেষ ইস্যুকৃত সিরিয়াল স্লিপ" : "Last Issued Serial Slip"}
                 </h3>
                 {issuedTicket && (
                   <button
@@ -1748,7 +1757,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                     className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs flex items-center gap-1 cursor-pointer"
                   >
                     <Printer className="w-3.5 h-3.5" />
-                    <span>Print</span>
+                    <span>{t.print}</span>
                   </button>
                 )}
               </div>
@@ -1760,7 +1769,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                   </div>
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)] block">
-                      Queue Ticket Issued & Confirmed
+                      {language === "bn" ? "সিরিয়াল টিকিট নিশ্চিত ও ইস্যু করা হয়েছে" : "Queue Ticket Issued & Confirmed"}
                     </span>
                     <span className="text-4xl font-black text-[var(--brand-primary)]">
                       #{issuedTicket.serialNumber}
@@ -1769,26 +1778,26 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
 
                   <div className="pt-3 border-t border-[var(--brand-primary)]/20 text-left text-xs space-y-1.5">
                     <p className="font-bold text-slate-900 dark:text-white">
-                      Patient: {issuedTicket.patient.user.name}
+                      {t.patientName}: {issuedTicket.patient.user.name}
                     </p>
                     <p className="text-slate-500 text-[11px]">
-                      Doctor: {issuedTicket.doctor.user.name} ({issuedTicket.doctor.specialization})
+                      {t.doctor}: {issuedTicket.doctor.user.name} ({issuedTicket.doctor.specialization})
                     </p>
                     <p className="text-slate-500 text-[11px]">
-                      Chamber: {issuedTicket.doctor.chamberAddress || "OPD Consultation Chamber"}
+                      {t.chamber}: {issuedTicket.doctor.chamberAddress || (language === "bn" ? "ওপিডি কনসালটেশন চেম্বার" : "OPD Consultation Chamber")}
                     </p>
                     <div className="pt-1.5 border-t border-[var(--brand-primary)]/10 flex items-center justify-between">
                       <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200">
                         {issuedTicket.visitType === "REPORT_REVIEW"
-                          ? "Report Review"
+                          ? (language === "bn" ? "রিপোর্ট রিভিউ" : "Report Review")
                           : issuedTicket.visitType === "FOLLOWUP"
-                          ? "Follow-up"
-                          : "New Patient"}
+                          ? (language === "bn" ? "ফলো-আপ" : "Follow-up")
+                          : (language === "bn" ? "নতুন রোগী" : "New Patient")}
                       </span>
                       <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                         {issuedTicket.fee === 0
-                          ? "FREE ($0.00)"
-                          : `$${issuedTicket.fee} • PAID (${issuedTicket.paymentMethod || "Desk"})`}
+                          ? (language === "bn" ? "ফ্রি ($০.০০)" : "FREE ($0.00)")
+                          : `$${issuedTicket.fee} • ${language === "bn" ? "পরিশোধিত" : "PAID"} (${issuedTicket.paymentMethod || "Desk"})`}
                       </span>
                     </div>
                   </div>
@@ -1796,8 +1805,12 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
               ) : (
                 <div className="py-16 text-center text-slate-400 space-y-2">
                   <Activity className="w-8 h-8 mx-auto text-slate-300" />
-                  <p className="text-xs font-semibold">No Ticket Dispensed Yet</p>
-                  <p className="text-[11px]">Complete the intake form to generate the next serial ticket.</p>
+                  <p className="text-xs font-semibold">
+                    {language === "bn" ? "এখনও কোন টিকিট ইস্যু করা হয়নি" : "No Ticket Dispensed Yet"}
+                  </p>
+                  <p className="text-[11px]">
+                    {language === "bn" ? "পরবর্তী সিরিয়াল টিকিট তৈরির জন্য ফর্ম পূরণ করুন।" : "Complete the intake form to generate the next serial ticket."}
+                  </p>
                 </div>
               )}
             </div>
@@ -1811,9 +1824,9 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                Today&apos;s Active Consultation Queue
+                {language === "bn" ? "আজকের সক্রিয় কনসালটেশন সিরিয়াল" : "Today's Active Consultation Queue"}
               </h2>
-              <p className="text-xs text-slate-500">Live patient turn tracker across all consulting chambers</p>
+              <p className="text-xs text-slate-500">{language === "bn" ? "সকল চেম্বারে রোগী দেখার লাইভ সিরিয়াল ট্র্যাকার" : "Live patient turn tracker across all consulting chambers"}</p>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
@@ -1822,13 +1835,13 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                   value={doctorFilter}
                   onChange={(val) => setDoctorFilter(val)}
                   options={[
-                    { value: "all", label: "All Doctors" },
+                    { value: "all", label: language === "bn" ? "সকল ডাক্তার" : "All Doctors" },
                     ...doctors.map((d) => ({
                       value: d.id,
                       label: `${d.name} (${d.specialization})`,
                     })),
                   ]}
-                  placeholder="Filter by doctor..."
+                  placeholder={language === "bn" ? "ডাক্তার নির্বাচন..." : "Filter by doctor..."}
                 />
               </div>
 
@@ -1836,7 +1849,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
                 <input
                   type="text"
-                  placeholder="Filter serial # or patient..."
+                  placeholder={language === "bn" ? "সিরিয়াল বা রোগী ফিল্টার..." : "Filter serial # or patient..."}
                   value={queueSearch}
                   onChange={(e) => setQueueSearch(e.target.value)}
                   className="!pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs"
@@ -1850,12 +1863,12 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider font-semibold">
-                  <th className="py-2.5 px-3">Serial #</th>
-                  <th className="py-2.5 px-3">Patient</th>
-                  <th className="py-2.5 px-3">Consulting Doctor</th>
-                  <th className="py-2.5 px-3">Fee / Payment</th>
-                  <th className="py-2.5 px-3">Status</th>
-                  <th className="py-2.5 px-3 text-right">Actions</th>
+                  <th className="py-2.5 px-3">{language === "bn" ? "সিরিয়াল #" : "Serial #"}</th>
+                  <th className="py-2.5 px-3">{language === "bn" ? "রোগী" : "Patient"}</th>
+                  <th className="py-2.5 px-3">{language === "bn" ? "চিকিৎসক" : "Consulting Doctor"}</th>
+                  <th className="py-2.5 px-3">{language === "bn" ? "ফি / পেমেন্ট" : "Fee / Payment"}</th>
+                  <th className="py-2.5 px-3">{t.statusLabel}</th>
+                  <th className="py-2.5 px-3 text-right">{t.actions}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -1956,10 +1969,10 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                All Clinic Appointments & Logs
+                {language === "bn" ? "সকল অ্যাপয়েন্টমেন্ট ও লগ" : "All Clinic Appointments & Logs"}
               </h2>
               <p className="text-xs text-slate-500">
-                Audit trail of verified, pending, completed, and cancelled consultation bookings.
+                {language === "bn" ? "যাচাইকৃত, অপেক্ষমান, সম্পন্ন ও বাতিলকৃত সকল বুকিংয়ের তালিকা।" : "Audit trail of verified, pending, completed, and cancelled consultation bookings."}
               </p>
             </div>
 
@@ -1976,7 +1989,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                       : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
-                  {st}
+                  {st === "ALL" ? (language === "bn" ? "সকল" : "ALL") : st}
                 </button>
               ))}
             </div>
@@ -1987,19 +2000,19 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider font-semibold">
-                  <th className="py-2.5 px-3">Date & Serial</th>
-                  <th className="py-2.5 px-3">Patient</th>
-                  <th className="py-2.5 px-3">Doctor</th>
-                  <th className="py-2.5 px-3">Payment</th>
-                  <th className="py-2.5 px-3">Status & Verification</th>
-                  <th className="py-2.5 px-3 text-right">Actions</th>
+                  <th className="py-2.5 px-3">{language === "bn" ? "তারিখ ও সিরিয়াল" : "Date & Serial"}</th>
+                  <th className="py-2.5 px-3">{language === "bn" ? "রোগী" : "Patient"}</th>
+                  <th className="py-2.5 px-3">{language === "bn" ? "ডাক্তার" : "Doctor"}</th>
+                  <th className="py-2.5 px-3">{language === "bn" ? "পেমেন্ট" : "Payment"}</th>
+                  <th className="py-2.5 px-3">{language === "bn" ? "অবস্থা ও যাচাই" : "Status & Verification"}</th>
+                  <th className="py-2.5 px-3 text-right">{t.actions}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {filteredAllAppointments.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-12 text-center text-slate-400">
-                      No appointments match this filter.
+                      {language === "bn" ? "এই ফিল্টারে কোনো অ্যাপয়েন্টমেন্ট পাওয়া যায়নি।" : "No appointments match this filter."}
                     </td>
                   </tr>
                 ) : (
@@ -2119,19 +2132,19 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <span>Registered Patients Directory</span>
+                <span>{language === "bn" ? "নিবন্ধিত রোগী ডিরেক্টরি" : "Registered Patients Directory"}</span>
                 {patients.filter((p) => p.user.isApproved === false).length > 0 && (
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">
-                    {patients.filter((p) => p.user.isApproved === false).length} Pending Verification
+                    {patients.filter((p) => p.user.isApproved === false).length} {language === "bn" ? "যাচাই অপেক্ষমান" : "Pending Verification"}
                   </span>
                 )}
               </h2>
               <p className="text-xs text-slate-500">
-                Patient directory and account verification governance. Verify registered patients to enable their patient portal access.
+                {language === "bn" ? "রোগী তালিকা ও অ্যাকাউন্ট যাচাইকরণ। পোর্টাল অ্যাক্সেস দিতে রোগীদের যাচাই করুন।" : "Patient directory and account verification governance. Verify registered patients to enable their patient portal access."}
               </p>
             </div>
             <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 self-start sm:self-auto">
-              {patients.length} Total Patients
+              {patients.length} {language === "bn" ? "জন মোট রোগী" : "Total Patients"}
             </span>
           </div>
 
@@ -2147,7 +2160,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 onClick={() => setPatientVerifySuccess(null)}
                 className="text-emerald-600 hover:text-emerald-800 dark:hover:text-emerald-200 cursor-pointer text-xs"
               >
-                Dismiss
+                {language === "bn" ? "বন্ধ করুন" : "Dismiss"}
               </button>
             </div>
           )}
@@ -2177,7 +2190,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 }`}
               >
                 <Clock className="w-3.5 h-3.5 text-amber-500" />
-                <span>Pending Verification</span>
+                <span>{language === "bn" ? "যাচাই অপেক্ষমান" : "Pending Verification"}</span>
                 {patients.filter((p) => p.user.isApproved === false).length > 0 && (
                   <span className="px-1.5 py-0.2 rounded-full text-[10px] font-black bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
                     {patients.filter((p) => p.user.isApproved === false).length}
@@ -2195,7 +2208,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 }`}
               >
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                <span>Verified ({patients.filter((p) => p.user.isApproved !== false).length})</span>
+                <span>{language === "bn" ? "যাচাইকৃত" : "Verified"} ({patients.filter((p) => p.user.isApproved !== false).length})</span>
               </button>
             </div>
 
@@ -2205,7 +2218,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 type="text"
                 value={patientSearchQuery}
                 onChange={(e) => setPatientSearchQuery(e.target.value)}
-                placeholder="Search patient name, phone, email..."
+                placeholder={language === "bn" ? "রোগীর নাম, ফোন, ইমেইল দিয়ে খুঁজুন..." : "Search patient name, phone, email..."}
                 className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
@@ -2228,7 +2241,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
               );
             }).length === 0 ? (
             <div className="p-10 text-center text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
-              No patients found matching the selected filter or search criteria.
+              {language === "bn" ? "নির্বাচিত ফিল্টার বা অনুসন্ধানের সাথে মিল রেখে কোনো রোগী পাওয়া যায়নি।" : "No patients found matching the selected filter or search criteria."}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
@@ -2269,7 +2282,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
 
                       <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
                         <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                        <span>{pat.user.phone || "No phone recorded"}</span>
+                        <span>{pat.user.phone || (language === "bn" ? "ফোন নম্বর নেই" : "No phone recorded")}</span>
                       </div>
 
                       {/* Verification Status Badge */}
@@ -2277,12 +2290,12 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                         {pat.user.isApproved === false ? (
                           <span className="px-2 py-0.5 rounded-full font-bold text-[10px] bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1 w-fit">
                             <Clock className="w-3 h-3 text-amber-500 shrink-0" />
-                            <span>Pending Staff Verification</span>
+                            <span>{language === "bn" ? "স্টাফ যাচাই অপেক্ষমান" : "Pending Staff Verification"}</span>
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-full font-bold text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center gap-1 w-fit">
+                          <span className="px-2 py-0.5 rounded-full font-bold text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1 w-fit">
                             <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
-                            <span>Verified & Active</span>
+                            <span>{language === "bn" ? "যাচাইকৃত ও সক্রিয়" : "Verified & Active"}</span>
                           </span>
                         )}
                       </div>
@@ -2308,7 +2321,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                           ) : (
                             <ShieldCheck className="w-3.5 h-3.5" />
                           )}
-                          <span>Verify & Activate Account</span>
+                          <span>{language === "bn" ? "অ্যাকাউন্ট যাচাই ও সক্রিয় করুন" : "Verify & Activate Account"}</span>
                         </button>
                       </div>
                     )}
@@ -2321,7 +2334,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                         className="w-full py-2 px-3 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] hover:brightness-95 font-bold text-xs shadow-2xs transition flex items-center justify-center gap-1.5 cursor-pointer"
                       >
                         <FileText className="w-3.5 h-3.5" />
-                        <span>Upload Lab Report</span>
+                        <span>{language === "bn" ? "ল্যাব রিপোর্ট আপলোড" : "Upload Lab Report"}</span>
                       </button>
                     </div>
                   </div>
@@ -2343,10 +2356,10 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 </div>
                 <div>
                   <h3 className="text-lg font-black text-slate-900 dark:text-white">
-                    Cancel Appointment Request
+                    {language === "bn" ? "অ্যাপয়েন্টমেন্ট বাতিল অনুরোধ" : "Cancel Appointment Request"}
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Serial #{staffCancelTarget.serialNumber} • Patient: {staffCancelTarget.patient.user.name}
+                    {language === "bn" ? "সিরিয়াল" : "Serial"} #{staffCancelTarget.serialNumber} • {t.patientName}: {staffCancelTarget.patient.user.name}
                   </p>
                 </div>
               </div>
@@ -2363,25 +2376,31 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
             {/* Target Overview */}
             <div className="p-3.5 rounded-2xl bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 grid grid-cols-2 gap-2 text-xs">
               <div>
-                <span className="text-[10px] text-slate-400 block font-semibold uppercase">Doctor</span>
+                <span className="text-[10px] text-slate-400 block font-semibold uppercase">{t.doctor}</span>
                 <span className="font-bold text-slate-900 dark:text-white">
                   Dr. {staffCancelTarget.doctor.user.name}
                 </span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 block font-semibold uppercase">Consultation Date</span>
+                <span className="text-[10px] text-slate-400 block font-semibold uppercase">
+                  {language === "bn" ? "পরামর্শের তারিখ" : "Consultation Date"}
+                </span>
                 <span className="font-bold text-slate-900 dark:text-white">
                   {new Date(staffCancelTarget.appointmentDate).toLocaleDateString()}
                 </span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 block font-semibold uppercase">Payment Status</span>
+                <span className="text-[10px] text-slate-400 block font-semibold uppercase">
+                  {language === "bn" ? "পেমেন্ট স্ট্যাটাস" : "Payment Status"}
+                </span>
                 <span className="font-bold text-slate-900 dark:text-white">
                   {staffCancelTarget.paymentStatus} (${staffCancelTarget.fee})
                 </span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 block font-semibold uppercase">Current Status</span>
+                <span className="text-[10px] text-slate-400 block font-semibold uppercase">
+                  {language === "bn" ? "বর্তমান স্ট্যাটাস" : "Current Status"}
+                </span>
                 <span className="font-bold text-slate-900 dark:text-white">
                   {staffCancelTarget.status}
                 </span>
@@ -2392,7 +2411,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
             {staffCancelTarget.paymentStatus === "PAID" && (staffCancelTarget.fee ?? 0) > 0 && (
               <div className="space-y-2">
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Refund Decision (Paid Fee: ${staffCancelTarget.fee})
+                  {language === "bn" ? `রিফান্ড সিদ্ধান্ত (প্রদত্ত ফি: $${staffCancelTarget.fee})` : `Refund Decision (Paid Fee: $${staffCancelTarget.fee})`}
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   <button
@@ -2404,7 +2423,9 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                         : "bg-[var(--bg-app)] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800"
                     }`}
                   >
-                    <span className="block text-[10px] uppercase opacity-75">100% Full Refund</span>
+                    <span className="block text-[10px] uppercase opacity-75">
+                      {language === "bn" ? "১০০% সম্পূর্ণ রিফান্ড" : "100% Full Refund"}
+                    </span>
                     <span className="block font-mono text-sm">${staffCancelTarget.fee}</span>
                   </button>
 
@@ -2417,7 +2438,9 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                         : "bg-[var(--bg-app)] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800"
                     }`}
                   >
-                    <span className="block text-[10px] uppercase opacity-75">No Refund</span>
+                    <span className="block text-[10px] uppercase opacity-75">
+                      {language === "bn" ? "রিফান্ড নেই" : "No Refund"}
+                    </span>
                     <span className="block font-mono text-sm">$0.00</span>
                   </button>
 
@@ -2430,15 +2453,19 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                         : "bg-[var(--bg-app)] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800"
                     }`}
                   >
-                    <span className="block text-[10px] uppercase opacity-75">Custom</span>
-                    <span className="block font-mono text-sm">Partial</span>
+                    <span className="block text-[10px] uppercase opacity-75">
+                      {language === "bn" ? "কাস্টম" : "Custom"}
+                    </span>
+                    <span className="block font-mono text-sm">
+                      {language === "bn" ? "আংশিক" : "Partial"}
+                    </span>
                   </button>
                 </div>
 
                 {staffRefundChoice === "CUSTOM" && (
                   <div className="pt-1">
                     <label className="block text-[11px] font-semibold text-slate-500 mb-1">
-                      Enter Custom Refund Amount ($)
+                      {language === "bn" ? "কাস্টম রিফান্ডের পরিমাণ লিখুন ($)" : "Enter Custom Refund Amount ($)"}
                     </label>
                     <input
                       type="number"
@@ -2456,27 +2483,27 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
             {/* Cancellation Reason */}
             <div className="space-y-2">
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Cancellation Reason *
+                {language === "bn" ? "বাতিল করার কারণ *" : "Cancellation Reason *"}
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {[
-                  "Physician Emergency / Off-duty",
-                  "Patient Requested via Phone",
-                  "Duplicate Booking Request",
-                  "Payment Not Received",
-                  "Clinic Operational Reschedule",
+                  { en: "Physician Emergency / Off-duty", bn: "চিকিৎসকের জরুরি সমস্যা / অনুপস্থিত" },
+                  { en: "Patient Requested via Phone", bn: "ফোনে রোগীর অনুরোধ" },
+                  { en: "Duplicate Booking Request", bn: "একাধিকবার বুকিং অনুরোধ" },
+                  { en: "Payment Not Received", bn: "পেমেন্ট পাওয়া যায়নি" },
+                  { en: "Clinic Operational Reschedule", bn: "ক্লিনিকের সময়সূচী পরিবর্তন" },
                 ].map((preset) => (
                   <button
-                    key={preset}
+                    key={preset.en}
                     type="button"
-                    onClick={() => setStaffCancelReason(preset)}
+                    onClick={() => setStaffCancelReason(language === "bn" ? preset.bn : preset.en)}
                     className={`px-2.5 py-1 rounded-xl text-xs font-semibold transition cursor-pointer ${
-                      staffCancelReason === preset
+                      staffCancelReason === (language === "bn" ? preset.bn : preset.en)
                         ? "bg-[var(--brand-primary)] text-white"
                         : "bg-[var(--bg-app)] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800"
                     }`}
                   >
-                    {preset}
+                    {language === "bn" ? preset.bn : preset.en}
                   </button>
                 ))}
               </div>
@@ -2484,7 +2511,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 rows={2}
                 value={staffCancelReason}
                 onChange={(e) => setStaffCancelReason(e.target.value)}
-                placeholder="Additional notes on why this appointment was cancelled..."
+                placeholder={language === "bn" ? "অ্যাপয়েন্টমেন্ট বাতিলের অতিরিক্ত বিবরণ..." : "Additional notes on why this appointment was cancelled..."}
                 className="w-full mt-1.5 p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
@@ -2497,7 +2524,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 onClick={() => setStaffCancelTarget(null)}
                 className="px-5 py-2.5 rounded-2xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition cursor-pointer disabled:opacity-50"
               >
-                Keep Appointment
+                {language === "bn" ? "অ্যাপয়েন্টমেন্ট রাখুন" : "Keep Appointment"}
               </button>
               <button
                 type="button"
@@ -2508,10 +2535,10 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 {staffCancelSubmitting ? (
                   <>
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>Processing Cancellation...</span>
+                    <span>{language === "bn" ? "বাতিল প্রক্রিয়াধীন..." : "Processing Cancellation..."}</span>
                   </>
                 ) : (
-                  <span>Confirm Cancellation</span>
+                  <span>{language === "bn" ? "বাতিল নিশ্চিত করুন" : "Confirm Cancellation"}</span>
                 )}
               </button>
             </div>
@@ -2623,12 +2650,12 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                   {uploadingReport ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Uploading & Attaching...</span>
+                      <span>{language === "bn" ? "আপলোড ও সংযুক্ত করা হচ্ছে..." : "Uploading & Attaching..."}</span>
                     </>
                   ) : (
                     <>
                       <Upload className="w-4 h-4" />
-                      <span>Upload & Attach to Record</span>
+                      <span>{language === "bn" ? "রেকর্ডে আপলোড ও সংযুক্ত করুন" : "Upload & Attach to Record"}</span>
                     </>
                   )}
                 </button>

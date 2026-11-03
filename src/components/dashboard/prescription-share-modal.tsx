@@ -13,6 +13,7 @@ import {
   Globe,
   Lock,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type PrescriptionShareModalProps = {
   prescriptionId: string;
@@ -27,6 +28,7 @@ export function PrescriptionShareModal({
   isOpen,
   onClose,
 }: PrescriptionShareModalProps) {
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [isPublic, setIsPublic] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
@@ -127,7 +129,7 @@ export function PrescriptionShareModal({
       });
       const data = await res.json();
       if (data.success) {
-        setEmailSuccess(`Prescription successfully emailed to ${recipientEmail}`);
+        setEmailSuccess(`${t.emailSentSuccess} (${recipientEmail})`);
         setRecipientEmail("");
         setPersonalNote("");
         setIsPublic(true);
@@ -153,7 +155,7 @@ export function PrescriptionShareModal({
             </div>
             <div>
               <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
-                Share Prescription
+                {t.sharePrescription}
               </h2>
               <p className="text-xs text-slate-500">
                 Rx #{prescriptionNumber || prescriptionId.slice(-8).toUpperCase()}
@@ -193,13 +195,11 @@ export function PrescriptionShareModal({
                   <Lock className="w-4 h-4 text-slate-400" />
                 )}
                 <span className="text-xs font-bold text-slate-900 dark:text-white">
-                  Public Web Link Access
+                  {t.publicWebLinkAccess}
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 leading-snug">
-                {isPublic
-                  ? "Anyone with the share link or QR code can view this verified prescription."
-                  : "This prescription is currently private. Enable sharing to create a link or QR code."}
+                {isPublic ? t.publicLinkShareDesc : t.privateLinkShareDesc}
               </p>
             </div>
 
@@ -213,7 +213,7 @@ export function PrescriptionShareModal({
               }`}
             >
               {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-              <span>{isPublic ? "Disable Link" : "Enable Sharing"}</span>
+              <span>{isPublic ? t.disableLink : t.enableSharing}</span>
             </button>
           </div>
 
@@ -223,7 +223,7 @@ export function PrescriptionShareModal({
               {/* Copyable URL Bar */}
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                  Public Link
+                  {t.publicLink}
                 </label>
                 <div className="flex items-center gap-2">
                   <input
@@ -238,7 +238,7 @@ export function PrescriptionShareModal({
                     className="px-3.5 py-2.5 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] hover:bg-[var(--brand-primary)] hover:text-white transition text-xs font-bold flex items-center gap-1.5 shrink-0 cursor-pointer"
                   >
                     {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copied ? "Copied" : "Copy"}</span>
+                    <span>{copied ? t.copied : t.copyKey}</span>
                   </button>
                 </div>
               </div>
@@ -256,10 +256,10 @@ export function PrescriptionShareModal({
                     <div className="space-y-0.5">
                       <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1">
                         <QrCode className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-                        <span>Instant Mobile Scan QR</span>
+                        <span>{t.instantMobileScanQr}</span>
                       </span>
                       <p className="text-[11px] text-slate-400">
-                        Patients or pharmacies can scan to view digital Rx.
+                        {t.scanMobileQrDesc}
                       </p>
                     </div>
                   </div>
@@ -270,7 +270,7 @@ export function PrescriptionShareModal({
                     className="p-2.5 rounded-xl border border-[var(--border-default)] text-slate-700 dark:text-slate-300 hover:bg-[var(--bg-subtle)] transition text-xs font-semibold flex items-center gap-1 cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Save QR</span>
+                    <span className="hidden sm:inline">{t.saveQr}</span>
                   </button>
                 </div>
               )}
@@ -282,7 +282,7 @@ export function PrescriptionShareModal({
             <div className="flex items-center gap-2">
               <Mail className="w-4 h-4 text-[var(--brand-primary)]" />
               <span className="text-xs font-bold text-slate-900 dark:text-white">
-                Send Prescription to Email
+                {t.sendPrescriptionToEmail}
               </span>
             </div>
 
@@ -290,14 +290,14 @@ export function PrescriptionShareModal({
               <input
                 type="email"
                 required
-                placeholder="patient@example.com or recipient email"
+                placeholder={t.patientEmailPlaceholder}
                 value={recipientEmail}
                 onChange={(e) => setRecipientEmail(e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-xs placeholder:text-slate-400 focus:outline-none focus:border-[var(--brand-primary)]"
               />
               <input
                 type="text"
-                placeholder="Optional personal message (e.g. Please take as prescribed)"
+                placeholder={t.personalNotePlaceholder}
                 value={personalNote}
                 onChange={(e) => setPersonalNote(e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-xs placeholder:text-slate-400 focus:outline-none focus:border-[var(--brand-primary)]"
@@ -310,7 +310,7 @@ export function PrescriptionShareModal({
               className="w-full py-2.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {sendingEmail ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Mail className="w-3.5 h-3.5" />}
-              <span>{sendingEmail ? "Sending Email..." : "Send Prescription Email"}</span>
+              <span>{sendingEmail ? t.sendingEmail : t.sendPrescriptionEmail}</span>
             </button>
           </form>
         </div>

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export interface CustomDatePickerProps {
   value?: string; // Format: YYYY-MM-DD
@@ -17,12 +18,18 @@ export interface CustomDatePickerProps {
   quickPresets?: boolean;
 }
 
-const MONTH_NAMES = [
+const MONTH_NAMES_EN = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
 
-const DAYS_OF_WEEK = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+const MONTH_NAMES_BN = [
+  "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
+  "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"
+];
+
+const DAYS_OF_WEEK_EN = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+const DAYS_OF_WEEK_BN = ["রবি", "সোম", "মঙ্গল", "বুধ", "বৃহঃ", "শুক্র", "শনি"];
 
 function parseISODate(isoStr?: string): Date | null {
   if (!isoStr) return null;
@@ -42,10 +49,10 @@ function formatToISO(date: Date): string {
   return `${y}-${m}-${d}`;
 }
 
-function formatDisplayDate(isoStr?: string): string {
+function formatDisplayDate(isoStr?: string, isBn?: boolean): string {
   const d = parseISODate(isoStr);
   if (!d) return "";
-  return d.toLocaleDateString("en-US", {
+  return d.toLocaleDateString(isBn ? "bn-BD" : "en-US", {
     weekday: "short",
     year: "numeric",
     month: "short",
@@ -57,7 +64,7 @@ export function CustomDatePicker({
   value,
   onChange,
   label,
-  placeholder = "Select date...",
+  placeholder,
   minDate,
   maxDate,
   disabled = false,
@@ -66,6 +73,12 @@ export function CustomDatePicker({
   className = "",
   quickPresets = true,
 }: CustomDatePickerProps) {
+  const { language } = useLanguage();
+  const isBn = language === "bn";
+  const effectivePlaceholder = placeholder || (isBn ? "তারিখ নির্বাচন করুন..." : "Select date...");
+  const monthNames = isBn ? MONTH_NAMES_BN : MONTH_NAMES_EN;
+  const daysOfWeek = isBn ? DAYS_OF_WEEK_BN : DAYS_OF_WEEK_EN;
+
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -216,10 +229,10 @@ export function CustomDatePicker({
         <div className="flex items-center gap-2 truncate flex-1 min-w-0">
           {value ? (
             <span className="font-medium text-slate-900 dark:text-slate-100 truncate">
-              {formatDisplayDate(value)}
+              {formatDisplayDate(value, isBn)}
             </span>
           ) : (
-            <span className="text-slate-400 dark:text-slate-500 truncate">{placeholder}</span>
+            <span className="text-slate-400 dark:text-slate-500 truncate">{effectivePlaceholder}</span>
           )}
         </div>
 
@@ -231,7 +244,7 @@ export function CustomDatePicker({
                 e.stopPropagation();
                 onChange("");
               }}
-              title="Clear date"
+              title={isBn ? "তারিখ মুছুন" : "Clear date"}
               className="hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg hover:bg-[var(--bg-subtle)] transition"
             >
               <X className="w-3.5 h-3.5" />
@@ -253,14 +266,14 @@ export function CustomDatePicker({
               type="button"
               onClick={handlePrevMonth}
               className="p-1.5 rounded-xl hover:bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 transition cursor-pointer"
-              aria-label="Previous month"
+              aria-label={isBn ? "পূর্ববর্তী মাস" : "Previous month"}
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
 
             <div className="flex items-center gap-1.5 font-bold text-sm text-slate-900 dark:text-white">
               <span className="px-2.5 py-1 rounded-xl bg-[var(--bg-subtle)] text-xs font-black tracking-tight text-slate-800 dark:text-slate-100">
-                {MONTH_NAMES[viewMonth]} {viewYear}
+                {monthNames[viewMonth]} {viewYear}
               </span>
             </div>
 
@@ -268,7 +281,7 @@ export function CustomDatePicker({
               type="button"
               onClick={handleNextMonth}
               className="p-1.5 rounded-xl hover:bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 transition cursor-pointer"
-              aria-label="Next month"
+              aria-label={isBn ? "পরবর্তী মাস" : "Next month"}
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -282,35 +295,35 @@ export function CustomDatePicker({
                 onClick={() => handleApplyPreset(0)}
                 className="px-2 py-1 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] font-semibold transition shrink-0 cursor-pointer"
               >
-                Today
+                {isBn ? "আজ" : "Today"}
               </button>
               <button
                 type="button"
                 onClick={() => handleApplyPreset(1)}
                 className="px-2 py-1 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] font-semibold transition shrink-0 cursor-pointer"
               >
-                Tomorrow
+                {isBn ? "আগামীকাল" : "Tomorrow"}
               </button>
               <button
                 type="button"
                 onClick={() => handleApplyPreset(3)}
                 className="px-2 py-1 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] font-semibold transition shrink-0 cursor-pointer"
               >
-                +3 Days
+                {isBn ? "+৩ দিন" : "+3 Days"}
               </button>
               <button
                 type="button"
                 onClick={() => handleApplyPreset(7)}
                 className="px-2 py-1 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] font-semibold transition shrink-0 cursor-pointer"
               >
-                +1 Week
+                {isBn ? "+১ সপ্তাহ" : "+1 Week"}
               </button>
             </div>
           )}
 
           {/* Days of Week Header */}
           <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-            {DAYS_OF_WEEK.map((d) => (
+            {daysOfWeek.map((d) => (
               <span key={d} className="py-1">
                 {d}
               </span>

@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useLanguage } from "@/lib/i18n/language-context";
 import { CustomSelect } from "@/components/common/custom-select";
 import {
   Users,
@@ -56,6 +57,7 @@ interface StaffDirectoryProps {
 }
 
 export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
+  const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedClinic, setSelectedClinic] = useState<string>("ALL");
   const [selectedRole, setSelectedRole] = useState<string>("ALL");
@@ -103,31 +105,31 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
     switch (role) {
       case "STAFF":
         return {
-          label: "Front Desk & Triage Staff",
+          label: t.frontDeskStaff,
           badgeClass: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20",
           icon: <ClipboardList className="w-3.5 h-3.5" />,
-          department: "Patient Intake & Queue Management",
+          department: t.patientIntakeQueueMgmt,
         };
       case "ADMIN":
         return {
-          label: "Clinic Operations Admin",
+          label: t.clinicOpsAdmin,
           badgeClass: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
           icon: <ShieldCheck className="w-3.5 h-3.5" />,
-          department: "Practice Administration & Governance",
+          department: t.practiceAdminGovernance,
         };
       case "DOCTOR":
         return {
-          label: "Consulting Physician",
+          label: t.consultingPhysicianRole,
           badgeClass: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20",
           icon: <Stethoscope className="w-3.5 h-3.5" />,
-          department: "Clinical Consultations & Prescriptions",
+          department: t.clinicalConsultationsPrescriptions,
         };
       default:
         return {
           label: role,
           badgeClass: "bg-slate-500/10 text-slate-600 border-slate-500/20",
           icon: <Users className="w-3.5 h-3.5" />,
-          department: "Clinical Services",
+          department: language === "bn" ? "ক্লিনিকাল সেবা" : "Clinical Services",
         };
     }
   };
@@ -144,14 +146,15 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search staff by name, email, phone, role, or clinic affiliation..."
+              placeholder={t.searchStaffPlaceholder}
               className="w-full pl-11 pr-10 py-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 text-sm text-[var(--text-primary)] placeholder:text-slate-400 transition-all outline-none"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
+                aria-label={t.clear}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -168,7 +171,7 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
                 value={selectedClinic}
                 onChange={(val) => setSelectedClinic(val)}
                 options={[
-                  { value: "ALL", label: "All Clinics & Chambers" },
+                  { value: "ALL", label: t.allClinicsAndChambers },
                   ...clinics.map((c) => ({ value: c.slug, label: c.name })),
                 ]}
                 searchable={clinics.length > 5}
@@ -183,10 +186,10 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
                 value={selectedRole}
                 onChange={(val) => setSelectedRole(val)}
                 options={[
-                  { value: "ALL", label: "All Roles" },
-                  { value: "STAFF", label: "Front Desk & Triage (STAFF)" },
-                  { value: "ADMIN", label: "Clinic Administration (ADMIN)" },
-                  { value: "DOCTOR", label: "Consulting Physicians (DOCTOR)" },
+                  { value: "ALL", label: t.allRolesFilter },
+                  { value: "STAFF", label: t.frontDeskStaffRole },
+                  { value: "ADMIN", label: t.clinicAdminRole },
+                  { value: "DOCTOR", label: t.doctorStaffRole },
                 ]}
                 searchable={false}
               />
@@ -200,9 +203,9 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
                 value={sortBy}
                 onChange={(val) => setSortBy(val as "name" | "role" | "clinic")}
                 options={[
-                  { value: "name", label: "Sort by Name (A-Z)" },
-                  { value: "role", label: "Sort by Role" },
-                  { value: "clinic", label: "Sort by Clinic" },
+                  { value: "name", label: t.sortByName },
+                  { value: "role", label: t.sortByRole },
+                  { value: "clinic", label: t.sortByClinic },
                 ]}
                 searchable={false}
               />
@@ -214,17 +217,18 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
         <div className="flex items-center justify-between pt-2 border-t border-[var(--border-subtle)] text-xs text-slate-500">
           <div className="flex items-center gap-2">
             <span>
-              Showing <strong className="text-[var(--text-primary)]">{sortedStaff.length}</strong> of{" "}
-              {initialStaff.length} healthcare team members
+              {language === "bn" ? `${t.showingClinicsCount} ` : "Showing "}
+              <strong className="text-[var(--text-primary)]">{sortedStaff.length}</strong>{" "}
+              {language === "bn" ? `${t.ofClinics} ${initialStaff.length} ${t.healthcareTeamMembers}` : `of ${initialStaff.length} healthcare team members`}
             </span>
             {searchQuery && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] font-semibold text-[11px]">
-                Matching &ldquo;{searchQuery}&rdquo;
+                {language === "bn" ? `"${searchQuery}" এর মিল` : `Matching “${searchQuery}”`}
               </span>
             )}
           </div>
           <div className="hidden sm:flex items-center gap-3 text-[11px]">
-            <span>{clinics.length} Accredited Facilities</span>
+            <span>{clinics.length} {t.accreditedFacilities}</span>
           </div>
         </div>
       </div>
@@ -308,7 +312,7 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
                   ) : (
                     <div className="p-3 rounded-2xl bg-[var(--bg-subtle)]/50 border border-[var(--border-subtle)] text-xs text-slate-400 flex items-center gap-2">
                       <Building2 className="w-4 h-4 shrink-0" />
-                      <span>Platform Staff & Support</span>
+                      <span>{t.platformStaffSupport}</span>
                     </div>
                   )}
 
@@ -342,7 +346,7 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
                 <div className="pt-5 mt-5 border-t border-[var(--border-subtle)] flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Verified</span>
+                    <span>{language === "bn" ? "যাচাইকৃত" : "Verified"}</span>
                   </div>
 
                   {member.organization ? (
@@ -350,7 +354,7 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
                       href={`/clinics/${member.organization.slug}`}
                       className="px-3.5 py-1.5 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] hover:bg-[var(--brand-primary)] hover:text-white border border-[var(--brand-border)] text-xs font-bold transition flex items-center gap-1"
                     >
-                      <span>Clinic Profile</span>
+                      <span>{language === "bn" ? "ক্লিনিক প্রোফাইল" : "Clinic Profile"}</span>
                       <ArrowRight className="w-3 h-3" />
                     </Link>
                   ) : (
@@ -358,7 +362,7 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
                       href="/clinics"
                       className="px-3 py-1.5 rounded-xl border border-[var(--border-subtle)] text-xs text-slate-500 font-semibold"
                     >
-                      View Clinics
+                      {language === "bn" ? "ক্লিনিকসমূহ দেখুন" : "View Clinics"}
                     </Link>
                   )}
                 </div>
@@ -374,10 +378,10 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
           </div>
           <div className="space-y-1">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-              No staff members found
+              {t.noStaffMembersFound}
             </h3>
             <p className="text-xs text-slate-500">
-              No clinical staff or administrators matched your current search filters.
+              {t.noStaffMatchingFilters}
             </p>
           </div>
           <button
@@ -387,9 +391,9 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
               setSelectedClinic("ALL");
               setSelectedRole("ALL");
             }}
-            className="px-4 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-90 transition"
+            className="px-4 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-90 transition cursor-pointer"
           >
-            Clear Filters & View All
+            {t.clearFiltersViewAll}
           </button>
         </div>
       )}

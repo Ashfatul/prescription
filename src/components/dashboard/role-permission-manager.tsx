@@ -24,6 +24,7 @@ import {
   PermissionDefinition,
   DEFAULT_ROLE_PERMISSIONS,
 } from "@/lib/auth/permissions";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 interface RolePermissionsData {
   categories: string[];
@@ -76,6 +77,7 @@ const ALL_ROLES = [
 ];
 
 export function RolePermissionManager() {
+  const { t, language } = useLanguage();
   const [data, setData] = useState<RolePermissionsData | null>(null);
   const [rolePermissions, setRolePermissions] = useState<Record<string, string[]>>({});
   const [initialRolePermissions, setInitialRolePermissions] = useState<Record<string, string[]>>({});
@@ -243,10 +245,10 @@ export function RolePermissionManager() {
             </div>
             <div>
               <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-                Role & Permission Matrix
+                {t.roleMatrixTitle}
               </h2>
               <p className="text-xs text-[var(--text-secondary)]">
-                Grant or restrict fine-grained system access across Physician, Staff, and Patient roles.
+                {t.roleMatrixSubtitle}
               </p>
             </div>
           </div>
@@ -256,28 +258,28 @@ export function RolePermissionManager() {
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => setShowDevGuide(!showDevGuide)}
-            className="flex items-center gap-1.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] px-3 py-2 text-xs font-semibold text-[var(--text-secondary)] transition hover:text-[var(--text-primary)] hover:border-[var(--border-strong)]"
+            className="flex items-center gap-1.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] px-3 py-2 text-xs font-semibold text-[var(--text-secondary)] transition hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] cursor-pointer"
           >
             <Code className="h-3.5 w-3.5 text-[var(--brand-primary)]" />
-            Developer Guide
+            {language === "bn" ? "ডেভেলপার গাইড" : "Developer Guide"}
             {showDevGuide ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           </button>
 
           <button
             onClick={handleResetToDefaults}
-            className="flex items-center gap-1.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 py-2 text-xs font-semibold text-[var(--text-secondary)] transition hover:bg-[var(--bg-subtle)] hover:text-rose-600"
+            className="flex items-center gap-1.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 py-2 text-xs font-semibold text-[var(--text-secondary)] transition hover:bg-[var(--bg-subtle)] hover:text-rose-600 cursor-pointer"
             title="Reset to recommended default baseline"
           >
             <RotateCcw className="h-3.5 w-3.5" />
-            Reset Defaults
+            {language === "bn" ? "ডিফল্ট রিসেট" : "Reset Defaults"}
           </button>
 
           {hasUnsavedChanges && (
             <button
               onClick={handleDiscardChanges}
-              className="rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/20 dark:text-rose-400"
+              className="rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-100 cursor-pointer dark:border-rose-900/40 dark:bg-rose-950/20 dark:text-rose-400"
             >
-              Discard Changes
+              {t.discardChanges}
             </button>
           )}
 
@@ -295,7 +297,7 @@ export function RolePermissionManager() {
             ) : (
               <Save className="h-4 w-4" />
             )}
-            {saving ? "Saving..." : hasUnsavedChanges ? "Save Changes *" : "Saved"}
+            {saving ? (language === "bn" ? "সংরক্ষণ হচ্ছে..." : "Saving...") : hasUnsavedChanges ? (language === "bn" ? "সংরক্ষণ করুন *" : "Save Changes *") : t.saved}
           </button>
         </div>
       </div>
@@ -336,39 +338,60 @@ export function RolePermissionManager() {
             <div className="space-y-3">
               <div>
                 <h3 className="text-sm font-bold text-teal-950 dark:text-teal-200">
-                  Developer Guide: Adding Future Feature Permissions
+                  {language === "bn"
+                    ? "ডেভেলপার নির্দেশিকা: ভবিষ্যতের ফিচারের জন্য নতুন পারমিশন যুক্তকরণ"
+                    : "Developer Guide: Adding Future Feature Permissions"}
                 </h3>
                 <p className="mt-0.5 text-xs text-teal-800/80 dark:text-teal-400/80">
-                  Our permission architecture uses a zero-boilerplate, self-registering schema.
-                  Follow these instructions whenever adding a new feature or endpoint.
+                  {language === "bn"
+                    ? "আমাদের পারমিশন আর্কিটেকচার সেলফ-রেজিস্টারিং স্কিমা ব্যবহার করে। নতুন ফিচার বা এন্ডপয়েন্ট যোগ করার সময় নিচের ধাপগুলো অনুসরণ করুন।"
+                    : "Our permission architecture uses a zero-boilerplate, self-registering schema. Follow these instructions whenever adding a new feature or endpoint."}
                 </p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl border border-teal-500/20 bg-white/70 p-3.5 dark:bg-slate-900/60">
                   <span className="font-mono text-xs font-bold text-teal-700 dark:text-teal-400">
-                    Step 1: Open Registry
+                    {language === "bn" ? "ধাপ ১: রেজিস্ট্রি খুলুন" : "Step 1: Open Registry"}
                   </span>
                   <p className="mt-1 text-xs text-[var(--text-secondary)]">
-                    Navigate to <code className="rounded bg-teal-100 px-1 py-0.5 text-[11px] font-mono dark:bg-teal-950">src/lib/auth/permissions.ts</code>.
+                    {language === "bn" ? "ফাইলটি ওপেন করুন: " : "Navigate to "}
+                    <code className="rounded bg-teal-100 px-1 py-0.5 text-[11px] font-mono dark:bg-teal-950">src/lib/auth/permissions.ts</code>.
                   </p>
                 </div>
 
                 <div className="rounded-2xl border border-teal-500/20 bg-white/70 p-3.5 dark:bg-slate-900/60">
                   <span className="font-mono text-xs font-bold text-teal-700 dark:text-teal-400">
-                    Step 2: Add Definition
+                    {language === "bn" ? "ধাপ ২: পারমিশন যুক্ত করুন" : "Step 2: Add Definition"}
                   </span>
                   <p className="mt-1 text-xs text-[var(--text-secondary)]">
-                    Append your permission entry to <code className="rounded bg-teal-100 px-1 py-0.5 text-[11px] font-mono dark:bg-teal-950">AVAILABLE_PERMISSIONS</code> with <code className="font-mono text-[11px]">id, label, category, description</code>.
+                    {language === "bn" ? (
+                      <>
+                        <code className="rounded bg-teal-100 px-1 py-0.5 text-[11px] font-mono dark:bg-teal-950">AVAILABLE_PERMISSIONS</code>-এ{" "}
+                        <code className="font-mono text-[11px]">id, label, category, description</code> সহ নতুন এন্ট্রি যুক্ত করুন।
+                      </>
+                    ) : (
+                      <>
+                        Append your permission entry to <code className="rounded bg-teal-100 px-1 py-0.5 text-[11px] font-mono dark:bg-teal-950">AVAILABLE_PERMISSIONS</code> with <code className="font-mono text-[11px]">id, label, category, description</code>.
+                      </>
+                    )}
                   </p>
                 </div>
 
                 <div className="rounded-2xl border border-teal-500/20 bg-white/70 p-3.5 dark:bg-slate-900/60">
                   <span className="font-mono text-xs font-bold text-teal-700 dark:text-teal-400">
-                    Step 3: Auto-Discovery
+                    {language === "bn" ? "ধাপ ৩: স্বয়ংক্রিয় প্রদর্শন" : "Step 3: Auto-Discovery"}
                   </span>
                   <p className="mt-1 text-xs text-[var(--text-secondary)]">
-                    Zero UI code needed! The new permission instantly renders in this checkbox matrix and can be enforced via <code className="font-mono text-[11px]">requirePermission()</code>.
+                    {language === "bn" ? (
+                      <>
+                        কোনো বাড়তি ইউআই কোড ছাড়াই নতুন পারমিশনটি এই ম্যাট্রিক্সে প্রদর্শিত হবে এবং <code className="font-mono text-[11px]">requirePermission()</code> এর মাধ্যমে প্রয়োগ করা যাবে।
+                      </>
+                    ) : (
+                      <>
+                        Zero UI code needed! The new permission instantly renders in this checkbox matrix and can be enforced via <code className="font-mono text-[11px]">requirePermission()</code>.
+                      </>
+                    )}
                   </p>
                 </div>
               </div>
@@ -420,7 +443,7 @@ export function RolePermissionManager() {
 
               <div className="mt-4">
                 <div className="flex items-center justify-between text-[11px] text-[var(--text-secondary)]">
-                  <span>Assigned Permissions</span>
+                  <span>{language === "bn" ? "বরাদ্দকৃত অনুমতি" : "Assigned Permissions"}</span>
                   <span className="font-bold text-[var(--text-primary)]">
                     {assignedCount} / {totalCount}
                   </span>
@@ -447,7 +470,7 @@ export function RolePermissionManager() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search permissions by capability name, keyword, key (e.g. 'medicines:create'), or description..."
+              placeholder={language === "bn" ? "অনুমতির নাম, কিওয়ার্ড বা বিবরণ দিয়ে খুঁজুন..." : "Search permissions by capability name, keyword, key (e.g. 'medicines:create'), or description..."}
               className="w-full min-h-[44px] rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-app)] py-2.5 input-icon-left !pl-11 pr-10 text-xs font-medium text-[var(--text-primary)] placeholder-[var(--text-muted)] transition focus:border-[var(--brand-primary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20"
             />
             {searchQuery && (
@@ -465,7 +488,7 @@ export function RolePermissionManager() {
           {/* Matches Counter & Reset */}
           <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
             <div className="flex items-center gap-1.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] px-3 py-2 text-xs font-semibold text-[var(--text-secondary)]">
-              <span>Matching:</span>
+              <span>{t.matching}:</span>
               <span className="font-bold text-[var(--brand-primary)]">
                 {filteredPermissions.length}
               </span>
@@ -483,7 +506,7 @@ export function RolePermissionManager() {
                 }}
                 className="rounded-xl border border-rose-200 bg-rose-50/60 px-3 py-2 text-xs font-bold text-rose-700 transition hover:bg-rose-100 cursor-pointer dark:border-rose-900/40 dark:bg-rose-950/20 dark:text-rose-400"
               >
-                Clear Filters
+                {t.clearFilters}
               </button>
             )}
           </div>
@@ -493,10 +516,10 @@ export function RolePermissionManager() {
         <div className="flex flex-col gap-2 pt-2 border-t border-[var(--border-subtle)]">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              Filter by Category
+              {language === "bn" ? "ক্যাটাগরি ফিল্টার" : "Filter by Category"}
             </span>
             <span className="text-[11px] text-[var(--text-muted)]">
-              {selectedCategory === "ALL" ? "Showing all categories" : `Filtered: ${selectedCategory}`}
+              {selectedCategory === "ALL" ? (language === "bn" ? "সকল ক্যাটাগরি প্রদর্শিত হচ্ছে" : "Showing all categories") : `${language === "bn" ? "ফিল্টারকৃত" : "Filtered"}: ${selectedCategory}`}
             </span>
           </div>
 
@@ -509,7 +532,7 @@ export function RolePermissionManager() {
                   : "bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:bg-[var(--bg-app)] hover:text-[var(--text-primary)] border border-[var(--border-subtle)]"
               }`}
             >
-              All Categories ({data?.availablePermissions.length || 0})
+              {t.allCategories} ({data?.availablePermissions.length || 0})
             </button>
             {data?.categories.map((cat) => {
               const count = data.availablePermissions.filter((p) => p.category === cat).length;
@@ -537,7 +560,7 @@ export function RolePermissionManager() {
         {/* Sticky Table Header */}
         <div className="sticky top-16 z-20 grid grid-cols-12 items-center rounded-t-3xl border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/95 px-6 py-3.5 text-xs font-bold text-[var(--text-secondary)] shadow-xs backdrop-blur-md">
           <div className="col-span-12 md:col-span-6">
-            <span className="uppercase tracking-wider">Permission Capability</span>
+            <span className="uppercase tracking-wider">{t.permissionCapability}</span>
           </div>
 
           <div className="hidden grid-cols-4 md:col-span-6 md:grid text-center">
@@ -557,7 +580,7 @@ export function RolePermissionManager() {
         {/* Grouped Permissions Content */}
         {Object.entries(groupedPermissions).length === 0 ? (
           <div className="p-12 text-center text-xs text-[var(--text-muted)]">
-            No permissions matching your search filters.
+            {language === "bn" ? "কোনো পারমিশন পাওয়া যায়নি।" : "No permissions matching your search filters."}
           </div>
         ) : (
           Object.entries(groupedPermissions).map(([category, perms]) => (
@@ -570,18 +593,18 @@ export function RolePermissionManager() {
                     {category}
                   </span>
                   <span className="rounded-md bg-[var(--bg-subtle)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">
-                    {perms.length} capabilities
+                    {perms.length} {language === "bn" ? "টি সুবিধা" : "capabilities"}
                   </span>
                 </div>
 
                 {/* Category Quick Batch Actions */}
                 <div className="flex items-center gap-2 text-[11px]">
-                  <span className="text-[var(--text-muted)]">Grant all in {category}:</span>
+                  <span className="text-[var(--text-muted)]">{t.grantAllIn} {category}:</span>
                   {ALL_ROLES.map((r) => (
                     <button
                       key={r}
                       onClick={() => handleToggleCategory(r, category, true)}
-                      className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-2 py-0.5 font-semibold text-[var(--text-secondary)] hover:text-[var(--brand-primary)] hover:border-[var(--brand-primary)] transition"
+                      className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-2 py-0.5 font-semibold text-[var(--text-secondary)] hover:text-[var(--brand-primary)] hover:border-[var(--brand-primary)] transition cursor-pointer"
                       title={`Grant all ${category} to ${r}`}
                     >
                       +{r.slice(0, 3)}
@@ -664,23 +687,23 @@ export function RolePermissionManager() {
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 animate-ping rounded-full bg-[var(--brand-primary)]" />
             <span className="text-xs font-bold text-[var(--text-primary)]">
-              You have unsaved permission changes.
+              {t.unsavedChanges}
             </span>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={handleDiscardChanges}
-              className="rounded-xl border border-[var(--border-subtle)] px-3 py-1.5 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)]"
+              className="rounded-xl border border-[var(--border-subtle)] px-3 py-1.5 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] cursor-pointer"
             >
-              Discard
+              {t.discardChanges}
             </button>
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-2 rounded-xl bg-[var(--brand-primary)] px-4 py-1.5 text-xs font-bold text-white shadow-sm hover:brightness-110"
+              className="flex items-center gap-2 rounded-xl bg-[var(--brand-primary)] px-4 py-1.5 text-xs font-bold text-white shadow-sm hover:brightness-110 cursor-pointer"
             >
-              {saving ? "Saving..." : "Save Changes"}
+              {saving ? (language === "bn" ? "সংরক্ষণ হচ্ছে..." : "Saving...") : t.saveChangesBtn}
             </button>
           </div>
         </div>

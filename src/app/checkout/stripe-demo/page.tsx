@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/language-context";
 import {
   CreditCard,
   ShieldCheck,
@@ -17,6 +18,7 @@ import {
 function StripeDemoContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t, language } = useLanguage();
 
   const appointmentId = searchParams.get("appointmentId") || "";
   const feeParam = searchParams.get("fee") || "50";
@@ -78,12 +80,12 @@ function StripeDemoContent() {
           className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Patient Portal</span>
+          <span>{t.backToPatientPortal}</span>
         </Link>
 
         <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
           <Lock className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Stripe End-to-End Encryption (256-bit SSL)</span>
+          <span>{language === "bn" ? "স্ট্রাইপ এন্ড-টু-এন্ড এনক্রিপশন (২৫৬-বিট SSL)" : "Stripe End-to-End Encryption (256-bit SSL)"}</span>
         </div>
       </div>
 
@@ -93,13 +95,13 @@ function StripeDemoContent() {
           <div className="space-y-5">
             <div>
               <span className="text-[10px] font-black uppercase tracking-widest text-[var(--brand-text)]">
-                Consultation Checkout
+                {t.consultationCheckout}
               </span>
               <h1 className="text-xl font-black text-slate-900 dark:text-white mt-1">
-                Confirm Visiting Serial
+                {t.confirmVisitingSerial}
               </h1>
               <p className="text-xs text-slate-500 mt-1">
-                Lock your doctor appointment queue ticket
+                {t.lockYourQueueTicket}
               </p>
             </div>
 
@@ -110,12 +112,12 @@ function StripeDemoContent() {
                   {doctorName}
                 </span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-300 font-bold">
-                  {visitType === "FOLLOWUP" ? "Follow-up" : "First Visit"}
+                  {visitType === "FOLLOWUP" ? t.followupVisit : t.firstVisit}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-xs text-slate-500">
                 <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                <span>Reserved Serial: </span>
+                <span>{t.reservedSerial} </span>
                 <strong className="text-[var(--brand-text)] font-mono text-sm">
                   #{serialNumber}
                 </strong>
@@ -125,20 +127,20 @@ function StripeDemoContent() {
             {/* Price Breakdown */}
             <div className="space-y-2 pt-2 border-t border-slate-200/60 dark:border-slate-800/60 text-xs">
               <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                <span>Physician Consultation:</span>
+                <span>{t.physicianConsultation}</span>
                 <span className="font-mono font-bold text-slate-900 dark:text-white">
                   ${feeNumber.toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                <span>Hospital Triage & Digital Rx:</span>
+                <span>{t.hospitalTriageDigitalRx}</span>
                 <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
                   $0.00
                 </span>
               </div>
               <div className="pt-3 border-t border-slate-200/80 dark:border-slate-800/80 flex justify-between items-baseline">
                 <span className="font-bold text-slate-900 dark:text-white text-sm">
-                  Total Due:
+                  {t.totalDue}
                 </span>
                 <span className="text-2xl font-black font-mono text-[var(--brand-text)]">
                   ${feeNumber.toFixed(2)}
@@ -150,7 +152,7 @@ function StripeDemoContent() {
           <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-[11px] flex items-start gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
             <p>
-              Free diagnostic report review window is granted within 2 days after consultation completion.
+              {t.freeReportReviewWindow}
             </p>
           </div>
         </div>
@@ -162,11 +164,11 @@ function StripeDemoContent() {
               <div className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-[var(--brand-primary)]" />
                 <h2 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
-                  Payment Method
+                  {t.paymentMethod}
                 </h2>
               </div>
               <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
-                Stripe Sandbox Mode
+                {t.stripeSandboxMode}
               </span>
             </div>
 
@@ -174,10 +176,10 @@ function StripeDemoContent() {
             <div className="p-3.5 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60 text-xs text-amber-900 dark:text-amber-200 space-y-1">
               <div className="flex items-center gap-1.5 font-bold">
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                <span>Simulated Sandbox Payment</span>
+                <span>{t.simulatedSandboxPayment}</span>
               </div>
               <p className="text-[11px] leading-relaxed text-amber-800/90 dark:text-amber-300/80">
-                Stripe keys in your current environment are running in demo sandbox. No actual credit card will be charged. Clicking <strong>Complete Payment</strong> will finalize your transaction and verify serial <strong>#{serialNumber}</strong>.
+                {t.stripeSandboxNotice}
               </p>
             </div>
 
@@ -193,10 +195,10 @@ function StripeDemoContent() {
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <h3 className="text-base font-black text-slate-900 dark:text-white">
-                  Payment Successful!
+                  {t.paymentSuccessful}
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Verifying transaction and loading your digital prescription ticket...
+                  {t.verifyingTransaction}
                 </p>
               </div>
             ) : (
@@ -204,7 +206,7 @@ function StripeDemoContent() {
                 {/* Card Number */}
                 <div className="space-y-1">
                   <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400">
-                    Card Number
+                    {t.cardNumber}
                   </label>
                   <div className="relative">
                     <input
@@ -222,7 +224,7 @@ function StripeDemoContent() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400">
-                      Expiration Date
+                      {t.expirationDate}
                     </label>
                     <input
                       type="text"
@@ -234,7 +236,7 @@ function StripeDemoContent() {
                   </div>
                   <div className="space-y-1">
                     <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400">
-                      CVC / CVV
+                      {t.cvcCvv}
                     </label>
                     <input
                       type="text"
@@ -249,7 +251,7 @@ function StripeDemoContent() {
                 {/* Cardholder Name */}
                 <div className="space-y-1">
                   <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400">
-                    Cardholder Name
+                    {t.cardholderName}
                   </label>
                   <input
                     type="text"
@@ -270,12 +272,16 @@ function StripeDemoContent() {
                     {processing ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Verifying with Stripe Sandbox...</span>
+                        <span>{t.verifyingWithStripe}</span>
                       </>
                     ) : (
                       <>
                         <Lock className="w-3.5 h-3.5" />
-                        <span>Pay ${feeNumber.toFixed(2)} via Stripe (Sandbox Test)</span>
+                        <span>
+                          {language === "bn"
+                            ? `স্ট্রাইপের মাধ্যমে $${feeNumber.toFixed(2)} পরিশোধ করুন (স্যান্ডবক্স টেস্ট)`
+                            : `Pay $${feeNumber.toFixed(2)} via Stripe (Sandbox Test)`}
+                        </span>
                       </>
                     )}
                   </button>
@@ -285,12 +291,12 @@ function StripeDemoContent() {
           </div>
 
           <div className="flex items-center justify-between text-[11px] text-slate-400 pt-3 border-t border-slate-200/60 dark:border-slate-800/60">
-            <span>Powered by Stripe Payments</span>
+            <span>{t.poweredByStripe}</span>
             <Link
               href="/dashboard/patient"
               className="hover:underline text-slate-500 dark:text-slate-400"
             >
-              Cancel & Return
+              {t.cancelAndReturn}
             </Link>
           </div>
         </div>

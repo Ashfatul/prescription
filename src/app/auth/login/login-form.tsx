@@ -169,10 +169,12 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
       {/* Desktop Informative Hero Panel (Left 5 Columns, Fixed / Sticky, Guaranteed No Scroll) */}
       <div className="lg:col-span-5 xl:col-span-5 hidden lg:flex flex-col sticky top-0 h-screen max-h-screen overflow-hidden">
         <AuthBrandingPanel
-          badge="Clinical Operating System"
-          title="Intelligent Prescriptions for Modern Healthcare"
-          highlightText="Zero Friction."
-          description="Sign in to your clinical workspace to issue electronic prescriptions, manage chamber consultation queues, and review patient health records."
+          badge={language === "bn" ? "ক্লিনিক্যাল অপারেটিং সিস্টেম" : "Clinical Operating System"}
+          title={language === "bn" ? "আধুনিক স্বাস্থ্যসেবায় ডিজিটাল প্রেসক্রিপশন" : "Intelligent Prescriptions for Modern Healthcare"}
+          highlightText={language === "bn" ? "সহজ ও নির্ভরযোগ্য।" : "Zero Friction."}
+          description={language === "bn"
+            ? "ইলেকট্রনিক প্রেসক্রিপশন প্রদান, চেম্বার পরামর্শ কিউ নিয়ন্ত্রণ এবং রোগীর স্বাস্থ্য রেকর্ড দেখতে আপনার ক্লিনিকাল ওয়ার্কস্পেসে লগইন করুন।"
+            : "Sign in to your clinical workspace to issue electronic prescriptions, manage chamber consultation queues, and review patient health records."}
         />
       </div>
 
@@ -196,7 +198,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
 
           <div className="hidden lg:flex items-center gap-2 text-xs text-slate-500 font-medium">
             <Sparkles className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-            <span>Secure Enterprise Single Sign-On</span>
+            <span>{language === "bn" ? "নিরাপদ এন্টারপ্রাইজ সিঙ্গেল সাইন-অন" : "Secure Enterprise Single Sign-On"}</span>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
@@ -399,7 +401,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
           {/* Account Registration Callouts */}
           <div className="pt-4 border-t border-[var(--border-subtle)] space-y-2.5">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
-              New to PPMS? Create an Account:
+              {language === "bn" ? "নতুন ব্যবহারকারী? অ্যাকাউন্ট খুলুন:" : "New to PPMS? Create an Account:"}
             </span>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -413,12 +415,12 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[var(--brand-text)] transition truncate">
-                      Register Clinic
+                      {language === "bn" ? "ক্লিনিক নিবন্ধন" : "Register Clinic"}
                     </span>
                     <ArrowRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0 ml-1" />
                   </div>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                    14-Day Free Trial • No Card
+                    {language === "bn" ? "১৪ দিনের ফ্রি ট্রায়াল • কার্ড লাগবে না" : "14-Day Free Trial • No Card"}
                   </p>
                 </div>
               </Link>
@@ -433,12 +435,12 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-rose-500 transition truncate">
-                      Patient Portal
+                      {language === "bn" ? "রোগীর পোর্টাল" : "Patient Portal"}
                     </span>
                     <ArrowRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0 ml-1" />
                   </div>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                    Book doctors & view Rx
+                    {language === "bn" ? "ডাক্তার বুকিং ও প্রেসক্রিপশন" : "Book doctors & view Rx"}
                   </p>
                 </div>
               </Link>
@@ -464,7 +466,9 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
               <DemoCountdownTimer variant="inline" />
 
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Click any profile below to sign in immediately to the <strong className="text-[var(--text-primary)]">PPMS Clinic</strong> sandbox facility:
+                {language === "bn"
+                  ? <>সরাসরি প্রবেশ করতে নিচের যে কোনো ডেমো প্রোফাইলে ক্লিক করুন (<strong className="text-[var(--text-primary)]">PPMS Clinic</strong> স্যান্ডবক্স):</>
+                  : <>Click any profile below to sign in immediately to the <strong className="text-[var(--text-primary)]">PPMS Clinic</strong> sandbox facility:</>}
               </p>
 
               <div className="grid grid-cols-2 gap-2.5 pt-1">
@@ -506,10 +510,10 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
 
         {/* Bottom Footer legal text */}
         <div className="pt-6 border-t border-[var(--border-subtle)] text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-500">
-          <span>© {new Date().getFullYear()} PPMS Clinical OS. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} PPMS Clinical OS. {language === "bn" ? "সর্বস্বত্ব সংরক্ষিত।" : "All rights reserved."}</span>
           <span className="flex items-center gap-1">
             <Lock className="w-3 h-3 text-emerald-500" />
-            HIPAA & BMDC Compliant
+            {language === "bn" ? "বিএমডিসি ও স্বাস্থ্য নিরাপত্তা নিয়ন্ত্রিত" : "HIPAA & BMDC Compliant"}
           </span>
         </div>
       </div>

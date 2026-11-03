@@ -1051,12 +1051,12 @@ export function PrescriptionEditor({
         <div>
           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-2 flex items-center gap-1.5">
             <Activity className="w-3.5 h-3.5 text-rose-500" />
-            <span>Triage Vital Signs (Recorded by Front Desk)</span>
+            <span>{t.triageVitalsRecorded}</span>
           </span>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
-              <label className="text-[10px] font-bold text-slate-500 uppercase block">BP (mmHg)</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.bpUnit}</label>
               <input
                 type="text"
                 value={bp}
@@ -1067,7 +1067,7 @@ export function PrescriptionEditor({
             </div>
 
             <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
-              <label className="text-[10px] font-bold text-slate-500 uppercase block">Pulse (bpm)</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.pulseUnit}</label>
               <input
                 type="text"
                 value={pulse}
@@ -1078,7 +1078,7 @@ export function PrescriptionEditor({
             </div>
 
             <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
-              <label className="text-[10px] font-bold text-slate-500 uppercase block">Temp (°F)</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.tempUnit}</label>
               <input
                 type="text"
                 value={temp}
@@ -1089,7 +1089,7 @@ export function PrescriptionEditor({
             </div>
 
             <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
-              <label className="text-[10px] font-bold text-slate-500 uppercase block">Weight (kg)</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.weightUnit}</label>
               <input
                 type="text"
                 value={weight}
@@ -1100,7 +1100,7 @@ export function PrescriptionEditor({
             </div>
 
             <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
-              <label className="text-[10px] font-bold text-slate-500 uppercase block">RBS / Sugar</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.bloodSugarUnit}</label>
               <input
                 type="text"
                 value={bloodSugar}
@@ -1111,7 +1111,7 @@ export function PrescriptionEditor({
             </div>
 
             <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
-              <label className="text-[10px] font-bold text-slate-500 uppercase block">SpO2 (%)</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.spo2Unit}</label>
               <input
                 type="text"
                 value={spo2}
@@ -1130,17 +1130,17 @@ export function PrescriptionEditor({
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-rose-700 dark:text-rose-300 flex items-center gap-1.5">
                 <ShieldAlert className="w-3.5 h-3.5" />
-                <span>Drug Allergies & Safety Warnings</span>
+                <span>{t.drugAllergiesWarnings}</span>
               </span>
               <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-200 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200">
-                Safety Critical
+                {t.safetyCritical}
               </span>
             </div>
             <textarea
               rows={2}
               value={allergies}
               onChange={(e) => setAllergies(e.target.value)}
-              placeholder="Allergies (e.g. Penicillin, Sulfa drugs, NSAIDs)..."
+              placeholder={t.allergiesInputPlaceholder}
               className="w-full px-3 py-2 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white focus:outline-none"
             />
             <div className="flex flex-wrap gap-1.5">
@@ -1161,7 +1161,7 @@ export function PrescriptionEditor({
           <div className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Medical History & Comorbidities (Staff Recorded)
+                {t.medicalHistoryStaff}
               </span>
               <span className="text-[10px] font-mono text-slate-400">Hx</span>
             </div>
@@ -1169,7 +1169,7 @@ export function PrescriptionEditor({
               rows={2}
               value={medicalHistory}
               onChange={(e) => setMedicalHistory(e.target.value)}
-              placeholder="Chronic conditions (Diabetes, HTN, Asthma)..."
+              placeholder={t.chronicConditionsPlaceholder}
               className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white focus:outline-none"
             />
             <div className="flex flex-wrap gap-1.5">
@@ -1194,23 +1194,23 @@ export function PrescriptionEditor({
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-teal-500" />
             <span className="font-bold text-slate-800 dark:text-slate-200">
-              Chamber: {docHospital || "General OPD"} • {docName} ({docSpecialization})
+              {t.chamberLabel}: {docHospital || "General OPD"} • {docName} ({docSpecialization})
             </span>
-            {docRegNo && <span className="text-slate-400">• Reg: {docRegNo}</span>}
+            {docRegNo && <span className="text-slate-400">• {t.bmdcRegNo}: {docRegNo}</span>}
           </div>
           <button
             type="button"
             onClick={() => setCustomizeDoctorHeader(!customizeDoctorHeader)}
             className="text-xs font-semibold text-[var(--brand-text)] hover:underline self-start sm:self-auto"
           >
-            {customizeDoctorHeader ? "Hide Header Editor" : "✎ Edit Chamber Details"}
+            {customizeDoctorHeader ? t.hideHeaderEditor : t.editChamberDetails}
           </button>
         </div>
 
         {customizeDoctorHeader && (
           <div className="p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 animate-in fade-in">
             <div>
-              <label className="text-[11px] font-bold text-slate-500 block mb-1">Doctor Name</label>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">{t.doctorName}</label>
               <input
                 type="text"
                 value={docName}
@@ -1219,7 +1219,7 @@ export function PrescriptionEditor({
               />
             </div>
             <div>
-              <label className="text-[11px] font-bold text-slate-500 block mb-1">Degrees</label>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">{t.degrees}</label>
               <input
                 type="text"
                 value={docDegrees}
@@ -1228,7 +1228,7 @@ export function PrescriptionEditor({
               />
             </div>
             <div>
-              <label className="text-[11px] font-bold text-slate-500 block mb-1">Specialization</label>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">{t.specialization}</label>
               <input
                 type="text"
                 value={docSpecialization}
@@ -1237,7 +1237,7 @@ export function PrescriptionEditor({
               />
             </div>
             <div>
-              <label className="text-[11px] font-bold text-slate-500 block mb-1">Hospital Name</label>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">{t.hospitalName}</label>
               <input
                 type="text"
                 value={docHospital}
@@ -1246,7 +1246,7 @@ export function PrescriptionEditor({
               />
             </div>
             <div>
-              <label className="text-[11px] font-bold text-slate-500 block mb-1">Designation</label>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">{t.designation}</label>
               <input
                 type="text"
                 value={docDesignation}
@@ -1256,7 +1256,7 @@ export function PrescriptionEditor({
               />
             </div>
             <div>
-              <label className="text-[11px] font-bold text-slate-500 block mb-1">BMDC Reg No</label>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">{t.bmdcRegNo}</label>
               <input
                 type="text"
                 value={docRegNo}
@@ -1266,7 +1266,7 @@ export function PrescriptionEditor({
               />
             </div>
             <div>
-              <label className="text-[11px] font-bold text-slate-500 block mb-1">Chamber Address</label>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">{t.chamberAddress}</label>
               <input
                 type="text"
                 value={docChamber}
@@ -1275,7 +1275,7 @@ export function PrescriptionEditor({
               />
             </div>
             <div>
-              <label className="text-[11px] font-bold text-slate-500 block mb-1">Contact Phone</label>
+              <label className="text-[11px] font-bold text-slate-500 block mb-1">{t.contactPhone}</label>
               <input
                 type="text"
                 value={docContact}
@@ -1313,7 +1313,7 @@ export function PrescriptionEditor({
               {/* Categorized Pill Presets (Requirement 5 & 6) */}
               <div className="space-y-2 pt-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-                  Quick Select Presets:
+                  {t.quickSelectPresets}
                 </span>
                 <div className="space-y-1.5">
                   {COMPLAINT_GROUPS.map((grp) => (
@@ -1353,7 +1353,7 @@ export function PrescriptionEditor({
               {/* Categorized Diagnosis Presets */}
               <div className="space-y-2 pt-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-                  Common Diagnoses:
+                  {t.commonDiagnoses}
                 </span>
                 <div className="space-y-1.5">
                   {DIAGNOSIS_GROUPS.map((grp) => (
@@ -1389,7 +1389,7 @@ export function PrescriptionEditor({
                   2. {t.medications}
                 </span>
                 <p className="text-xs text-slate-500">
-                  {language === "bn" ? "ডোজ এবং সেবনবিধি স্বয়ংক্রিয়ভাবে পেতে ঔষধ নির্বাচন করুন অথবা নতুন যোগ করুন।" : "Select brand or generic to auto-populate dosage & instructions. Add custom entries freely."}
+                  {t.selectBrandGenericAuto}
                 </p>
               </div>
             </div>
@@ -1421,7 +1421,7 @@ export function PrescriptionEditor({
                       {med.type || "Tablet"}
                     </span>
                     <span className="font-extrabold text-sm text-slate-900 dark:text-white">
-                      {med.name || "New Medication"}
+                      {med.name || t.newMedication}
                     </span>
                     {med.dosage && (
                       <span className="text-xs font-bold text-[var(--brand-text)] bg-[var(--brand-surface)] px-2 py-0.5 rounded-md border border-[var(--brand-border)]">
@@ -1437,7 +1437,7 @@ export function PrescriptionEditor({
                       className="px-2.5 py-1 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition cursor-pointer flex items-center gap-1"
                     >
                       <Copy className="w-3.5 h-3.5" />
-                      <span>Duplicate</span>
+                      <span>{t.duplicate}</span>
                     </button>
                     <button
                       type="button"
@@ -1445,7 +1445,7 @@ export function PrescriptionEditor({
                       className="px-2.5 py-1 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer flex items-center gap-1"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
-                      <span>Remove</span>
+                      <span>{t.remove}</span>
                     </button>
                   </div>
                 </div>
@@ -1454,7 +1454,7 @@ export function PrescriptionEditor({
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
                   <div className="sm:col-span-3">
                     <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                      Formulation
+                      {t.formulationLabel}
                     </label>
                     <SearchableSelect
                       options={FORMULATION_OPTIONS}
@@ -1468,12 +1468,12 @@ export function PrescriptionEditor({
 
                   <div className="sm:col-span-6">
                     <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                      Drug / Brand Search (Auto-Fills) *
+                      {t.drugBrandSearchLabel}
                     </label>
                     <SearchableSelect
                       options={catalogMedicines}
                       value={med.name}
-                      placeholder="Search brand or generic (e.g. Maxpro, Napa, Amoxicillin)..."
+                      placeholder={language === "bn" ? "ব্র্যান্ড বা জেনেরিক খুঁজুন (যেমনঃ Maxpro, Napa, Amoxicillin)..." : "Search brand or generic (e.g. Maxpro, Napa, Amoxicillin)..."}
                       allowCustom
                       onChange={(val, opt) => handleSelectMedicineFromCatalog(index, opt || { value: val, label: val })}
                     />
@@ -1481,7 +1481,7 @@ export function PrescriptionEditor({
 
                   <div className="sm:col-span-3">
                     <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                      Strength / Dosage
+                      {t.strengthDosageLabel}
                     </label>
                     <input
                       type="text"
@@ -1497,10 +1497,10 @@ export function PrescriptionEditor({
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
                     <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                      Dose Schedule (Frequency)
+                      {t.doseScheduleFrequency}
                     </label>
                     <span className="text-[11px] font-mono font-bold text-[var(--brand-text)]">
-                      Dose: {med.frequency || "Not specified"}
+                      {language === "bn" ? "মাত্রা:" : "Dose:"} {med.frequency || (language === "bn" ? "অনুল্লেখিত" : "Not specified")}
                     </span>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
@@ -1535,7 +1535,7 @@ export function PrescriptionEditor({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                   <div className="space-y-1.5">
                     <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                      Timing & Meal Relation
+                      {t.timingMealRelation}
                     </label>
                     <input
                       type="text"
@@ -1545,14 +1545,14 @@ export function PrescriptionEditor({
                       className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs focus:outline-none"
                     />
                     <div className="flex flex-wrap gap-1.5">
-                      {TIMING_PRESETS.map((t) => (
+                      {TIMING_PRESETS.map((tItem) => (
                         <button
-                          key={t}
+                          key={tItem}
                           type="button"
-                          onClick={() => updateMedicine(index, "instructions", t)}
+                          onClick={() => updateMedicine(index, "instructions", tItem)}
                           className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[var(--bg-surface)] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition cursor-pointer"
                         >
-                          {t}
+                          {tItem}
                         </button>
                       ))}
                     </div>
@@ -1560,7 +1560,7 @@ export function PrescriptionEditor({
 
                   <div className="space-y-1.5">
                     <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                      Course Duration
+                      {t.courseDurationLabel}
                     </label>
                     <input
                       type="text"
@@ -1594,7 +1594,7 @@ export function PrescriptionEditor({
               className="px-6 py-2.5 rounded-2xl border-2 border-dashed border-[var(--brand-primary)]/40 hover:border-[var(--brand-primary)] bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-bold transition cursor-pointer flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
-              <span>+ Add Prescribed Medicine</span>
+              <span>+ {t.addPrescribedMedicine}</span>
             </button>
           </div>
         </div>
@@ -1604,22 +1604,22 @@ export function PrescriptionEditor({
           <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                3. Diagnostic Investigations Advised
+                3. {t.diagnosticInvestigationsAdvised}
               </span>
-              <p className="text-xs text-slate-500">Order lab tests, radiology scans, or pathological tests.</p>
+              <p className="text-xs text-slate-500">{t.orderLabTestsDesc}</p>
             </div>
             <button
               type="button"
               onClick={() => addTest()}
               className="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
             >
-              + Add Investigation
+              {t.addInvestigationBtn}
             </button>
           </div>
 
           {/* Quick Test Chips */}
           <div className="flex flex-wrap items-center gap-1.5 pb-2">
-            <span className="text-[11px] font-bold text-slate-500 mr-1">Quick Select:</span>
+            <span className="text-[11px] font-bold text-slate-500 mr-1">{t.quickSelectPresets}</span>
             {COMMON_TEST_CHIPS.map((chip) => (
               <button
                 key={chip.name}
@@ -1646,7 +1646,7 @@ export function PrescriptionEditor({
                   <SearchableSelect
                     options={catalogTests}
                     value={test.name}
-                    placeholder="Search diagnostic tests..."
+                    placeholder={t.searchDiagnosticTestsPlaceholder}
                     allowCustom
                     onChange={(val) => updateTest(index, "name", val)}
                   />
@@ -1656,7 +1656,7 @@ export function PrescriptionEditor({
                     type="text"
                     value={test.instructions}
                     onChange={(e) => updateTest(index, "instructions", e.target.value)}
-                    placeholder="Instructions (e.g. 10-12h overnight fasting)"
+                    placeholder={t.testInstructionsPlaceholder}
                     className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-xs focus:outline-none"
                   />
                 </div>
@@ -1719,13 +1719,13 @@ export function PrescriptionEditor({
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-                  Follow-Up / Next Consultation Visit
+                  {t.nextConsultationVisit}
                 </label>
                 <input
                   type="text"
                   value={followUp}
                   onChange={(e) => setFollowUp(e.target.value)}
-                  placeholder="e.g. After 7 days with investigation reports"
+                  placeholder={t.followUpPlaceholder}
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs font-semibold focus:outline-none"
                 />
                 <div className="flex flex-wrap gap-1.5 pt-1">
@@ -1744,13 +1744,13 @@ export function PrescriptionEditor({
 
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-                  Private Physician Notes (Internal Only)
+                  {t.privatePhysicianNotes}
                 </label>
                 <input
                   type="text"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Internal medical observations (not printed on prescription)..."
+                  placeholder={t.internalNotesPlaceholder}
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
                 />
               </div>
@@ -1763,11 +1763,11 @@ export function PrescriptionEditor({
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)] flex items-center gap-1.5">
               <Paperclip className="w-3.5 h-3.5" />
-              <span>5. Prescription Attachments (Optional)</span>
+              <span>5. {t.prescriptionAttachmentsOptional}</span>
             </span>
             <label className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold cursor-pointer transition shadow-2xs">
               <Upload className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-              <span>{uploadingAttachment ? "Uploading..." : "Attach File"}</span>
+              <span>{uploadingAttachment ? t.uploadingAttachment : t.attachFileBtn}</span>
               <input
                 type="file"
                 accept="image/*,.pdf,.doc,.docx"
@@ -1784,7 +1784,7 @@ export function PrescriptionEditor({
 
           {attachments.length === 0 ? (
             <p className="text-xs text-slate-400 py-3 text-center bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
-              No files attached to this prescription.
+              {t.noFilesAttached}
             </p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1843,10 +1843,10 @@ export function PrescriptionEditor({
               <div>
                 <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
                   <FileSearch className="w-4 h-4 text-[var(--brand-primary)]" />
-                  <span>Attached Lab Reports & Scans</span>
+                  <span>{t.attachedLabReportsScans}</span>
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Uploaded by triage staff for {currentPatient?.user.name}
+                  {t.uploadedByTriageStaffFor} {currentPatient?.user.name}
                 </p>
               </div>
               <button
@@ -1861,7 +1861,7 @@ export function PrescriptionEditor({
             <div className="max-h-96 overflow-y-auto space-y-3">
               {patientReports.length === 0 ? (
                 <p className="text-center py-8 text-xs text-slate-400">
-                  No lab reports found for this patient.
+                  {language === "bn" ? "এই রোগীর কোনো ল্যাব রিপোর্ট পাওয়া যায়নি।" : "No lab reports found for this patient."}
                 </p>
               ) : (
                 patientReports.map((r) => (
@@ -1878,7 +1878,7 @@ export function PrescriptionEditor({
                       </p>
                       {r.notes && (
                         <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">
-                          Notes: {r.notes}
+                          {language === "bn" ? "নোট:" : "Notes:"} {r.notes}
                         </p>
                       )}
                     </div>
@@ -1890,7 +1890,7 @@ export function PrescriptionEditor({
                       className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-90 transition"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
-                      <span>View File</span>
+                      <span>{t.view}</span>
                     </a>
                   </div>
                 ))
@@ -1903,7 +1903,7 @@ export function PrescriptionEditor({
                 onClick={() => setShowReportsModal(false)}
                 className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300"
               >
-                Close
+                {t.close}
               </button>
             </div>
           </div>
@@ -1929,8 +1929,8 @@ export function PrescriptionEditor({
           signatureUrl: docSignatureUrl || doctor.signatureUrl || doctor.user?.signatureUrl || undefined,
         }}
         patient={{
-          name: currentPatient?.user.name || "Patient",
-          gender: currentPatient?.gender || "Not specified",
+          name: currentPatient?.user.name || (language === "bn" ? "রোগী" : "Patient"),
+          gender: currentPatient?.gender || (language === "bn" ? "অনুল্লেখিত" : "Not specified"),
           phone: currentPatient?.user.phone || undefined,
           age: patientAge,
         }}

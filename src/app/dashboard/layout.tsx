@@ -1,12 +1,13 @@
 import { Suspense } from "react";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { requirePageUser } from "@/lib/auth/page-auth";
+import { LoadingFallback } from "@/components/common/loading-fallback";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await requirePageUser();
 
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-app)] flex items-center justify-center text-slate-400">Loading clinical workspace...</div>}>
+    <Suspense fallback={<LoadingFallback />}>
       <DashboardShell user={user}>
         {children}
       </DashboardShell>

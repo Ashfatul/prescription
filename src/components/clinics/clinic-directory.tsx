@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useLanguage } from "@/lib/i18n/language-context";
 import { CustomSelect } from "@/components/common/custom-select";
 import {
   Building2,
@@ -69,6 +70,7 @@ interface ClinicDirectoryProps {
 }
 
 export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
+  const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"ALL" | "ACTIVE" | "WITH_DOCTORS">("ALL");
   const [sortBy, setSortBy] = useState<"doctors" | "recent" | "alpha">("doctors");
@@ -141,14 +143,14 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search clinics by name, subdomain, address, phone or practicing physician..."
+              placeholder={t.searchClinicsExpanded}
               className="w-full pl-11 pr-10 py-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 text-sm text-[var(--text-primary)] placeholder:text-slate-400 transition-all outline-none"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                aria-label="Clear search query"
+                aria-label={t.clear}
                 className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer"
               >
                 <X className="w-4 h-4" />
@@ -168,7 +170,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                     : "text-slate-600 dark:text-slate-400 hover:text-[var(--text-primary)]"
                 }`}
               >
-                All ({initialClinics.length})
+                {t.allClinicsFilter} ({initialClinics.length})
               </button>
               <button
                 type="button"
@@ -179,7 +181,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                     : "text-slate-600 dark:text-slate-400 hover:text-[var(--text-primary)]"
                 }`}
               >
-                Active Only
+                {t.activeOnly}
               </button>
               <button
                 type="button"
@@ -190,13 +192,13 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                     : "text-slate-600 dark:text-slate-400 hover:text-[var(--text-primary)]"
                 }`}
               >
-                With Doctors
+                {t.withDoctors}
               </button>
             </div>
 
             {/* Sort Selector */}
             <div className="flex items-center gap-2 text-xs">
-              <span className="text-slate-400 hidden sm:inline font-semibold">Sort:</span>
+              <span className="text-slate-400 hidden sm:inline font-semibold">{language === "bn" ? "সাজান:" : "Sort:"}</span>
               <div className="w-48">
                 <CustomSelect
                   size="sm"
@@ -204,9 +206,9 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                   value={sortBy}
                   onChange={(val) => setSortBy(val as "doctors" | "recent" | "alpha")}
                   options={[
-                    { value: "doctors", label: "Most Doctors First" },
-                    { value: "recent", label: "Recently Added" },
-                    { value: "alpha", label: "Alphabetical (A - Z)" },
+                    { value: "doctors", label: t.mostDoctorsFirst },
+                    { value: "recent", label: t.recentlyAdded },
+                    { value: "alpha", label: t.alphabetical },
                   ]}
                   searchable={false}
                 />
@@ -219,19 +221,20 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
         <div className="flex items-center justify-between pt-2 border-t border-[var(--border-subtle)] text-xs text-slate-500">
           <div className="flex items-center gap-2 flex-wrap">
             <span>
-              Showing <strong className="text-[var(--text-primary)]">{sortedClinics.length}</strong> of{" "}
-              {initialClinics.length} clinics
+              {language === "bn" ? `${t.showingClinicsCount} ` : "Showing "}
+              <strong className="text-[var(--text-primary)]">{sortedClinics.length}</strong>{" "}
+              {language === "bn" ? `${t.ofClinics} ${initialClinics.length} ${t.clinicsCountLabel}` : `of ${initialClinics.length} clinics`}
             </span>
             {searchQuery && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] font-semibold text-[11px]">
-                Matching &ldquo;{searchQuery}&rdquo;
+                {language === "bn" ? `"${searchQuery}" এর মিল` : `Matching “${searchQuery}”`}
               </span>
             )}
           </div>
           <div className="hidden sm:flex items-center gap-3 text-[11px]">
-            <span>{totalDoctors} Registered Doctors</span>
+            <span>{totalDoctors} {t.registeredDoctors}</span>
             <span>•</span>
-            <span>{totalPatients} Enrolled Patients</span>
+            <span>{totalPatients} {t.enrolledPatients}</span>
           </div>
         </div>
       </div>
@@ -283,13 +286,13 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                               clinic.status === "ACTIVE" ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
                             }`}
                           />
-                          {clinic.status === "ACTIVE" ? "Active" : clinic.status}
+                          {clinic.status === "ACTIVE" ? (language === "bn" ? "সক্রিয়" : "Active") : clinic.status}
                         </span>
 
                         {clinic.isDemo && (
                           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 shrink-0">
                             <Sparkles className="w-3 h-3" />
-                            <span>Demo Sandbox</span>
+                            <span>{language === "bn" ? "ডেমো স্যান্ডবক্স" : "Demo Sandbox"}</span>
                           </span>
                         )}
 
@@ -307,7 +310,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] text-[11px] font-mono font-medium text-slate-600 dark:text-slate-300 hover:text-[var(--brand-text)] border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition group/sub shadow-2xs"
-                          title="Visit this clinic's dedicated SaaS subdomain"
+                          title={language === "bn" ? "ক্লিনিকের ডেডিকেটেড সাবডোমেনে যান" : "Visit this clinic's dedicated SaaS subdomain"}
                         >
                           <Globe className="w-3 h-3 text-[var(--brand-primary)] shrink-0" />
                           <span className="font-semibold text-[var(--brand-text)] truncate max-w-[220px] sm:max-w-none">
@@ -323,7 +326,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                   <div className="grid grid-cols-3 gap-2 p-2.5 rounded-2xl bg-[var(--bg-subtle)]/50 border border-[var(--border-subtle)] text-center">
                     <div className="space-y-0.5">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-                        Doctors
+                        {t.doctors}
                       </span>
                       <p className="text-sm font-extrabold text-[var(--brand-text)] flex items-center justify-center gap-1">
                         <Stethoscope className="w-3.5 h-3.5 text-[var(--brand-primary)] shrink-0" />
@@ -333,7 +336,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
 
                     <div className="space-y-0.5 border-x border-[var(--border-subtle)]">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-                        Patients
+                        {t.patients}
                       </span>
                       <p className="text-sm font-extrabold text-slate-900 dark:text-white flex items-center justify-center gap-1">
                         <UserCheck className="w-3.5 h-3.5 text-sky-500 shrink-0" />
@@ -343,7 +346,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
 
                     <div className="space-y-0.5">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-                        Prescriptions
+                        {t.prescriptions}
                       </span>
                       <p className="text-sm font-extrabold text-slate-900 dark:text-white flex items-center justify-center gap-1">
                         <FileText className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
@@ -357,7 +360,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                     <div className="flex items-start gap-2.5">
                       <MapPin className="w-4 h-4 text-[var(--brand-primary)] shrink-0 mt-0.5" />
                       <span className="leading-relaxed line-clamp-2">
-                        {clinic.address || "Clinical Chamber Address Registered on File"}
+                        {clinic.address || t.chamberAddressOnFile}
                       </span>
                     </div>
 
@@ -373,7 +376,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                       ) : (
                         <span className="flex items-center gap-1.5 text-slate-400">
                           <Phone className="w-3.5 h-3.5 shrink-0" />
-                          <span>Hotline on file</span>
+                          <span>{t.hotlineOnFile}</span>
                         </span>
                       )}
 
@@ -394,10 +397,10 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                         <Stethoscope className="w-3.5 h-3.5 text-[var(--brand-primary)] shrink-0" />
-                        <span>Consulting Physicians</span>
+                        <span>{t.consultingPhysicians}</span>
                       </span>
                       <span className="text-[11px] font-bold text-[var(--brand-text)]">
-                        {clinic._count.doctors} {clinic._count.doctors === 1 ? "Physician" : "Physicians"}
+                        {clinic._count.doctors} {clinic._count.doctors === 1 ? t.physicianSingle : t.physicians}
                       </span>
                     </div>
 
@@ -434,7 +437,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
 
                             <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20 shrink-0">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                              Active
+                              {language === "bn" ? "সক্রিয়" : "Active"}
                             </span>
                           </div>
                         ))}
@@ -444,18 +447,20 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                             href={`/clinics/${clinic.slug}`}
                             className="w-full py-1.5 text-center text-[11px] font-bold text-[var(--brand-text)] hover:underline block"
                           >
-                            + {remainingDoctorsCount} more consulting specialist{remainingDoctorsCount > 1 ? "s" : ""} at this clinic →
+                            {language === "bn"
+                              ? `+ আরও ${remainingDoctorsCount} জন পরামর্শক বিশেষজ্ঞ →`
+                              : `+ ${remainingDoctorsCount} more consulting specialist${remainingDoctorsCount > 1 ? "s" : ""} at this clinic →`}
                           </Link>
                         )}
                       </div>
                     ) : (
                       <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)]/40 border border-dashed border-[var(--border-default)] text-xs text-slate-500 flex items-center justify-between gap-2">
-                        <span>New chamber facility — assigning clinical physicians.</span>
+                        <span>{t.newChamberFacility}</span>
                         <Link
                           href="/auth/register"
                           className="font-bold text-[var(--brand-text)] hover:underline whitespace-nowrap text-xs"
                         >
-                          Join Clinic →
+                          {t.joinClinic} →
                         </Link>
                       </div>
                     )}
@@ -465,15 +470,15 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                   <div className="pt-1 flex flex-wrap gap-1.5 text-[10px] font-semibold text-slate-500">
                     <span className="px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] flex items-center gap-1">
                       <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
-                      Digital Rx EMR
+                      {t.digitalRxEmr}
                     </span>
                     <span className="px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] flex items-center gap-1">
                       <Clock className="w-3 h-3 text-[var(--brand-primary)] shrink-0" />
-                      Live Serial TV
+                      {t.liveSerialTv}
                     </span>
                     <span className="px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] flex items-center gap-1">
                       <ShieldCheck className="w-3 h-3 text-sky-500 shrink-0" />
-                      BMDC Verified
+                      {t.bmdcVerified}
                     </span>
                   </div>
                 </div>
@@ -486,17 +491,17 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                       className="min-h-[42px] px-3.5 py-2 rounded-xl border border-[var(--border-default)] hover:border-[var(--brand-primary)] bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] text-xs font-bold text-slate-800 dark:text-slate-200 hover:text-[var(--brand-text)] transition flex items-center justify-center gap-1.5 flex-1 sm:flex-initial shadow-2xs"
                     >
                       <Users className="w-3.5 h-3.5 text-[var(--brand-primary)] shrink-0" />
-                      <span>Clinic Profile & Staff</span>
+                      <span>{t.clinicProfileStaff}</span>
                     </Link>
 
                     {clinic.contactPhone && (
                       <a
                         href={`tel:${clinic.contactPhone}`}
                         className="min-h-[42px] px-3 py-2 rounded-xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-xs font-bold text-slate-700 dark:text-slate-200 transition flex items-center justify-center gap-1.5 shadow-2xs"
-                        title={`Call Hotline ${clinic.contactPhone}`}
+                        title={`${t.callHotline} ${clinic.contactPhone}`}
                       >
                         <Phone className="w-3.5 h-3.5 shrink-0 text-slate-400" />
-                        <span className="hidden sm:inline">Call</span>
+                        <span className="hidden sm:inline">{t.callHotline}</span>
                       </a>
                     )}
                   </div>
@@ -506,7 +511,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                     className="min-h-[42px] px-4 py-2 rounded-xl bg-[var(--brand-primary)] text-white hover:opacity-95 text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-xs"
                   >
                     <Stethoscope className="w-3.5 h-3.5 shrink-0" />
-                    <span>Doctors & Serial</span>
+                    <span>{t.doctorsAndSerial}</span>
                     <ArrowRight className="w-3.5 h-3.5 shrink-0" />
                   </Link>
                 </div>
@@ -522,10 +527,12 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
           </div>
           <div className="space-y-1">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-              No matching clinics found
+              {t.noMatchingClinics}
             </h3>
             <p className="text-xs text-slate-500">
-              We couldn&apos;t find any clinics matching your current search &ldquo;{searchQuery}&rdquo;.
+              {language === "bn"
+                ? `"${searchQuery}" এর সাথে কোনো ক্লিনিক পাওয়া যায়নি।`
+                : `We couldn't find any clinics matching your current search “${searchQuery}”.`}
             </p>
           </div>
           <button
@@ -536,7 +543,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
             }}
             className="px-4 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-90 transition cursor-pointer"
           >
-            Clear Filters & View All
+            {t.clearFiltersViewAll}
           </button>
         </div>
       )}
@@ -546,13 +553,13 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
         <div className="space-y-2 max-w-2xl text-center md:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--brand-primary)]/10 text-[var(--brand-text)] text-xs font-extrabold uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Launch Your Practice</span>
+            <span>{t.launchYourPractice}</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-            Register Your Clinic, Chamber or Polyclinic
+            {language === "bn" ? "আপনার ক্লিনিক, চেম্বার বা পলিক্লিনিক নিবন্ধন করুন" : "Register Your Clinic, Chamber or Polyclinic"}
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            Equip your physicians with automated dosage composition, live chamber TV call tokens, and verified BMDC A4 printouts. 14-day free trial with instant setup.
+            {t.registerClinicDesc}
           </p>
         </div>
 
@@ -562,14 +569,14 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
             className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-[var(--brand-primary)] hover:opacity-95 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 whitespace-nowrap min-h-[44px]"
           >
             <Building2 className="w-4 h-4" />
-            <span>Register Clinic (Free Trial)</span>
+            <span>{t.registerClinicFreeTrial}</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
             href="/auth/login"
             className="w-full sm:w-auto px-4 py-3 rounded-2xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-200 font-bold text-xs transition text-center min-h-[44px] flex items-center justify-center"
           >
-            Sign In to EMR
+            {t.signInToEmr}
           </Link>
         </div>
       </div>

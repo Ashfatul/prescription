@@ -40,7 +40,7 @@ const emptySubscribe = () => () => {};
 
 export function Header({ loggedIn }: { loggedIn?: boolean }) {
   const pathname = usePathname();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user, logout, loading } = useAuth();
   
   const [menuOpen, setMenuOpen] = useState(false);
@@ -324,9 +324,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
               {/* Close Button with Keyboard Shortcut Badge */}
               <div className="flex items-center gap-3">
                 <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-mono text-slate-400 bg-[var(--bg-subtle)] px-2.5 py-1 rounded-lg border border-[var(--border-subtle)]">
-                  <span>Press</span>
-                  <kbd className="font-bold text-slate-700 dark:text-slate-300">ESC</kbd>
-                  <span>to close</span>
+                  <span>{t.pressEscToClose}</span>
                 </span>
 
                 <button
@@ -355,10 +353,10 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                   </div>
                   <div>
                     <h4 className="font-extrabold text-sm text-slate-900 dark:text-white tracking-tight">
-                      Clinical Chambers & Care
+                      {t.clinicalChambersCare}
                     </h4>
                     <p className="text-[11px] text-slate-500">
-                      Directory of clinics, specialists & healthcare teams
+                      {t.directoryOfClinicsDesc}
                     </p>
                   </div>
                 </div>
@@ -383,7 +381,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Browse all accredited polyclinics, hospitals & specialized medical centers
+                        {t.browseAllClinicsDesc}
                       </p>
                     </div>
                   </Link>
@@ -404,7 +402,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Verified doctors, BMDC credentials, chamber hours & appointment booking
+                        {t.browseAllDoctorsDesc}
                       </p>
                     </div>
                   </Link>
@@ -428,7 +426,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Browse hospital staff, receptionists, triage coordinators & clinic admins
+                        {t.browseAllStaffDesc}
                       </p>
                     </div>
                   </Link>
@@ -450,7 +448,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Real-time waiting room calling screen with auto-cycling doctor serial tokens
+                        {t.liveTvCallingDesc}
                       </p>
                     </div>
                   </Link>
@@ -465,10 +463,10 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                   </div>
                   <div>
                     <h4 className="font-extrabold text-sm text-slate-900 dark:text-white tracking-tight">
-                      SaaS Platform & Engine
+                      {t.saasPlatformEngine}
                     </h4>
                     <p className="text-[11px] text-slate-500">
-                      Prescription architecture & subscription tiers
+                      {t.prescriptionArchitectureDesc}
                     </p>
                   </div>
                 </div>
@@ -485,12 +483,12 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
-                          Prescription Capabilities
+                          {t.prescriptionCapabilities}
                         </span>
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Drug formulary auto-fill, multi-page printing, QR verification & audit logs
+                        {t.drugFormularyCapabilitiesDesc}
                       </p>
                     </div>
                   </Link>
@@ -513,7 +511,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                         </span>
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Transparent monthly and yearly tiers for solo chambers & hospitals
+                        {t.pricingPlansNavDesc}
                       </p>
                     </div>
                   </Link>
@@ -529,12 +527,12 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
-                          Step-by-Step Prescribing
+                          {t.stepByStepPrescribing}
                         </span>
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Zero redundancy clinical workflow from complaint triage to medicine dispensing
+                        {t.zeroRedundancyWorkflowDesc}
                       </p>
                     </div>
                   </Link>
@@ -550,14 +548,14 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)]">
-                          WYSIWYG Template Studio
+                          {t.templateStudioNav}
                         </span>
                         <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
                           Design
                         </span>
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Custom clinic insignia, hospital letterhead, watermarks & legal disclaimers
+                        {t.customInsigniaLetterheadDesc}
                       </p>
                     </div>
                   </Link>
@@ -572,10 +570,10 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                   </div>
                   <div>
                     <h4 className="font-extrabold text-sm text-slate-900 dark:text-white tracking-tight">
-                      Portals, Access & Support
+                      {t.portalsAccessSupport}
                     </h4>
                     <p className="text-[11px] text-slate-500">
-                      Patient medical accounts & clinical login
+                      {t.patientMedicalAccountsDesc}
                     </p>
                   </div>
                 </div>
@@ -597,7 +595,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Secure authorization for doctors, hospital staff & administrators
+                        {t.secureAuthStaffDesc}
                       </p>
                     </div>
                   </Link>
@@ -620,7 +618,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                         </span>
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Patient queue management, check-in, triage & doctor availability
+                        {t.queueCheckinTriageDesc}
                       </p>
                     </div>
                   </Link>
@@ -641,7 +639,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[var(--brand-text)] transition-transform" />
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        Create a free patient medical account with instant clinic assignment
+                        {t.createFreePatientAccountDesc}
                       </p>
                     </div>
                   </Link>
@@ -664,7 +662,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                         </span>
                       </div>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        Immediate assistance for emergency and outpatient guidance
+                        {t.immediateEmergencyHelpDesc}
                       </p>
                     </div>
                   </a>
@@ -679,7 +677,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
               
               <div className="flex items-center gap-3">
-                <span className="text-xs font-bold text-slate-500">System Preferences:</span>
+                <span className="text-xs font-bold text-slate-500">{t.systemPreferences}</span>
                 <ThemeCustomizer compact direction="up" align="left" />
                 <LanguageToggle />
               </div>
@@ -690,7 +688,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                   onClick={(e) => handleNavClick(e, "/terms")}
                   className="hover:text-[var(--brand-text)] transition"
                 >
-                  Terms of Service
+                  {t.termsOfService}
                 </Link>
                 <span>•</span>
                 <Link 
@@ -698,7 +696,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                   onClick={(e) => handleNavClick(e, "/privacy")}
                   className="hover:text-[var(--brand-text)] transition"
                 >
-                  Privacy Policy
+                  {t.privacyPolicy}
                 </Link>
                 <span>•</span>
                 <Link 
@@ -706,7 +704,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                   onClick={(e) => handleNavClick(e, "/disclaimer")}
                   className="hover:text-[var(--brand-text)] transition"
                 >
-                  Medical Disclaimer
+                  {t.medicalDisclaimer}
                 </Link>
               </div>
 
@@ -718,7 +716,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     className="px-5 py-2.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition inline-flex items-center gap-1.5"
                   >
                     <LayoutDashboard className="w-3.5 h-3.5" />
-                    <span>Go to {t.dashboard}</span>
+                    <span>{language === "bn" ? "ড্যাশবোর্ডে প্রবেশ করুন" : "Go to Dashboard"}</span>
                   </Link>
                 ) : (
                   <Link
@@ -727,7 +725,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     className="px-5 py-2.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition inline-flex items-center gap-1.5"
                   >
                     <LogIn className="w-3.5 h-3.5" />
-                    <span>Sign In to EMR</span>
+                    <span>{language === "bn" ? "লগইন করুন" : "Sign In to EMR"}</span>
                   </Link>
                 )}
               </div>

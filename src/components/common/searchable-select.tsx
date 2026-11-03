@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export interface SelectOption {
   value: string;
@@ -34,8 +35,8 @@ export function SearchableSelect({
   options,
   value,
   onChange,
-  placeholder = "Select an option...",
-  searchPlaceholder = "Type to search...",
+  placeholder,
+  searchPlaceholder,
   allowCustom = false,
   onAddCustom,
   disabled = false,
@@ -47,6 +48,10 @@ export function SearchableSelect({
   size = "md",
   allowClear = true,
 }: SearchableSelectProps) {
+  const { language } = useLanguage();
+  const effectivePlaceholder = placeholder || (language === "bn" ? "নির্বাচন করুন..." : "Select an option...");
+  const effectiveSearchPlaceholder = searchPlaceholder || (language === "bn" ? "খুঁজতে টাইপ করুন..." : "Type to search...");
+
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -184,7 +189,7 @@ export function SearchableSelect({
           ) : value ? (
             <span className="font-medium text-slate-900 dark:text-slate-100 truncate">{value}</span>
           ) : (
-            <span className="text-slate-400 dark:text-slate-500">{placeholder}</span>
+            <span className="text-slate-400 dark:text-slate-500">{effectivePlaceholder}</span>
           )}
         </div>
 
@@ -196,7 +201,7 @@ export function SearchableSelect({
                 e.stopPropagation();
                 onChange("");
               }}
-              title="Clear selection"
+              title={language === "bn" ? "মুছে ফেলুন" : "Clear selection"}
               className="hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg hover:bg-[var(--bg-subtle)] transition"
             >
               <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
@@ -246,7 +251,7 @@ export function SearchableSelect({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={searchPlaceholder}
+                placeholder={effectiveSearchPlaceholder}
                 className="w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] py-2.5 input-icon-left !pl-11 pr-3.5 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-[var(--brand-primary)] focus:outline-none"
               />
             </div>
@@ -302,7 +307,9 @@ export function SearchableSelect({
               })
             ) : (
               <div className="py-4 text-center">
-                <p className="text-xs text-slate-400 dark:text-slate-500">No matching results</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500">
+                  {language === "bn" ? "কোন ফলাফল পাওয়া যায়নি" : "No matching results"}
+                </p>
               </div>
             )}
 
@@ -313,7 +320,7 @@ export function SearchableSelect({
                 onClick={handleAddCustom}
                 className="w-full mt-1 text-left px-3.5 py-2.5 rounded-xl border border-dashed border-[var(--brand-border)] bg-[var(--brand-surface)] text-xs font-semibold text-[var(--brand-text)] hover:opacity-90 flex items-center gap-2 cursor-pointer"
               >
-                <span>➕ Add custom: &ldquo;{search.trim()}&rdquo;</span>
+                <span>➕ {language === "bn" ? "নতুন যুক্ত করুন:" : "Add custom:"} &ldquo;{search.trim()}&rdquo;</span>
               </button>
             )}
           </div>

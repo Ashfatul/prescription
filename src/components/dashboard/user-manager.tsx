@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition, useCallback } from "react";
 import { Search } from "lucide-react";
 import { useAuth } from "@/lib/auth/auth-context";
 import { CustomSelect } from "@/components/common/custom-select";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 interface UserRecord {
   id: string;
@@ -26,6 +27,7 @@ const inputClasses =
 
 export function UserManager() {
   const { user: currentUser } = useAuth();
+  const { t, language } = useLanguage();
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -235,15 +237,17 @@ export function UserManager() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-md bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 text-xs font-bold">
-              User Directory & Credentials
+              {language === "bn" ? "ব্যবহারকারী তালিকা ও ক্রেডেনশিয়াল" : "User Directory & Credentials"}
             </span>
-            <span className="text-xs text-slate-400 font-medium">• Access Management</span>
+            <span className="text-xs text-slate-400 font-medium">
+              {language === "bn" ? "• অ্যাক্সেস ব্যবস্থাপনা" : "• Access Management"}
+            </span>
           </div>
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Hospital Account Management
+            {t.userDirectoryTitle}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Full administrative control to provision, update, and audit clinical and administrative staff accounts.
+            {t.userDirectorySubtitle}
           </p>
         </div>
 
@@ -253,18 +257,18 @@ export function UserManager() {
           className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 transition-all cursor-pointer self-start md:self-auto shrink-0"
         >
           <span>➕</span>
-          <span>Register New Account</span>
+          <span>{t.registerNewAccount}</span>
         </button>
       </div>
 
       {/* Metric Chips */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         {[
-          { label: "Total Accounts", count: stats.total, icon: "👥" },
-          { label: "Doctors", count: stats.doctors, icon: "🩺" },
-          { label: "Hospital Staff", count: stats.staff, icon: "🏥" },
-          { label: "Patients", count: stats.patients, icon: "🧑" },
-          { label: "Administrators", count: stats.admins, icon: "👑" },
+          { label: t.totalAccounts, count: stats.total, icon: "👥" },
+          { label: t.doctors, count: stats.doctors, icon: "🩺" },
+          { label: t.hospitalStaff, count: stats.staff, icon: "🏥" },
+          { label: t.patients, count: stats.patients, icon: "🧑" },
+          { label: t.administrators, count: stats.admins, icon: "👑" },
         ].map((item) => (
           <div
             key={item.label}
@@ -289,7 +293,7 @@ export function UserManager() {
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
-            placeholder="Search by name, email, phone..."
+            placeholder={t.searchUserPlaceholder}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full input-icon-left !pl-11 pr-4 rounded-xl text-sm bg-[var(--bg-surface)] border border-[var(--border-default)] outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 text-slate-900 dark:text-slate-100 min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
@@ -308,7 +312,7 @@ export function UserManager() {
                   : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              {role === "ALL" ? "All Roles" : role.replace("_", " ")}
+              {role === "ALL" ? t.allRoles : role.replace("_", " ")}
             </button>
           ))}
         </div>
@@ -317,21 +321,23 @@ export function UserManager() {
       {/* User Table / Cards */}
       <div className="rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm overflow-hidden">
         {loading ? (
-          <div className="p-12 text-center text-xs text-slate-400">Loading user accounts...</div>
+          <div className="p-12 text-center text-xs text-slate-400">
+            {language === "bn" ? "অ্যাকাউন্ট লোড হচ্ছে..." : "Loading user accounts..."}
+          </div>
         ) : filteredUsers.length === 0 ? (
           <div className="p-12 text-center text-xs text-slate-400">
-            No accounts match your search criteria.
+            {language === "bn" ? "কোনো অ্যাকাউন্ট পাওয়া যায়নি।" : "No accounts match your search criteria."}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-800">
                 <tr>
-                  <th className="py-3.5 px-5">User / Name</th>
-                  <th className="py-3.5 px-5">Email Address</th>
-                  <th className="py-3.5 px-5">Contact Phone</th>
-                  <th className="py-3.5 px-5">Assigned Role</th>
-                  <th className="py-3.5 px-5 text-right">Actions</th>
+                  <th className="py-3.5 px-5">{t.userColumn}</th>
+                  <th className="py-3.5 px-5">{t.emailColumn}</th>
+                  <th className="py-3.5 px-5">{t.phoneColumn}</th>
+                  <th className="py-3.5 px-5">{t.assignedRole}</th>
+                  <th className="py-3.5 px-5 text-right">{t.actions}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
@@ -371,7 +377,7 @@ export function UserManager() {
                         title="Edit Account"
                         className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-[11px] transition cursor-pointer"
                       >
-                        ✏️ Edit
+                        ✏️ {t.edit}
                       </button>
                       <button
                         type="button"
@@ -380,7 +386,7 @@ export function UserManager() {
                         disabled={currentUser?.id === u.id}
                         className="px-2.5 py-1 rounded-lg border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 hover:bg-red-100 font-semibold text-[11px] transition disabled:opacity-40 cursor-pointer"
                       >
-                        🗑️ Delete
+                        🗑️ {t.delete}
                       </button>
                     </td>
                   </tr>
@@ -397,7 +403,7 @@ export function UserManager() {
           <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                Register New User Account
+                {t.registerNewUserAccount}
               </h3>
               <button
                 type="button"
@@ -412,7 +418,7 @@ export function UserManager() {
               <div className="modal-body flex-1 overflow-y-auto p-6 space-y-3.5">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                    Full Legal Name *
+                    {t.fullLegalName}
                   </label>
                   <input
                     type="text"
@@ -426,7 +432,7 @@ export function UserManager() {
 
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                    Email Address *
+                    {t.emailColumn} *
                   </label>
                   <input
                     type="email"
@@ -441,7 +447,7 @@ export function UserManager() {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                      Initial Password *
+                      {t.initialPassword}
                     </label>
                     <input
                       type="password"
@@ -455,7 +461,7 @@ export function UserManager() {
                   </div>
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                      Contact Phone
+                      {t.phoneColumn}
                     </label>
                     <input
                       type="text"
@@ -469,7 +475,7 @@ export function UserManager() {
 
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                    System Access Role *
+                    {t.systemAccessRole}
                   </label>
                   <CustomSelect
                     value={createRole}
@@ -497,12 +503,12 @@ export function UserManager() {
                 {createRole === "DOCTOR" && (
                   <div className="p-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--brand-text)] block">
-                      Physician Credentials & Chamber Roster
+                      {t.physicianCredentialsChamber}
                     </span>
                     <div className="grid grid-cols-2 gap-2.5">
                       <div>
                         <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
-                          Specialization
+                          {t.specializationLabel}
                         </label>
                         <input
                           type="text"
@@ -514,7 +520,7 @@ export function UserManager() {
                       </div>
                       <div>
                         <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
-                          Degrees / Qualifications
+                          {t.degreesQualifications}
                         </label>
                         <input
                           type="text"
@@ -528,7 +534,7 @@ export function UserManager() {
                     <div className="grid grid-cols-2 gap-2.5">
                       <div>
                         <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
-                          BMDC Reg No
+                          {language === "bn" ? "বিএমডিসি রেজি. নং" : "BMDC Reg No"}
                         </label>
                         <input
                           type="text"
@@ -540,7 +546,7 @@ export function UserManager() {
                       </div>
                       <div>
                         <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
-                          Visiting Hours
+                          {language === "bn" ? "রোগী দেখার সময়" : "Visiting Hours"}
                         </label>
                         <input
                           type="text"
@@ -553,7 +559,7 @@ export function UserManager() {
                     </div>
                     <div>
                       <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
-                        Chamber Address & Room
+                        {language === "bn" ? "চেম্বার ও রুমের ঠিকানা" : "Chamber Address & Room"}
                       </label>
                       <input
                         type="text"
@@ -579,14 +585,14 @@ export function UserManager() {
                   onClick={() => setShowCreateModal(false)}
                   className="px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 cursor-pointer"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
                   className="px-5 py-2 rounded-xl text-xs font-bold bg-[var(--brand-primary)] text-white shadow-md hover:opacity-90 disabled:opacity-50 cursor-pointer"
                 >
-                  {isPending ? "Creating..." : "Save Account"}
+                  {isPending ? (language === "bn" ? "তৈরি হচ্ছে..." : "Creating...") : t.saveAccount}
                 </button>
               </div>
             </form>
@@ -600,7 +606,7 @@ export function UserManager() {
           <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                Edit User Account
+                {t.editUserAccount}
               </h3>
               <button
                 type="button"
@@ -615,7 +621,7 @@ export function UserManager() {
               <div className="modal-body flex-1 overflow-y-auto p-6 space-y-3.5">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                    Full Legal Name *
+                    {t.fullLegalName}
                   </label>
                   <input
                     type="text"
@@ -628,7 +634,7 @@ export function UserManager() {
 
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                    Email Address *
+                    {t.emailColumn} *
                   </label>
                   <input
                     type="email"
@@ -642,7 +648,7 @@ export function UserManager() {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                      Contact Phone
+                      {t.phoneColumn}
                     </label>
                     <input
                       type="text"
@@ -653,7 +659,7 @@ export function UserManager() {
                   </div>
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                      Change Password (Optional)
+                      {language === "bn" ? "পাসওয়ার্ড পরিবর্তন (ঐচ্ছিক)" : "Change Password (Optional)"}
                     </label>
                     <input
                       type="password"
@@ -667,7 +673,7 @@ export function UserManager() {
 
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                    System Access Role *
+                    {t.systemAccessRole}
                   </label>
                   <CustomSelect
                     value={editRole}
@@ -705,14 +711,14 @@ export function UserManager() {
                   onClick={() => setEditingUser(null)}
                   className="px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 cursor-pointer"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
                   className="px-5 py-2 rounded-xl text-xs font-bold bg-[var(--brand-primary)] text-white shadow-md hover:opacity-90 disabled:opacity-50 cursor-pointer"
                 >
-                  {isPending ? "Updating..." : "Update Account"}
+                  {isPending ? (language === "bn" ? "হালনাগাদ হচ্ছে..." : "Updating...") : t.updateAccount}
                 </button>
               </div>
             </form>

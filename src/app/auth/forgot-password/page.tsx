@@ -47,22 +47,24 @@ export default function ForgotPasswordPage() {
       {/* Desktop Informative Hero Panel (Left 5 Columns, Fixed / Sticky, Guaranteed No Scroll) */}
       <div className="lg:col-span-5 xl:col-span-5 hidden lg:flex flex-col sticky top-0 h-screen max-h-screen overflow-hidden">
         <AuthBrandingPanel
-          badge="Account Security"
-          title="Secure Access Recovery for Healthcare Teams"
-          highlightText="Zero Compromise."
-          description="Our account recovery system uses single-use cryptographic tokens with rate limiting to safeguard sensitive medical and prescription records."
+          badge={language === "bn" ? "অ্যাকাউন্ট নিরাপত্তা" : "Account Security"}
+          title={language === "bn" ? "স্বাস্থ্যসেবা কর্মীদের জন্য নিরাপদ অ্যাক্সেস পুনরুদ্ধার" : "Secure Access Recovery for Healthcare Teams"}
+          highlightText={language === "bn" ? "সর্বোচ্চ নিরাপত্তা।" : "Zero Compromise."}
+          description={language === "bn"
+            ? "আমাদের অ্যাকাউন্ট পুনরুদ্ধার প্রক্রিয়া সংবেদনশীল মেডিকেল এবং প্রেসক্রিপশন রেকর্ড সুরক্ষিত রাখতে সিঙ্গল-ইউজ ক্রিপ্টোগ্রাফিক টোকেন ও রেট লিমিটিং ব্যবহার করে।"
+            : "Our account recovery system uses single-use cryptographic tokens with rate limiting to safeguard sensitive medical and prescription records."}
           features={[
             {
               icon: <KeyRound className="w-4 h-4 text-teal-400" />,
-              title: "Cryptographic Single-Use Reset Tokens",
+              title: language === "bn" ? "ক্রিপ্টোগ্রাফিক সিঙ্গল-ইউজ রিসেট টোকেন" : "Cryptographic Single-Use Reset Tokens",
             },
             {
               icon: <ShieldCheck className="w-4 h-4 text-emerald-400" />,
-              title: "OWASP-Compliant Account Enumeration Defense",
+              title: language === "bn" ? "OWASP-সম্মত অ্যাকাউন্ট এনামারেশন প্রতিরোধ" : "OWASP-Compliant Account Enumeration Defense",
             },
             {
               icon: <Sparkles className="w-4 h-4 text-sky-400" />,
-              title: "Comprehensive Security & IP Audit Logging",
+              title: language === "bn" ? "নিরাপত্তা ও আইপি অডিট লগিং" : "Comprehensive Security & IP Audit Logging",
             },
           ]}
         />
@@ -89,7 +91,7 @@ export default function ForgotPasswordPage() {
 
           <div className="hidden lg:flex items-center gap-2 text-xs text-slate-500 font-medium">
             <ShieldCheck className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-            <span>Cryptographic Account Recovery</span>
+            <span>{language === "bn" ? "ক্রিপ্টোগ্রাফিক অ্যাকাউন্ট পুনরুদ্ধার" : "Cryptographic Account Recovery"}</span>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">

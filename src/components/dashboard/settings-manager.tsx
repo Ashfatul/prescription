@@ -20,8 +20,10 @@ import {
 } from "@/features/settings/settings.service";
 import { ChangePasswordCard } from "@/components/common/change-password-card";
 import { TwoFactorAuthCard } from "@/components/common/two-factor-auth-card";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function SettingsManager() {
+  const { t, language } = useLanguage();
   const [settings, setSettings] = useState<HospitalSettings>(DEFAULT_HOSPITAL_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -86,7 +88,9 @@ export function SettingsManager() {
     return (
       <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-3">
         <RefreshCw className="w-6 h-6 animate-spin text-[var(--brand-primary)] mx-auto" />
-        <p className="text-xs text-slate-500 font-medium">Loading hospital settings...</p>
+        <p className="text-xs text-slate-500 font-medium">
+          {language === "bn" ? "হাসপাতাল সেটিংস লোড হচ্ছে..." : "Loading hospital settings..."}
+        </p>
       </div>
     );
   }
@@ -97,15 +101,17 @@ export function SettingsManager() {
       <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-1.5">
           <span className="px-2.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-primary)] text-xs font-bold">
-            Hospital OS Configuration
+            {language === "bn" ? "হাসপাতাল ওএস কনফিগারেশন" : "Hospital OS Configuration"}
           </span>
-          <span className="text-xs text-[var(--text-muted)] font-medium">• Public Portal & Chamber Variables</span>
+          <span className="text-xs text-[var(--text-muted)] font-medium">
+            {language === "bn" ? "• পাবলিক পোর্টাল ও চেম্বার সেটিংস" : "• Public Portal & Chamber Variables"}
+          </span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
-          Hospital & Chamber Settings
+          {t.hospitalSettingsTitle}
         </h1>
         <p className="text-xs text-[var(--text-secondary)] mt-1">
-          Dynamically configure hospital identity, OPD visiting hours, emergency hotlines, chamber schedules, and medical notice banners across the entire system.
+          {t.hospitalSettingsSubtitle}
         </p>
       </div>
 
@@ -114,7 +120,11 @@ export function SettingsManager() {
         {saveSuccess && (
           <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-            <span>Hospital settings saved successfully. All public pages, headers, footers, and doctor directories will reflect these values immediately.</span>
+            <span>
+              {language === "bn"
+                ? "হাসপাতালের সেটিংস সফলভাবে সংরক্ষিত হয়েছে। সমস্ত পাবলিক পেজ, হেডার ও ফুটারে তথ্য আপডেট হয়েছে।"
+                : "Hospital settings saved successfully. All public pages, headers, footers, and doctor directories will reflect these values immediately."}
+            </span>
           </div>
         )}
 
@@ -131,10 +141,10 @@ export function SettingsManager() {
             <ShieldCheck className="w-5 h-5 text-[var(--brand-primary)]" />
             <div>
               <h2 className="text-base font-bold text-[var(--text-primary)]">
-                Authentication & Security Governance
+                {t.authSecurityGovernance}
               </h2>
               <p className="text-xs text-[var(--text-muted)]">
-                Control access requirements, email confirmation gates, and account onboarding rules.
+                {t.authSecurityDesc}
               </p>
             </div>
           </div>
@@ -143,19 +153,21 @@ export function SettingsManager() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
             <div className="space-y-1">
               <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <span>Require Email Verification for All Registrations</span>
+                <span>{t.requireEmailVerificationLabel}</span>
                 {settings.requireEmailVerification ? (
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                    Mandatory
+                    {t.mandatoryBadge}
                   </span>
                 ) : (
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-500">
-                    Disabled
+                    {t.disabledBadge}
                   </span>
                 )}
               </span>
               <p className="text-xs text-slate-500 leading-relaxed max-w-xl">
-                When enabled, every registered physician, staff member, clinic admin, and patient must confirm their email address before they can continue to dashboard or log in. Unverified users will be gated at the verification screen.
+                {language === "bn"
+                  ? "সক্রিয় থাকলে, প্রতিটি নিবন্ধিত চিকিৎসক, স্টাফ, ক্লিনিক অ্যাডমিন এবং রোগীকে ড্যাশবোর্ডে প্রবেশের পূর্বে তাদের ইমেইল ঠিকানা নিশ্চিত করতে হবে।"
+                  : "When enabled, every registered physician, staff member, clinic admin, and patient must confirm their email address before they can continue to dashboard or log in. Unverified users will be gated at the verification screen."}
               </p>
             </div>
 
@@ -186,19 +198,21 @@ export function SettingsManager() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
             <div className="space-y-1">
               <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <span>Require Super Admin Approval for New Clinic Registrations</span>
+                <span>{t.requireOrgApprovalLabel}</span>
                 {settings.requireOrgApproval ? (
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400">
-                    Approval Required
+                    {t.approvalRequiredBadge}
                   </span>
                 ) : (
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-500">
-                    Auto-Approved
+                    {t.autoApprovedBadge}
                   </span>
                 )}
               </span>
               <p className="text-xs text-slate-500 leading-relaxed max-w-xl">
-                When enabled, new clinic organizations cannot log in or manage patients until their account has been officially reviewed and confirmed by the platform Super Administrator.
+                {language === "bn"
+                  ? "সক্রিয় থাকলে, প্ল্যাটফর্ম সুপার অ্যাডমিনের অনুমোদন না পাওয়া পর্যন্ত নতুন কোনো ক্লিনিক সংস্থা লগইন বা রোগী পরিচালনা করতে পারবে না।"
+                  : "When enabled, new clinic organizations cannot log in or manage patients until their account has been officially reviewed and confirmed by the platform Super Administrator."}
               </p>
             </div>
 
@@ -229,19 +243,21 @@ export function SettingsManager() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
             <div className="space-y-1">
               <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <span>Require Clinic Staff / Admin Verification for New Patients</span>
+                <span>{t.requirePatientVerificationLabel}</span>
                 {settings.requirePatientVerification ? (
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400">
-                    Verification Required
+                    {t.verificationRequiredBadge}
                   </span>
                 ) : (
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-500">
-                    Auto-Verified
+                    {t.autoVerifiedBadge}
                   </span>
                 )}
               </span>
               <p className="text-xs text-slate-500 leading-relaxed max-w-xl">
-                When enabled, newly self-registered patient accounts remain pending until clinical front desk staff or hospital administrators verify their identity. After verification, patients receive a confirmation email and gain login access.
+                {language === "bn"
+                  ? "সক্রিয় থাকলে, রোগী নিজে নিবন্ধন করার পর ক্লিনিক্যাল ফ্রন্ট ডেস্ক স্টাফ বা হাসপাতাল অ্যাডমিন তাদের পরিচয় যাচাই না করা পর্যন্ত অ্যাকাউন্ট পেন্ডিং থাকবে।"
+                  : "When enabled, newly self-registered patient accounts remain pending until clinical front desk staff or hospital administrators verify their identity. After verification, patients receive a confirmation email and gain login access."}
               </p>
             </div>
 
@@ -274,14 +290,14 @@ export function SettingsManager() {
           <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
             <Building2 className="w-5 h-5 text-[var(--brand-primary)]" />
             <h2 className="text-base font-bold text-[var(--text-primary)]">
-              Hospital & Chamber Identity
+              {t.hospitalIdentityTitle}
             </h2>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Hospital / Clinic Legal Name
+                {t.hospitalLegalName}
               </label>
               <input
                 type="text"
@@ -295,7 +311,7 @@ export function SettingsManager() {
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Branch / Block Affiliation
+                {t.branchAffiliation}
               </label>
               <input
                 type="text"
@@ -308,7 +324,7 @@ export function SettingsManager() {
 
             <div className="sm:col-span-2 space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Full Physical Address
+                {t.fullPhysicalAddress}
               </label>
               <div className="relative">
                 <MapPin className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -329,14 +345,14 @@ export function SettingsManager() {
           <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
             <Clock className="w-5 h-5 text-[var(--brand-primary)]" />
             <h2 className="text-base font-bold text-[var(--text-primary)]">
-              OPD Visiting Hours & Chamber Schedules
+              {t.opdVisitingHoursTitle}
             </h2>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                OPD Visiting Hours
+                {language === "bn" ? "বহির্বিভাগ (OPD) সময়সূচী" : "OPD Visiting Hours"}
               </label>
               <input
                 type="text"
@@ -350,7 +366,7 @@ export function SettingsManager() {
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Weekly Chamber Days
+                {t.weeklyChamberDays}
               </label>
               <input
                 type="text"
@@ -363,7 +379,7 @@ export function SettingsManager() {
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Chamber Active Status Pill Text
+                {t.chamberActivePill}
               </label>
               <input
                 type="text"
@@ -381,14 +397,14 @@ export function SettingsManager() {
           <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
             <PhoneCall className="w-5 h-5 text-[var(--brand-primary)]" />
             <h2 className="text-base font-bold text-[var(--text-primary)]">
-              Emergency Hotlines & Inquiries
+              {t.emergencyHotlinesTitle}
             </h2>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                24/7 Emergency Hotline Number
+                {t.emergencyHotlineNumber}
               </label>
               <div className="relative">
                 <PhoneCall className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-rose-500 pointer-events-none" />
@@ -405,7 +421,7 @@ export function SettingsManager() {
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Chamber OPD Contact Phone
+                {t.chamberContactPhone}
               </label>
               <div className="relative">
                 <PhoneCall className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -421,7 +437,7 @@ export function SettingsManager() {
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Clinical Support Email
+                {t.clinicalSupportEmail}
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -442,13 +458,13 @@ export function SettingsManager() {
           <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
             <AlertCircle className="w-5 h-5 text-amber-500" />
             <h2 className="text-base font-bold text-[var(--text-primary)]">
-              Emergency Trauma & Medical Notice Banner
+              {t.emergencyNoticeTitle}
             </h2>
           </div>
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-              Disclaimer & Emergency Care Notice (Footer & Legal Pages)
+              {t.emergencyNoticeLabel}
             </label>
             <textarea
               rows={3}
@@ -464,7 +480,7 @@ export function SettingsManager() {
         <div className="p-5 rounded-3xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
           <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-300">
             <Sparkles className="w-4 h-4 text-[var(--brand-primary)]" />
-            <span>Live Header & Footer Preview Preview</span>
+            <span>{t.liveHeaderFooterPreview}</span>
           </div>
           <div className="p-3.5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -490,12 +506,12 @@ export function SettingsManager() {
             {saving ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin" />
-                <span>Saving Hospital Settings...</span>
+                <span>{t.savingHospitalSettings}</span>
               </>
             ) : (
               <>
                 <Save className="w-4 h-4" />
-                <span>Save Hospital & Chamber Settings</span>
+                <span>{t.saveHospitalSettingsBtn}</span>
               </>
             )}
           </button>

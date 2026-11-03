@@ -158,8 +158,8 @@ function PrescriptionPageSheet({
               {hospitalInfo?.address || doctor.chamberAddress || "Diagnostic & Consultation Block, Dhaka"}
             </p>
             <div className="text-[11px] text-slate-500 flex flex-wrap sm:justify-end gap-x-2">
-              <span><strong>Hotline:</strong> {hospitalInfo?.phone || doctor.contactNumber || "+880 2-8901234"}</span>
-              <span><strong>Emerg:</strong> 10678 (24h)</span>
+              <span><strong>{language === "bn" ? "হটলাইন:" : "Hotline:"}</strong> {hospitalInfo?.phone || doctor.contactNumber || "+880 2-8901234"}</span>
+              <span><strong>{language === "bn" ? "জরুরি:" : "Emerg:"}</strong> 10678 (24h)</span>
             </div>
             <p className="text-[10px] font-mono font-bold text-slate-500">
               Rx: {prescriptionId || "PREVIEW-DRAFT"} • v{version || 1}
@@ -255,7 +255,9 @@ function PrescriptionPageSheet({
               <div className="space-y-1 text-xs">
                 <h3 className="font-bold uppercase tracking-wider text-rose-600 text-[11px] pb-1 border-b border-rose-200 flex items-center justify-between">
                   <span>{t.drugAllergiesAlert}</span>
-                  <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-rose-100 text-rose-700">Alert</span>
+                  <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-rose-100 text-rose-700">
+                    {language === "bn" ? "সতর্কতা" : "Alert"}
+                  </span>
                 </h3>
                 <div className="text-rose-900 leading-relaxed whitespace-pre-line pt-1 font-medium bg-rose-50/60 p-2.5 rounded-xl border border-rose-200/60">
                   {clinicalInfo.allergies}

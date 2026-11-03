@@ -1,4 +1,4 @@
-import { Card } from "@/components/common/card";
+import { DoctorNotFoundCard } from "@/components/dashboard/doctor-not-found-card";
 import { DoctorDashboardView } from "@/components/dashboard/doctor-dashboard-view";
 import { requirePageUser } from "@/lib/auth/page-auth";
 import { db } from "@/lib/db";
@@ -23,14 +23,7 @@ export default async function DoctorDashboardPage() {
   });
 
   if (!doctor) {
-    return (
-      <Card>
-        <h2 className="text-lg font-bold">Doctor Profile Not Found</h2>
-        <p className="mt-2 text-sm text-zinc-500">
-          Your user account is not linked to a doctor record. Please contact the administrator.
-        </p>
-      </Card>
-    );
+    return <DoctorNotFoundCard />;
   }
 
   const [todaysAppointments, patients] = await Promise.all([

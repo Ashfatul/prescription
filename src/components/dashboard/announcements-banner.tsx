@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AlertCircle, Sparkles, X } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type AnnouncementItem = {
   id: string;
@@ -16,6 +17,7 @@ type AnnouncementItem = {
 const DISMISSED_STORAGE_KEY = "ppms_dismissed_announcements";
 
 export function AnnouncementsBanner() {
+  const { t } = useLanguage();
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
   const [dismissed, setDismissed] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
@@ -105,7 +107,7 @@ export function AnnouncementsBanner() {
               {current.title}
             </strong>
             <span className="text-[10px] opacity-70 hidden md:inline">
-              • Broadcast from {current.authorName}
+              • {t.broadcastFrom} {current.authorName}
             </span>
           </div>
           <p className="opacity-90 leading-relaxed text-[11px] sm:text-xs">
@@ -118,7 +120,7 @@ export function AnnouncementsBanner() {
         type="button"
         onClick={() => handleDismiss(current.id)}
         className="p-1 rounded-lg opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5 transition shrink-0 cursor-pointer"
-        title="Dismiss announcement"
+        title={t.dismissAnnouncement}
       >
         <X className="w-4 h-4" />
       </button>

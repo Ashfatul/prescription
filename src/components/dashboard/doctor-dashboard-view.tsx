@@ -13,6 +13,7 @@ import { PrescriptionShareModal } from "@/components/dashboard/prescription-shar
 import { AnnouncementsBanner } from "@/components/dashboard/announcements-banner";
 import { AnnouncementsManager } from "@/components/dashboard/announcements-manager";
 import { useAuth } from "@/lib/auth/auth-context";
+import { useLanguage } from "@/lib/i18n/language-context";
 import {
   Share2,
   Clock,
@@ -173,6 +174,7 @@ export function DoctorDashboardView({
   recentPrescriptions: PrescriptionSummary[];
 }) {
   const { user: currentUser } = useAuth();
+  const { t, language } = useLanguage();
   const [doctor, setDoctor] = useState<DoctorData>(initialDoctor);
   const [appointmentsState, setAppointmentsState] = useState<AppointmentData[]>(initialAppointments);
   const [prescriptionToRevise, setPrescriptionToRevise] = useState<PrescriptionSummary | null>(null);
@@ -327,7 +329,7 @@ export function DoctorDashboardView({
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] px-3 py-1 text-xs font-bold">
-                Attending Physician Chamber
+                {language === "bn" ? "উপস্থিত চিকিৎসকের চেম্বার" : "Attending Physician Chamber"}
               </span>
               <span
                 className={`rounded-full px-3 py-1 text-[11px] font-semibold ${
@@ -336,7 +338,9 @@ export function DoctorDashboardView({
                     : "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
                 }`}
               >
-                {doctor.available ? "● Active Consultation Session" : "○ Chamber Paused"}
+                {doctor.available
+                  ? (language === "bn" ? "● চেম্বার সক্রিয়" : "● Active Consultation Session")
+                  : (language === "bn" ? "○ চেম্বার বিরতিতে" : "○ Chamber Paused")}
               </span>
             </div>
 
@@ -351,25 +355,25 @@ export function DoctorDashboardView({
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
               {doctor.hospital && (
                 <span>
-                  🏥 Working for: <strong className="text-slate-800 dark:text-slate-200">{doctor.hospital}</strong>
+                  🏥 {language === "bn" ? "হাসপাতাল:" : "Working for:"} <strong className="text-slate-800 dark:text-slate-200">{doctor.hospital}</strong>
                 </span>
               )}
               {doctor.designation && <span>• {doctor.designation}</span>}
-              {doctor.bmdcRegNo && <span>• BMDC: <strong>{doctor.bmdcRegNo}</strong></span>}
+              {doctor.bmdcRegNo && <span>• {t.bmdcRegNo}: <strong>{doctor.bmdcRegNo}</strong></span>}
             </div>
           </div>
 
           {/* Quick Queue Status Block */}
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] px-4 py-2.5">
-              <span className="text-xs text-[var(--text-secondary)]">Queue Waiting:</span>
+              <span className="text-xs text-[var(--text-secondary)]">{t.chamberQueue}:</span>
               <span className="rounded-full bg-[var(--brand-primary)] px-2.5 py-0.5 text-xs font-bold text-white">
                 {waitingAppointments.length}
               </span>
             </div>
 
             <div className="flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-[var(--bg-surface)] px-4 py-2.5 text-xs">
-              <span className="text-slate-500">Completed Today:</span>
+              <span className="text-slate-500">{language === "bn" ? "আজকের সম্পন্ন:" : "Completed Today:"}</span>
               <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">
                 {completedAppointments.length}
               </span>
@@ -381,7 +385,7 @@ export function DoctorDashboardView({
                 onClick={() => startConsultationForAppt(nextWaitingAppt.id)}
                 className="flex items-center gap-1.5 rounded-2xl bg-[var(--brand-primary)] px-4 py-2.5 text-xs font-extrabold text-white shadow-sm hover:brightness-110 transition cursor-pointer"
               >
-                <span>📞 Call Serial #{nextWaitingAppt.serialNumber}</span>
+                <span>📞 {language === "bn" ? `সিরিয়াল #${nextWaitingAppt.serialNumber}-কে ডাকুন` : `Call Serial #${nextWaitingAppt.serialNumber}`}</span>
               </button>
             )}
           </div>
@@ -423,17 +427,19 @@ export function DoctorDashboardView({
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="px-2.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-xs font-bold">
-                      Queue-Driven Consultation
+                      {language === "bn" ? "সিরিয়াল ভিত্তিক প্রেসক্রিপশন" : "Queue-Driven Consultation"}
                     </span>
                     <span className="text-xs text-slate-500 font-medium">
-                      Select patient to write prescription
+                      {language === "bn" ? "প্রেসক্রিপশন লিখতে রোগী নির্বাচন করুন" : "Select patient to write prescription"}
                     </span>
                   </div>
                   <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
-                    Today&apos;s Chamber Waiting Queue ({waitingAppointments.length} Waiting)
+                    {language === "bn" ? `আজকের চেম্বার ওয়েটিং সিরিয়াল (${waitingAppointments.length} জন অপেক্ষমান)` : `Today's Chamber Waiting Queue (${waitingAppointments.length} Waiting)`}
                   </h2>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Patient demographics, triage vitals, and medical history are prepared by triage staff. Click &quot;Start Consultation&quot; to begin.
+                    {language === "bn"
+                      ? "রোগীর তথ্য, প্রাথমিক ভাইটাল এবং পূর্ব ইতিহাস স্টাফ কর্তৃক প্রস্তুতকৃত। শুরু করতে \"পরামর্শ শুরু করুন\" চাপুন।"
+                      : "Patient demographics, triage vitals, and medical history are prepared by triage staff. Click \"Start Consultation\" to begin."}
                   </p>
                 </div>
 
@@ -445,7 +451,7 @@ export function DoctorDashboardView({
                       className="px-5 py-3 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-extrabold shadow-md hover:opacity-95 transition cursor-pointer flex items-center gap-2"
                     >
                       <UserCheck className="w-4 h-4" />
-                      <span>Call Next Patient (Serial #{nextWaitingAppt.serialNumber})</span>
+                      <span>{language === "bn" ? `পরবর্তী রোগীকে ডাকুন (সিরিয়াল #${nextWaitingAppt.serialNumber})` : `Call Next Patient (Serial #${nextWaitingAppt.serialNumber})`}</span>
                     </button>
                   )}
                 </div>
@@ -457,7 +463,7 @@ export function DoctorDashboardView({
                   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                   <input
                     type="text"
-                    placeholder="Search by serial #, patient name, or phone..."
+                    placeholder={t.searchQueuePlaceholder}
                     value={queueSearch}
                     onChange={(e) => setQueueSearch(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
@@ -465,7 +471,9 @@ export function DoctorDashboardView({
                 </div>
 
                 <span className="text-xs text-slate-400 font-medium shrink-0">
-                  Showing {filteredWaiting.length} of {waitingAppointments.length} waiting
+                  {language === "bn"
+                    ? `${waitingAppointments.length} জনের মধ্যে ${filteredWaiting.length} জন দেখানো হচ্ছে`
+                    : `Showing ${filteredWaiting.length} of ${waitingAppointments.length} waiting`}
                 </span>
               </div>
 
@@ -474,12 +482,12 @@ export function DoctorDashboardView({
                 <div className="p-12 text-center rounded-3xl bg-[var(--bg-app)] border border-dashed border-slate-200 dark:border-slate-800 space-y-3">
                   <Clock className="w-8 h-8 text-slate-400 mx-auto" />
                   <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                    No Patients Currently Waiting in Queue
+                    {language === "bn" ? "বর্তমানে সিরিয়ালে কোনো রোগী অপেক্ষমান নেই" : "No Patients Currently Waiting in Queue"}
                   </h3>
                   <p className="text-xs text-slate-500 max-w-md mx-auto">
                     {waitingAppointments.length === 0
-                      ? "All queued patients have been attended or the waiting room is currently empty. Staff can check in new walk-in patients from the Reception Desk."
-                      : "No patients matched your search query. Try clearing the filter."}
+                      ? (language === "bn" ? "সকল রোগীর পরামর্শ সম্পন্ন হয়েছে অথবা ওয়েটিং রুম খালি। রিসেপশন ডেস্ক থেকে নতুন সরাসরি আগত রোগী যুক্ত করা যাবে।" : "All queued patients have been attended or the waiting room is currently empty. Staff can check in new walk-in patients from the Reception Desk.")
+                      : (language === "bn" ? "অনুসন্ধানের সাথে কোনো রোগী মিলেনি। ফিল্টার পরিবর্তন করুন।" : "No patients matched your search query. Try clearing the filter.")}
                   </p>
                 </div>
               ) : (
@@ -505,7 +513,7 @@ export function DoctorDashboardView({
                                   {appt.patient.user.name}
                                 </span>
                                 <span className="text-xs text-slate-500">
-                                  ({appt.patient.gender || "Patient"})
+                                  ({appt.patient.gender || (language === "bn" ? "রোগী" : "Patient")})
                                 </span>
                               </div>
                               <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400 mt-0.5">
@@ -515,9 +523,9 @@ export function DoctorDashboardView({
                                     <span>{appt.patient.user.phone}</span>
                                   </span>
                                 )}
-                                <span>• Visit Type: {appt.visitType || "Standard"}</span>
+                                <span>• {t.visitTypeLabel}: {appt.visitType || "Standard"}</span>
                                 {appt.paymentStatus && (
-                                  <span>• Status: <strong className="text-emerald-600">{appt.paymentStatus}</strong></span>
+                                  <span>• {t.statusLabel}: <strong className="text-emerald-600">{appt.paymentStatus}</strong></span>
                                 )}
                               </div>
                             </div>
@@ -527,7 +535,7 @@ export function DoctorDashboardView({
                             {reportCount > 0 && (
                               <span className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-bold">
                                 <Paperclip className="w-3 h-3" />
-                                <span>{reportCount} Lab Reports</span>
+                                <span>{reportCount} {t.labReportsCount}</span>
                               </span>
                             )}
 
@@ -536,7 +544,7 @@ export function DoctorDashboardView({
                               onClick={() => startConsultationForAppt(appt.id)}
                               className="px-4 py-2.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-extrabold shadow-sm hover:opacity-95 transition cursor-pointer flex items-center gap-1.5"
                             >
-                              <span>Start Consultation / Prescribe</span>
+                              <span>{language === "bn" ? "পরামর্শ শুরু ও প্রেসক্রিপশন" : "Start Consultation / Prescribe"}</span>
                               <ArrowRight className="w-3.5 h-3.5" />
                             </button>
                           </div>
@@ -546,7 +554,7 @@ export function DoctorDashboardView({
                         {appt.notes && (
                           <div className="p-3 rounded-xl bg-[var(--bg-surface)] border border-slate-200/60 dark:border-slate-800/60 text-xs text-slate-600 dark:text-slate-300 flex items-center gap-2">
                             <Activity className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                            <span><strong>Triage Vitals:</strong> {appt.notes}</span>
+                            <span><strong>{language === "bn" ? "প্রাথমিক ভাইটাল:" : "Triage Vitals:"}</strong> {appt.notes}</span>
                           </div>
                         )}
 
@@ -556,7 +564,7 @@ export function DoctorDashboardView({
                             {allergies.length > 0 && (
                               <div className="flex flex-wrap items-center gap-1 text-rose-600">
                                 <ShieldAlert className="w-3 h-3" />
-                                <span className="font-bold text-[11px]">Allergies:</span>
+                                <span className="font-bold text-[11px]">{t.drugAllergiesWarnings}:</span>
                                 {allergies.map((al) => (
                                   <span
                                     key={al}
@@ -570,7 +578,7 @@ export function DoctorDashboardView({
 
                             {diseases.length > 0 && (
                               <div className="flex flex-wrap items-center gap-1 text-slate-500 ml-2">
-                                <span className="font-bold text-[11px]">History:</span>
+                                <span className="font-bold text-[11px]">{t.medicalHistoryStaff}:</span>
                                 {diseases.map((dis) => (
                                   <span
                                     key={dis}
@@ -602,19 +610,19 @@ export function DoctorDashboardView({
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div>
                 <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                  Today&apos;s Booked Appointments
+                  {language === "bn" ? "আজকের বুকিংকৃত অ্যাপয়েন্টমেন্ট" : "Today's Booked Appointments"}
                 </h2>
-                <p className="text-xs text-slate-500">Live patient turn sequence</p>
+                <p className="text-xs text-slate-500">{language === "bn" ? "লাইভ রোগী ডাকার ক্রম" : "Live patient turn sequence"}</p>
               </div>
               <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                {waitingAppointments.length} patients waiting
+                {waitingAppointments.length} {language === "bn" ? "জন অপেক্ষমান" : "patients waiting"}
               </span>
             </div>
 
             <div className="space-y-2.5">
               {appointmentsState.length === 0 ? (
                 <p className="py-8 text-center text-sm text-slate-400">
-                  No appointments scheduled for today.
+                  {language === "bn" ? "আজকের জন্য কোনো অ্যাপয়েন্টমেন্ট নির্ধারিত নেই।" : "No appointments scheduled for today."}
                 </p>
               ) : (
                 appointmentsState.map((item) => (
@@ -625,13 +633,13 @@ export function DoctorDashboardView({
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="flex items-center gap-2">
                         <span className="rounded-lg bg-[var(--brand-surface)] px-2.5 py-1 text-xs font-black text-[var(--brand-text)] border border-[var(--brand-border)] font-mono">
-                          Serial #{item.serialNumber}
+                          {language === "bn" ? `সিরিয়াল #${item.serialNumber}` : `Serial #${item.serialNumber}`}
                         </span>
                         <span className="font-bold text-slate-900 dark:text-white">
                           {item.patient.user.name}
                         </span>
                         <span className="text-xs text-slate-500">
-                          ({item.patient.gender || "Patient"})
+                          ({item.patient.gender || (language === "bn" ? "রোগী" : "Patient")})
                         </span>
                       </div>
 
@@ -652,7 +660,7 @@ export function DoctorDashboardView({
                             onClick={() => startConsultationForAppt(item.id)}
                             className="rounded-xl bg-[var(--brand-primary)] px-3 py-1 text-xs font-bold text-white transition hover:opacity-90 shadow-xs cursor-pointer"
                           >
-                            Prescribe
+                            {t.prescriptions}
                           </button>
                         )}
                       </div>
@@ -672,10 +680,10 @@ export function DoctorDashboardView({
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <FileSearch className="w-4 h-4 text-[var(--brand-primary)]" />
-                <span>Patient Diagnostic Lab Reports & Scans</span>
+                <span>{t.attachedLabReportsScans}</span>
               </h2>
               <p className="text-xs text-slate-500">
-                Uploaded by hospital triage staff prior to physician consultation
+                {language === "bn" ? "ডাক্তারের পরামর্শের পূর্বে ট্রায়াজ স্টাফ কর্তৃক আপলোডকৃত" : "Uploaded by hospital triage staff prior to physician consultation"}
               </p>
             </div>
 
@@ -683,7 +691,7 @@ export function DoctorDashboardView({
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search reports or patients..."
+                placeholder={t.searchReportsPlaceholder}
                 value={reportsSearch}
                 onChange={(e) => setReportsSearch(e.target.value)}
                 className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none"
@@ -694,17 +702,17 @@ export function DoctorDashboardView({
           <div className="overflow-x-auto">
             {filteredReports.length === 0 ? (
               <p className="py-12 text-center text-xs text-slate-400">
-                No diagnostic test reports found.
+                {t.noReportsFound}
               </p>
             ) : (
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider font-semibold">
-                    <th className="py-2.5 px-3">Report Title</th>
-                    <th className="py-2.5 px-3">Patient</th>
-                    <th className="py-2.5 px-3">Date</th>
-                    <th className="py-2.5 px-3">Notes</th>
-                    <th className="py-2.5 px-3 text-right">Actions</th>
+                    <th className="py-2.5 px-3">{t.reportTitle}</th>
+                    <th className="py-2.5 px-3">{language === "bn" ? "রোগী" : "Patient"}</th>
+                    <th className="py-2.5 px-3">{t.reportDate}</th>
+                    <th className="py-2.5 px-3">{language === "bn" ? "নোট" : "Notes"}</th>
+                    <th className="py-2.5 px-3 text-right">{t.actions}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -720,7 +728,7 @@ export function DoctorDashboardView({
                         <span className="font-bold text-slate-800 dark:text-slate-200 block">
                           {r.patientName}
                         </span>
-                        <span className="text-[11px] text-slate-400">{r.patientPhone || "No phone"}</span>
+                        <span className="text-[11px] text-slate-400">{r.patientPhone || (language === "bn" ? "ফোন নম্বর নেই" : "No phone")}</span>
                       </td>
                       <td className="py-3 px-3 text-slate-500">
                         {r.reportDate ? new Date(r.reportDate).toLocaleDateString() : ""}
@@ -736,7 +744,7 @@ export function DoctorDashboardView({
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-90 transition"
                         >
                           <ExternalLink className="w-3.5 h-3.5" />
-                          <span>View Report</span>
+                          <span>{t.view}</span>
                         </a>
                       </td>
                     </tr>
@@ -778,10 +786,10 @@ export function DoctorDashboardView({
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                Prescription Archive
+                {t.prescriptionHistoryTitle}
               </h2>
               <p className="text-xs text-slate-500">
-                View, re-print, and inspect previously issued prescriptions
+                {t.prescriptionHistorySubtitle}
               </p>
             </div>
             <button
@@ -793,25 +801,25 @@ export function DoctorDashboardView({
               }}
               className="rounded-xl bg-[var(--brand-primary)] px-4 py-2 text-xs font-bold text-white shadow-xs cursor-pointer"
             >
-              + Create New
+              {language === "bn" ? "+ নতুন প্রেসক্রিপশন" : "+ Create New"}
             </button>
           </div>
 
           <div className="overflow-x-auto">
             {recentPrescriptions.length === 0 ? (
               <p className="py-8 text-center text-sm text-slate-400">
-                No past prescriptions found in your archive.
+                {t.noPrescriptionsFound}
               </p>
             ) : (
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase text-slate-400">
-                    <th className="pb-3">Patient Name</th>
-                    <th className="pb-3">Version & Reason</th>
-                    <th className="pb-3">Last Updated</th>
-                    <th className="pb-3">Medicines</th>
-                    <th className="pb-3">Lab Tests</th>
-                    <th className="pb-3 text-right">Actions</th>
+                    <th className="pb-3">{t.patientName}</th>
+                    <th className="pb-3">{language === "bn" ? "ভার্সন ও কারণ" : "Version & Reason"}</th>
+                    <th className="pb-3">{language === "bn" ? "সর্বশেষ হালনাগাদ" : "Last Updated"}</th>
+                    <th className="pb-3">{t.medications}</th>
+                    <th className="pb-3">{t.investigations}</th>
+                    <th className="pb-3 text-right">{t.actions}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
@@ -831,7 +839,7 @@ export function DoctorDashboardView({
                             {p.patient.user.name}
                           </p>
                           <p className="text-[11px] text-slate-500">
-                            {p.patient.gender || "Patient"}
+                            {p.patient.gender || (language === "bn" ? "রোগী" : "Patient")}
                             {p.patient.user.phone ? ` • ${p.patient.user.phone}` : ""}
                           </p>
                         </td>
@@ -848,7 +856,7 @@ export function DoctorDashboardView({
                                   onClick={() => setHistoryModalPrescription(p)}
                                   className="text-[10px] font-semibold text-slate-500 hover:text-[var(--brand-text)] underline cursor-pointer"
                                 >
-                                  {versionCount} revisions
+                                  {versionCount} {language === "bn" ? "টি সংশোধন" : "revisions"}
                                 </button>
                               )}
                             </div>
@@ -865,13 +873,13 @@ export function DoctorDashboardView({
 
                         <td className="py-3.5 text-slate-600 dark:text-slate-300">
                           <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">
-                            {medCount} items
+                            {medCount} {language === "bn" ? "টি" : "items"}
                           </span>
                         </td>
 
                         <td className="py-3.5 text-slate-600 dark:text-slate-300">
                           <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">
-                            {testCount} items
+                            {testCount} {language === "bn" ? "টি" : "items"}
                           </span>
                         </td>
 
@@ -887,7 +895,7 @@ export function DoctorDashboardView({
                               title="Revise prescription and create a new version"
                               className="inline-flex items-center gap-1 rounded-xl bg-amber-500 text-white px-2.5 py-1.5 text-xs font-bold transition hover:bg-amber-600 shadow-xs cursor-pointer"
                             >
-                              <span>✏️ Revise (v{(p.version || 1) + 1})</span>
+                              <span>✏️ {t.revisePrescription} (v{(p.version || 1) + 1})</span>
                             </button>
 
                             <Link
@@ -896,7 +904,7 @@ export function DoctorDashboardView({
                               title="View & Print Latest Version"
                               className="inline-flex items-center gap-1 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] px-2.5 py-1.5 text-xs font-bold transition hover:opacity-90 shadow-xs"
                             >
-                              <span>🖨️ Print</span>
+                              <span>🖨️ {t.print}</span>
                             </Link>
 
                             <button
@@ -906,7 +914,7 @@ export function DoctorDashboardView({
                               className="inline-flex items-center gap-1 rounded-xl bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-300 border border-[var(--border-subtle)] px-2.5 py-1.5 text-xs font-bold hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition cursor-pointer"
                             >
                               <Share2 className="w-3.5 h-3.5" />
-                              <span>Share</span>
+                              <span>{t.sharePrescription}</span>
                             </button>
 
                             {versionCount > 1 && (
@@ -916,7 +924,7 @@ export function DoctorDashboardView({
                                 title="View All Historical Versions"
                                 className="inline-flex items-center gap-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 transition cursor-pointer"
                               >
-                                <span>📜 History</span>
+                                <span>📜 {t.versionHistory}</span>
                               </button>
                             )}
                           </div>
@@ -938,14 +946,14 @@ export function DoctorDashboardView({
             <div className="modal-header shrink-0 flex items-start justify-between gap-4 p-6 pb-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                  Prescription History & Revisions
+                  {t.prescriptionHistoryTitle}
                 </span>
                 <h3 className="text-xl font-black text-slate-900 dark:text-white mt-1">
                   {historyModalPrescription.patient.user.name}
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Rx ID: <code className="font-mono">{historyModalPrescription.id}</code> • Total
-                  Versions: <strong>{historyModalPrescription.versions?.length || 1}</strong>
+                  Rx ID: <code className="font-mono">{historyModalPrescription.id}</code> • {language === "bn" ? "মোট সংস্করণ:" : "Total Versions:"}{" "}
+                  <strong>{historyModalPrescription.versions?.length || 1}</strong>
                 </p>
               </div>
 
@@ -990,23 +998,23 @@ export function DoctorDashboardView({
                                 : "bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                             }`}
                           >
-                            Version {ver.versionNumber}
+                            {language === "bn" ? `সংস্করণ ${ver.versionNumber}` : `Version ${ver.versionNumber}`}
                           </span>
                           {isLatest && (
                             <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                              ● Current Active
+                              {language === "bn" ? "● বর্তমান কার্যকর" : "● Current Active"}
                             </span>
                           )}
                           <span className="text-xs text-slate-500">{verDate}</span>
                         </div>
 
                         <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-2">
-                          ↳ Reason: {ver.changeReason || "Prescription revision"}
+                          {language === "bn" ? "↳ কারণ:" : "↳ Reason:"} {ver.changeReason || (language === "bn" ? "প্রেসক্রিপশন সংশোধন" : "Prescription revision")}
                         </p>
 
                         <p className="text-[11px] text-slate-500 mt-1">
-                          Snapshot: <strong>{vMedCount}</strong> medicines •{" "}
-                          <strong>{vTestCount}</strong> diagnostic tests
+                          {language === "bn" ? "সংক্ষিপ্ত বিবরণ:" : "Snapshot:"} <strong>{vMedCount}</strong> {language === "bn" ? "টি ঔষধ" : "medicines"} •{" "}
+                          <strong>{vTestCount}</strong> {language === "bn" ? "টি পরীক্ষা" : "diagnostic tests"}
                         </p>
                       </div>
 
@@ -1016,7 +1024,7 @@ export function DoctorDashboardView({
                           target="_blank"
                           className="px-3.5 py-2 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-xs font-bold hover:bg-[var(--brand-primary)] hover:text-white transition shadow-xs"
                         >
-                          🖨️ View & Print v{ver.versionNumber}
+                          🖨️ {t.viewAndPrintA4} v{ver.versionNumber}
                         </Link>
                       </div>
                     </div>
@@ -1037,7 +1045,7 @@ export function DoctorDashboardView({
                 }}
                 className="px-4 py-2.5 rounded-xl bg-amber-500 text-white text-xs font-bold hover:bg-amber-600 transition shadow-xs cursor-pointer"
               >
-                ✏️ Create New Version (v{(historyModalPrescription.version || 1) + 1})
+                ✏️ {language === "bn" ? `নতুন সংস্করণ তৈরি (v${(historyModalPrescription.version || 1) + 1})` : `Create New Version (v${(historyModalPrescription.version || 1) + 1})`}
               </button>
 
               <button
@@ -1045,7 +1053,7 @@ export function DoctorDashboardView({
                 onClick={() => setHistoryModalPrescription(null)}
                 className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition cursor-pointer"
               >
-                Close
+                {t.close}
               </button>
             </div>
           </div>

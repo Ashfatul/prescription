@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { Lock, KeyRound, CheckCircle2, AlertCircle, RefreshCw, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function ChangePasswordCard() {
+  const { t } = useLanguage();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -18,12 +20,12 @@ export function ChangePasswordCard() {
     if (!currentPassword || !newPassword || loading) return;
 
     if (newPassword.length < 8) {
-      setErrorMsg("New password must be at least 8 characters long.");
+      setErrorMsg(t.newPasswordMinLength);
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setErrorMsg("New password and confirmation password do not match.");
+      setErrorMsg(t.passwordsDoNotMatch);
       return;
     }
 
@@ -45,12 +47,12 @@ export function ChangePasswordCard() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        setSuccessMsg(data.message || "Your password has been changed successfully.");
+        setSuccessMsg(data.message || t.passwordChangedSuccess);
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
       } else {
-        setErrorMsg(data.message || "Failed to update password. Please check your current password.");
+        setErrorMsg(data.message || t.passwordChangeFailed);
       }
     } catch {
       setErrorMsg("Network error while updating password. Please try again.");
@@ -67,10 +69,10 @@ export function ChangePasswordCard() {
         </div>
         <div>
           <h3 className="text-base font-bold text-slate-900 dark:text-white">
-            Change Account Password
+            {t.changeAccountPassword}
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Update your account password to ensure your clinical workspace remains secure.
+            {t.changeAccountPasswordDesc}
           </p>
         </div>
       </div>
@@ -93,7 +95,7 @@ export function ChangePasswordCard() {
         {/* Current Password */}
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
-            Current Password
+            {t.currentPassword}
           </label>
           <div className="relative">
             <input
@@ -119,7 +121,7 @@ export function ChangePasswordCard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
-              New Password (min 8)
+              {t.newPasswordMin8}
             </label>
             <div className="relative">
               <input
@@ -144,7 +146,7 @@ export function ChangePasswordCard() {
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
-              Confirm New Password
+              {t.confirmNewPassword}
             </label>
             <div className="relative">
               <input
@@ -170,10 +172,10 @@ export function ChangePasswordCard() {
             {loading ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin" />
-                Updating Password...
+                {t.updatingPassword}
               </>
             ) : (
-              "Update Password"
+              t.updatePassword
             )}
           </button>
         </div>

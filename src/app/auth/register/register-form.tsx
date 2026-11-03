@@ -122,7 +122,11 @@ export function RegisterForm() {
 
       if (trimmed.length < 3) {
         setSlugStatus("unavailable");
-        setSlugMessage("Subdomain must be at least 3 characters.");
+        setSlugMessage(
+          language === "bn"
+            ? "সাবডোমেন কমপক্ষে ৩ অক্ষরের হতে হবে।"
+            : "Subdomain must be at least 3 characters."
+        );
         return;
       }
 
@@ -133,23 +137,37 @@ export function RegisterForm() {
         if (json.success && json.data) {
           if (json.data.available) {
             setSlugStatus("available");
-            setSlugMessage("Subdomain is available!");
+            setSlugMessage(language === "bn" ? "সাবডোমেনটি খালি আছে!" : "Subdomain is available!");
           } else {
             setSlugStatus("unavailable");
-            setSlugMessage(json.data.reason || "Subdomain is already taken or unavailable.");
+            setSlugMessage(
+              json.data.reason ||
+                (language === "bn"
+                  ? "সাবডোমেনটি ইতোমধ্যে ব্যবহৃত বা অনুপলব্ধ।"
+                  : "Subdomain is already taken or unavailable.")
+            );
           }
         } else {
           setSlugStatus("unavailable");
-          setSlugMessage(json.message || "Failed to validate subdomain.");
+          setSlugMessage(
+            json.message ||
+              (language === "bn"
+                ? "সাবডোমেন যাচাই করতে ব্যর্থ হয়েছে।"
+                : "Failed to validate subdomain.")
+          );
         }
       } catch {
         setSlugStatus("unavailable");
-        setSlugMessage("Network error validating subdomain.");
+        setSlugMessage(
+          language === "bn"
+            ? "সাবডোমেন যাচাইয়ে নেটওয়ার্ক ত্রুটি।"
+            : "Network error validating subdomain."
+        );
       }
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [clinicSlug, mode]);
+  }, [clinicSlug, mode, language]);
 
   useEffect(() => {
     // Fetch organizations for patient dropdown
@@ -195,25 +213,25 @@ export function RegisterForm() {
     try {
       if (mode === "clinic") {
         if (!clinicName.trim()) {
-          throw new Error("Clinic or Hospital name is required.");
+          throw new Error(language === "bn" ? "ক্লিনিক বা হাসপাতালের নাম আবশ্যক।" : "Clinic or Hospital name is required.");
         }
         if (!clinicSlug.trim()) {
-          throw new Error("Clinic identifier URL slug is required.");
+          throw new Error(language === "bn" ? "ক্লিনিকের ইউআরএল সাবডোমেন আবশ্যক।" : "Clinic identifier URL slug is required.");
         }
         if (slugStatus === "checking") {
-          throw new Error("Validating clinic subdomain availability. Please wait...");
+          throw new Error(language === "bn" ? "ক্লিনিকের সাবডোমেন যাচাই করা হচ্ছে। অনুগ্রহ করে অপেক্ষা করুন..." : "Validating clinic subdomain availability. Please wait...");
         }
         if (slugStatus === "unavailable") {
-          throw new Error(slugMessage || "Please enter a valid, available subdomain for your clinic.");
+          throw new Error(slugMessage || (language === "bn" ? "আপনার ক্লিনিকের জন্য একটি বৈধ ও খালি সাবডোমেন প্রদান করুন।" : "Please enter a valid, available subdomain for your clinic."));
         }
         if (!name.trim()) {
-          throw new Error("Administrator full name is required.");
+          throw new Error(language === "bn" ? "অ্যাডমিনিস্ট্রেটরের পূর্ণ নাম আবশ্যক।" : "Administrator full name is required.");
         }
         if (!email.trim() || !email.includes("@")) {
-          throw new Error("Valid work email address is required.");
+          throw new Error(language === "bn" ? "বৈধ কাজের ইমেইল ঠিকানা আবশ্যক।" : "Valid work email address is required.");
         }
         if (password.length < 6) {
-          throw new Error("Password must be at least 6 characters.");
+          throw new Error(language === "bn" ? "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।" : "Password must be at least 6 characters.");
         }
 
         const res = await fetch("/api/auth/register", {
@@ -234,7 +252,7 @@ export function RegisterForm() {
 
         const data = await res.json();
         if (!res.ok || !data.success) {
-          throw new Error(data.message || data.error || "Failed to register clinic.");
+          throw new Error(data.message || data.error || (language === "bn" ? "ক্লিনিক নিবন্ধন ব্যর্থ হয়েছে।" : "Failed to register clinic."));
         }
 
         setSuccess(true);
@@ -254,9 +272,9 @@ export function RegisterForm() {
         }
       } else {
         // Patient registration
-        if (!name.trim()) throw new Error("Full name is required.");
-        if (!email.trim() || !email.includes("@")) throw new Error("Valid email address is required.");
-        if (password.length < 6) throw new Error("Password must be at least 6 characters.");
+        if (!name.trim()) throw new Error(language === "bn" ? "পূর্ণ নাম আবশ্যক।" : "Full name is required.");
+        if (!email.trim() || !email.includes("@")) throw new Error(language === "bn" ? "বৈধ ইমেইল ঠিকানা আবশ্যক।" : "Valid email address is required.");
+        if (password.length < 6) throw new Error(language === "bn" ? "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।" : "Password must be at least 6 characters.");
 
         const res = await fetch("/api/auth/register", {
           method: "POST",
@@ -276,7 +294,7 @@ export function RegisterForm() {
 
         const data = await res.json();
         if (!res.ok || !data.success) {
-          throw new Error(data.message || data.error || "Failed to create patient account.");
+          throw new Error(data.message || data.error || (language === "bn" ? "রোগীর অ্যাকাউন্ট তৈরি করতে ব্যর্থ হয়েছে।" : "Failed to create patient account."));
         }
 
         setSuccess(true);
@@ -295,7 +313,13 @@ export function RegisterForm() {
         }
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Registration failed.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : language === "bn"
+          ? "নিবন্ধন ব্যর্থ হয়েছে।"
+          : "Registration failed."
+      );
     } finally {
       setLoading(false);
     }
@@ -383,7 +407,11 @@ export function RegisterForm() {
             <CheckCircle2 className="w-4 h-4 shrink-0" />
             <span>
               {mode === "clinic"
-                ? "Clinic created with 14-day free trial! Redirecting to admin dashboard..."
+                ? language === "bn"
+                  ? "১৪ দিনের ফ্রি ট্রায়ালসহ ক্লিনিক সফলভাবে তৈরি হয়েছে! ড্যাশবোর্ডে নিয়ে যাওয়া হচ্ছে..."
+                  : "Clinic created with 14-day free trial! Redirecting to admin dashboard..."
+                : language === "bn"
+                ? "অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! পেশেন্ট ড্যাশবোর্ডে নিয়ে যাওয়া হচ্ছে..."
                 : "Account created successfully! Redirecting to patient dashboard..."}
             </span>
           </div>

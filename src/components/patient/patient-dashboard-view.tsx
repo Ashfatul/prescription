@@ -444,17 +444,17 @@ export function PatientDashboardView({
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
         <div className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-            Prescriptions
+            {t.myPrescriptions}
           </span>
           <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight font-mono">
             {prescriptions.length}
           </span>
-          <p className="text-[11px] text-slate-500 mt-1">Official digital records</p>
+          <p className="text-[11px] text-slate-500 mt-1">{language === "bn" ? "অফিসিয়াল ডিজিটাল প্রেসক্রিপশন" : "Official digital records"}</p>
         </div>
 
         <div className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-            Active Bookings
+            {t.activeBookings}
           </span>
           <span className="text-2xl sm:text-3xl font-extrabold text-[var(--brand-text)] tracking-tight font-mono">
             {
@@ -463,27 +463,27 @@ export function PatientDashboardView({
               ).length
             }
           </span>
-          <p className="text-[11px] text-slate-500 mt-1">Scheduled chamber visits</p>
+          <p className="text-[11px] text-slate-500 mt-1">{t.scheduledChamberVisits}</p>
         </div>
 
         <div className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-            Completed Visits
+            {t.completedVisits}
           </span>
           <span className="text-2xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight font-mono">
             {initialAppointments.filter((a) => a.status === "COMPLETED").length}
           </span>
-          <p className="text-[11px] text-slate-500 mt-1">Past consultations</p>
+          <p className="text-[11px] text-slate-500 mt-1">{t.pastConsultations}</p>
         </div>
 
         <div className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-            Total Appointments
+            {t.totalAppointments}
           </span>
           <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight font-mono">
             {initialAppointments.length}
           </span>
-          <p className="text-[11px] text-slate-500 mt-1">All recorded serials</p>
+          <p className="text-[11px] text-slate-500 mt-1">{t.allRecordedSerials}</p>
         </div>
       </div>
 
@@ -504,10 +504,10 @@ export function PatientDashboardView({
               </span>
               <div>
                 <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                  Consulting Specialists & Visiting Charges
+                  {t.consultingSpecialistsVisitingCharges}
                 </h2>
                 <p className="text-xs text-slate-500">
-                  Doctor visiting rates, follow-up discount policies, and direct appointment queue reservations
+                  {t.specialistsVisitingRatesDesc}
                 </p>
               </div>
             </div>
@@ -516,7 +516,7 @@ export function PatientDashboardView({
               href="/doctors"
               className="text-xs font-bold text-[var(--brand-primary)] hover:underline self-start sm:self-auto"
             >
-              All Doctors Directory →
+              {t.allDoctorsDirectory}
             </Link>
           </div>
 
@@ -545,7 +545,7 @@ export function PatientDashboardView({
                         {doc.specialization}
                       </p>
                       <p className="text-[10px] text-slate-400 truncate mt-0.5">
-                        {doc.chamberAddress || doc.hospital || "Chamber Open"}
+                        {doc.chamberAddress || doc.hospital || (language === "bn" ? "চেম্বার উন্মুক্ত" : "Chamber Open")}
                       </p>
                     </div>
                   </div>
@@ -564,14 +564,14 @@ export function PatientDashboardView({
                   {/* Consultation Pricing Schedule */}
                   <div className="mt-2.5 pt-2 border-t border-slate-200/70 dark:border-slate-800/70 space-y-1">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-500 text-[11px]">First Visit Rate:</span>
+                      <span className="text-slate-500 text-[11px]">{t.firstVisit}:</span>
                       <span className="font-extrabold text-blue-700 dark:text-blue-300 font-mono">
                         ${doc.newPatientFee}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-slate-500 text-[11px]">
-                        Follow-up ({doc.followupValidityDays}d):
+                        {t.followup} ({doc.followupValidityDays}d):
                       </span>
                       <span className="font-extrabold text-teal-700 dark:text-teal-300 font-mono">
                         ${doc.followupFee}
@@ -579,18 +579,18 @@ export function PatientDashboardView({
                     </div>
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-slate-500 text-[11px]">
-                        Report Review:
+                        {t.reportReview}:
                       </span>
                       <span className="font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
-                        Free ({doc.reportFreeDays}d)
+                        {t.free} ({doc.reportFreeDays}d)
                       </span>
                     </div>
                   </div>
                 </div>
 
                 <div className="pt-2 flex items-center justify-between gap-2 border-t border-slate-200/60 dark:border-slate-800/60">
-                  <span className="text-[10px] text-slate-400 italic truncate" title="Schedule may adjust for clinical emergencies">
-                    Schedule may adjust in emergencies
+                  <span className="text-[10px] text-slate-400 italic truncate" title={language === "bn" ? "জরুরি প্রয়োজনে সময়সূচী পরিবর্তিত হতে পারে" : "Schedule may adjust for clinical emergencies"}>
+                    {language === "bn" ? "জরুরি প্রয়োজনে সময় পরিবর্তিত হতে পারে" : "Schedule may adjust in emergencies"}
                   </span>
                   <button
                     type="button"
@@ -598,7 +598,7 @@ export function PatientDashboardView({
                     className="shrink-0 px-3.5 py-1.5 rounded-xl bg-[var(--brand-primary)] text-white text-[11px] font-bold hover:opacity-90 transition cursor-pointer flex items-center gap-1 shadow-xs"
                   >
                     <Plus className="w-3 h-3" />
-                    <span>Book Serial</span>
+                    <span>{t.bookSerial}</span>
                   </button>
                 </div>
               </div>
@@ -619,14 +619,14 @@ export function PatientDashboardView({
                 </span>
                 <div>
                   <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                    Consultation Appointments
+                    {t.consultationAppointments}
                   </h2>
-                  <p className="text-xs text-slate-500">Upcoming and previous chamber visits</p>
+                  <p className="text-xs text-slate-500">{t.upcomingPreviousChamberVisits}</p>
                 </div>
               </div>
 
               <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                {initialAppointments.length} Booked
+                {initialAppointments.length} {language === "bn" ? "বুকড" : "Booked"}
               </span>
             </div>
 
@@ -638,10 +638,10 @@ export function PatientDashboardView({
                   </div>
                   <div>
                     <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                      No Scheduled Appointments
+                      {t.noScheduledAppointments}
                     </p>
                     <p className="text-[11px] text-slate-400 mt-0.5">
-                      Book with any consulting specialist to get an instant serial ticket.
+                      {t.bookWithSpecialistInstantSerial}
                     </p>
                   </div>
                   <button
@@ -650,7 +650,7 @@ export function PatientDashboardView({
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-xs font-bold hover:bg-[var(--brand-primary)] hover:text-white transition cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>Book Now</span>
+                    <span>{t.bookNow}</span>
                   </button>
                 </div>
               ) : (
@@ -688,7 +688,7 @@ export function PatientDashboardView({
                               })}
                             </span>
                             <span className="font-bold text-[var(--brand-text)]">
-                              Serial #{item.serialNumber}
+                              {t.serialNumber} #{item.serialNumber}
                             </span>
                           </div>
 
@@ -704,10 +704,10 @@ export function PatientDashboardView({
                               }`}
                             >
                               {item.visitType === "REPORT_REVIEW"
-                                ? "Free Report Review ($0)"
+                                ? t.freeReportReviewNotice
                                 : item.visitType === "FOLLOWUP"
-                                ? `Follow-up ($${item.fee ?? 30})`
-                                : `First Visit ($${item.fee ?? 50})`}
+                                ? `${t.followup} ($${item.fee ?? 30})`
+                                : `${t.firstVisit} ($${item.fee ?? 50})`}
                             </span>
 
                             <span
@@ -720,10 +720,10 @@ export function PatientDashboardView({
                               }`}
                             >
                               {item.paymentStatus === "PAID"
-                                ? `PAID (${item.paymentMethod || "Stripe"})`
+                                ? (language === "bn" ? `পরিশোধিত (${item.paymentMethod || "স্ট্রাইপ"})` : `PAID (${item.paymentMethod || "Stripe"})`)
                                 : item.paymentStatus === "WAIVED"
-                                ? "FEE WAIVED"
-                                : "PAYMENT PENDING"}
+                                ? (language === "bn" ? "ফি মওকুফ" : "FEE WAIVED")
+                                : (language === "bn" ? "পেমেন্ট বাকি" : "PAYMENT PENDING")}
                             </span>
                           </div>
 
@@ -757,9 +757,13 @@ export function PatientDashboardView({
                                   }`}
                                 >
                                   {isPending
-                                    ? "Pending Verification"
+                                    ? (language === "bn" ? "যাচাইকরণের অপেক্ষায়" : "Pending Verification")
                                     : isConfirmed
-                                    ? "Confirmed"
+                                    ? (language === "bn" ? "নিশ্চিত" : "Confirmed")
+                                    : isCompleted
+                                    ? (language === "bn" ? "সম্পন্ন" : "Completed")
+                                    : isCancelled
+                                    ? (language === "bn" ? "বাতিলকৃত" : "Cancelled")
                                     : item.status}
                                 </span>
 
@@ -776,7 +780,7 @@ export function PatientDashboardView({
                                         })}
                                         target="_blank"
                                         rel="noreferrer"
-                                        title="Add to Google Calendar"
+                                        title={language === "bn" ? "গুগল ক্যালেন্ডারে যোগ করুন" : "Add to Google Calendar"}
                                         className="p-1.5 rounded-lg border border-amber-200 dark:border-amber-900/50 hover:bg-amber-50 text-amber-600 dark:text-amber-400 transition cursor-pointer text-xs"
                                       >
                                         <Calendar className="w-3.5 h-3.5" />
@@ -785,7 +789,7 @@ export function PatientDashboardView({
                                       <button
                                         type="button"
                                         onClick={() => setSelectedSlip(item)}
-                                        title="View Appointment Slip"
+                                        title={language === "bn" ? "অ্যাপয়েন্টমেন্ট স্লিপ দেখুন" : "View Appointment Slip"}
                                         className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition cursor-pointer text-xs"
                                       >
                                         <Printer className="w-3.5 h-3.5" />
@@ -799,8 +803,8 @@ export function PatientDashboardView({
                                       onClick={() => handleOpenCancellationModal(item)}
                                       title={
                                         canCancel
-                                          ? `Cancel Appointment & Get Full Refund (> ${cutoffHours}h before consultation)`
-                                          : `Cancellation Window Closed (< ${cutoffHours}h remaining)`
+                                          ? (language === "bn" ? `অ্যাপয়েন্টমেন্ট বাতিল করুন ও রিফান্ড পান (${cutoffHours} ঘণ্টা পূর্বে)` : `Cancel Appointment & Get Full Refund (> ${cutoffHours}h before consultation)`)
+                                          : (language === "bn" ? `বাতিলের সময়সীমা শেষ (< ${cutoffHours} ঘণ্টা বাকি)` : `Cancellation Window Closed (< ${cutoffHours}h remaining)`)
                                       }
                                       className={`p-1.5 rounded-lg border text-xs transition cursor-pointer ${
                                         canCancel
@@ -823,10 +827,10 @@ export function PatientDashboardView({
                         <div className="mt-2.5 p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs flex items-center justify-between text-amber-700 dark:text-amber-300">
                           <span className="flex items-center gap-1.5 font-medium">
                             <Clock className="w-3.5 h-3.5 text-amber-500" />
-                            Awaiting Clinic Front-Desk Verification & Confirmation
+                            {language === "bn" ? "ক্লিনিক ফ্রন্ট-ডেস্ক যাচাইকরণ ও নিশ্চিতকরণের অপেক্ষায়" : "Awaiting Clinic Front-Desk Verification & Confirmation"}
                           </span>
                           <span className="text-[11px] opacity-80">
-                            Serial #{item.serialNumber} reserved
+                            {t.serialNumber} #{item.serialNumber} {language === "bn" ? "সংরক্ষিত" : "reserved"}
                           </span>
                         </div>
                       )}
@@ -835,20 +839,20 @@ export function PatientDashboardView({
                       {isCancelled && (
                         <div className="mt-2.5 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-800 dark:text-rose-200 space-y-1">
                           <div className="flex items-center justify-between font-semibold">
-                            <span>Appointment Cancelled</span>
+                            <span>{language === "bn" ? "অ্যাপয়েন্টমেন্ট বাতিল করা হয়েছে" : "Appointment Cancelled"}</span>
                             {item.refundStatus === "REFUNDED" ? (
                               <span className="px-2 py-0.5 rounded-md bg-emerald-600 text-white text-[10px] font-black uppercase">
-                                ✓ Refund Issued: ${item.refundAmount || item.fee}
+                                ✓ {language === "bn" ? "রিফান্ড প্রদান করা হয়েছে:" : "Refund Issued:"} ${item.refundAmount || item.fee}
                               </span>
                             ) : item.refundStatus === "REFUND_PENDING" ? (
                               <span className="px-2 py-0.5 rounded-md bg-amber-500 text-white text-[10px] font-black uppercase">
-                                ⏳ Refund Processing: ${item.refundAmount || item.fee}
+                                ⏳ {language === "bn" ? "রিফান্ড প্রক্রিয়াধীন:" : "Refund Processing:"} ${item.refundAmount || item.fee}
                               </span>
                             ) : null}
                           </div>
                           {item.cancellationReason && (
                             <p className="text-[11px] opacity-85 italic">
-                              Reason: {item.cancellationReason}
+                              {language === "bn" ? "কারণ:" : "Reason:"} {item.cancellationReason}
                             </p>
                           )}
                         </div>
@@ -860,7 +864,7 @@ export function PatientDashboardView({
                           <div className="flex items-center gap-1.5 text-xs">
                             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                             <span className="text-slate-600 dark:text-slate-400">
-                              Payment Due: <strong className="font-mono text-slate-900 dark:text-white">${item.fee}</strong>
+                              {language === "bn" ? "প্রদেয় ফি:" : "Payment Due:"} <strong className="font-mono text-slate-900 dark:text-white">${item.fee}</strong>
                             </span>
                           </div>
                           <button
@@ -872,12 +876,12 @@ export function PatientDashboardView({
                             {payingAppointmentId === item.id ? (
                               <>
                                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                <span>Opening Stripe...</span>
+                                <span>{language === "bn" ? "স্ট্রাইপ লোড হচ্ছে..." : "Opening Stripe..."}</span>
                               </>
                             ) : (
                               <>
                                 <CreditCard className="w-3.5 h-3.5" />
-                                <span>Pay ${item.fee} via Stripe</span>
+                                <span>{language === "bn" ? `স্ট্রাইপ দিয়ে $${item.fee} প্রদান করুন` : `Pay $${item.fee} via Stripe`}</span>
                               </>
                             )}
                           </button>
@@ -900,14 +904,14 @@ export function PatientDashboardView({
               </span>
               <div>
                 <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                  Medical Prescriptions
+                  {t.medicalPrescriptions}
                 </h2>
-                <p className="text-xs text-slate-500">Official digital prescriptions issued by doctors</p>
+                <p className="text-xs text-slate-500">{t.officialDigitalPrescriptions}</p>
               </div>
             </div>
 
             <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-              {prescriptions.length} Records
+              {prescriptions.length} {language === "bn" ? "রেকর্ড" : "Records"}
             </span>
           </div>
 
@@ -918,10 +922,10 @@ export function PatientDashboardView({
                   <FileText className="w-6 h-6" />
                 </div>
                 <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  No Prescriptions Yet
+                  {t.noPrescriptionsYetTitle}
                 </p>
                 <p className="text-[11px] text-slate-400">
-                  Prescriptions issued by your physician will appear here with instant print options.
+                  {t.prescriptionsIssuedAppearHere}
                 </p>
               </div>
             ) : (
@@ -952,19 +956,19 @@ export function PatientDashboardView({
                             onClick={() => setSelectedHistoryPrescription(item)}
                             className="text-[10px] font-semibold text-[var(--brand-text)] underline hover:opacity-80 cursor-pointer"
                           >
-                            {versionCount} revisions
+                            {language === "bn" ? `${versionCount}টি সংস্করণ` : `${versionCount} revisions`}
                           </button>
                         )}
                       </div>
 
                       <p className="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5 text-slate-400" />
-                        {item.version && item.version > 1 ? `Updated on ${formattedDate}` : `Issued on ${formattedDate}`}
+                        {item.version && item.version > 1 ? (language === "bn" ? `আপডেট: ${formattedDate}` : `Updated on ${formattedDate}`) : (language === "bn" ? `প্রদান: ${formattedDate}` : `Issued on ${formattedDate}`)}
                       </p>
 
                       {latestReason && item.version && item.version > 1 && (
                         <p className="text-[11px] text-amber-700 dark:text-amber-400 mt-0.5 font-medium">
-                          ↳ Note: {latestReason}
+                          ↳ {language === "bn" ? "নোট:" : "Note:"} {latestReason}
                         </p>
                       )}
                     </div>
@@ -976,7 +980,7 @@ export function PatientDashboardView({
                           onClick={() => setSelectedHistoryPrescription(item)}
                           className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                         >
-                          📜 Versions
+                          📜 {language === "bn" ? "সংস্করণসমূহ" : "Versions"}
                         </button>
                       )}
 
@@ -986,7 +990,7 @@ export function PatientDashboardView({
                         className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-xs font-bold hover:bg-[var(--brand-primary)] hover:text-white transition-all shadow-xs cursor-pointer"
                       >
                         <Printer className="w-3.5 h-3.5" />
-                        <span>View & Print</span>
+                        <span>{t.viewAndPrint}</span>
                       </Link>
 
                       <button
@@ -996,7 +1000,7 @@ export function PatientDashboardView({
                         className="flex items-center gap-1 px-3 py-2 rounded-xl border border-[var(--border-default)] text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-[var(--bg-subtle)] transition cursor-pointer"
                       >
                         <Share2 className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">Share</span>
+                        <span className="hidden sm:inline">{t.share}</span>
                       </button>
 
                       <button
@@ -1008,7 +1012,7 @@ export function PatientDashboardView({
                       >
                         <Clock className="w-3.5 h-3.5" />
                         <span className="hidden sm:inline">
-                          {generatingRemindersId === item.id ? "Setting..." : "Reminders"}
+                          {generatingRemindersId === item.id ? (language === "bn" ? "সেট হচ্ছে..." : "Setting...") : (language === "bn" ? "রিমাইন্ডার" : "Reminders")}
                         </span>
                       </button>
                     </div>
@@ -1036,7 +1040,7 @@ export function PatientDashboardView({
           <div className="w-full max-w-md bg-[var(--bg-surface)] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                Patient Appointment Slip
+                {t.patientAppointmentSlip}
               </span>
               <button
                 type="button"
@@ -1050,7 +1054,7 @@ export function PatientDashboardView({
             <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4">
               <div className="p-5 rounded-2xl bg-[var(--brand-surface)] border border-[var(--brand-border)] text-center space-y-2">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                  Confirmed Queue Ticket
+                  {t.confirmedQueueTicket}
                 </span>
                 <div className="text-4xl font-black text-[var(--brand-primary)]">
                   #{selectedSlip.serialNumber}
@@ -1067,32 +1071,32 @@ export function PatientDashboardView({
                   })}
                 </p>
                 <p className="text-[11px] text-slate-400">
-                  Chamber: {selectedSlip.doctor.chamberAddress || "Doctor Consultation Chamber"}
+                  {t.chamberLocation}: {selectedSlip.doctor.chamberAddress || (language === "bn" ? "ডাক্তার পরামর্শ চেম্বার" : "Doctor Consultation Chamber")}
                 </p>
 
                 {/* Consultation Fee & Visit Type */}
                 <div className="pt-3 border-t border-[var(--brand-primary)]/20 grid grid-cols-2 gap-2 text-left text-xs">
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Visit Type:</span>
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">{language === "bn" ? "ভিজিটের ধরন:" : "Visit Type:"}</span>
                     <span className="font-bold text-slate-900 dark:text-white">
                       {selectedSlip.visitType === "REPORT_REVIEW"
-                        ? "Free Report Review"
+                        ? t.freeReportReviewNotice
                         : selectedSlip.visitType === "FOLLOWUP"
-                        ? "Follow-up Visit"
-                        : "First Visit"}
+                        ? t.followupConsultation
+                        : t.newPatientConsultation}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Fee & Payment:</span>
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">{language === "bn" ? "ফি ও পেমেন্ট:" : "Fee & Payment:"}</span>
                     <span className="font-bold text-slate-900 dark:text-white">
                       {selectedSlip.visitType === "REPORT_REVIEW" || selectedSlip.fee === 0
-                        ? "Free ($0.00)"
+                        ? (language === "bn" ? "ফ্রি ($০.০০)" : "Free ($0.00)")
                         : `$${selectedSlip.fee} • ${
                             selectedSlip.paymentStatus === "PAID"
-                              ? "Paid"
+                              ? (language === "bn" ? "পরিশোধিত" : "Paid")
                               : selectedSlip.paymentStatus === "WAIVED"
-                              ? "Waived"
-                              : "Pending"
+                              ? (language === "bn" ? "মওকুফ" : "Waived")
+                              : (language === "bn" ? "বাকি" : "Pending")
                           }`}
                     </span>
                   </div>
@@ -1107,14 +1111,14 @@ export function PatientDashboardView({
                 className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center gap-1.5 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
               >
                 <Printer className="w-3.5 h-3.5" />
-                <span>Print</span>
+                <span>{t.print}</span>
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedSlip(null)}
                 className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold cursor-pointer hover:opacity-90 transition shadow-xs"
               >
-                Close
+                {t.close}
               </button>
             </div>
           </div>
@@ -1128,13 +1132,13 @@ export function PatientDashboardView({
             <div className="modal-header shrink-0 flex items-start justify-between gap-4 p-6 pb-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                  Prescription Version Timeline
+                  {language === "bn" ? "প্রেসক্রিপশন সংস্করণ টাইমলাইন" : "Prescription Version Timeline"}
                 </span>
                 <h3 className="text-xl font-black text-slate-900 dark:text-white mt-1">
                   Dr. {selectedHistoryPrescription.doctor.user.name}
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  {selectedHistoryPrescription.doctor.specialization} • Total Revisions: <strong>{selectedHistoryPrescription.versions?.length || 1}</strong>
+                  {selectedHistoryPrescription.doctor.specialization} • {language === "bn" ? "মোট সংস্করণ:" : "Total Revisions:"} <strong>{selectedHistoryPrescription.versions?.length || 1}</strong>
                 </p>
               </div>
 
@@ -1177,11 +1181,11 @@ export function PatientDashboardView({
                                 : "bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                             }`}
                           >
-                            Version {ver.versionNumber}
+                            {language === "bn" ? `সংস্করণ ${ver.versionNumber}` : `Version ${ver.versionNumber}`}
                           </span>
                           {isLatest && (
                             <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                              ● Current Active
+                              {language === "bn" ? "● বর্তমান সক্রিয়" : "● Current Active"}
                             </span>
                           )}
                           <span className="text-xs text-slate-500">
@@ -1190,7 +1194,7 @@ export function PatientDashboardView({
                         </div>
 
                         <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-2">
-                          ↳ Reason: {ver.changeReason || "Prescription revision"}
+                          ↳ {language === "bn" ? "কারণ:" : "Reason:"} {ver.changeReason || (language === "bn" ? "প্রেসক্রিপশন সংশোধন" : "Prescription revision")}
                         </p>
                       </div>
 
@@ -1199,7 +1203,7 @@ export function PatientDashboardView({
                         target="_blank"
                         className="self-start sm:self-auto px-3.5 py-2 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-xs font-bold hover:bg-[var(--brand-primary)] hover:text-white transition shadow-xs"
                       >
-                        🖨️ View & Print v{ver.versionNumber}
+                        {language === "bn" ? `🖨️ প্রিন্ট করুন v${ver.versionNumber}` : `🖨️ View & Print v${ver.versionNumber}`}
                       </Link>
                     </div>
                   </div>
@@ -1213,7 +1217,7 @@ export function PatientDashboardView({
                 onClick={() => setSelectedHistoryPrescription(null)}
                 className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition cursor-pointer"
               >
-                Close
+                {t.close}
               </button>
             </div>
           </div>
@@ -1258,10 +1262,10 @@ export function PatientDashboardView({
                   </div>
                   <div>
                     <h3 className="text-lg font-black text-slate-900 dark:text-white">
-                      {isAllowed ? "Cancel Appointment" : "Cancellation Window Closed"}
+                      {isAllowed ? t.cancelAppointmentTitle : t.cancellationWindowClosed}
                     </h3>
                     <p className="text-xs text-slate-500">
-                      Serial #{cancellationTarget.serialNumber} • Dr. {cancellationTarget.doctor.user.name}
+                      {t.serialNumber} #{cancellationTarget.serialNumber} • Dr. {cancellationTarget.doctor.user.name}
                     </p>
                   </div>
                 </div>
@@ -1281,26 +1285,24 @@ export function PatientDashboardView({
                   <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200 space-y-2">
                     <p className="font-bold flex items-center gap-1.5">
                       <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-                      Clinic Cancellation Policy Notice
+                      {language === "bn" ? "ক্লিনিক অ্যাপয়েন্টমেন্ট বাতিল নীতিমালা" : "Clinic Cancellation Policy Notice"}
                     </p>
                     <p className="leading-relaxed">
-                      Appointments and consultation fee refunds can only be cancelled at least{" "}
-                      <strong>{cutoff} hours</strong> before the scheduled chamber time.
+                      {language === "bn"
+                        ? `অ্যাপয়েন্টমেন্ট ও পরামর্শ ফি রিফান্ড চেম্বারের নির্ধারিত সময়ের কমপক্ষে ${cutoff} ঘণ্টা পূর্বে বাতিল করতে হবে।`
+                        : `Appointments and consultation fee refunds can only be cancelled at least ${cutoff} hours before the scheduled chamber time.`}
                     </p>
                     <p className="text-[11px] opacity-85">
-                      Currently:{" "}
-                      <strong>
-                        {hoursUntil > 0
-                          ? `${Math.max(1, Math.round(hoursUntil))} hour(s) remaining`
-                          : "Scheduled time has passed"}
-                      </strong>
-                      . Online cancellation is closed to protect physician consultation slots.
+                      {language === "bn"
+                        ? `বর্তমানে: ${hoursUntil > 0 ? `${Math.max(1, Math.round(hoursUntil))} ঘণ্টা বাকি` : "নির্ধারিত সময় অতিবাহিত হয়েছে"}। চিকিৎসকের পরামর্শ স্লট সংরক্ষণের জন্য অনলাইন বাতিল বন্ধ রয়েছে।`
+                        : `Currently: ${hoursUntil > 0 ? `${Math.max(1, Math.round(hoursUntil))} hour(s) remaining` : "Scheduled time has passed"}. Online cancellation is closed to protect physician consultation slots.`}
                     </p>
                   </div>
 
                   <p className="text-xs text-slate-500 leading-relaxed">
-                    If you have an urgent medical emergency or need to reschedule your serial, please contact the front desk at{" "}
-                    <strong>{cancellationTarget.doctor.chamberAddress || "clinic reception"}</strong>.
+                    {language === "bn"
+                      ? `আপনার যদি জরুরি কোনো মেডিকেল পরিস্থিতি থাকে বা সময় পরিবর্তন প্রয়োজন হয়, অনুগ্রহ করে অভ্যর্থনা ডেস্কে যোগাযোগ করুন (${cancellationTarget.doctor.chamberAddress || "ক্লিনিক অভ্যর্থনা"})।`
+                      : `If you have an urgent medical emergency or need to reschedule your serial, please contact the front desk at ${cancellationTarget.doctor.chamberAddress || "clinic reception"}.`}
                   </p>
 
                   <div className="pt-2 flex justify-end">
@@ -1309,7 +1311,7 @@ export function PatientDashboardView({
                       onClick={() => setCancellationTarget(null)}
                       className="px-6 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 transition cursor-pointer"
                     >
-                      Understood
+                      {language === "bn" ? "বুঝেছি" : "Understood"}
                     </button>
                   </div>
                 </div>
@@ -1319,10 +1321,12 @@ export function PatientDashboardView({
                   <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-900 dark:text-emerald-200 space-y-1">
                     <div className="flex items-center gap-2 font-bold">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                      <span>Eligible for 100% Full Refund</span>
+                      <span>{t.eligibleForFullRefund}</span>
                     </div>
                     <p className="text-[11px] opacity-85">
-                      You are cancelling {Math.round(hoursUntil)} hours in advance (threshold is {cutoff}h).
+                      {language === "bn"
+                        ? `আপনি ${Math.round(hoursUntil)} ঘণ্টা পূর্বে বাতিল করছেন (সীমা ${cutoff} ঘণ্টা)।`
+                        : `You are cancelling ${Math.round(hoursUntil)} hours in advance (threshold is ${cutoff}h).`}
                     </p>
                   </div>
 
@@ -1330,22 +1334,22 @@ export function PatientDashboardView({
                   {wasPaid && (
                     <div className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 space-y-2">
                       <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                        Refund Calculation
+                        {language === "bn" ? "রিফান্ড গণনা" : "Refund Calculation"}
                       </span>
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-slate-600 dark:text-slate-400">Paid Consultation Fee</span>
+                        <span className="text-slate-600 dark:text-slate-400">{t.paidConsultationFee}</span>
                         <span className="font-mono font-bold text-slate-900 dark:text-white">
                           ${cancellationTarget.fee}
                         </span>
                       </div>
                       <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-200/80 dark:border-slate-800/80 font-bold">
-                        <span className="text-emerald-600 dark:text-emerald-400">Refund Credited</span>
+                        <span className="text-emerald-600 dark:text-emerald-400">{t.refundCredited}</span>
                         <span className="font-mono text-emerald-600 dark:text-emerald-400">
                           ${cancellationTarget.fee} (100%)
                         </span>
                       </div>
                       <p className="text-[11px] text-slate-400 pt-1">
-                        Refund will be credited back to your original payment method.
+                        {t.refundNoticeMethod}
                       </p>
                     </div>
                   )}
@@ -1353,34 +1357,37 @@ export function PatientDashboardView({
                   {/* Reason Selection */}
                   <div className="space-y-2">
                     <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                      Reason for Cancellation (Optional)
+                      {t.reasonForCancellation}
                     </label>
                     <div className="flex flex-wrap gap-1.5">
                       {[
-                        "Schedule conflict",
-                        "Symptoms improved",
-                        "Booked wrong doctor/date",
-                        "Emergency",
-                      ].map((preset) => (
-                        <button
-                          key={preset}
-                          type="button"
-                          onClick={() => setCancellationReason(preset)}
-                          className={`px-3 py-1 rounded-xl text-xs font-semibold transition cursor-pointer ${
-                            cancellationReason === preset
-                              ? "bg-[var(--brand-primary)] text-white"
-                              : "bg-[var(--bg-app)] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800"
-                          }`}
-                        >
-                          {preset}
-                        </button>
-                      ))}
+                        { en: "Schedule conflict", bn: "সময়ের অমিল" },
+                        { en: "Symptoms improved", bn: "লক্ষণ উপশম হয়েছে" },
+                        { en: "Booked wrong doctor/date", bn: "ভুল ডাক্তার/তারিখ" },
+                        { en: "Emergency", bn: "জরুরি পরিস্থিতি" },
+                      ].map((preset) => {
+                        const text = language === "bn" ? preset.bn : preset.en;
+                        return (
+                          <button
+                            key={preset.en}
+                            type="button"
+                            onClick={() => setCancellationReason(text)}
+                            className={`px-3 py-1 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                              cancellationReason === text
+                                ? "bg-[var(--brand-primary)] text-white"
+                                : "bg-[var(--bg-app)] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800"
+                            }`}
+                          >
+                            {text}
+                          </button>
+                        );
+                      })}
                     </div>
                     <textarea
                       rows={2}
                       value={cancellationReason}
                       onChange={(e) => setCancellationReason(e.target.value)}
-                      placeholder="Add any additional details for clinic staff..."
+                      placeholder={language === "bn" ? "ক্লিনিক কর্মীদের জন্য অতিরিক্ত তথ্য লিখুন..." : "Add any additional details for clinic staff..."}
                       className="w-full mt-1.5 p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[var(--brand-primary)]"
                     />
                   </div>
@@ -1400,7 +1407,7 @@ export function PatientDashboardView({
                       onClick={() => setCancellationTarget(null)}
                       className="px-5 py-2.5 rounded-2xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition cursor-pointer disabled:opacity-50"
                     >
-                      Keep Appointment
+                      {t.keepAppointment}
                     </button>
                     <button
                       type="button"
@@ -1411,10 +1418,10 @@ export function PatientDashboardView({
                       {cancellationSubmitting ? (
                         <>
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          <span>Cancelling...</span>
+                          <span>{t.cancelling}</span>
                         </>
                       ) : (
-                        <span>Confirm Cancellation & Refund</span>
+                        <span>{t.confirmCancellationRefund}</span>
                       )}
                     </button>
                   </div>

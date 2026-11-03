@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { CustomSelect } from "@/components/common/custom-select";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 const inputClasses =
   "w-full px-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]";
@@ -30,6 +31,7 @@ type ReminderItem = {
 };
 
 export function MedicineRemindersView({ patientId }: { patientId?: string }) {
+  const { t, language } = useLanguage();
   const [reminders, setReminders] = useState<ReminderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -149,11 +151,11 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
               <Pill className="w-5 h-5" />
             </div>
             <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-              Medicine Schedule & Dosing Reminders
+              {t.medicineScheduleTitle}
             </h2>
           </div>
           <p className="text-xs text-slate-500">
-            Never miss a prescribed dose. Sync recurring medicine reminders with Google Calendar with 1-click.
+            {t.medicineScheduleSubtitle}
           </p>
         </div>
 
@@ -163,7 +165,7 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
           className="px-4 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>Add Medicine Reminder</span>
+          <span>{t.addNewReminder}</span>
         </button>
       </div>
 
@@ -171,16 +173,16 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
       {loading ? (
         <div className="p-12 text-center text-xs text-slate-400">
           <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--brand-primary)] mb-2" />
-          <span>Loading medication reminders...</span>
+          <span>{t.loadingMedicationReminders}</span>
         </div>
       ) : reminders.length === 0 ? (
         <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
           <Clock className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-700" />
           <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">
-            No Active Reminders
+            {t.noActiveReminders}
           </h3>
           <p className="text-xs text-slate-400 max-w-sm mx-auto">
-            Reminders will appear here when generated from your doctor&apos;s prescription or added manually.
+            {t.noActiveRemindersDesc}
           </p>
         </div>
       ) : (
@@ -224,7 +226,7 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
                     </p>
                     {reminder.notes && (
                       <p className="text-[11px] text-slate-400 italic pt-1">
-                        Note: {reminder.notes}
+                        {language === "bn" ? "বিশেষ দ্রষ্টব্য: " : "Note: "}{reminder.notes}
                       </p>
                     )}
                   </div>
@@ -238,7 +240,7 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
                     className="w-full py-2 px-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <Calendar className="w-3.5 h-3.5" />
-                    <span>Add to Google Calendar</span>
+                    <span>{t.addToGoogleCalendar}</span>
                     <ExternalLink className="w-3 h-3 opacity-60" />
                   </a>
 
@@ -250,7 +252,7 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
                         onChange={() => handleToggle(reminder.id, reminder.isActive)}
                         className="w-3.5 h-3.5 accent-[var(--brand-primary)]"
                       />
-                      <span>Active Schedule</span>
+                      <span>{t.activeSchedule}</span>
                     </label>
 
                     <button
@@ -274,7 +276,7 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
           <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="font-bold text-slate-900 dark:text-white text-base">
-                New Medicine Reminder
+                {t.newMedicineReminder}
               </h3>
               <button
                 type="button"
@@ -289,7 +291,7 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
               <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4 text-xs">
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Medicine Name *
+                    {t.reminderMedicineName} *
                   </label>
                   <input
                     type="text"
@@ -304,7 +306,7 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      Strength / Dosage
+                      {t.strengthDosage}
                     </label>
                     <input
                       type="text"
@@ -317,7 +319,7 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
 
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      Frequency
+                      {t.reminderFrequency}
                     </label>
                     <CustomSelect
                       value={frequency}
@@ -336,7 +338,7 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
 
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Timing Instructions
+                    {t.timingInstructions}
                   </label>
                   <input
                     type="text"
@@ -349,7 +351,7 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
 
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Notes / Instructions
+                    {t.notesInstructions}
                   </label>
                   <input
                     type="text"
@@ -367,14 +369,14 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
                   onClick={() => setModalOpen(false)}
                   className="px-4 py-2 rounded-xl border border-[var(--border-default)] text-slate-600 dark:text-slate-300 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
                   className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold cursor-pointer hover:opacity-90 disabled:opacity-50 transition shadow-xs"
                 >
-                  {submitting ? "Saving..." : "Create Reminder"}
+                  {submitting ? t.saving : t.createReminder}
                 </button>
               </div>
             </form>

@@ -20,10 +20,12 @@ import {
 import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
 import { LanguageToggle } from "@/components/common/language-toggle";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 function VerifyEmailInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t, language } = useLanguage();
   const token = searchParams.get("token");
   const emailParam = searchParams.get("email");
   const [email, setEmail] = useState(emailParam || "");
@@ -171,10 +173,10 @@ function VerifyEmailInner() {
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                Verifying Your Email Address...
+                {t.verifyingEmailAddress}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Please hold on while we validate your cryptographic verification token.
+                {t.verifyingEmailNotice}
               </p>
             </div>
           </div>
@@ -198,11 +200,10 @@ function VerifyEmailInner() {
             </div>
             <div>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                {pendingApproval ? "Email Confirmed • Pending Approval" : "Email Confirmed & Verified!"}
+                {pendingApproval ? t.emailConfirmedApproval : t.emailConfirmedSuccess}
               </h2>
               <p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 max-w-sm mx-auto leading-relaxed">
-                {successMsg ||
-                  "Your email address has been authenticated. You now have full access to your clinical dashboard."}
+                {successMsg || t.emailAuthNotice}
               </p>
             </div>
 
@@ -213,7 +214,7 @@ function VerifyEmailInner() {
                   className="w-full min-h-[46px] rounded-xl bg-[var(--brand-primary)] hover:opacity-95 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  Return to Sign In
+                  {language === "bn" ? "লগইন পেজে ফিরুন" : "Return to Sign In"}
                 </Link>
               ) : (
                 <button
@@ -224,7 +225,7 @@ function VerifyEmailInner() {
                   }}
                   className="w-full min-h-[46px] rounded-xl bg-[var(--brand-primary)] hover:opacity-95 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
                 >
-                  Continue to Dashboard
+                  {language === "bn" ? "ড্যাশবোর্ডে প্রবেশ করুন" : "Continue to Dashboard"}
                   <ArrowRight className="w-4 h-4" />
                 </button>
               )}
@@ -245,10 +246,12 @@ function VerifyEmailInner() {
                 </span>
               </div>
               <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                Check Your Inbox
+                {t.checkYourInbox}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-                We sent a secure verification link to confirm your email before granting access to patient records and clinical tools.
+                {language === "bn"
+                  ? "রোগীর রেকর্ড ও ক্লিনিক্যাল টুলস ব্যবহারের পূর্বে আপনার ইমেইল নিশ্চিত করার জন্য আমরা একটি নিরাপদ ভেরিফিকেশন লিংক পাঠিয়েছি।"
+                  : "We sent a secure verification link to confirm your email before granting access to patient records and clinical tools."}
               </p>
             </div>
 
@@ -263,7 +266,7 @@ function VerifyEmailInner() {
             ) : (
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                  Enter Your Registered Email
+                  {language === "bn" ? "আপনার নিবন্ধিত ইমেইল লিখুন" : "Enter Your Registered Email"}
                 </label>
                 <div className="relative">
                   <input
@@ -305,14 +308,14 @@ function VerifyEmailInner() {
                 {resending ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Sending Fresh Link...</span>
+                    <span>{language === "bn" ? "নতুন লিংক পাঠানো হচ্ছে..." : "Sending Fresh Link..."}</span>
                   </>
                 ) : cooldown > 0 ? (
-                  `Resend available in ${cooldown}s`
+                  language === "bn" ? `${cooldown} সেকেন্ড পর পুনরায় পাঠানো যাবে` : `Resend available in ${cooldown}s`
                 ) : (
                   <>
                     <RefreshCw className="w-4 h-4" />
-                    <span>Resend Verification Email</span>
+                    <span>{t.resendVerificationEmail}</span>
                   </>
                 )}
               </button>
@@ -320,12 +323,26 @@ function VerifyEmailInner() {
               {/* Instructions list */}
               <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[11px] text-slate-500 dark:text-slate-400 space-y-1.5 leading-relaxed">
                 <p className="font-semibold text-slate-700 dark:text-slate-300">
-                  Didn’t receive the confirmation email?
+                  {t.didNotReceiveEmail}
                 </p>
                 <ul className="list-disc list-inside space-y-1 pl-1">
-                  <li>Check your <strong>Spam</strong> or <strong>Junk</strong> folder.</li>
-                  <li>Ensure your email service allows messages from our clinic domain.</li>
-                  <li>Wait 1-2 minutes or click resend link above.</li>
+                  <li>
+                    {language === "bn" ? (
+                      <>আপনার <strong>Spam</strong> বা <strong>Junk</strong> ফোল্ডার চেক করুন।</>
+                    ) : (
+                      <>Check your <strong>Spam</strong> or <strong>Junk</strong> folder.</>
+                    )}
+                  </li>
+                  <li>
+                    {language === "bn"
+                      ? "আপনার ক্লিনিকের ডোমেন থেকে পাঠানো বার্তা অনুমোদন করা আছে কিনা তা নিশ্চিত করুন।"
+                      : "Ensure your email service allows messages from our clinic domain."}
+                  </li>
+                  <li>
+                    {language === "bn"
+                      ? "১-২ মিনিট অপেক্ষা করুন অথবা ওপরের বাটনটি দিয়ে পুনরায় লিংক পাঠান।"
+                      : "Wait 1-2 minutes or click resend link above."}
+                  </li>
                 </ul>
               </div>
             </div>
@@ -343,26 +360,26 @@ function VerifyEmailInner() {
                   className="w-full text-xs font-semibold text-[var(--brand-primary)] hover:underline flex items-center justify-center gap-1.5 py-1 cursor-pointer"
                 >
                   <Edit3 className="w-3.5 h-3.5" />
-                  Mistyped email? Change address & resend
+                  {language === "bn" ? "ভুল ইমেইল দিয়েছেন? ঠিকানা পরিবর্তন করে পুনরায় পাঠান" : "Mistyped email? Change address & resend"}
                 </button>
               ) : (
                 <form onSubmit={(e) => void handleChangeEmail(e)} className="space-y-3 pt-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                      Update Account Email Address
+                      {t.updateEmailAddress}
                     </span>
                     <button
                       type="button"
                       onClick={() => setShowChangeEmail(false)}
                       className="text-[11px] text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 cursor-pointer"
                     >
-                      Cancel
+                      {t.cancel}
                     </button>
                   </div>
 
                   <div>
                     <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                      New Email Address
+                      {t.newEmailAddress}
                     </label>
                     <div className="relative">
                       <input
@@ -379,7 +396,7 @@ function VerifyEmailInner() {
 
                   <div>
                     <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                      Account Password (to confirm identity)
+                      {language === "bn" ? "অ্যাকাউন্টের পাসওয়ার্ড (পরিচয় নিশ্চিতের জন্য)" : "Account Password (to confirm identity)"}
                     </label>
                     <div className="relative">
                       <input
@@ -395,7 +412,7 @@ function VerifyEmailInner() {
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer p-1"
-                        title={showPassword ? "Hide password" : "Show password"}
+                        title={showPassword ? (language === "bn" ? "পাসওয়ার্ড লুকান" : "Hide password") : (language === "bn" ? "পাসওয়ার্ড দেখুন" : "Show password")}
                       >
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -407,7 +424,9 @@ function VerifyEmailInner() {
                     disabled={changingEmail || !newEmail || !password}
                     className="w-full min-h-[44px] rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-bold text-xs flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
                   >
-                    {changingEmail ? "Updating & Dispatching..." : "Update Email & Resend"}
+                    {changingEmail
+                      ? (language === "bn" ? "আপডেট ও পাঠানো হচ্ছে..." : "Updating & Dispatching...")
+                      : (language === "bn" ? "ইমেইল আপডেট করে পুনরায় লিংক পাঠান" : "Update Email & Resend")}
                   </button>
                 </form>
               )}
@@ -420,27 +439,31 @@ function VerifyEmailInner() {
 }
 
 export default function VerifyEmailPage() {
+  const { t, language } = useLanguage();
+
   return (
     <main className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-12 bg-[var(--bg-app)] text-[var(--text-primary)]">
       {/* Desktop Informative Hero Panel (Left 5 Columns, Fixed / Sticky, Guaranteed No Scroll) */}
       <div className="lg:col-span-5 xl:col-span-5 hidden lg:flex flex-col sticky top-0 h-screen max-h-screen overflow-hidden">
         <AuthBrandingPanel
-          badge="Email Authentication"
-          title="Verifying Clinical Credentials & Contacts"
-          highlightText="Zero Compromise."
-          description="We verify email addresses to ensure that sensitive prescription notifications and lab results reach authenticated clinicians and patients."
+          badge={language === "bn" ? "ইমেইল প্রমাণীকরণ" : "Email Authentication"}
+          title={language === "bn" ? "ক্লিনিক্যাল তথ্য ও পরিচয় যাচাই" : "Verifying Clinical Credentials & Contacts"}
+          highlightText={language === "bn" ? "সম্পূর্ণ আপসহীন।" : "Zero Compromise."}
+          description={language === "bn"
+            ? "রোগীর প্রেসক্রিপশন ও ল্যাব টেস্টের সংবেদনশীল তথ্যের নিরাপত্তা নিশ্চিত করতে আমরা চিকিৎসকদের ইমেইল যাচাই করি।"
+            : "We verify email addresses to ensure that sensitive prescription notifications and lab results reach authenticated clinicians and patients."}
           features={[
             {
               icon: <ShieldCheck className="w-4 h-4 text-teal-400" />,
-              title: "Verified Electronic Dispense & Rx Alerts",
+              title: language === "bn" ? "যাচাইকৃত ডিজিটাল প্রেসক্রিপশন ও সতর্কতা" : "Verified Electronic Dispense & Rx Alerts",
             },
             {
               icon: <Lock className="w-4 h-4 text-emerald-400" />,
-              title: "Cryptographic Single-Use Verification Tokens",
+              title: language === "bn" ? "একক-ব্যবহারযোগ্য ক্রিপ্টোগ্রাফিক ভেরিফিকেশন টোকেন" : "Cryptographic Single-Use Verification Tokens",
             },
             {
               icon: <Sparkles className="w-4 h-4 text-sky-400" />,
-              title: "One-Click Activation & Direct Redirection",
+              title: language === "bn" ? "এক-ক্লিক অ্যাক্টিভেশন ও সরাসরি ড্যাশবোর্ড" : "One-Click Activation & Direct Redirection",
             },
           ]}
         />
@@ -457,17 +480,17 @@ export default function VerifyEmailPage() {
             </div>
             <div>
               <h1 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
-                PPMS Clinical
+                {t.appTitle}
               </h1>
               <p className="text-[10px] text-slate-500 dark:text-slate-400">
-                Healthcare Operating System
+                {t.appSubtitle}
               </p>
             </div>
           </div>
 
           <div className="hidden lg:flex items-center gap-2 text-xs text-slate-500 font-medium">
             <Mail className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-            <span>Email Identity Authentication</span>
+            <span>{language === "bn" ? "ইমেইল পরিচয় প্রমাণীকরণ" : "Email Identity Authentication"}</span>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
@@ -478,7 +501,7 @@ export default function VerifyEmailPage() {
               className="text-xs font-semibold text-slate-500 hover:text-[var(--brand-primary)] transition flex items-center gap-1"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Login</span>
+              <span>{t.login}</span>
             </Link>
           </div>
         </div>
@@ -489,7 +512,7 @@ export default function VerifyEmailPage() {
             fallback={
               <div className="p-6 max-w-md mx-auto rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-xs text-slate-500 text-center">
                 <RefreshCw className="w-4 h-4 animate-spin mx-auto mb-2 text-[var(--brand-primary)]" />
-                Loading verification panel...
+                {language === "bn" ? "প্যানেল লোড করা হচ্ছে..." : "Loading verification panel..."}
               </div>
             }
           >
@@ -499,14 +522,14 @@ export default function VerifyEmailPage() {
 
         {/* Bottom Footer */}
         <div className="pt-4 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
-          <span>Protected by HIPAA & BMDC compliant security standards.</span>
+          <span>{language === "bn" ? "বিএমডিসি ও স্বাস্থ্যসেবা নিরাপত্তা মান দ্বারা সুরক্ষিত।" : "Protected by HIPAA & BMDC compliant security standards."}</span>
           <div className="flex items-center gap-3">
-            <Link href="/" className="hover:text-[var(--brand-primary)] transition font-medium">
-              Privacy Policy
+            <Link href="/privacy" className="hover:text-[var(--brand-primary)] transition font-medium">
+              {t.privacyPolicy}
             </Link>
             <span>•</span>
-            <Link href="/" className="hover:text-[var(--brand-primary)] transition font-medium">
-              Security Overview
+            <Link href="/terms" className="hover:text-[var(--brand-primary)] transition font-medium">
+              {t.termsOfService}
             </Link>
           </div>
         </div>

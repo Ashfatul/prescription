@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ChangePasswordCard } from "@/components/common/change-password-card";
 import { TwoFactorAuthCard } from "@/components/common/two-factor-auth-card";
 import { CustomSelect } from "@/components/common/custom-select";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export type DoctorProfile = {
   id: string;
@@ -40,6 +41,7 @@ export function DoctorProfileEditor({
   doctor: DoctorProfile;
   onSaved?: (updated: Partial<DoctorProfile>) => void;
 }) {
+  const { t, language } = useLanguage();
   const [specialization, setSpecialization] = useState(doctor.specialization || "");
   const [degrees, setDegrees] = useState(doctor.degrees || "");
   const [designation, setDesignation] = useState(doctor.designation || "");
@@ -131,7 +133,7 @@ export function DoctorProfileEditor({
     ctx.lineWidth = 2.5;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    ctx.strokeStyle = "#0f172a"; // Crisp dark ink color
+    ctx.strokeStyle = "#0f172a";
   };
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
@@ -214,7 +216,7 @@ export function DoctorProfileEditor({
 
       setMessage({
         type: "success",
-        text: "Doctor profile & digital signature saved successfully! Updated details will reflect on your public specialist page and all prescription prints.",
+        text: t.profileUpdatedSuccess,
       });
 
       onSaved?.({
@@ -248,13 +250,13 @@ export function DoctorProfileEditor({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-100 dark:border-slate-800 gap-4">
         <div>
           <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
-            Physician Credentials & Public Profile
+            {t.physicianCredentialsPublicProfile}
           </span>
           <h3 className="text-xl font-black text-slate-900 dark:text-white mt-1">
-            Doctor Profile & Digital Signature
+            {t.doctorProfileDigitalSignature}
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">
-            Update your professional information shown on your dedicated doctor details page and official prescription headers.
+            {t.doctorProfileDesc}
           </p>
         </div>
 
@@ -266,7 +268,7 @@ export function DoctorProfileEditor({
                 : "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
             }`}
           >
-            {available ? "● Accepting Patients" : "○ Currently Away"}
+            {available ? t.acceptingPatients : t.currentlyAway}
           </span>
         </div>
       </div>
@@ -294,13 +296,13 @@ export function DoctorProfileEditor({
         {/* Section 1: Official Medical Credentials */}
         <div className="space-y-4">
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-2">
-            1. Official Credentials & Designation
+            {t.officialCredentialsDesignation}
           </h4>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Doctor Full Name (Registered)
+                {t.doctorFullNameRegistered}
               </label>
               <input
                 disabled
@@ -311,13 +313,13 @@ export function DoctorProfileEditor({
 
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Specialization / Field of Practice *
+                {t.specializationFieldPractice} *
               </label>
               <input
                 required
                 value={specialization}
                 onChange={(e) => setSpecialization(e.target.value)}
-                placeholder="e.g. Internal Medicine, Cardiology, Neurology"
+                placeholder={t.specializationPlaceholder}
                 className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
@@ -326,25 +328,25 @@ export function DoctorProfileEditor({
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Hospital / Institution Affiliation *
+                {t.hospitalInstitutionAffiliation} *
               </label>
               <input
                 required
                 value={hospital}
                 onChange={(e) => setHospital(e.target.value)}
-                placeholder="e.g. Metropolitan Specialized Hospital"
+                placeholder={t.hospitalPlaceholder}
                 className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
 
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Clinical Designation / Rank
+                {t.clinicalDesignationRank}
               </label>
               <input
                 value={designation}
                 onChange={(e) => setDesignation(e.target.value)}
-                placeholder="e.g. Senior Consultant / Associate Professor"
+                placeholder={t.designationPlaceholder}
                 className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
@@ -353,36 +355,36 @@ export function DoctorProfileEditor({
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Degrees & Qualifications
+                {t.degreesQualifications}
               </label>
               <input
                 value={degrees}
                 onChange={(e) => setDegrees(e.target.value)}
-                placeholder="e.g. MBBS, FCPS (Medicine), MD (Cardiology)"
+                placeholder={t.degreesPlaceholder}
                 className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
 
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                BMDC / Medical Registration No
+                {t.bmdcMedicalRegNo}
               </label>
               <input
                 value={bmdcRegNo}
                 onChange={(e) => setBmdcRegNo(e.target.value)}
-                placeholder="e.g. BMDC-A-41285"
+                placeholder={t.bmdcRegPlaceholder}
                 className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)] font-mono"
               />
             </div>
 
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Clinical Experience (Years)
+                {t.clinicalExperienceYears}
               </label>
               <input
                 value={experienceYears}
                 onChange={(e) => setExperienceYears(e.target.value)}
-                placeholder="e.g. 14+ Years"
+                placeholder={t.experienceYearsPlaceholder}
                 className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
@@ -392,42 +394,42 @@ export function DoctorProfileEditor({
         {/* Section 2: Chamber Practice & Consultation Details */}
         <div className="space-y-4">
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-2">
-            2. Chamber Location & Practice Hours
+            {t.chamberLocationPracticeHours}
           </h4>
 
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Chamber / Room Location
+                {t.chamberRoomLocation}
               </label>
               <input
                 value={chamberAddress}
                 onChange={(e) => setChamberAddress(e.target.value)}
-                placeholder="e.g. Room 301, 3rd Floor, West Wing"
+                placeholder={t.chamberAddressPlaceholder}
                 className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
 
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Visiting / Chamber Hours
+                {t.visitingChamberHours}
               </label>
               <input
                 value={visitingHours}
                 onChange={(e) => setVisitingHours(e.target.value)}
-                placeholder="e.g. Sat - Thu: 5:00 PM - 9:30 PM"
+                placeholder={t.visitingHoursPlaceholder}
                 className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
 
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Consultation Fee
+                {t.consultationFeeSummary}
               </label>
               <input
                 value={consultationFee}
                 onChange={(e) => setConsultationFee(e.target.value)}
-                placeholder="e.g. ৳ 1,000 (New) / ৳ 600 (Follow-up)"
+                placeholder={t.consultationFeePlaceholder}
                 className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
@@ -436,19 +438,19 @@ export function DoctorProfileEditor({
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Appointment / Chamber Hotline
+                {t.appointmentChamberHotline}
               </label>
               <input
                 value={contactNumber}
                 onChange={(e) => setContactNumber(e.target.value)}
-                placeholder="e.g. +880 1711-234567 / 10678"
+                placeholder={t.hotlinePlaceholder}
                 className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)] font-mono"
               />
             </div>
 
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Consultation Status
+                {t.consultationStatus}
               </label>
               <div className="flex items-center gap-3 pt-2">
                 <label className="flex cursor-pointer items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
@@ -458,7 +460,7 @@ export function DoctorProfileEditor({
                     onChange={(e) => setAvailable(e.target.checked)}
                     className="h-4 w-4 rounded text-[var(--brand-primary)] focus:ring-[var(--brand-primary)] cursor-pointer"
                   />
-                  <span>Active & available for live serial booking queue</span>
+                  <span>{t.activeForLiveSerialBooking}</span>
                 </label>
               </div>
             </div>
@@ -466,7 +468,7 @@ export function DoctorProfileEditor({
 
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Chamber Practice Notes / Display Banner
+              {t.chamberNotesBanner}
             </label>
             <input
               value={consultationFee}
@@ -478,13 +480,13 @@ export function DoctorProfileEditor({
 
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Doctor Biography & Clinical Focus (Public Profile)
+              {t.doctorBiographyClinicalFocus}
             </label>
             <textarea
               rows={3}
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              placeholder="Dr. ... is a highly regarded specialist with extensive experience in managing acute and chronic disorders..."
+              placeholder={t.doctorBioPlaceholder}
               className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] p-3.5 text-xs outline-none focus:border-[var(--brand-primary)] leading-relaxed resize-y"
             />
           </div>
@@ -495,21 +497,21 @@ export function DoctorProfileEditor({
           <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2.5">
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-                3. Multi-Tier Consultation Fees & Visiting Policy
+                {t.multiTierFeesVisitingPolicy}
               </h4>
               <p className="text-[11px] text-slate-500">
-                Configure patient charges, returning follow-up rates, and free report review periods.
+                {t.configurePatientCharges}
               </p>
             </div>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-              Live Dynamic Calculation
+              {t.liveDynamicCalculation}
             </span>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-                New Patient Fee ($) *
+                {t.newPatientFeeLabel} ($) *
               </label>
               <input
                 type="number"
@@ -521,12 +523,12 @@ export function DoctorProfileEditor({
                 placeholder="50"
                 className="w-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-3.5 py-2.5 text-xs font-mono font-bold outline-none focus:border-[var(--brand-primary)]"
               />
-              <span className="mt-1 block text-[10px] text-slate-400">First-time consultation charge</span>
+              <span className="mt-1 block text-[10px] text-slate-400">{t.firstTimeConsultationCharge}</span>
             </div>
 
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-                Follow-up Fee ($) *
+                {t.followupFeeLabel} ($) *
               </label>
               <input
                 type="number"
@@ -538,57 +540,57 @@ export function DoctorProfileEditor({
                 placeholder="30"
                 className="w-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-3.5 py-2.5 text-xs font-mono font-bold outline-none focus:border-[var(--brand-primary)]"
               />
-              <span className="mt-1 block text-[10px] text-slate-400">Returning patient rate</span>
+              <span className="mt-1 block text-[10px] text-slate-400">{t.returningPatientRate}</span>
             </div>
 
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-                Follow-up Validity (Days)
+                {t.followupValidityLabel}
               </label>
               <CustomSelect
                 allowClear={false}
                 value={String(followupValidityDays)}
                 onChange={(val) => setFollowupValidityDays(Number(val))}
                 options={[
-                  { value: "30", label: "30 Days (1 Month)" },
-                  { value: "60", label: "60 Days (2 Months)" },
-                  { value: "90", label: "90 Days (3 Months - Recommended)" },
-                  { value: "180", label: "180 Days (6 Months)" },
+                  { value: "30", label: t.opt30Days },
+                  { value: "60", label: t.opt60Days },
+                  { value: "90", label: t.opt90Days },
+                  { value: "180", label: t.opt180Days },
                 ]}
                 searchable={false}
               />
-              <span className="mt-1 block text-[10px] text-slate-400">Requires previous prescription</span>
+              <span className="mt-1 block text-[10px] text-slate-400">{t.requiresPreviousPrescription}</span>
             </div>
 
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-                Free Report Review (Days)
+                {t.freeReportReviewLabel}
               </label>
               <CustomSelect
                 allowClear={false}
                 value={String(reportFreeDays)}
                 onChange={(val) => setReportFreeDays(Number(val))}
                 options={[
-                  { value: "0", label: "No free window (Charge immediate follow-up)" },
-                  { value: "2", label: "2 Days after visit ($0 Free - Recommended)" },
-                  { value: "3", label: "3 Days after visit ($0 Free)" },
-                  { value: "5", label: "5 Days after visit ($0 Free)" },
-                  { value: "7", label: "7 Days after visit ($0 Free)" },
+                  { value: "0", label: t.optNoFree },
+                  { value: "2", label: t.opt2Days },
+                  { value: "3", label: t.opt3Days },
+                  { value: "5", label: t.opt5Days },
+                  { value: "7", label: t.opt7Days },
                 ]}
                 searchable={false}
               />
-              <span className="mt-1 block text-[10px] text-slate-400">Diagnostic report check window</span>
+              <span className="mt-1 block text-[10px] text-slate-400">{t.diagnosticReportCheckWindow}</span>
             </div>
           </div>
 
           {/* Visual Policy Explanation Strip */}
           <div className="rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-3 text-xs text-[var(--brand-text)] flex flex-wrap items-center justify-between gap-3">
             <div className="space-y-0.5">
-              <span className="font-bold block">Summary of Chamber Consultation Policy:</span>
+              <span className="font-bold block">{t.summaryOfChamberPolicy}</span>
               <p className="text-[11px] leading-relaxed opacity-90">
-                • <strong>New Patients:</strong> Charged <strong>${newPatientFee}</strong> for first consultation.<br />
-                • <strong>Diagnostic Report Showing:</strong> Free (<strong>$0.00</strong>) within <strong>{reportFreeDays} days</strong> of initial visit.<br />
-                • <strong>Follow-up Visits:</strong> Charged <strong>${followupFee}</strong> if presenting within <strong>{followupValidityDays} days</strong> with verified previous prescription.
+                • <strong>{language === "bn" ? "নতুন রোগী:" : "New Patients:"}</strong> {language === "bn" ? `প্রথম পরামর্শে ফি $${newPatientFee}।` : `Charged $${newPatientFee} for first consultation.`}<br />
+                • <strong>{language === "bn" ? "টেস্টের রিপোর্ট প্রদর্শন:" : "Diagnostic Report Showing:"}</strong> {language === "bn" ? `ভিজিটের ${reportFreeDays} দিনের মধ্যে বিনামূল্যে ($০.০০)।` : `Free ($0.00) within ${reportFreeDays} days of initial visit.`}<br />
+                • <strong>{language === "bn" ? "ফলো-আপ ভিজিট:" : "Follow-up Visits:"}</strong> {language === "bn" ? `পূর্বের প্রেসক্রিপশনসহ ${followupValidityDays} দিনের মধ্যে আসলে ফি $${followupFee}।` : `Charged $${followupFee} if presenting within ${followupValidityDays} days with verified previous prescription.`}
               </p>
             </div>
           </div>
@@ -598,10 +600,10 @@ export function DoctorProfileEditor({
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              4. Digital Signature for Official Prescriptions
+              {t.digitalSignatureTitle}
             </h4>
             <span className="text-[11px] text-slate-500">
-              Appears on live prescription previews, downloads, and official prints
+              {t.signatureAppearsDesc}
             </span>
           </div>
 
@@ -609,7 +611,7 @@ export function DoctorProfileEditor({
             {/* Left: Signature Preview Box */}
             <div className="p-5 rounded-2xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800/80 space-y-3">
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Signature Display on Prescriptions
+                {t.signatureDisplay}
               </span>
 
               {signatureUrl ? (
@@ -625,23 +627,23 @@ export function DoctorProfileEditor({
                   </div>
                   <div className="flex items-center justify-between text-[11px] text-slate-500">
                     <span className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                      <span>✓</span> Active Signature Attached
+                      <span>✓</span> {t.activeSignatureAttached}
                     </span>
                     <button
                       type="button"
                       onClick={() => setSignatureUrl("")}
                       className="text-red-500 hover:text-red-700 font-bold hover:underline cursor-pointer"
                     >
-                      Remove Signature
+                      {t.removeSignature}
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="h-28 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 flex flex-col items-center justify-center text-center p-3 text-slate-400 text-xs">
                   <span className="text-2xl mb-1">✍️</span>
-                  <span>No digital signature uploaded yet</span>
+                  <span>{t.noSignatureUploaded}</span>
                   <span className="text-[10px] text-slate-500 mt-0.5">
-                    Physical stamp line will be used as fallback
+                    {t.physicalStampFallback}
                   </span>
                 </div>
               )}
@@ -650,7 +652,7 @@ export function DoctorProfileEditor({
             {/* Right: Signature Upload / Draw Actions */}
             <div className="space-y-3">
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Upload or Draw Signature
+                {t.uploadOrDrawSignature}
               </span>
 
               <div className="flex flex-col sm:flex-row gap-3">
@@ -673,7 +675,7 @@ export function DoctorProfileEditor({
                   className="flex-1 flex items-center justify-center gap-2 rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] hover:bg-slate-100 dark:hover:bg-slate-800 p-3.5 text-xs font-bold text-slate-800 dark:text-slate-200 transition shadow-xs cursor-pointer disabled:opacity-60"
                 >
                   <span>📁</span>
-                  <span>{uploadingSignature ? "Uploading..." : "Upload Image (PNG/JPG)"}</span>
+                  <span>{uploadingSignature ? t.uploading : t.uploadImageFile}</span>
                 </button>
 
                 {/* Draw Signature Button */}
@@ -683,12 +685,12 @@ export function DoctorProfileEditor({
                   className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] hover:bg-[var(--brand-primary)] hover:text-white p-3.5 text-xs font-bold transition shadow-xs cursor-pointer"
                 >
                   <span>🖊️</span>
-                  <span>Draw on Screen</span>
+                  <span>{t.drawOnScreen}</span>
                 </button>
               </div>
 
               <p className="text-[11px] text-slate-500 leading-relaxed">
-                💡 <strong>Tip for best results:</strong> Upload a transparent background PNG or a crisp photo of your signature written on plain white paper. Or use the &quot;Draw on Screen&quot; pad on mobile/tablet or touch device.
+                💡 <strong>{t.tipForBestResults}</strong> {t.tipSignatureDesc}
               </p>
             </div>
           </div>
@@ -698,9 +700,9 @@ export function DoctorProfileEditor({
             <div className="p-4 rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)]/20 space-y-3 animate-in fade-in">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                  Draw Signature with Touch / Mouse:
+                  {t.drawSignatureWithTouch}
                 </span>
-                <span className="text-[11px] text-slate-500">Sign inside the box below</span>
+                <span className="text-[11px] text-slate-500">{t.signInsideBox}</span>
               </div>
 
               <div className="border border-slate-300 dark:border-slate-700 rounded-xl bg-white overflow-hidden shadow-inner flex justify-center">
@@ -725,7 +727,7 @@ export function DoctorProfileEditor({
                   onClick={clearCanvas}
                   className="px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
                 >
-                  Clear Canvas
+                  {t.clearCanvas}
                 </button>
 
                 <div className="flex items-center gap-2">
@@ -734,7 +736,7 @@ export function DoctorProfileEditor({
                     onClick={() => setIsDrawingOpen(false)}
                     className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer"
                   >
-                    Cancel
+                    {t.cancel}
                   </button>
                   <button
                     type="button"
@@ -742,7 +744,7 @@ export function DoctorProfileEditor({
                     onClick={saveCanvasSignature}
                     className="px-4 py-1.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-90 cursor-pointer disabled:opacity-60"
                   >
-                    {uploadingSignature ? "Saving..." : "Use Drawn Signature"}
+                    {uploadingSignature ? t.saving : t.useDrawnSignature}
                   </button>
                 </div>
               </div>
@@ -757,7 +759,7 @@ export function DoctorProfileEditor({
             disabled={saving || uploadingSignature}
             className="rounded-2xl bg-[var(--brand-primary)] px-8 py-3 text-xs font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-70 cursor-pointer"
           >
-            {saving ? "Saving Credentials..." : "Save Professional Profile & Signature"}
+            {saving ? t.savingCredentials : t.saveDoctorProfileBtn}
           </button>
         </div>
       </form>

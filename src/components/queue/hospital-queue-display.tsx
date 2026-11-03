@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/language-context";
 import {
   Activity,
   Bell,
@@ -76,6 +77,7 @@ export function HospitalQueueDisplay({
   initialDoctorId?: string;
   clinicSlug?: string;
 }) {
+  const { t, language } = useLanguage();
   const [doctors, setDoctors] = useState<DoctorQueueData[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -222,7 +224,7 @@ export function HospitalQueueDisplay({
           <Activity className="w-6 h-6 animate-spin" />
         </div>
         <p className="text-sm font-bold text-slate-600 dark:text-slate-400">
-          Connecting to OPD Chamber Calling System...
+          {t.connectingOpdCalling}
         </p>
       </div>
     );
@@ -233,16 +235,16 @@ export function HospitalQueueDisplay({
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-8 text-center space-y-3">
         <Tv className="w-12 h-12 text-slate-400" />
         <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">
-          No Outpatient Chambers Currently Active
+          {t.noActiveChambers}
         </h2>
         <p className="text-xs text-slate-500 max-w-md">
-          Chamber consultations have not begun for today. Please consult the hospital reception desk for visiting hours.
+          {t.noActiveChambersDesc}
         </p>
         <Link
           href="/doctors"
           className="mt-2 px-4 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95"
         >
-          View All Specialist Directory
+          {t.viewAllSpecialists}
         </Link>
       </div>
     );
@@ -265,11 +267,11 @@ export function HospitalQueueDisplay({
           </div>
           <div>
             <h1 className="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-              <span>Live Outpatient Chamber Calling Monitor</span>
+              <span>{t.liveOpdCallingMonitor}</span>
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
             </h1>
             <p className="text-xs text-slate-500">
-              Real-time room sequence • Auto-synchronizes with clinical stations
+              {t.autoSynchronizesStations}
             </p>
           </div>
         </div>
@@ -286,10 +288,10 @@ export function HospitalQueueDisplay({
             type="button"
             onClick={toggleFullscreen}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white transition shadow-2xs cursor-pointer"
-            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen Display Mode"}
+            title={isFullscreen ? t.exitFullscreen : t.tvMode}
           >
             {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{isFullscreen ? "Exit Fullscreen" : "TV Mode"}</span>
+            <span className="hidden sm:inline">{isFullscreen ? t.exitFullscreen : t.tvMode}</span>
           </button>
         </div>
       </header>
@@ -302,7 +304,7 @@ export function HospitalQueueDisplay({
               type="button"
               onClick={handlePrevDoctor}
               className="p-1.5 rounded-lg border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 transition"
-              title="Previous Doctor"
+              title={language === "bn" ? "পূর্ববর্তী ডাক্তার" : "Previous Doctor"}
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -314,7 +316,7 @@ export function HospitalQueueDisplay({
                   ? "bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400"
                   : "border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300"
               }`}
-              title={isPaused ? "Resume Auto-Cycling" : "Pause on this Doctor"}
+              title={isPaused ? (language === "bn" ? "অটো-সাইকেল চালু করুন" : "Resume Auto-Cycling") : (language === "bn" ? "এই ডাক্তারের উপর থামুন" : "Pause on this Doctor")}
             >
               {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
             </button>
@@ -322,7 +324,7 @@ export function HospitalQueueDisplay({
               type="button"
               onClick={handleNextDoctor}
               className="p-1.5 rounded-lg border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 transition"
-              title="Next Doctor"
+              title={language === "bn" ? "পরবর্তী ডাক্তার" : "Next Doctor"}
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -330,7 +332,7 @@ export function HospitalQueueDisplay({
 
           <div className="flex items-center gap-2">
             <span className="font-semibold text-slate-700 dark:text-slate-300">
-              Chamber {selectedIndex + 1} of {doctors.length}:
+              {t.chamber} {selectedIndex + 1} {t.ofText} {doctors.length}:
             </span>
             <span className="font-bold text-[var(--brand-text)]">
               {selectedDoctor?.name} ({selectedDoctor?.specialization})
@@ -342,7 +344,7 @@ export function HospitalQueueDisplay({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="text-[11px] text-slate-500">
-              {isPaused ? "Auto-cycling paused" : `Cycling in ${secondsRemaining}s`}
+              {isPaused ? (language === "bn" ? "অটো-সাইকেল স্থগিত" : "Auto-cycling paused") : (language === "bn" ? `${secondsRemaining} সেকেন্ডে পরিবর্তন` : `Cycling in ${secondsRemaining}s`)}
             </span>
             <div className="w-24 h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
               <div
@@ -362,10 +364,10 @@ export function HospitalQueueDisplay({
           <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
               <Users className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-              <span>Consulting Specialists ({doctors.length})</span>
+              <span>{t.consultingPhysicians} ({doctors.length})</span>
             </span>
             <span className="text-[10px] text-emerald-600 font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10">
-              Live Updates
+              {language === "bn" ? "লাইভ আপডেট" : "Live Updates"}
             </span>
           </div>
 
@@ -410,7 +412,7 @@ export function HospitalQueueDisplay({
                       </h4>
                       <p className="text-[11px] text-slate-500 truncate">{doc.specialization}</p>
                       <p className="text-[10px] text-slate-400 truncate">
-                        {doc.chamberAddress || "OPD Chamber Room"}
+                        {doc.chamberAddress || (language === "bn" ? "ওপিডি চেম্বার কক্ষ" : "OPD Chamber Room")}
                       </p>
                     </div>
                   </div>
@@ -418,7 +420,7 @@ export function HospitalQueueDisplay({
                   {/* Calling Serial Badge */}
                   <div className="text-right shrink-0">
                     <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 block">
-                      Now Calling
+                      {t.nowCalling}
                     </span>
                     <span
                       className={`text-base font-black font-mono block ${
@@ -428,7 +430,7 @@ export function HospitalQueueDisplay({
                       #{doc.currentSerial || "0"}
                     </span>
                     <span className="text-[10px] text-slate-500 font-medium">
-                      {doc.waitingCount} waiting
+                      {doc.waitingCount} {language === "bn" ? "অপেক্ষমাণ" : "waiting"}
                     </span>
                   </div>
                 </button>
@@ -439,10 +441,12 @@ export function HospitalQueueDisplay({
           {/* Patient Instruction Card */}
           <div className="p-3.5 rounded-2xl bg-[var(--bg-app)] border border-[var(--border-subtle)] text-[11px] text-slate-500 space-y-1">
             <span className="font-bold text-slate-700 dark:text-slate-300 block">
-              Patient Guidance:
+              {language === "bn" ? "রোগীদের জন্য নির্দেশিকা:" : "Patient Guidance:"}
             </span>
             <p className="leading-relaxed">
-              This display rotates automatically through all chambers. If you are waiting for a specific physician, click their name above or visit their direct page.
+              {language === "bn"
+                ? "এই ডিসপ্লেটি স্বয়ংক্রিয়ভাবে সকল চেম্বারের তথ্য প্রদর্শন করে। নির্দিষ্ট চিকিৎসকের জন্য উপরের তালিকায় ক্লিক করুন বা তাদের প্রোফাইল দেখুন।"
+                : "This display rotates automatically through all chambers. If you are waiting for a specific physician, click their name above or visit their direct page."}
             </p>
           </div>
         </div>
@@ -477,11 +481,11 @@ export function HospitalQueueDisplay({
                     {selectedDoctor.name}
                   </h2>
                   <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-                    {selectedDoctor.degrees || "Specialist Physician"}{" "}
+                    {selectedDoctor.degrees || (language === "bn" ? "বিশেষজ্ঞ চিকিৎসক" : "Specialist Physician")}{" "}
                     {selectedDoctor.designation ? `• ${selectedDoctor.designation}` : ""}
                   </p>
                   <p className="text-[11px] text-slate-500 font-mono">
-                    {selectedDoctor.chamberAddress || "OPD Chamber 301, 3rd Floor"} • BMDC: {selectedDoctor.bmdcRegNo || "Verified"}
+                    {selectedDoctor.chamberAddress || "OPD Chamber 301, 3rd Floor"} • BMDC: {selectedDoctor.bmdcRegNo || (language === "bn" ? "ভেরিফায়েড" : "Verified")}
                   </p>
                 </div>
               </div>
@@ -492,11 +496,11 @@ export function HospitalQueueDisplay({
                   href={`/doctors/${selectedDoctor.id}`}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] hover:bg-[var(--brand-primary)] hover:text-white transition font-bold text-xs border border-[var(--brand-border)] shadow-2xs"
                 >
-                  <span>Open Doctor Details & Schedule</span>
+                  <span>{language === "bn" ? "ডাক্তারের বিস্তারিত ও সময়সূচী" : "Open Doctor Details & Schedule"}</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </Link>
                 <span className="text-[10px] text-slate-400 font-medium">
-                  Visiting: {selectedDoctor.visitingHours || "Sat - Thu: 5:00 PM - 9:00 PM"}
+                  {language === "bn" ? "রোগী দেখার সময়:" : "Visiting:"} {selectedDoctor.visitingHours || (language === "bn" ? "শনি - বৃহঃ বিকাল ৫:০০ - রাত ৯:০০" : "Sat - Thu: 5:00 PM - 9:00 PM")}
                 </span>
               </div>
             </div>
@@ -507,7 +511,7 @@ export function HospitalQueueDisplay({
 
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-black uppercase tracking-widest border border-[var(--brand-border)] shadow-xs">
                 <Bell className="w-4 h-4 animate-bounce text-[var(--brand-primary)]" />
-                <span>NOW CONSULTING IN CHAMBER</span>
+                <span>{t.nowConsultingInChamber}</span>
               </div>
 
               {selectedDoctor.currentSerial > 0 ? (
@@ -517,11 +521,11 @@ export function HospitalQueueDisplay({
                   </div>
 
                   <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
-                    {selectedDoctor.currentPatient?.safeName || `Token #${selectedDoctor.currentSerial}`}
+                    {selectedDoctor.currentPatient?.safeName || `${t.tokenNumber} #${selectedDoctor.currentSerial}`}
                   </div>
 
                   <p className="text-xs sm:text-sm text-slate-500 font-semibold">
-                    Please proceed to {selectedDoctor.chamberAddress || "Doctor Consultation Chamber"}
+                    {t.pleaseProceedTo} {selectedDoctor.chamberAddress || (language === "bn" ? "ডাক্তার পরামর্শ চেম্বার" : "Doctor Consultation Chamber")}
                   </p>
                 </>
               ) : (
@@ -530,10 +534,10 @@ export function HospitalQueueDisplay({
                     #--
                   </div>
                   <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                    No active consultation currently in session
+                    {t.noActiveConsultationSession}
                   </p>
                   <p className="text-xs text-slate-500">
-                    Doctor is preparing chamber or all scheduled consultations for this slot are completed.
+                    {t.doctorPreparingChamber}
                   </p>
                 </div>
               )}
@@ -546,7 +550,7 @@ export function HospitalQueueDisplay({
               <div className="sm:col-span-4 p-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-1.5 shadow-2xs">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                  <span>Previous Patient</span>
+                  <span>{t.previousPatient}</span>
                 </span>
                 {selectedDoctor.previousPatient ? (
                   <div>
@@ -556,10 +560,10 @@ export function HospitalQueueDisplay({
                     <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 block truncate">
                       {selectedDoctor.previousPatient.safeName}
                     </span>
-                    <span className="text-[10px] text-emerald-600 font-medium">Completed</span>
+                    <span className="text-[10px] text-emerald-600 font-medium">{language === "bn" ? "সম্পন্ন" : "Completed"}</span>
                   </div>
                 ) : (
-                  <span className="text-xs text-slate-400 block pt-1 font-medium">None yet today</span>
+                  <span className="text-xs text-slate-400 block pt-1 font-medium">{language === "bn" ? "আজকে এখনও নেই" : "None yet today"}</span>
                 )}
               </div>
 
@@ -567,7 +571,7 @@ export function HospitalQueueDisplay({
               <div className="sm:col-span-4 p-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-1.5 shadow-2xs">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Next in Lobby</span>
+                  <span>{t.nextInLobby}</span>
                 </span>
                 {selectedDoctor.nextPatient ? (
                   <div>
@@ -577,10 +581,10 @@ export function HospitalQueueDisplay({
                     <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 block truncate">
                       {selectedDoctor.nextPatient.safeName}
                     </span>
-                    <span className="text-[10px] text-amber-600 font-medium">Please be ready</span>
+                    <span className="text-[10px] text-amber-600 font-medium">{t.pleaseBeReady}</span>
                   </div>
                 ) : (
-                  <span className="text-xs text-slate-400 block pt-1 font-medium">No patient next in line</span>
+                  <span className="text-xs text-slate-400 block pt-1 font-medium">{language === "bn" ? "লাইনে কোনো রোগী নেই" : "No patient next in line"}</span>
                 )}
               </div>
 
@@ -588,7 +592,7 @@ export function HospitalQueueDisplay({
               <div className="sm:col-span-4 p-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-1.5 shadow-2xs">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-rose-500 flex items-center gap-1">
                   <XCircle className="w-3.5 h-3.5 text-rose-500" />
-                  <span>Missed / Skipped Calls</span>
+                  <span>{t.missedSkippedCalls}</span>
                 </span>
                 {selectedDoctor.missedPatients.length > 0 ? (
                   <div>
@@ -603,11 +607,11 @@ export function HospitalQueueDisplay({
                       ))}
                     </div>
                     <span className="text-[9px] text-slate-500 block mt-1 leading-tight">
-                      Report to reception desk to re-queue.
+                      {t.reportToReceptionRequeue}
                     </span>
                   </div>
                 ) : (
-                  <span className="text-xs text-slate-400 block pt-1 font-medium">Zero missed calls</span>
+                  <span className="text-xs text-slate-400 block pt-1 font-medium">{t.zeroMissedCalls}</span>
                 )}
               </div>
 
@@ -617,10 +621,10 @@ export function HospitalQueueDisplay({
             <div className="p-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-bold text-slate-800 dark:text-slate-200">
-                  Upcoming Queue in Line:
+                  {t.upcomingQueueInLine}
                 </span>
                 <span className="text-[11px] text-slate-500">
-                  Total Booked Today: <strong>{selectedDoctor.totalToday}</strong> • Waiting:{" "}
+                  {language === "bn" ? "আজকের মোট বুকিং:" : "Total Booked Today:"} <strong>{selectedDoctor.totalToday}</strong> • {language === "bn" ? "অপেক্ষমাণ:" : "Waiting:"}{" "}
                   <strong>{selectedDoctor.waitingCount}</strong>
                 </span>
               </div>
@@ -643,7 +647,7 @@ export function HospitalQueueDisplay({
                 </div>
               ) : (
                 <p className="text-xs text-slate-400 py-2">
-                  No additional patients currently queued in line.
+                  {language === "bn" ? "বর্তমানে কিউতে কোনো অপেক্ষমাণ রোগী নেই।" : "No additional patients currently queued in line."}
                 </p>
               )}
             </div>
@@ -653,11 +657,11 @@ export function HospitalQueueDisplay({
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
                 <span>
-                  <strong>Safe Public Display:</strong> Patient names are masked to respect privacy and medical confidentiality.
+                  <strong>{t.safePublicDisplay}</strong> {t.safePublicDisplayNotice}
                 </span>
               </div>
               <span className="text-[11px] font-medium text-slate-400">
-                Calling serials are advanced by clinical staff and doctors inside the consulting room.
+                {language === "bn" ? "চিকিৎসক ও ক্লিনিক্যাল কর্মীরা চেম্বার থেকে সিরিয়াল নম্বর পরিবর্তন করেন।" : "Calling serials are advanced by clinical staff and doctors inside the consulting room."}
               </span>
             </div>
           </div>

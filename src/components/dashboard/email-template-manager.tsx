@@ -11,6 +11,7 @@ import {
   RefreshCw,
   Sparkles,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export interface EmailTemplateItem {
   id: string;
@@ -34,6 +35,7 @@ const textareaClasses =
   "w-full p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all font-mono leading-relaxed";
 
 export function EmailTemplateManager() {
+  const { t, language } = useLanguage();
   const [templates, setTemplates] = useState<EmailTemplateItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
@@ -270,12 +272,12 @@ export function EmailTemplateManager() {
                 <span className="text-xs text-[var(--text-muted)] font-medium">• SMTP Engine</span>
               </div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-                Email Templates & Dispatch Center
+                {t.emailTemplatesManagement}
               </h2>
             </div>
           </div>
           <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
-            Customize HTML email layouts for user registration confirmation, password recovery, clinic welcome alerts, and clinical notifications. Each template dynamically injects user credentials and variables.
+            {t.emailTemplatesDesc}
           </p>
         </div>
 
@@ -285,7 +287,7 @@ export function EmailTemplateManager() {
           className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 active:scale-98 transition-all cursor-pointer self-start sm:self-auto shrink-0"
         >
           <Plus className="w-4 h-4" />
-          <span>New Custom Template</span>
+          <span>{t.newEmailTemplate}</span>
         </button>
       </div>
 
@@ -294,11 +296,11 @@ export function EmailTemplateManager() {
         {loading ? (
           <div className="p-12 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
             <RefreshCw className="w-4 h-4 animate-spin text-[var(--brand-primary)]" />
-            <span>Loading communication templates...</span>
+            <span>{t.loadingEmailTemplates}</span>
           </div>
         ) : templates.length === 0 ? (
           <div className="p-12 text-center text-xs text-slate-400">
-            No email templates configured yet.
+            {language === "bn" ? "এখনও কোনো ইমেইল টেমপ্লেট সংরক্ষিত নেই।" : "No email templates configured yet."}
           </div>
         ) : (
           <div className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -328,7 +330,10 @@ export function EmailTemplateManager() {
                   </h3>
 
                   <p className="text-xs text-slate-500 font-medium">
-                    <strong className="text-slate-700 dark:text-slate-300">Subject:</strong> {tpl.subject}
+                    <strong className="text-slate-700 dark:text-slate-300">
+                      {language === "bn" ? "বিষয়:" : "Subject:"}
+                    </strong>{" "}
+                    {tpl.subject}
                   </p>
 
                   {tpl.description && (
@@ -339,7 +344,9 @@ export function EmailTemplateManager() {
 
                   {Array.isArray(tpl.availableVars) && tpl.availableVars.length > 0 && (
                     <div className="flex flex-wrap items-center gap-1 pt-1">
-                      <span className="text-[10px] font-semibold text-slate-400 mr-1">Variables:</span>
+                      <span className="text-[10px] font-semibold text-slate-400 mr-1">
+                        {language === "bn" ? "ভেরিয়েবলসমূহ:" : "Variables:"}
+                      </span>
                       {tpl.availableVars.map((v) => (
                         <span
                           key={v}
@@ -357,10 +364,10 @@ export function EmailTemplateManager() {
                     type="button"
                     onClick={() => handleOpenTestModal(tpl)}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-300 text-xs font-semibold cursor-pointer transition shadow-2xs"
-                    title="Send test email via SMTP"
+                    title={t.testEmail}
                   >
                     <Send className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
-                    <span>Test SMTP</span>
+                    <span>{t.testEmail}</span>
                   </button>
 
                   <button
@@ -369,7 +376,7 @@ export function EmailTemplateManager() {
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] hover:opacity-90 text-xs font-bold cursor-pointer transition"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
-                    <span>Customize</span>
+                    <span>{t.edit}</span>
                   </button>
 
                   {!tpl.isSystem && (
@@ -377,7 +384,7 @@ export function EmailTemplateManager() {
                       type="button"
                       onClick={() => handleDelete(tpl.id, tpl.name)}
                       className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
-                      title="Delete template"
+                      title={t.delete}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -572,14 +579,14 @@ export function EmailTemplateManager() {
                   onClick={() => setModalOpen(false)}
                   className="px-5 py-2.5 rounded-xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 font-semibold cursor-pointer"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
                   className="px-6 py-2.5 rounded-xl bg-[var(--brand-primary)] text-white font-bold shadow-md hover:opacity-90 disabled:opacity-50 cursor-pointer"
                 >
-                  {isPending ? "Saving..." : "Save Email Template"}
+                  {isPending ? t.saving : t.saveTemplate}
                 </button>
               </div>
             </form>
@@ -598,10 +605,10 @@ export function EmailTemplateManager() {
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-900 dark:text-white text-sm">
-                    Dispatch Test Email
+                    {t.sendTestNotification}
                   </h3>
                   <p className="text-[11px] text-slate-400">
-                    Template: {testTargetTemplate.name}
+                    {t.templateStudioNav}: {testTargetTemplate.name}
                   </p>
                 </div>
               </div>
@@ -617,7 +624,9 @@ export function EmailTemplateManager() {
             <form onSubmit={handleSendTestEmail} className="flex flex-col flex-1 min-h-0 overflow-hidden">
               <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4 text-xs">
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  This will send a live sample email rendered with mock test data to verify your SMTP configuration (<code className="font-mono text-[11px] bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">127.0.0.1:2525</code>).
+                  {language === "bn"
+                    ? "এটি আপনার এসএমটিপি কনফিগারেশন যাচাই করার জন্য মক ডেটা সহ একটি পরীক্ষামূলক নমুনা ইমেইল পাঠাবে।"
+                    : "This will send a live sample email rendered with mock test data to verify your SMTP configuration."}
                 </p>
 
                 {testResult && (
@@ -634,7 +643,7 @@ export function EmailTemplateManager() {
 
                 <div className="space-y-1">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Recipient Test Address *
+                    {t.recipientEmail} *
                   </label>
                   <input
                     type="email"
@@ -653,7 +662,7 @@ export function EmailTemplateManager() {
                   onClick={() => setTestModalOpen(false)}
                   className="px-4 py-2 rounded-xl border border-[var(--border-default)] text-slate-600 dark:text-slate-300 font-semibold cursor-pointer"
                 >
-                  Close
+                  {t.close}
                 </button>
                 <button
                   type="submit"
@@ -663,12 +672,12 @@ export function EmailTemplateManager() {
                   {testSending ? (
                     <>
                       <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                      <span>Sending via SMTP...</span>
+                      <span>{t.sendingTestEmail}</span>
                     </>
                   ) : (
                     <>
                       <Send className="w-3.5 h-3.5" />
-                      <span>Send Live Test</span>
+                      <span>{t.sendTestNotification}</span>
                     </>
                   )}
                 </button>

@@ -10,6 +10,7 @@ import {
   Eye,
   AlertCircle,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export interface CustomTextBlock {
   id: string;
@@ -95,6 +96,7 @@ const DEFAULT_WATERMARK_PRESETS = [
 ];
 
 export function TemplateManager() {
+  const { t, language } = useLanguage();
   const [templates, setTemplates] = useState<TemplateItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -538,7 +540,7 @@ export function TemplateManager() {
           className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 transition-all cursor-pointer self-start md:self-auto shrink-0"
         >
           <span>✨</span>
-          <span>Create Master Template</span>
+          <span>{language === "bn" ? "নতুন মাস্টার টেমপ্লেট তৈরি করুন" : "Create Master Template"}</span>
         </button>
       </div>
 
@@ -558,11 +560,11 @@ export function TemplateManager() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {loading ? (
           <div className="col-span-full p-12 text-center text-xs text-slate-400">
-            Loading prescription templates...
+            {language === "bn" ? "প্রেসক্রিপশন টেমপ্লেট লোড হচ্ছে..." : "Loading prescription templates..."}
           </div>
         ) : templates.length === 0 ? (
           <div className="col-span-full p-12 text-center text-xs text-slate-400">
-            No templates configured yet. Click above to design one!
+            {language === "bn" ? "কোনো টেমপ্লেট কনফিগার করা হয়নি। উপরে ক্লিক করে তৈরি করুন!" : "No templates configured yet. Click above to design one!"}
           </div>
         ) : (
           templates.map((tpl) => {
@@ -594,10 +596,12 @@ export function TemplateManager() {
                     </div>
                     {tpl.isDefault ? (
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200">
-                        Default Master
+                        {language === "bn" ? "ডিফল্ট মাস্টার" : "Default Master"}
                       </span>
                     ) : (
-                      <span className="text-[10px] text-slate-400">Chamber Layout</span>
+                      <span className="text-[10px] text-slate-400">
+                        {language === "bn" ? "চেম্বার লেআউট" : "Chamber Layout"}
+                      </span>
                     )}
                   </div>
 
@@ -687,7 +691,7 @@ export function TemplateManager() {
                 }`}
               >
                 <SlidersHorizontal className="w-3.5 h-3.5" />
-                <span>Controls</span>
+                <span>{language === "bn" ? "কন্ট্রোলস" : "Controls"}</span>
               </button>
               <button
                 type="button"
@@ -699,7 +703,7 @@ export function TemplateManager() {
                 }`}
               >
                 <Eye className="w-3.5 h-3.5" />
-                <span>Preview</span>
+                <span>{t.preview}</span>
               </button>
             </div>
 
@@ -709,7 +713,7 @@ export function TemplateManager() {
                 onClick={() => setShowDesigner(false)}
                 className="px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
               >
-                Cancel
+                {t.cancel}
               </button>
               <button
                 type="button"
@@ -717,7 +721,7 @@ export function TemplateManager() {
                 disabled={saving}
                 className="px-4 sm:px-6 py-2 rounded-xl text-xs font-bold bg-[var(--brand-primary)] text-white shadow-md hover:opacity-90 disabled:opacity-50 cursor-pointer whitespace-nowrap"
               >
-                {saving ? "Saving..." : "💾 Save"}
+                {saving ? t.saving : t.saveTemplate}
               </button>
             </div>
           </div>
@@ -733,13 +737,13 @@ export function TemplateManager() {
               {/* Category Tab Selector */}
               <div className="flex items-center gap-1 p-2 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 overflow-x-auto text-xs shrink-0">
                 {[
-                  { id: "branding", label: "🏥 Info" },
-                  { id: "watermark", label: "🖼️ Behind Logo" },
-                  { id: "colors", label: "🎨 Colors" },
-                  { id: "fonts", label: "📐 Typography" },
-                  { id: "positions", label: "🎯 X/Y Offsets" },
-                  { id: "visibility", label: "👁️ Show/Hide" },
-                  { id: "customText", label: "✍️ Place Text" },
+                  { id: "branding", label: `🏥 ${t.brandingInsignia}` },
+                  { id: "watermark", label: `🖼️ ${t.watermarkBehindLogo}` },
+                  { id: "colors", label: `🎨 ${t.colorPalette}` },
+                  { id: "fonts", label: `📐 ${t.typographyScaling}` },
+                  { id: "positions", label: `🎯 ${t.offsetsMargins}` },
+                  { id: "visibility", label: `👁️ ${t.visibleSections}` },
+                  { id: "customText", label: `✍️ ${t.freeFloatingText}` },
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -1460,7 +1464,9 @@ export function TemplateManager() {
 
                           <div className="flex items-center justify-between gap-2 pt-1">
                             <div className="flex items-center gap-1.5">
-                              <span className="text-[10px] text-slate-400">Font:</span>
+                              <span className="text-[10px] text-slate-400">
+                                {language === "bn" ? "ফন্ট:" : "Font:"}
+                              </span>
                               <input
                                 type="number"
                                 min="8"
@@ -1473,7 +1479,9 @@ export function TemplateManager() {
                             </div>
 
                             <div className="flex items-center gap-1.5">
-                              <span className="text-[10px] text-slate-400">Color:</span>
+                              <span className="text-[10px] text-slate-400">
+                                {language === "bn" ? "রং:" : "Color:"}
+                              </span>
                               <input
                                 type="color"
                                 value={block.color}
@@ -1489,7 +1497,9 @@ export function TemplateManager() {
                                 onChange={(e) => handleUpdateCustomText(block.id, { isBold: e.target.checked })}
                                 className="w-3.5 h-3.5 rounded"
                               />
-                              <span className="text-[10px] font-bold">Bold</span>
+                              <span className="text-[10px] font-bold">
+                                {language === "bn" ? "বোল্ড" : "Bold"}
+                              </span>
                             </label>
                           </div>
                         </div>
@@ -1507,7 +1517,7 @@ export function TemplateManager() {
                   className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-[var(--brand-surface)] text-[var(--brand-primary)] border border-[var(--brand-border)] hover:bg-[var(--brand-primary)] hover:text-white transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                 >
                   <Eye className="w-4 h-4" />
-                  <span>View Live A4 Canvas Preview →</span>
+                  <span>{language === "bn" ? "লাইভ A4 ক্যানভাস প্রিভিউ দেখুন →" : "View Live A4 Canvas Preview →"}</span>
                 </button>
               </div>
             </div>
@@ -1527,10 +1537,10 @@ export function TemplateManager() {
                     className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 cursor-pointer shadow-xs"
                   >
                     <SlidersHorizontal className="w-3.5 h-3.5" />
-                    <span>Controls</span>
+                    <span>{language === "bn" ? "কন্ট্রোলস" : "Controls"}</span>
                   </button>
                   <span className="text-xs font-bold text-slate-600 dark:text-slate-300 hidden sm:inline">
-                    Live A4 Preview (Real Scale)
+                    {language === "bn" ? "লাইভ A4 প্রিভিউ (আসল মাপ)" : "Live A4 Preview (Real Scale)"}
                   </span>
                 </div>
 
@@ -1706,14 +1716,24 @@ export function TemplateManager() {
                           Dr. Fahim Rahman
                         </h2>
                         <p className="font-bold text-slate-700">MBBS, FCPS (Medicine), MACP (USA)</p>
-                        <p className="text-[11px] text-slate-600">Senior Consultant, Department of Internal Medicine</p>
-                        <p className="text-[10px] text-slate-400">BMDC Reg No: BMDC-A-41285</p>
+                        <p className="text-[11px] text-slate-600">
+                          {language === "bn" ? "সিনিয়র কনসালট্যান্ট, মেডিসিন বিভাগ" : "Senior Consultant, Department of Internal Medicine"}
+                        </p>
+                        <p className="text-[10px] text-slate-400">
+                          {language === "bn" ? "বিএমডিসি রেজি নং: BMDC-A-41285" : "BMDC Reg No: BMDC-A-41285"}
+                        </p>
                       </div>
 
                       <div className="text-right text-[11px]">
-                        <p className="font-bold text-slate-800">Chamber: Room 301, 3rd Floor</p>
-                        <p className="text-slate-500">Visiting Hours: 09:00 AM - 01:00 PM</p>
-                        <p className="text-slate-500">Contact: +880 1711-234567</p>
+                        <p className="font-bold text-slate-800">
+                          {language === "bn" ? "চেম্বার: রুম ৩০১, ৩য় তলা" : "Chamber: Room 301, 3rd Floor"}
+                        </p>
+                        <p className="text-slate-500">
+                          {language === "bn" ? "রোগী দেখার সময়: সকাল ৯:০০ - দুপুর ১:০০" : "Visiting Hours: 09:00 AM - 01:00 PM"}
+                        </p>
+                        <p className="text-slate-500">
+                          {language === "bn" ? "যোগাযোগ: +880 1711-234567" : "Contact: +880 1711-234567"}
+                        </p>
                       </div>
                     </div>
 
@@ -1725,21 +1745,23 @@ export function TemplateManager() {
                         borderColor: `${themeColor}33`,
                       }}
                     >
-                      <span>Patient: <strong>Nusrat Jahan</strong></span>
-                      <span>Age: <strong>32 Yrs</strong></span>
-                      <span>Gender: <strong>Female</strong></span>
-                      <span>Date: <strong>01 Nov 2026</strong></span>
+                      <span>{t.patientName}: <strong>{language === "bn" ? "নুসরাত জাহান" : "Nusrat Jahan"}</strong></span>
+                      <span>{t.age}: <strong>{language === "bn" ? "৩২ বছর" : "32 Yrs"}</strong></span>
+                      <span>{t.gender}: <strong>{language === "bn" ? "মহিলা" : "Female"}</strong></span>
+                      <span>{language === "bn" ? "তারিখ:" : "Date:"} <strong>{language === "bn" ? "০১ নভেম্বর ২০২৬" : "01 Nov 2026"}</strong></span>
                       <span>Rx ID: <code className="font-mono text-[10px]">#RX-7892</code></span>
                     </div>
 
                     {/* Vitals Box */}
                     {showVitals && (
                       <div className="flex items-center gap-3 p-2 rounded-lg bg-slate-50 border border-slate-200 text-[10px] font-medium text-slate-600">
-                        <span className="font-bold uppercase tracking-wider text-slate-400">Vitals:</span>
+                        <span className="font-bold uppercase tracking-wider text-slate-400">
+                          {language === "bn" ? "ভাইটালস:" : "Vitals:"}
+                        </span>
                         <span>BP: <strong>120/80 mmHg</strong></span>
-                        <span>Pulse: <strong>76 bpm</strong></span>
-                        <span>Weight: <strong>62 kg</strong></span>
-                        <span>Temp: <strong>98.6 °F</strong></span>
+                        <span>{language === "bn" ? "পালস:" : "Pulse:"} <strong>76 bpm</strong></span>
+                        <span>{language === "bn" ? "ওজন:" : "Weight:"} <strong>62 kg</strong></span>
+                        <span>{language === "bn" ? "তাপমাত্রা:" : "Temp:"} <strong>98.6 °F</strong></span>
                       </div>
                     )}
 
@@ -1751,12 +1773,14 @@ export function TemplateManager() {
                           {showClinicalNotes && (
                             <div>
                               <h4 className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: themeColor }}>
-                                Chief Complaints
+                                {t.chiefComplaints}
                               </h4>
                               <p style={{ fontSize: `${bodyFontSize}px` }} className="text-slate-600 leading-snug">
-                                • Fever x 3 days<br />
-                                • Severe throat ache<br />
-                                • Dry productive cough
+                                {language === "bn" ? (
+                                  <>• জ্বর x ৩ দিন<br />• তীব্র গলা ব্যথা<br />• শুকনো কাশি</>
+                                ) : (
+                                  <>• Fever x 3 days<br />• Severe throat ache<br />• Dry productive cough</>
+                                )}
                               </p>
                             </div>
                           )}
@@ -1764,10 +1788,10 @@ export function TemplateManager() {
                           {showDiagnosis && (
                             <div>
                               <h4 className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: themeColor }}>
-                                Diagnosis
+                                {t.clinicalDiagnosis}
                               </h4>
                               <p style={{ fontSize: `${bodyFontSize}px` }} className="font-bold text-slate-800 leading-snug">
-                                Acute Pharyngitis with Upper Respiratory Infection
+                                {language === "bn" ? "তীব্র ফ্যারিঞ্জাইটিস এবং শ্বাসতন্ত্রের সংক্রমণ" : "Acute Pharyngitis with Upper Respiratory Infection"}
                               </p>
                             </div>
                           )}
@@ -1781,15 +1805,15 @@ export function TemplateManager() {
                             Rx
                           </span>
                           <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                            Medications & Dosage
+                            {language === "bn" ? "ঔষধ ও সেবনবিধি" : "Medications & Dosage"}
                           </span>
                         </div>
 
                         <div className="space-y-2.5">
                           {[
-                            { name: "Tab. Ciprocin 500mg", type: "Tablet", freq: "1+0+1", dur: "7 days", inst: "After meal with plenty of water" },
-                            { name: "Tab. Napa Extra 500mg+65mg", type: "Tablet", freq: "1+1+1", dur: "3 days", inst: "If fever exceeds 100°F" },
-                            { name: "Cap. Maxpro 20mg", type: "Capsule", freq: "1+0+1", dur: "14 days", inst: "30 minutes before breakfast & dinner" },
+                            { name: "Tab. Ciprocin 500mg", type: "Tablet", freq: "1+0+1", dur: language === "bn" ? "৭ দিন" : "7 days", inst: language === "bn" ? "খাবারের পর প্রচুর পানিসহ" : "After meal with plenty of water" },
+                            { name: "Tab. Napa Extra 500mg+65mg", type: "Tablet", freq: "1+1+1", dur: language === "bn" ? "৩ দিন" : "3 days", inst: language === "bn" ? "জ্বর ১০০°F এর বেশি হলে" : "If fever exceeds 100°F" },
+                            { name: "Cap. Maxpro 20mg", type: "Capsule", freq: "1+0+1", dur: language === "bn" ? "১৪ দিন" : "14 days", inst: language === "bn" ? "সকাল ও রাতের খাবারের ৩০ মিনিট আগে" : "30 minutes before breakfast & dinner" },
                           ].map((med, i) => (
                             <div key={i} className="pb-1.5 border-b border-slate-100 last:border-b-0">
                               <p className="font-bold text-slate-900" style={{ fontSize: `${rxItemFontSize}px` }}>
@@ -1813,13 +1837,15 @@ export function TemplateManager() {
                         style={{ transform: `translateY(${signatureOffsetY}px)` }}
                       >
                         <div className="text-[10px] text-slate-400">
-                          <p>Issued by Metropolitan Health Clinical Suite</p>
-                          <p>Prescription Verification: <strong>VERIFIED-2026-OK</strong></p>
+                          <p>{language === "bn" ? "মেট্রোপলিটন হেলথ ক্লিনিকাল স্যুট দ্বারা প্রদত্ত" : "Issued by Metropolitan Health Clinical Suite"}</p>
+                          <p>{language === "bn" ? "প্রেসক্রিপশন যাচাইকরণ:" : "Prescription Verification:"} <strong>VERIFIED-2026-OK</strong></p>
                         </div>
                         <div className="text-right">
                           <div className="w-40 border-b border-slate-400 mb-1" />
                           <p className="text-[11px] font-bold text-slate-800">Dr. Fahim Rahman</p>
-                          <p className="text-[10px] text-slate-400">Registered Medical Practitioner</p>
+                          <p className="text-[10px] text-slate-400">
+                            {language === "bn" ? "নিবন্ধিত চিকিৎসা কর্মকর্তা (বিএমডিসি)" : "Registered Medical Practitioner"}
+                          </p>
                         </div>
                       </div>
                     )}

@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { CustomSelect } from "@/components/common/custom-select";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type ChatConnectionItem = {
   id: string;
@@ -56,6 +57,7 @@ type UserOption = {
 };
 
 export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
+  const { t } = useLanguage();
   const [connections, setConnections] = useState<ChatConnectionItem[]>([]);
   const [activeConnectionId, setActiveConnectionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessageItem[]>([]);
@@ -238,11 +240,11 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
               <MessageSquare className="w-5 h-5" />
             </div>
             <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-              Clinical Consultation Chat
+              {t.clinicalChatTitle}
             </h2>
           </div>
           <p className="text-xs text-slate-500">
-            Secure, verified clinical messaging between patients, physicians, and clinic staff with approval security.
+            {t.clinicalChatSubtitle}
           </p>
         </div>
 
@@ -252,7 +254,7 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
           className="px-4 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>New Chat Request</span>
+          <span>{t.newChatRequest}</span>
         </button>
       </div>
 
@@ -264,7 +266,7 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
           {pendingIncoming.length > 0 && (
             <div className="space-y-2 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs">
               <span className="font-bold text-amber-800 dark:text-amber-300 block text-[11px] uppercase tracking-wider">
-                Pending Requests ({pendingIncoming.length})
+                {t.pendingRequests} ({pendingIncoming.length})
               </span>
               <div className="space-y-2">
                 {pendingIncoming.map((conn) => (
@@ -291,14 +293,14 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
                         onClick={() => handleRespondRequest(conn.id, "REJECTED")}
                         className="px-2.5 py-1 rounded-lg border border-[var(--border-default)] text-slate-600 hover:bg-rose-50 hover:text-rose-600 text-[10px] font-bold transition cursor-pointer"
                       >
-                        Decline
+                        {t.decline}
                       </button>
                       <button
                         type="button"
                         onClick={() => handleRespondRequest(conn.id, "APPROVED")}
                         className="px-3 py-1 rounded-lg bg-[var(--brand-primary)] text-white text-[10px] font-bold transition hover:opacity-90 cursor-pointer"
                       >
-                        Approve
+                        {t.approve}
                       </button>
                     </div>
                   </div>
@@ -311,7 +313,7 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
           {pendingOutgoing.length > 0 && (
             <div className="p-3 rounded-2xl bg-[var(--bg-subtle)] space-y-1.5 text-xs">
               <span className="font-bold text-slate-500 block text-[10px] uppercase tracking-wider">
-                Awaiting Doctor / Staff Approval
+                {t.awaitingApproval}
               </span>
               {pendingOutgoing.map((conn) => (
                 <div
@@ -321,7 +323,7 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
                   <span className="truncate">{conn.partner.name}</span>
                   <span className="inline-flex items-center gap-1 text-[10px] text-amber-500 font-bold shrink-0">
                     <Clock className="w-3 h-3" />
-                    <span>Pending</span>
+                    <span>{t.pending}</span>
                   </span>
                 </div>
               ))}
@@ -331,20 +333,20 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
           {/* Approved Active Threads */}
           <div className="flex-1 space-y-1 overflow-y-auto">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block px-2 mb-1">
-              Active Conversations
+              {t.activeConversations}
             </span>
 
             {loading ? (
               <div className="p-6 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin text-[var(--brand-primary)]" />
-                <span>Loading chats...</span>
+                <span>{t.loadingChats}</span>
               </div>
             ) : approvedConnections.length === 0 ? (
               <div className="p-6 text-center text-xs text-slate-400 space-y-1">
                 <p className="font-semibold text-slate-600 dark:text-slate-300">
-                  No active chats yet
+                  {t.noActiveChats}
                 </p>
-                <p>Click &quot;New Chat Request&quot; to send an invitation.</p>
+                <p>{t.newChatInvitationDesc}</p>
               </div>
             ) : (
               approvedConnections.map((conn) => {
@@ -373,7 +375,7 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
                         </span>
                       </div>
                       <p className="text-[11px] text-slate-400 truncate">
-                        {conn.lastMessage ? conn.lastMessage.message : "Tap to open chat thread"}
+                        {conn.lastMessage ? conn.lastMessage.message : t.tapToOpenChat}
                       </p>
                     </div>
                   </button>
@@ -408,7 +410,7 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
 
                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold">
                   <CheckCircle2 className="w-3 h-3" />
-                  <span>Approved Thread</span>
+                  <span>{t.approvedThread}</span>
                 </div>
               </div>
 
@@ -416,7 +418,7 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
               <div className="flex-1 p-6 overflow-y-auto space-y-3.5 max-h-[420px] bg-[var(--bg-app)]/30">
                 {messages.length === 0 ? (
                   <div className="p-8 text-center text-xs text-slate-400">
-                    No messages exchanged yet. Say hello to begin!
+                    {t.noMessagesExchanged}
                   </div>
                 ) : (
                   messages.map((msg) => {
@@ -455,7 +457,7 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
               >
                 <input
                   type="text"
-                  placeholder="Type clinical consultation message..."
+                  placeholder={t.typeYourMessage}
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   className="flex-1 px-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
@@ -466,7 +468,7 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
                   className="px-5 py-3 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
                   {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                  <span className="hidden sm:inline">Send</span>
+                  <span className="hidden sm:inline">{t.send}</span>
                 </button>
               </form>
             </>
@@ -474,10 +476,10 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-400 space-y-2">
               <MessageSquare className="w-12 h-12 text-slate-300 dark:text-slate-700" />
               <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                Select a Conversation
+                {t.selectPartnerToChat}
               </h3>
               <p className="text-xs max-w-xs">
-                Pick an approved consultation thread on the left, or send a new request to connect.
+                {t.newChatInvitationDesc}
               </p>
             </div>
           )}
@@ -490,7 +492,7 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
           <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="font-bold text-slate-900 dark:text-white text-base">
-                Request Chat Consultation
+                {t.requestChatConsultation}
               </h3>
               <button
                 type="button"
@@ -511,7 +513,7 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
 
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Select Recipient (Doctor / Patient / Staff)
+                    {t.selectRecipientLabel}
                   </label>
                   <CustomSelect
                     value={selectedRecipientId}
@@ -521,21 +523,21 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
                       label: `${u.name} (${u.role.name}${u.doctor?.specialization ? ` - ${u.doctor.specialization}` : ""})`,
                       badge: u.role.name,
                     }))}
-                    placeholder="Select practitioner or patient..."
-                    searchPlaceholder="Search recipient by name..."
+                    placeholder={t.selectRecipientPlaceholder}
+                    searchPlaceholder={t.searchRecipientPlaceholder}
                   />
                 </div>
 
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Reason / Introduction Note *
+                    {t.chatReasonLabel}
                   </label>
                   <textarea
                     required
                     rows={3}
                     value={requestNote}
                     onChange={(e) => setRequestNote(e.target.value)}
-                    placeholder="e.g. Follow-up consultation regarding yesterday's medication regimen."
+                    placeholder={t.chatRequestPlaceholder}
                     className="w-full px-4 py-3 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all resize-none"
                   />
                 </div>
@@ -547,14 +549,14 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
                   onClick={() => setRequestModalOpen(false)}
                   className="px-4 py-2 rounded-xl border border-[var(--border-default)] text-slate-600 dark:text-slate-300 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={requesting}
                   className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold cursor-pointer hover:opacity-90 disabled:opacity-50 transition shadow-xs"
                 >
-                  {requesting ? "Submitting..." : "Send Request"}
+                  {requesting ? t.submitting : t.sendRequest}
                 </button>
               </div>
             </form>

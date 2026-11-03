@@ -14,6 +14,7 @@ import {
   User,
   Calendar,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 interface PricingPlan {
   id: string;
@@ -42,6 +43,7 @@ export function StripeUpgradeModal({
   organizationName,
   onSuccess,
 }: StripeUpgradeModalProps) {
+  const { t, language } = useLanguage();
   const [plans, setPlans] = useState<PricingPlan[]>([]);
   const [selectedPlanId, setSelectedPlanId] = useState<string>(currentPlanId || "");
   const [loadingPlans, setLoadingPlans] = useState(true);
@@ -234,10 +236,10 @@ export function StripeUpgradeModal({
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                Upgrade Clinic Subscription
+                {language === "bn" ? "ক্লিনিক সাবস্ক্রিপশন আপগ্রেড" : "Upgrade Clinic Subscription"}
               </h3>
               <p className="text-xs text-slate-500">
-                {organizationName ? `Empower ${organizationName}` : "Activate unlimited clinical operations"}
+                {organizationName ? `${organizationName}` : (language === "bn" ? "সীমাহীন ক্লিনিকাল অপারেশন সক্রিয় করুন" : "Activate unlimited clinical operations")}
               </p>
             </div>
           </div>
@@ -259,15 +261,16 @@ export function StripeUpgradeModal({
                 <CheckCircle2 className="w-10 h-10" />
               </div>
               <h4 className="text-xl font-bold text-slate-900 dark:text-white">
-                Subscription Activated!
+                {language === "bn" ? "সাবস্ক্রিপশন সক্রিয় হয়েছে!" : "Subscription Activated!"}
               </h4>
               <p className="text-sm text-slate-600 dark:text-slate-300 max-w-md mx-auto">
-                Payment processed via Stripe Sandbox. Your clinic is now on the{" "}
-                <strong className="text-[var(--brand-primary)]">{selectedPlan?.name}</strong> plan with active subscription.
+                {language === "bn"
+                  ? `স্ট্রাইপ স্যান্ডবক্সের মাধ্যমে সফলভাবে পেমেন্ট সম্পন্ন হয়েছে। আপনার ক্লিনিক এখন ${selectedPlan?.name || ""} প্ল্যানে সক্রিয় রয়েছে।`
+                  : `Payment processed via Stripe Sandbox. Your clinic is now on the ${selectedPlan?.name || ""} plan with active subscription.`}
               </p>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Subscription Status: ACTIVE</span>
+                <span>{t.status}: {t.activeStatus}</span>
               </div>
             </div>
           ) : (
@@ -275,7 +278,7 @@ export function StripeUpgradeModal({
               {/* Step 1: Select Plan */}
               <div className="space-y-2.5">
                 <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Select SaaS Package
+                  {t.availableClinicSaaS}
                 </label>
                 {loadingPlans ? (
                   <div className="h-28 rounded-2xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
@@ -295,7 +298,7 @@ export function StripeUpgradeModal({
                         >
                           {plan.isPopular && (
                             <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full bg-[var(--brand-primary)] text-white text-[9px] font-bold uppercase tracking-wider shadow-xs">
-                              Popular
+                              {t.mostPopular}
                             </span>
                           )}
                           <div>
@@ -333,10 +336,10 @@ export function StripeUpgradeModal({
                     </div>
                     <div>
                       <h5 className="text-xs font-bold text-slate-900 dark:text-white">
-                        Official Stripe Hosted Checkout
+                        {t.payWithStripeCheckout}
                       </h5>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                        Pay via Stripe’s authentic secure checkout page (Apple Pay, Google Pay & Cards)
+                        {language === "bn" ? "স্ট্রাইপের নিরাপদ হোস্টেড পেজে পেমেন্ট করুন" : "Pay via Stripe's authentic secure checkout page (Apple Pay, Google Pay & Cards)"}
                       </p>
                     </div>
                   </div>
@@ -354,12 +357,12 @@ export function StripeUpgradeModal({
                   {initiatingStripe ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      Connecting to Stripe API...
+                      {language === "bn" ? "স্ট্রাইপ এপিআই সংযোগ করা হচ্ছে..." : "Connecting to Stripe API..."}
                     </>
                   ) : (
                     <>
                       <CreditCard className="w-4 h-4" />
-                      Proceed to Official Stripe Checkout (${selectedPlan?.price || 49}/{selectedPlan?.billingCycle || "mo"})
+                      {t.payWithStripeCheckout} (${selectedPlan?.price || 49}/{selectedPlan?.billingCycle || "mo"})
                     </>
                   )}
                 </button>
@@ -369,7 +372,7 @@ export function StripeUpgradeModal({
               <div className="flex items-center gap-3">
                 <div className="flex-1 h-px bg-[var(--border-subtle)]" />
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  OR IN-APP SANDBOX TEST CARD
+                  {t.orPayWithSandboxCard}
                 </span>
                 <div className="flex-1 h-px bg-[var(--border-subtle)]" />
               </div>
@@ -380,7 +383,7 @@ export function StripeUpgradeModal({
                   <div className="flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-[var(--brand-primary)]" />
                     <span className="text-xs font-bold text-slate-900 dark:text-white">
-                      Direct Sandbox Card
+                      {language === "bn" ? "সরাসরি স্যান্ডবক্স কার্ড" : "Direct Sandbox Card"}
                     </span>
                     <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold border border-amber-500/20">
                       Sandbox Mode
@@ -392,7 +395,7 @@ export function StripeUpgradeModal({
                     className="text-xs font-bold text-[var(--brand-primary)] hover:underline inline-flex items-center gap-1 cursor-pointer"
                   >
                     <Zap className="w-3.5 h-3.5" />
-                    <span>Auto-Fill Test Card</span>
+                    <span>{t.autoFillTestCard}</span>
                   </button>
                 </div>
 
@@ -406,7 +409,7 @@ export function StripeUpgradeModal({
                 <div className="space-y-3">
                   <div>
                     <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1 block">
-                      Cardholder Name
+                      {t.cardHolderName}
                     </label>
                     <div className="relative">
                       <input
@@ -423,7 +426,7 @@ export function StripeUpgradeModal({
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">
-                        Card Number
+                        {t.cardNumber}
                       </label>
                       {getCardBrand() && (
                         <span className="text-[10px] font-bold text-[var(--brand-primary)] uppercase">
@@ -446,7 +449,7 @@ export function StripeUpgradeModal({
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1 block">
-                        Expires (MM/YY)
+                        {t.expiryDate}
                       </label>
                       <div className="relative">
                         <input
@@ -461,7 +464,7 @@ export function StripeUpgradeModal({
                     </div>
                     <div>
                       <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1 block">
-                        CVC Security Code
+                        {t.cvcCode}
                       </label>
                       <div className="relative">
                         <input
@@ -483,7 +486,7 @@ export function StripeUpgradeModal({
                     <Lock className="w-3.5 h-3.5 text-emerald-500" />
                     <span>256-bit Encrypted SSL Sandbox</span>
                   </div>
-                  <span>Test Cards: 4242 4242...</span>
+                  <span>{t.instantActivationNotice}</span>
                 </div>
               </div>
 
@@ -495,7 +498,7 @@ export function StripeUpgradeModal({
                   disabled={isPending}
                   className="px-4 py-2.5 rounded-xl border border-[var(--border-default)] text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
@@ -505,12 +508,12 @@ export function StripeUpgradeModal({
                   {isPending ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Processing Stripe Sandbox...</span>
+                      <span>{language === "bn" ? "প্রক্রিয়াকরণ করা হচ্ছে..." : "Processing Stripe Sandbox..."}</span>
                     </>
                   ) : (
                     <>
                       <ShieldCheck className="w-4 h-4" />
-                      <span>Pay ${selectedPlan?.price || 49} & Upgrade Clinic</span>
+                      <span>{language === "bn" ? `$${selectedPlan?.price || 49} পেমেন্ট ও আপগ্রেড করুন` : `Pay $${selectedPlan?.price || 49} & Upgrade Clinic`}</span>
                     </>
                   )}
                 </button>

@@ -9,6 +9,7 @@ import {
   Building2,
 } from "lucide-react";
 import { StripeUpgradeModal } from "./stripe-upgrade-modal";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 interface SubscriptionState {
   organizationId: string;
@@ -33,6 +34,7 @@ interface SubscriptionState {
 }
 
 export function TrialCountdownBanner() {
+  const { t, language } = useLanguage();
   const [sub, setSub] = useState<SubscriptionState | null>(null);
   const [loading, setLoading] = useState(true);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -122,7 +124,7 @@ export function TrialCountdownBanner() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
-                  Trial Expired
+                  {t.trialExpired}
                 </span>
                 <span className="text-xs text-slate-400">•</span>
                 <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
@@ -130,10 +132,10 @@ export function TrialCountdownBanner() {
                 </span>
               </div>
               <p className="text-sm font-bold text-slate-900 dark:text-white mt-0.5">
-                Your 14-day free trial has expired.
+                {t.trialExpiredSubtitle}
               </p>
               <p className="text-xs text-slate-500">
-                Upgrade now using Stripe Sandbox test payment to reactivate prescription creation and chamber queue.
+                {t.trialExpiredDesc}
               </p>
             </div>
           </div>
@@ -143,7 +145,7 @@ export function TrialCountdownBanner() {
             className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-xs flex items-center gap-2 cursor-pointer shrink-0"
           >
             <CreditCard className="w-4 h-4" />
-            <span>Upgrade with Stripe Sandbox</span>
+            <span>{t.upgradeWithStripeSandbox}</span>
           </button>
         </div>
       ) : (
@@ -165,7 +167,7 @@ export function TrialCountdownBanner() {
               <div className="space-y-0.5">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-full bg-teal-500/15 text-teal-700 dark:text-teal-300 text-[10px] font-bold uppercase tracking-wider border border-teal-500/20">
-                    14-Day Free Trial Active
+                    {t.trialActiveBadge}
                   </span>
                   <span className="text-xs text-slate-400">•</span>
                   <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1">
@@ -176,13 +178,13 @@ export function TrialCountdownBanner() {
                     <>
                       <span className="text-xs text-slate-400">•</span>
                       <span className="text-xs text-slate-500">
-                        {sub.plan.name} (${sub.plan.price}/mo)
+                        {sub.plan.name} (${sub.plan.price}/{language === "bn" ? "মাস" : "mo"})
                       </span>
                     </>
                   )}
                 </div>
                 <p className="text-xs text-slate-500">
-                  No credit card required. Explore doctor scheduling, Rx designer, patient chat & digital formulary.
+                  {t.noCreditCardRequired}
                 </p>
               </div>
             </div>
@@ -196,7 +198,7 @@ export function TrialCountdownBanner() {
                     {timeRemaining.days}
                   </span>
                   <span className="block text-[9px] font-bold text-slate-400 uppercase">
-                    Days
+                    {t.days}
                   </span>
                 </div>
                 <span className="font-bold text-slate-300 dark:text-slate-700">:</span>
@@ -205,7 +207,7 @@ export function TrialCountdownBanner() {
                     {String(timeRemaining.hours).padStart(2, "0")}
                   </span>
                   <span className="block text-[9px] font-bold text-slate-400 uppercase">
-                    Hours
+                    {t.hours}
                   </span>
                 </div>
                 <span className="font-bold text-slate-300 dark:text-slate-700">:</span>
@@ -214,7 +216,7 @@ export function TrialCountdownBanner() {
                     {String(timeRemaining.minutes).padStart(2, "0")}
                   </span>
                   <span className="block text-[9px] font-bold text-slate-400 uppercase">
-                    Mins
+                    {t.mins}
                   </span>
                 </div>
                 <span className="font-bold text-slate-300 dark:text-slate-700">:</span>
@@ -223,7 +225,7 @@ export function TrialCountdownBanner() {
                     {String(timeRemaining.seconds).padStart(2, "0")}
                   </span>
                   <span className="block text-[9px] font-bold text-slate-400 uppercase">
-                    Secs
+                    {t.secs}
                   </span>
                 </div>
               </div>
@@ -235,7 +237,7 @@ export function TrialCountdownBanner() {
                 className="px-4 py-2.5 rounded-xl bg-[var(--brand-primary)] hover:opacity-95 text-white text-xs font-bold transition shadow-xs flex items-center gap-2 cursor-pointer shrink-0"
               >
                 <Sparkles className="w-4 h-4" />
-                <span>Upgrade (Stripe Sandbox)</span>
+                <span>{t.upgradeWithStripeSandbox}</span>
               </button>
             </div>
           </div>

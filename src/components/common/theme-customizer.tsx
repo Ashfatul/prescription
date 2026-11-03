@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/lib/auth/auth-context";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export type AccentColor = "teal" | "blue" | "indigo" | "rose" | "slate";
 
@@ -44,6 +45,8 @@ export function ThemeCustomizer({
 }: ThemeCustomizerProps) {
   const { theme, setTheme } = useTheme();
   const { user, updatePreferences } = useAuth();
+  const { language } = useLanguage();
+  const isBn = language === "bn";
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
   const [accent, setAccent] = useState<AccentColor>(() => {
@@ -169,14 +172,16 @@ export function ThemeCustomizer({
         <button
           type="button"
           onClick={handleToggle}
-          title="Theme & Accent Settings"
+          title={isBn ? "থিম ও কালার সেটিংস" : "Theme & Accent Settings"}
           className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shadow-xs cursor-pointer"
         >
           <span
             className="w-3 h-3 rounded-full shrink-0 shadow-xs"
             style={{ backgroundColor: ACCENTS.find((a) => a.id === accent)?.color || "#0f766e" }}
           />
-          <span className="capitalize hidden sm:inline">{theme === "system" ? "System" : theme}</span>
+          <span className="capitalize hidden sm:inline">
+            {theme === "system" ? (isBn ? "সিস্টেম" : "System") : theme === "dark" ? (isBn ? "ডার্ক" : "Dark") : (isBn ? "লাইট" : "Light")}
+          </span>
           <svg
             className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${
               activeDir === "up"
@@ -201,7 +206,7 @@ export function ThemeCustomizer({
           >
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5">
-                  Appearance Mode
+                  {isBn ? "থিম মোড" : "Appearance Mode"}
                 </p>
                 <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl">
                   {(["light", "dark", "system"] as const).map((m) => (
@@ -215,7 +220,7 @@ export function ThemeCustomizer({
                           : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                       }`}
                     >
-                      {m}
+                      {m === "light" ? (isBn ? "লাইট" : "Light") : m === "dark" ? (isBn ? "ডার্ক" : "Dark") : (isBn ? "সিস্টেম" : "System")}
                     </button>
                   ))}
                 </div>
@@ -223,7 +228,7 @@ export function ThemeCustomizer({
 
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5">
-                  Accent Color
+                  {isBn ? "অ্যাকসেন্ট কালার" : "Accent Color"}
                 </p>
                 <div className="flex items-center justify-between gap-1.5 pt-0.5">
                   {ACCENTS.map((item) => (
@@ -256,21 +261,25 @@ export function ThemeCustomizer({
     <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm space-y-4 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <h4 className="text-sm font-semibold text-slate-900 dark:text-white">Workspace Appearance</h4>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Personalize contrast & accent palette</p>
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
+            {isBn ? "কাজের পরিবেশের রূপরেখা" : "Workspace Appearance"}
+          </h4>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            {isBn ? "কনট্রাস্ট ও অ্যাকসেন্ট রঙ কাস্টমাইজ করুন" : "Personalize contrast & accent palette"}
+          </p>
         </div>
       </div>
 
       <div className="space-y-3">
         <div>
           <label className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5 block">
-            Interface Theme
+            {isBn ? "ইন্টারফেস থিম" : "Interface Theme"}
           </label>
           <div className="grid grid-cols-3 gap-2">
             {[
-              { id: "light", label: "Light", icon: "☀️" },
-              { id: "dark", label: "Dark", icon: "🌙" },
-              { id: "system", label: "System", icon: "💻" },
+              { id: "light", label: isBn ? "লাইট" : "Light", icon: "☀️" },
+              { id: "dark", label: isBn ? "ডার্ক" : "Dark", icon: "🌙" },
+              { id: "system", label: isBn ? "সিস্টেম" : "System", icon: "💻" },
             ].map((m) => (
               <button
                 key={m.id}
@@ -291,7 +300,7 @@ export function ThemeCustomizer({
 
         <div>
           <label className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5 block">
-            Primary Accent Palette
+            {isBn ? "প্রধান অ্যাকসেন্ট প্যালেট" : "Primary Accent Palette"}
           </label>
           <div className="grid grid-cols-5 gap-2">
             {ACCENTS.map((item) => (

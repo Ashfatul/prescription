@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { CustomSelect } from "@/components/common/custom-select";
 import { useAuth } from "@/lib/auth/auth-context";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 const inputClasses =
   "w-full px-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]";
@@ -36,6 +37,7 @@ export interface AnnouncementsManagerProps {
 }
 
 export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManagerProps = {}) {
+  const { t, language } = useLanguage();
   const { user } = useAuth();
   const userRoleName =
     typeof user?.role === "string" ? user.role : (user?.role as { name?: string } | undefined)?.name;
@@ -170,23 +172,23 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
   const roleFilterOptions = useMemo(() => {
     if (currentRole === "SUPER_ADMIN" || currentRole === "STAFF") {
       return [
-        { value: "ALL", label: "All Audiences" },
-        { value: "DOCTOR", label: "Doctors & Physicians", badge: "Doctor" },
-        { value: "PATIENT", label: "Patients & Public", badge: "Patient" },
-        { value: "STAFF", label: "Hospital Front Desk", badge: "Staff" },
+        { value: "ALL", label: language === "bn" ? "সকল পাঠক" : "All Audiences" },
+        { value: "DOCTOR", label: language === "bn" ? "চিকিৎসকবৃন্দ" : "Doctors & Physicians", badge: "Doctor" },
+        { value: "PATIENT", label: language === "bn" ? "রোগী ও সাধারণ জনগণ" : "Patients & Public", badge: "Patient" },
+        { value: "STAFF", label: language === "bn" ? "হাসপাতাল ফ্রন্ট ডেস্ক" : "Hospital Front Desk", badge: "Staff" },
       ];
     }
     if (currentRole === "DOCTOR") {
       return [
-        { value: "ALL", label: "All Visible Notices" },
-        { value: "DOCTOR", label: "Doctor-Only Bulletins", badge: "Physicians" },
+        { value: "ALL", label: language === "bn" ? "সকল নোটিশ" : "All Visible Notices" },
+        { value: "DOCTOR", label: language === "bn" ? "চিকিৎসকদের নোটিশ" : "Doctor-Only Bulletins", badge: "Physicians" },
       ];
     }
     return [
-      { value: "ALL", label: "All Visible Notices" },
-      { value: "PATIENT", label: "Patient Care Notices", badge: "Patients" },
+      { value: "ALL", label: language === "bn" ? "সকল নোটিশ" : "All Visible Notices" },
+      { value: "PATIENT", label: language === "bn" ? "রোগীদের নোটিশ" : "Patient Care Notices", badge: "Patients" },
     ];
-  }, [currentRole]);
+  }, [currentRole, language]);
 
   // Filtered list
   const filteredAnnouncements = useMemo(() => {
@@ -245,19 +247,19 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                  Hospital Bulletins & Announcements
+                  {t.hospitalBulletinsTitle}
                 </h1>
                 {urgentCount > 0 && (
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-rose-500 text-white shadow-2xs animate-pulse">
                     <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                    {urgentCount} Urgent
+                    {urgentCount} {t.urgentPriority}
                   </span>
                 )}
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
                 {isManager
-                  ? "Publish urgent notices, operational schedule updates, and clinical bulletins across the hospital network."
-                  : "Review official hospital circulars, duty rosters, holiday schedules, and health bulletins."}
+                  ? t.hospitalBulletinsManagerSubtitle
+                  : t.hospitalBulletinsViewerSubtitle}
               </p>
             </div>
           </div>
@@ -270,7 +272,7 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
             className="px-5 py-3 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-95 transition flex items-center gap-2 self-start sm:self-auto cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>New Broadcast</span>
+            <span>{t.newBroadcast}</span>
           </button>
         )}
       </div>
@@ -282,7 +284,7 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
-            placeholder="Search by title, contents, or author..."
+            placeholder={t.searchAnnouncementsPlaceholder}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full input-icon-left !pl-11 pr-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
@@ -296,7 +298,7 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
             onChange={(val) => setRoleFilter(val)}
             options={roleFilterOptions}
             searchable={false}
-            placeholder="Audience Role"
+            placeholder={t.audienceRole}
           />
         </div>
 
@@ -306,13 +308,13 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
             value={priorityFilter}
             onChange={(val) => setPriorityFilter(val)}
             options={[
-              { value: "ALL", label: "All Priorities" },
-              { value: "URGENT", label: "Urgent Only", badge: "Urgent" },
-              { value: "HIGH", label: "High Priority", badge: "High" },
-              { value: "NORMAL", label: "Normal (Info)" },
+              { value: "ALL", label: t.allPriorities },
+              { value: "URGENT", label: t.urgentOnly, badge: "Urgent" },
+              { value: "HIGH", label: t.highPriority, badge: "High" },
+              { value: "NORMAL", label: t.normalPriority },
             ]}
             searchable={false}
-            placeholder="Priority"
+            placeholder={t.priority}
           />
         </div>
 
@@ -323,12 +325,12 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
               value={statusFilter}
               onChange={(val) => setStatusFilter(val)}
               options={[
-                { value: "ALL", label: "All Statuses" },
-                { value: "ACTIVE", label: "Active Live", badge: "Live" },
-                { value: "INACTIVE", label: "Deactivated" },
+                { value: "ALL", label: t.allStatuses },
+                { value: "ACTIVE", label: t.activeLive, badge: "Live" },
+                { value: "INACTIVE", label: t.deactivated },
               ]}
               searchable={false}
-              placeholder="Status"
+              placeholder={t.status}
             />
           </div>
         )}
@@ -338,7 +340,7 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
       {loading ? (
         <div className="p-16 text-center text-xs text-slate-400 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-3">
           <Loader2 className="w-7 h-7 animate-spin mx-auto text-[var(--brand-primary)]" />
-          <p className="font-medium">Loading hospital bulletins and announcements...</p>
+          <p className="font-medium">{t.loadingBulletins}</p>
         </div>
       ) : filteredAnnouncements.length === 0 ? (
         <div className="p-16 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-3 shadow-2xs">
@@ -347,12 +349,12 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
           </div>
           <div>
             <h3 className="font-bold text-base text-slate-900 dark:text-white">
-              No matching announcements found
+              {t.noMatchingAnnouncements}
             </h3>
             <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
               {searchTerm || roleFilter !== "ALL" || priorityFilter !== "ALL"
-                ? "Try clearing filters or search terms to view other bulletins."
-                : "There are currently no active announcements for your department."}
+                ? t.noMatchingAnnouncementsDesc
+                : (language === "bn" ? "বর্তমানে আপনার বিভাগের জন্য কোনো সক্রিয় নোটিশ নেই।" : "There are currently no active announcements for your department.")}
             </p>
           </div>
         </div>
@@ -429,13 +431,13 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
                       onClick={() => handleToggleActive(item.id, item.isActive)}
                       className="px-3 py-1.5 rounded-xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-300 font-semibold cursor-pointer text-xs"
                     >
-                      {item.isActive ? "Deactivate" : "Activate"}
+                      {item.isActive ? t.deactivate : t.activate}
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDelete(item.id)}
                       className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
-                      title="Permanently Delete Announcement"
+                      title={t.delete}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -457,7 +459,7 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
                   <Megaphone className="w-4 h-4" />
                 </div>
                 <h3 className="font-bold text-slate-900 dark:text-white text-base">
-                  Create Hospital Broadcast
+                  {t.createHospitalBroadcast}
                 </h3>
               </div>
               <button
@@ -479,7 +481,7 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
 
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Broadcast Headline *
+                    {t.broadcastHeadline} *
                   </label>
                   <input
                     type="text"
@@ -494,17 +496,17 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      Target Audience
+                      {t.targetAudience}
                     </label>
                     <CustomSelect
                       value={targetRole}
                       onChange={(val) => setTargetRole(val)}
                       options={[
-                        { value: "ALL", label: "All Users (Public)" },
-                        { value: "ADMIN", label: "Clinic Administrators Only" },
-                        { value: "DOCTOR", label: "Physicians & Doctors Only" },
-                        { value: "PATIENT", label: "Patients Only" },
-                        { value: "STAFF", label: "Front Desk & Staff Only" },
+                        { value: "ALL", label: language === "bn" ? "সকল ব্যবহারকারী (পাবলিক)" : "All Users (Public)" },
+                        { value: "ADMIN", label: language === "bn" ? "শুধুমাত্র ক্লিনিক প্রশাসক" : "Clinic Administrators Only" },
+                        { value: "DOCTOR", label: language === "bn" ? "শুধুমাত্র চিকিৎসকবৃন্দ" : "Physicians & Doctors Only" },
+                        { value: "PATIENT", label: language === "bn" ? "শুধুমাত্র রোগীগণ" : "Patients Only" },
+                        { value: "STAFF", label: language === "bn" ? "শুধুমাত্র ফ্রন্ট ডেস্ক ও স্টাফ" : "Front Desk & Staff Only" },
                       ]}
                       searchable={false}
                     />
@@ -512,15 +514,15 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
 
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      Urgency Priority
+                      {t.urgencyPriority}
                     </label>
                     <CustomSelect
                       value={priority}
                       onChange={(val) => setPriority(val)}
                       options={[
-                        { value: "NORMAL", label: "Normal (Info)" },
-                        { value: "HIGH", label: "High Priority" },
-                        { value: "URGENT", label: "Urgent / Critical Action" },
+                        { value: "NORMAL", label: t.normalPriority },
+                        { value: "HIGH", label: t.highPriority },
+                        { value: "URGENT", label: t.urgentPriority },
                       ]}
                       searchable={false}
                     />
@@ -529,7 +531,7 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
 
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    Announcement Details *
+                    {t.announcementDetails} *
                   </label>
                   <textarea
                     required
@@ -548,7 +550,7 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
                   onClick={() => setModalOpen(false)}
                   className="px-4 py-2.5 rounded-xl border border-[var(--border-default)] text-slate-700 dark:text-slate-300 font-semibold cursor-pointer text-xs"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
@@ -556,7 +558,7 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
                   className="px-5 py-2.5 rounded-xl bg-[var(--brand-primary)] text-white font-bold shadow-xs hover:opacity-95 transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50 text-xs"
                 >
                   {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  <span>{submitting ? "Publishing..." : "Publish Broadcast"}</span>
+                  <span>{submitting ? t.publishing : t.publishBroadcast}</span>
                 </button>
               </div>
             </form>

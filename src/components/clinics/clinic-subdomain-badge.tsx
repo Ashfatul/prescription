@@ -2,6 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { Globe, ExternalLink, Copy, Check } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 interface ClinicSubdomainBadgeProps {
   slug: string;
@@ -11,6 +12,7 @@ interface ClinicSubdomainBadgeProps {
 const emptySubscribe = () => () => {};
 
 export function ClinicSubdomainBadge({ slug }: ClinicSubdomainBadgeProps) {
+  const { t, language } = useLanguage();
   const [copied, setCopied] = useState(false);
 
   const isMounted = useSyncExternalStore(
@@ -56,14 +58,14 @@ export function ClinicSubdomainBadge({ slug }: ClinicSubdomainBadgeProps) {
     <div className="flex flex-wrap items-center gap-2 pt-1">
       <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs font-mono font-medium text-slate-700 dark:text-slate-300 shadow-2xs">
         <Globe className="w-3.5 h-3.5 text-[var(--brand-primary)] shrink-0" />
-        <span className="text-slate-400 select-none">Subdomain:</span>
+        <span className="text-slate-400 select-none">{language === "bn" ? "সাবডোমেইন:" : "Subdomain:"}</span>
         <strong className="text-[var(--brand-text)] font-bold">
           {displayHost || `${slug}.localhost:3000`}
         </strong>
         {isOnSubdomain && (
           <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-extrabold uppercase tracking-wider border border-emerald-500/20">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Live Tenant
+            {t.liveTenant}
           </span>
         )}
       </div>
@@ -72,17 +74,17 @@ export function ClinicSubdomainBadge({ slug }: ClinicSubdomainBadgeProps) {
         type="button"
         onClick={handleCopy}
         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-300 text-xs font-semibold transition cursor-pointer active:scale-95 shadow-2xs"
-        title="Copy clinic subdomain URL to clipboard"
+        title={t.copySubdomainUrlTitle}
       >
         {copied ? (
           <>
             <Check className="w-3.5 h-3.5 text-emerald-500" />
-            <span className="text-emerald-600 dark:text-emerald-400">Copied URL</span>
+            <span className="text-emerald-600 dark:text-emerald-400">{t.copiedUrl}</span>
           </>
         ) : (
           <>
             <Copy className="w-3.5 h-3.5 text-slate-400" />
-            <span>Copy Link</span>
+            <span>{t.copyLink}</span>
           </>
         )}
       </button>
@@ -94,7 +96,7 @@ export function ClinicSubdomainBadge({ slug }: ClinicSubdomainBadgeProps) {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] hover:opacity-90 text-xs font-bold transition border border-[var(--brand-border)] shadow-2xs"
         >
-          <span>Open Portal</span>
+          <span>{t.openPortal}</span>
           <ExternalLink className="w-3 h-3" />
         </a>
       )}
