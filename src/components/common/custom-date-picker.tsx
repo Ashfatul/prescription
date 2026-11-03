@@ -73,9 +73,9 @@ export function CustomDatePicker({
   className = "",
   quickPresets = true,
 }: CustomDatePickerProps) {
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   const isBn = language === "bn";
-  const effectivePlaceholder = placeholder || (isBn ? "তারিখ নির্বাচন করুন..." : "Select date...");
+  const effectivePlaceholder = placeholder || (t("uiSelectDate"));
   const monthNames = isBn ? MONTH_NAMES_BN : MONTH_NAMES_EN;
   const daysOfWeek = isBn ? DAYS_OF_WEEK_BN : DAYS_OF_WEEK_EN;
 
@@ -244,7 +244,7 @@ export function CustomDatePicker({
                 e.stopPropagation();
                 onChange("");
               }}
-              title={isBn ? "তারিখ মুছুন" : "Clear date"}
+              title={t("uiClearDate")}
               className="hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg hover:bg-[var(--bg-subtle)] transition"
             >
               <X className="w-3.5 h-3.5" />
@@ -266,7 +266,7 @@ export function CustomDatePicker({
               type="button"
               onClick={handlePrevMonth}
               className="p-1.5 rounded-xl hover:bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 transition cursor-pointer"
-              aria-label={isBn ? "পূর্ববর্তী মাস" : "Previous month"}
+              aria-label={t("uiPreviousMonth")}
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -281,7 +281,7 @@ export function CustomDatePicker({
               type="button"
               onClick={handleNextMonth}
               className="p-1.5 rounded-xl hover:bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 transition cursor-pointer"
-              aria-label={isBn ? "পরবর্তী মাস" : "Next month"}
+              aria-label={t("uiNextMonth")}
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -295,28 +295,28 @@ export function CustomDatePicker({
                 onClick={() => handleApplyPreset(0)}
                 className="px-2 py-1 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] font-semibold transition shrink-0 cursor-pointer"
               >
-                {isBn ? "আজ" : "Today"}
+                {t("uiToday2")}
               </button>
               <button
                 type="button"
                 onClick={() => handleApplyPreset(1)}
                 className="px-2 py-1 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] font-semibold transition shrink-0 cursor-pointer"
               >
-                {isBn ? "আগামীকাল" : "Tomorrow"}
+                {t("uiTomorrow")}
               </button>
               <button
                 type="button"
                 onClick={() => handleApplyPreset(3)}
                 className="px-2 py-1 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] font-semibold transition shrink-0 cursor-pointer"
               >
-                {isBn ? "+৩ দিন" : "+3 Days"}
+                {t("uiDays3")}
               </button>
               <button
                 type="button"
                 onClick={() => handleApplyPreset(7)}
                 className="px-2 py-1 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] font-semibold transition shrink-0 cursor-pointer"
               >
-                {isBn ? "+১ সপ্তাহ" : "+1 Week"}
+                {t("uiWeek")}
               </button>
             </div>
           )}

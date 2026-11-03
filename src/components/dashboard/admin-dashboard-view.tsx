@@ -16,6 +16,7 @@ import { ClinicalChat } from "@/components/dashboard/clinical-chat";
 import { TrialCountdownBanner } from "@/components/dashboard/trial-countdown-banner";
 import { ClinicSubscriptionView } from "@/components/dashboard/clinic-subscription-view";
 import { EmailTemplateManager } from "@/components/dashboard/email-template-manager";
+import { TranslationManager } from "@/components/dashboard/translation-manager";
 import { useAuth } from "@/lib/auth/auth-context";
 import { useLanguage } from "@/lib/i18n/language-context";
 import {
@@ -65,7 +66,8 @@ type TabKey =
   | "activity"
   | "announcements"
   | "email-templates"
-  | "chat";
+  | "chat"
+  | "translations";
 
 export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
   const { user: currentUser } = useAuth();
@@ -100,6 +102,8 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
       ? "email-templates"
       : urlTab === "chat"
       ? "chat"
+      : urlTab === "translations"
+      ? "translations"
       : "overview";
 
   return (
@@ -118,33 +122,31 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
             <div className="flex items-center gap-2 mb-1.5">
               <span className="px-2.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-primary)] text-xs font-bold">
                 {currentUser?.role === "SUPER_ADMIN"
-                  ? (language === "bn" ? "প্ল্যাটফর্ম হেডকোয়ার্টার" : "Platform HQ Executive")
-                  : (language === "bn" ? "ক্লিনিক প্রশাসন কেন্দ্র" : "Clinic Administration Center")}
+                  ? (t("uiPlatformHQExecutive"))
+                  : (t("uiClinicAdministrationCenter"))}
               </span>
               <span className="text-xs text-[var(--text-muted)] font-medium">
-                • {currentUser?.organizationName || (language === "bn" ? "কেয়ার নেটওয়ার্ক" : "Care Network")}
+                • {currentUser?.organizationName || (t("uiCareNetwork"))}
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
               {currentUser?.role === "SUPER_ADMIN"
                 ? t.adminOverviewTitle
-                : `${currentUser?.organizationName || "Clinic"} ${language === "bn" ? "ড্যাশবোর্ড ও পরিসংখ্যান" : "Dashboard & Analytics"}`}
+                : `${currentUser?.organizationName || "Clinic"} ${t("uiDashboardAnalytics")}`}
             </h1>
             <p className="text-xs text-[var(--text-secondary)] mt-1">
               {currentUser?.role === "SUPER_ADMIN"
                 ? t.adminOverviewSubtitle
-                : (language === "bn"
-                    ? "রিয়েল-টাইম ক্লিনিক পারফরম্যান্স মেট্রিক্স, চিকিৎসক, তালিকাভুক্ত রোগী এবং নিজস্ব ক্যাটালগ ব্যবস্থাপনা।"
-                    : "Real-time clinic performance metrics, attending physicians, registered patients, and dedicated formulary catalog.")}
+                : (t("uiRealTimeClinicPerformanceMetrics"))}
             </p>
           </div>
 
           {/* Live Metrics Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5">
             {[
-              { label: language === "bn" ? "সক্রিয় ব্যবহারকারী" : "Active Users", value: stats.users, icon: "👥" },
-              { label: language === "bn" ? "নিবন্ধিত চিকিৎসক" : "Registered Doctors", value: stats.doctors, icon: "🩺" },
-              { label: language === "bn" ? "তালিকাভুক্ত রোগী" : "Enrolled Patients", value: stats.patients, icon: "🏥" },
+              { label: t("uiActiveUsers"), value: stats.users, icon: "👥" },
+              { label: t("registeredDoctors"), value: stats.doctors, icon: "🩺" },
+              { label: t("uiEnrolledPatients"), value: stats.patients, icon: "🏥" },
               { label: t.appointments, value: stats.appointments, icon: "🗓️" },
               { label: t.prescriptions, value: stats.prescriptions, icon: "📝" },
             ].map((stat) => (
@@ -155,7 +157,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xl">{stat.icon}</span>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                    {language === "bn" ? "লাইভ" : "Live"}
+                    {t("uiLive")}
                   </span>
                 </div>
                 <div>
@@ -181,15 +183,15 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                      {language === "bn" ? "সর্বাধিক প্রেসক্রাইবকৃত ঔষধ" : "Top Prescribed Drugs"}
+                      {t("uiTopPrescribedDrugs")}
                     </h3>
                     <p className="text-[11px] text-[var(--text-muted)]">
-                      {language === "bn" ? "সকল চেম্বারে সর্বাধিক সুপারিশকৃত প্রয়োজনীয় ঔষধ" : "Most frequent medications issued across all clinical chambers"}
+                      {t("uiMostFrequentMedicationsIssuedAcross")}
                     </p>
                   </div>
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--brand-surface)] text-[var(--brand-text)]">
-                  {language === "bn" ? "ফার্মাসিউটিক্যাল পরিসংখ্যান" : "Formulary Insights"}
+                  {t("uiFormularyInsights")}
                 </span>
               </div>
 
@@ -204,7 +206,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
                         </span>
                         <div className="flex items-center gap-2">
                           <span className="text-[11px] font-bold text-[var(--brand-text)]">
-                            {item.count} {language === "bn" ? "টি প্রেসক্রিপশন" : "prescriptions"}
+                            {item.count} {t("uiPrescriptions")}
                           </span>
                           <span className="text-[10px] font-semibold text-[var(--text-muted)]">
                             ({item.percentage}%)
@@ -223,7 +225,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
               ) : (
                 <div className="py-8 text-center text-xs text-[var(--text-muted)]">
                   <Activity className="w-6 h-6 mx-auto mb-1 opacity-40" />
-                  <span>{language === "bn" ? "কোনো প্রেসক্রিপশন তথ্য পাওয়া যায়নি।" : "No prescription medication data recorded yet."}</span>
+                  <span>{t("uiNoPrescriptionMedicationDataRecorded")}</span>
                 </div>
               )}
             </div>
@@ -237,15 +239,15 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                      {language === "bn" ? "প্রচলিত রোগনির্ণয় (Dx)" : "Prevalent Diagnoses"}
+                      {t("uiPrevalentDiagnoses")}
                     </h3>
                     <p className="text-[11px] text-[var(--text-muted)]">
-                      {language === "bn" ? "চিকিৎসক কর্তৃক রেকর্ডকৃত প্রধান স্বাস্থ্য সমস্যাসমূহ" : "Primary clinical conditions recorded by physicians"}
+                      {t("uiPrimaryClinicalConditionsRecordedBy")}
                     </p>
                   </div>
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
-                  {language === "bn" ? "রোগতত্ত্ব" : "Epidemiology"}
+                  {t("uiEpidemiology")}
                 </span>
               </div>
 
@@ -260,7 +262,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
                         </span>
                         <div className="flex items-center gap-2 shrink-0">
                           <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400">
-                            {item.count} {language === "bn" ? "টি ঘটনা" : "cases"}
+                            {item.count} {t("uiCases")}
                           </span>
                           <span className="text-[10px] font-semibold text-[var(--text-muted)]">
                             ({item.percentage}%)
@@ -279,7 +281,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
               ) : (
                 <div className="py-8 text-center text-xs text-[var(--text-muted)]">
                   <Activity className="w-6 h-6 mx-auto mb-1 opacity-40" />
-                  <span>{language === "bn" ? "কোনো রোগনির্ণয় তথ্য পাওয়া যায়নি।" : "No clinical diagnoses recorded yet."}</span>
+                  <span>{t("uiNoClinicalDiagnosesRecordedYet")}</span>
                 </div>
               )}
             </div>
@@ -299,7 +301,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
                 <ArrowRight className="h-4 w-4 transition transform group-hover:translate-x-1" />
               </h3>
               <p className="mt-1 text-xs text-[var(--text-secondary)]">
-                {language === "bn" ? "চিকিৎসক, রোগী ও স্টাফ তৈরি করুন। ক্রেডেনশিয়াল ও পাসওয়ার্ড রিসেট করুন।" : "Create doctors, patients, staff. Edit credentials, reset passwords & delete accounts."}
+                {t("uiCreateDoctorsPatientsStaffEdit")}
               </p>
             </Link>
 
@@ -315,7 +317,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
                 <ArrowRight className="h-4 w-4 transition transform group-hover:translate-x-1" />
               </h3>
               <p className="mt-1 text-xs text-[var(--text-secondary)]">
-                {language === "bn" ? "ঔষধের ব্র্যান্ড, জেনেরিক, সেবনবিধি এবং ল্যাব টেস্টসমূহ পরিচালনা করুন।" : "Manage global medicines catalog, dosages, timings and diagnostic test investigations."}
+                {t("uiManageGlobalMedicinesCatalogDosages")}
               </p>
             </Link>
 
@@ -331,7 +333,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
                 <ArrowRight className="h-4 w-4 transition transform group-hover:translate-x-1" />
               </h3>
               <p className="mt-1 text-xs text-[var(--text-secondary)]">
-                {language === "bn" ? "লোগো, ওয়াটারমার্ক, কাস্টম ফন্ট ও অবস্থান অনুযায়ী প্রেসক্রিপশন সাজান।" : "Watermark behind logo, drag text anywhere, custom fonts, offsets and visibility toggles."}
+                {t("uiWatermarkBehindLogoDragText")}
               </p>
             </Link>
 
@@ -347,7 +349,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
                 <ArrowRight className="h-4 w-4 transition transform group-hover:translate-x-1" />
               </h3>
               <p className="mt-1 text-xs text-[var(--text-secondary)]">
-                {language === "bn" ? "অ্যাডমিন, চিকিৎসক, স্টাফ ও রোগীদের এক্সেস নিয়ন্ত্রণ ম্যাট্রিক্স।" : "Checkbox-based access control for SUPER_ADMIN, DOCTOR, STAFF, and PATIENT roles."}
+                {t("uiCheckboxBasedAccessControlFor")}
               </p>
             </Link>
           </div>
@@ -357,10 +359,10 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
               <div>
                 <h2 className="text-base font-bold text-[var(--text-primary)]">
-                  {language === "bn" ? "হাসপাতাল ডিরেক্টরি ও অ্যাকাউন্ট" : "Hospital Directory & Access Accounts"}
+                  {t("uiHospitalDirectoryAccessAccounts")}
                 </h2>
                 <p className="text-xs text-[var(--text-secondary)]">
-                  {users.length} {language === "bn" ? "টি যাচাইকৃত অ্যাকাউন্ট" : "verified accounts in database"}
+                  {users.length} {t("uiVerifiedAccountsInDatabase")}
                 </p>
               </div>
 
@@ -369,7 +371,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
                 className="flex items-center gap-1.5 rounded-xl bg-[var(--brand-primary)] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:brightness-110"
               >
                 <UserPlus className="h-3.5 w-3.5" />
-                {language === "bn" ? "সকল অ্যাকাউন্ট পরিচালনা" : "Manage All Accounts"}
+                {t("uiManageAllAccounts")}
               </Link>
             </div>
 
@@ -424,6 +426,9 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
       {/* Hospital & Chamber Settings Tab Content */}
       {activeTab === "settings" && <SettingsManager />}
 
+      {/* Platform Translation Management (Super Admin only) */}
+      {activeTab === "translations" && currentUser?.role === "SUPER_ADMIN" && <TranslationManager />}
+
       {/* Multi-Clinic SaaS Organizations Tab */}
       {activeTab === "organizations" && (
         currentUser?.role === "SUPER_ADMIN" ? (
@@ -431,12 +436,10 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
         ) : (
           <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-2">
             <p className="text-base font-bold text-[var(--text-primary)]">
-              {language === "bn" ? "অননুমোদিত প্রবেশাধিকার" : "Restricted Access"}
+              {t("uiRestrictedAccess")}
             </p>
             <p className="text-xs text-[var(--text-secondary)]">
-              {language === "bn"
-                ? "মাল্টি-ক্লিনিক SaaS প্রতিষ্ঠান ডিরেক্টরি শুধুমাত্র প্ল্যাটফর্ম সুপার অ্যাডমিনিস্ট্রেটরদের জন্য নির্ধারিত।"
-                : "Multi-clinic SaaS organization directory is only accessible by platform Super Administrators."}
+              {t("uiMultiClinicSaaSOrganizationDirectory")}
             </p>
           </div>
         )
@@ -449,12 +452,10 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
         ) : (
           <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-2">
             <p className="text-base font-bold text-[var(--text-primary)]">
-              {language === "bn" ? "অননুমোদিত প্রবেশাধিকার" : "Restricted Access"}
+              {t("uiRestrictedAccess")}
             </p>
             <p className="text-xs text-[var(--text-secondary)]">
-              {language === "bn"
-                ? "SaaS প্যাকেজ মূল্য নির্ধারণ শুধুমাত্র প্ল্যাটফর্ম সুপার অ্যাডমিনিস্ট্রেটরদের জন্য সংরক্ষিত।"
-                : "SaaS Pricing tier configuration is reserved for platform Super Administrators."}
+              {t("uiSaasPricingTierConfigurationIs")}
             </p>
           </div>
         )
@@ -478,12 +479,10 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
         ) : (
           <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-2">
             <p className="text-base font-bold text-[var(--text-primary)]">
-              {language === "bn" ? "অননুমোদিত প্রবেশাধিকার" : "Restricted Access"}
+              {t("uiRestrictedAccess")}
             </p>
             <p className="text-xs text-[var(--text-secondary)]">
-              {language === "bn"
-                ? "গ্লোবাল ইমেইল টেমপ্লেট প্রণয়ন শুধুমাত্র প্ল্যাটফর্ম সুপার অ্যাডমিনিস্ট্রেটরদের জন্য সংরক্ষিত।"
-                : "Global email template authoring is reserved for platform Super Administrators."}
+              {t("uiGlobalEmailTemplateAuthoringIs")}
             </p>
           </div>
         )

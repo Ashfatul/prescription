@@ -1,7 +1,23 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState } from "react";
-import { dictionary, Language, TranslationKey, Dictionary } from "@/lib/i18n/dictionary";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  BUILT_IN_LANGUAGES,
+  dictionary,
+  Language,
+  TranslationKey,
+  Dictionary,
+} from "@/lib/i18n/dictionary";
+
+export type LanguageOption = {
+  code: string;
+  name: string;
+  nativeName: string;
+  direction: string;
+  isActive: boolean;
+  isSystem: boolean;
+  translationCount?: number;
+};
 
 export interface TranslationFunction {
   (key: TranslationKey | (string & {}), fallback?: string): string;
@@ -13,6 +29,9 @@ type LangContextValue = {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: Translator;
+  languages: LanguageOption[];
+  refreshTranslations: () => Promise<void>;
+  translationsLoading: boolean;
 };
 
 const LangContext = createContext<LangContextValue | null>(null);
@@ -23,14 +42,55 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       return "en";
     }
     try {
-      const saved = localStorage.getItem("ppms_lang") as Language | null;
-      return saved === "bn" ? "bn" : "en";
+      return localStorage.getItem("ppms_lang") || "en";
     } catch {
       return "en";
     }
   });
+  const [languages, setLanguages] = useState<LanguageOption[]>([...BUILT_IN_LANGUAGES]);
+  const [remoteTranslations, setRemoteTranslations] = useState<Record<string, Record<string, string>>>({});
+  const [translationsLoading, setTranslationsLoading] = useState(false);
 
-  const updateLanguage = (lang: Language) => {
+  const loadLanguage = useCallback(async (lang: string) => {
+    try {
+      const response = await fetch(`/api/i18n?language=${encodeURIComponent(lang)}`, {
+        cache: "no-store",
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.success || !payload.data) return;
+
+      setLanguages(payload.data.languages || [...BUILT_IN_LANGUAGES]);
+      setRemoteTranslations((current) => ({
+        ...current,
+        [payload.data.language || lang]: payload.data.translations || {},
+      }));
+    } catch {
+      // The source-controlled locale files remain available when the database is offline.
+    }
+  }, []);
+
+  const refreshTranslations = useCallback(async () => {
+    setTranslationsLoading(true);
+    try {
+      await loadLanguage(language);
+    } finally {
+      setTranslationsLoading(false);
+    }
+  }, [language, loadLanguage]);
+
+  useEffect(() => {
+    // Loading a remote locale is an external synchronization effect.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void refreshTranslations();
+  }, [refreshTranslations]);
+
+  useEffect(() => {
+    const selectedLanguage = languages.find((item) => item.code === language);
+    document.documentElement.lang = language;
+    document.documentElement.dir = selectedLanguage?.direction === "rtl" ? "rtl" : "ltr";
+  }, [language, languages]);
+
+  const updateLanguage = useCallback((lang: Language) => {
     try {
       localStorage.setItem("ppms_lang", lang);
       document.cookie = `ppms_lang=${lang}; path=/; max-age=31536000; SameSite=Lax`;
@@ -38,19 +98,23 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       // ignore in restricted browser environments
     }
     setLanguage(lang);
-  };
+    void loadLanguage(lang);
+  }, [loadLanguage]);
 
   const value = useMemo(() => {
-    const activeDict = dictionary[language] || dictionary.en;
-    const fallbackDict = dictionary.en;
+    const fallbackDict = {
+      ...dictionary.en,
+      ...(remoteTranslations.en || {}),
+    } as Record<string, string>;
+    const activeDict = {
+      ...fallbackDict,
+      ...((dictionary as unknown as Record<string, Record<string, string>>)[language] || {}),
+      ...(remoteTranslations[language] || {}),
+    };
 
     const translate = ((key: string, fallback?: string): string => {
-      if (key in activeDict) {
-        return (activeDict as Record<string, string>)[key];
-      }
-      if (key in fallbackDict) {
-        return (fallbackDict as Record<string, string>)[key];
-      }
+      if (activeDict[key] !== undefined && activeDict[key] !== "") return activeDict[key];
+      if (fallbackDict[key] !== undefined && fallbackDict[key] !== "") return fallbackDict[key];
       return fallback !== undefined ? fallback : key;
     }) as unknown as Translator;
 
@@ -61,8 +125,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       language,
       setLanguage: updateLanguage,
       t: translate,
+      languages,
+      refreshTranslations,
+      translationsLoading,
     };
-  }, [language]);
+  }, [language, languages, refreshTranslations, remoteTranslations, translationsLoading, updateLanguage]);
 
   return <LangContext.Provider value={value}>{children}</LangContext.Provider>;
 }

@@ -47,7 +47,7 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
             <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="font-semibold">
-                {language === "bn" ? "স্বাস্থ্যসেবা নেটওয়ার্ক: " : "Clinical Health Network: "}
+                {t("uiClinicalHealthNetwork")}
                 <strong>{settings.hospitalName} ({settings.hospitalBranch})</strong>
               </span>
             </div>
@@ -99,9 +99,7 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
             </Link>
 
             <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-400 max-w-md">
-              {language === "bn"
-                ? "আধুনিক চিকিৎসক, পলিক্লিনিক ও মাল্টি-স্পেশালিটি হাসপাতালের জন্য নির্মিত উচ্চগতির প্রেসক্রিপশন প্ল্যাটফর্ম। সহজ ও দ্রুত প্রেসক্রিপশন তৈরি, স্বয়ংক্রিয় ডোজ, রিয়েল-টাইম চেম্বার কিউ ডিসপেন্সিং এবং বিএমডিসি-অনুমোদিত A4 প্রিন্ট।"
-                : "The high-velocity clinical prescribing suite designed for modern physicians, polyclinics, and multi-specialty hospitals. Zero-redundancy prescription composition, automated dosage frequencies, real-time chamber queue dispenses, and BMDC-compliant paginated A4 printing."}
+              {t("uiTheHighVelocityClinicalPrescribing")}
             </p>
 
             {/* Compliance Badges */}
@@ -268,7 +266,7 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
           </div>
           <div className="flex items-center gap-2">
             <Mail className="w-4 h-4 text-[var(--brand-primary)] shrink-0" />
-            <span className="truncate">{language === "bn" ? "সহায়তা: " : "Support: "}{settings.supportEmail}</span>
+            <span className="truncate">{t("uiSupport")}{settings.supportEmail}</span>
           </div>
         </div>
 

@@ -48,9 +48,9 @@ export function SearchableSelect({
   size = "md",
   allowClear = true,
 }: SearchableSelectProps) {
-  const { language } = useLanguage();
-  const effectivePlaceholder = placeholder || (language === "bn" ? "নির্বাচন করুন..." : "Select an option...");
-  const effectiveSearchPlaceholder = searchPlaceholder || (language === "bn" ? "খুঁজতে টাইপ করুন..." : "Type to search...");
+  const { t } = useLanguage();
+  const effectivePlaceholder = placeholder || t.selectOption;
+  const effectiveSearchPlaceholder = searchPlaceholder || t.typeToSearch;
 
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -201,7 +201,7 @@ export function SearchableSelect({
                 e.stopPropagation();
                 onChange("");
               }}
-              title={language === "bn" ? "মুছে ফেলুন" : "Clear selection"}
+              title={t.clearSelection}
               className="hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg hover:bg-[var(--bg-subtle)] transition"
             >
               <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
@@ -308,7 +308,7 @@ export function SearchableSelect({
             ) : (
               <div className="py-4 text-center">
                 <p className="text-xs text-slate-400 dark:text-slate-500">
-                  {language === "bn" ? "কোন ফলাফল পাওয়া যায়নি" : "No matching results"}
+                  {t.noMatchingResults}
                 </p>
               </div>
             )}
@@ -320,7 +320,7 @@ export function SearchableSelect({
                 onClick={handleAddCustom}
                 className="w-full mt-1 text-left px-3.5 py-2.5 rounded-xl border border-dashed border-[var(--brand-border)] bg-[var(--brand-surface)] text-xs font-semibold text-[var(--brand-text)] hover:opacity-90 flex items-center gap-2 cursor-pointer"
               >
-                <span>➕ {language === "bn" ? "নতুন যুক্ত করুন:" : "Add custom:"} &ldquo;{search.trim()}&rdquo;</span>
+                <span>➕ {t.addCustomOption} &ldquo;{search.trim()}&rdquo;</span>
               </button>
             )}
           </div>

@@ -23,7 +23,7 @@ interface DemoCountdownTimerProps {
 }
 
 export function DemoCountdownTimer({ variant = "floating", className = "" }: DemoCountdownTimerProps) {
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   const isBn = language === "bn";
   const [status, setStatus] = useState<DemoStatus | null>(null);
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
@@ -84,18 +84,18 @@ export function DemoCountdownTimer({ variant = "floating", className = "" }: Dem
         });
         const json = await res.json();
         if (json.success) {
-          setResetMessage(isBn ? "স্যান্ডবক্স সফলভাবে ডিফল্ট অবস্থায় রিসেট হয়েছে!" : "Sandbox restored to initial default baseline!");
+          setResetMessage(t("uiSandboxRestoredToInitialDefault"));
           await loadStatus();
           setTimeout(() => {
             setResetMessage(null);
             window.location.reload();
           }, 1200);
         } else {
-          setErrorMessage(json.message || (isBn ? "ডেমো ডেটা রিসেট করতে ব্যর্থ হয়েছে।" : "Failed to reset demo data."));
+          setErrorMessage(json.message || (t("uiFailedToResetDemoData")));
         }
       } catch (err) {
         console.error("Manual demo reset failed:", err);
-        setErrorMessage(isBn ? "নেটওয়ার্ক ত্রুটি ঘটেছে।" : "Network error occurred during reset.");
+        setErrorMessage(t("uiNetworkErrorOccurredDuringReset"));
       }
     });
   };
@@ -121,19 +121,17 @@ export function DemoCountdownTimer({ variant = "floating", className = "" }: Dem
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[var(--brand-primary)] animate-pulse" />
             <span className="font-bold text-[var(--brand-text)]">
-              {status.clinicName} {isBn ? "স্যান্ডবক্স:" : "Sandbox:"}
+              {status.clinicName} {t("uiSandbox")}
             </span>
             <span className="text-[var(--text-secondary)]">
-              {isBn
-                ? "সকল ডেমো পরামর্শ, কিউ এবং প্রেসক্রিপশন পরিবর্তন প্রতি ৬ ঘণ্টা পর স্বয়ংক্রিয়ভাবে ডিফল্ট অবস্থায় ফিরে আসে।"
-                : "All demo consultations, queues, and Rx modifications automatically reset every 6 hours."}
+              {t("uiAllDemoConsultationsQueuesAnd")}
             </span>
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
             <div className="flex items-center gap-1.5 font-mono font-bold text-[var(--brand-text)] bg-[var(--bg-surface)] px-2.5 py-1 rounded-lg border border-[var(--border-subtle)] shadow-2xs">
               <Clock className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-              <span>{isBn ? "রিসেট হতে বাকি: " : "Resets in: "} {formattedCountdown}</span>
+              <span>{t("uiResetsIn")} {formattedCountdown}</span>
             </div>
 
             <button
@@ -142,7 +140,7 @@ export function DemoCountdownTimer({ variant = "floating", className = "" }: Dem
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[var(--brand-primary)] hover:opacity-90 text-white font-bold text-xs transition shadow-2xs disabled:opacity-60 cursor-pointer"
             >
               <RotateCcw className={`w-3 h-3 ${isPending ? "animate-spin" : ""}`} />
-              <span>{isPending ? (isBn ? "রিসেট হচ্ছে..." : "Resetting...") : (isBn ? "এখনই রিসেট" : "Reset Now")}</span>
+              <span>{isPending ? (t("uiResetting")) : (t("uiResetNow"))}</span>
             </button>
           </div>
         </div>
@@ -166,24 +164,22 @@ export function DemoCountdownTimer({ variant = "floating", className = "" }: Dem
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="font-bold text-[var(--brand-text)] tracking-wide">
-              {status.clinicName} {isBn ? "ডেমো স্যান্ডবক্স" : "Demo Sandbox"}
+              {status.clinicName} {t("uiDemoSandbox")}
             </span>
           </div>
           <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-[var(--bg-surface)] text-[var(--brand-text)] border border-[var(--brand-border)]">
-            {isBn ? "৬ ঘণ্টার চক্র" : "6h Cycle"}
+            {t("uiHCycle")}
           </span>
         </div>
 
         <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
-          {isBn
-            ? "এই ডেমো চেম্বারে যেকোনো পরিবর্তন প্রতি ৬ ঘণ্টা অন্তর মূল অবস্থায় ফিরে যায়।"
-            : "Modifications made in this demo chamber restore to clean baseline state every 6 hours."}
+          {t("uiModificationsMadeInThisDemo")}
         </p>
 
         <div className="flex items-center justify-between gap-3 pt-1 border-t border-[var(--border-subtle)]">
           <div className="flex items-center gap-1.5 font-mono font-bold text-[var(--text-primary)]">
             <Clock className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-            <span>{isBn ? "রিসেট হতে বাকি: " : "Resets in: "} <strong className="text-[var(--brand-text)]">{formattedCountdown}</strong></span>
+            <span>{t("uiResetsIn")} <strong className="text-[var(--brand-text)]">{formattedCountdown}</strong></span>
           </div>
 
           <button
@@ -193,7 +189,7 @@ export function DemoCountdownTimer({ variant = "floating", className = "" }: Dem
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[var(--brand-primary)] text-white hover:opacity-90 font-bold text-[11px] transition disabled:opacity-60 cursor-pointer shadow-2xs"
           >
             <RotateCcw className={`w-3 h-3 ${isPending ? "animate-spin" : ""}`} />
-            <span>{isPending ? (isBn ? "পুনরুদ্ধার হচ্ছে..." : "Restoring...") : (isBn ? "ডিফল্টে রিসেট" : "Reset to Default")}</span>
+            <span>{isPending ? (t("uiRestoring")) : (t("uiResetToDefault"))}</span>
           </button>
         </div>
 
@@ -216,7 +212,7 @@ export function DemoCountdownTimer({ variant = "floating", className = "" }: Dem
   // Floating Pill (Bottom Right)
   return (
     <aside
-      aria-label={isBn ? "ডেমো পরিবেশ স্ট্যাটাস" : "Demo Environment Status"}
+      aria-label={t("uiDemoEnvironmentStatus")}
       className={`fixed bottom-4 right-4 z-40 max-w-sm rounded-2xl bg-[var(--bg-elevated)] border border-[var(--brand-border)] p-3 text-xs shadow-xl ring-1 ring-black/5 dark:ring-white/10 backdrop-blur-md transition-all ${className}`}
     >
       <div className="flex items-center justify-between gap-3">
@@ -230,11 +226,11 @@ export function DemoCountdownTimer({ variant = "floating", className = "" }: Dem
                 {status.clinicName}
               </span>
               <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)]">
-                {isBn ? "ডেমো" : "Demo"}
+                {t("uiDemo")}
               </span>
             </div>
             <p className="text-[10px] text-[var(--text-secondary)] font-mono">
-              {isBn ? "স্বয়ংক্রিয় রিসেট: " : "Auto-reset in: "} <strong className="text-[var(--brand-text)]">{formattedCountdown}</strong>
+              {t("uiAutoResetIn")} <strong className="text-[var(--brand-text)]">{formattedCountdown}</strong>
             </p>
           </div>
         </div>
@@ -243,11 +239,11 @@ export function DemoCountdownTimer({ variant = "floating", className = "" }: Dem
           type="button"
           onClick={handleReset}
           disabled={isPending}
-          title={isBn ? "পিপিএমএস ক্লিনিক ডেমো ডেটা ডিফল্ট অবস্থায় রিসেট করুন" : "Reset PPMS Clinic demo data to default baseline"}
+          title={t("uiResetPPMSClinicDemoData")}
           className="px-2.5 py-1.5 rounded-xl bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] border border-[var(--border-default)] font-bold text-[11px] text-[var(--text-primary)] transition flex items-center gap-1.5 disabled:opacity-60 cursor-pointer shrink-0"
         >
           <RotateCcw className={`w-3 h-3 ${isPending ? "animate-spin" : ""}`} />
-          <span>{isPending ? "..." : (isBn ? "রিসেট" : "Reset")}</span>
+          <span>{isPending ? "..." : (t("uiReset"))}</span>
         </button>
       </div>
 

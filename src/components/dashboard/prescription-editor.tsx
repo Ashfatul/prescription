@@ -883,8 +883,8 @@ export function PrescriptionEditor({
               <SearchableSelect
                 options={templates.map((tpl) => ({
                   value: tpl.id,
-                  label: `${tpl.name}${tpl.isDefault ? (language === "bn" ? " (ডিফল্ট)" : " (Default)") : ""}`,
-                  badge: tpl.isDefault ? (language === "bn" ? "ডিফল্ট" : "Default") : undefined,
+                  label: `${tpl.name}${tpl.isDefault ? (t("uiDefault2")) : ""}`,
+                  badge: tpl.isDefault ? (t("uiDefault")) : undefined,
                 }))}
                 value={selectedTemplateId}
                 placeholder={t.layoutTemplate}
@@ -922,7 +922,7 @@ export function PrescriptionEditor({
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400">
                 Prescription ID: <code className="font-mono font-bold">{createdPrescriptionId}</code> •
-                {language === "bn" ? " সিরিয়াল সম্পন্ন ও রুম মনিটর আপডেট করা হয়েছে।" : " Removed from Chamber Queue • TV waiting display updated."}
+                {t("uiRemovedFromChamberQueueTV")}
               </p>
             </div>
 
@@ -993,15 +993,15 @@ export function PrescriptionEditor({
             </div>
 
             <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
-              {currentPatient?.user.name || (language === "bn" ? "রোগীর তথ্য" : "Patient Record")}
+              {currentPatient?.user.name || (t("rolePatientRecord"))}
             </h3>
 
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
               <span>
-                {t.patientGender}: <strong className="text-slate-800 dark:text-slate-200">{currentPatient?.gender || (language === "bn" ? "অনুল্লেখিত" : "Not specified")}</strong>
+                {t.patientGender}: <strong className="text-slate-800 dark:text-slate-200">{currentPatient?.gender || (t("uiNotSpecified2"))}</strong>
               </span>
               <span>
-                {t.patientAge}: <strong className="text-slate-800 dark:text-slate-200">{patientAge ? `${patientAge} ${language === "bn" ? "বছর" : "yrs"}` : "N/A"}</strong>
+                {t.patientAge}: <strong className="text-slate-800 dark:text-slate-200">{patientAge ? `${patientAge} ${t("uiYrs2")}` : "N/A"}</strong>
               </span>
               {currentPatient?.user.phone && (
                 <span className="flex items-center gap-1">
@@ -1293,7 +1293,7 @@ export function PrescriptionEditor({
               <Stethoscope className="w-3.5 h-3.5" />
               <span>1. {t.chiefComplaints} & {t.clinicalDiagnosis}</span>
             </span>
-            <span className="text-[11px] text-slate-400 font-medium">{language === "bn" ? "হাতে লিখতে `- ` ব্যবহার করুন" : "Use `- ` for manual entries"}</span>
+            <span className="text-[11px] text-slate-400 font-medium">{t("useDashForManualEntries")}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1473,7 +1473,7 @@ export function PrescriptionEditor({
                     <SearchableSelect
                       options={catalogMedicines}
                       value={med.name}
-                      placeholder={language === "bn" ? "ব্র্যান্ড বা জেনেরিক খুঁজুন (যেমনঃ Maxpro, Napa, Amoxicillin)..." : "Search brand or generic (e.g. Maxpro, Napa, Amoxicillin)..."}
+                      placeholder={t("uiSearchBrandOrGenericE")}
                       allowCustom
                       onChange={(val, opt) => handleSelectMedicineFromCatalog(index, opt || { value: val, label: val })}
                     />
@@ -1500,7 +1500,7 @@ export function PrescriptionEditor({
                       {t.doseScheduleFrequency}
                     </label>
                     <span className="text-[11px] font-mono font-bold text-[var(--brand-text)]">
-                      {language === "bn" ? "মাত্রা:" : "Dose:"} {med.frequency || (language === "bn" ? "অনুল্লেখিত" : "Not specified")}
+                      {t("uiDose")} {med.frequency || (t("uiNotSpecified2"))}
                     </span>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
@@ -1861,7 +1861,7 @@ export function PrescriptionEditor({
             <div className="max-h-96 overflow-y-auto space-y-3">
               {patientReports.length === 0 ? (
                 <p className="text-center py-8 text-xs text-slate-400">
-                  {language === "bn" ? "এই রোগীর কোনো ল্যাব রিপোর্ট পাওয়া যায়নি।" : "No lab reports found for this patient."}
+                  {t("uiNoLabReportsFoundFor")}
                 </p>
               ) : (
                 patientReports.map((r) => (
@@ -1878,7 +1878,7 @@ export function PrescriptionEditor({
                       </p>
                       {r.notes && (
                         <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">
-                          {language === "bn" ? "নোট:" : "Notes:"} {r.notes}
+                          {t("uiNotes")} {r.notes}
                         </p>
                       )}
                     </div>
@@ -1929,8 +1929,8 @@ export function PrescriptionEditor({
           signatureUrl: docSignatureUrl || doctor.signatureUrl || doctor.user?.signatureUrl || undefined,
         }}
         patient={{
-          name: currentPatient?.user.name || (language === "bn" ? "রোগী" : "Patient"),
-          gender: currentPatient?.gender || (language === "bn" ? "অনুল্লেখিত" : "Not specified"),
+          name: currentPatient?.user.name || (t("rolePatient")),
+          gender: currentPatient?.gender || (t("uiNotSpecified2")),
           phone: currentPatient?.user.phone || undefined,
           age: patientAge,
         }}

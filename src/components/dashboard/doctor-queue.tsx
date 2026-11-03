@@ -64,12 +64,12 @@ export function DoctorQueue({ doctorId }: { doctorId: string }) {
             {t.currentSerial}
           </h3>
           <p className="text-xs text-slate-500">
-            {language === "bn" ? "রিয়েল-টাইম চেম্বার কলিং ক্রম" : "Real-time room call sequence"}
+            {t("uiRealTimeRoomCallSequence")}
           </p>
         </div>
         <div className="text-right">
           <span className="text-xs text-slate-400 block font-medium">
-            {language === "bn" ? "চলমান রোগী" : "Now Calling"}
+            {t("uiNowCalling")}
           </span>
           <span className="text-2xl font-black text-[var(--brand-text)] font-mono">
             #{data.currentSerial || "1"}
@@ -80,9 +80,7 @@ export function DoctorQueue({ doctorId }: { doctorId: string }) {
       <div className="space-y-2">
         {data.queue.length === 0 ? (
           <p className="py-6 text-center text-xs text-slate-400">
-            {language === "bn"
-              ? "বর্তমানে ওয়েটিং রুমে কোনো রোগী অপেক্ষমান নেই।"
-              : "No patients currently queued in the waiting room."}
+            {t("waitingRoomEmpty")}
           </p>
         ) : (
           data.queue.map((item) => (

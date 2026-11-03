@@ -535,3 +535,31 @@ model EmailTemplate {
   @@index([organizationId])
   @@index([key])
 }
+
+model TranslationLanguage {
+  id           String              @id @default(cuid())
+  code         String              @unique
+  name         String
+  nativeName   String?
+  direction    String              @default("ltr")
+  isActive     Boolean             @default(true)
+  isSystem     Boolean             @default(false)
+  translations TranslationEntry[]
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@index([isActive])
+}
+
+model TranslationEntry {
+  id         String             @id @default(cuid())
+  languageId String
+  language   TranslationLanguage @relation(fields: [languageId], references: [id], onDelete: Cascade)
+  key        String
+  value      String             @db.Text
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  @@unique([languageId, key])
+  @@index([key])
+}

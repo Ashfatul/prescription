@@ -691,9 +691,7 @@ export function TwoFactorAuthCard() {
             ) : (
               <form onSubmit={handleRegenBackupCodes} className="space-y-4">
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {language === "bn"
-                    ? "নতুন রিকভারি কোড তৈরি করলে পূর্বের সকল অব্যবহৃত কোড অকার্যকর হয়ে যাবে। নিশ্চিত করতে আপনার পাসওয়ার্ড দিন:"
-                    : "Regenerating recovery codes will invalidate all existing unused backup codes. Enter your current password to confirm:"}
+                  {t("uiRegeneratingRecoveryCodesWillInvalidate")}
                 </p>
 
                 <div>

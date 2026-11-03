@@ -24,7 +24,7 @@ export function PrintFloatingActionBar({
   changeReason,
   versions = [],
 }: PrintFloatingActionBarProps) {
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
 
   return (
     <>
@@ -63,7 +63,7 @@ export function PrintFloatingActionBar({
             href="/dashboard/doctor"
             className="flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800"
           >
-            {language === "bn" ? "← ড্যাশবোর্ডে ফিরুন" : "← Back to Dashboard"}
+            {t("uiBackToDashboard")}
           </Link>
           <span className="text-xs text-zinc-500">
             Rx ID: <code className="font-mono font-bold text-zinc-700 dark:text-zinc-300">{id}</code>
@@ -71,8 +71,8 @@ export function PrintFloatingActionBar({
           <span className="px-2.5 py-0.5 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-xs font-bold">
             {language === "bn" ? `সংস্করণ ${currentVersion}` : `Version ${currentVersion}`}{" "}
             {isHistorical
-              ? (language === "bn" ? "(সংরক্ষিত স্ন্যাপশট)" : "(Archived Snapshot)")
-              : (language === "bn" ? "(সর্বশেষ সক্রিয়)" : "(Latest Active)")}
+              ? (t("uiArchivedSnapshot"))
+              : (t("uiLatestActive"))}
           </span>
         </div>
 
@@ -81,7 +81,7 @@ export function PrintFloatingActionBar({
           {versions.length > 1 && (
             <div className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl">
               <span className="text-[11px] font-bold text-zinc-500 px-2 uppercase tracking-wider">
-                {language === "bn" ? "রিভিশন:" : "Revisions:"}
+                {t("uiRevisions2")}
               </span>
               {versions.map((ver) => {
                 const isSelected = ver.versionNumber === currentVersion;

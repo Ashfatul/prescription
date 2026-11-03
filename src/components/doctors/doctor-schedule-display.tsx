@@ -44,7 +44,7 @@ export function DoctorScheduleDisplay({
           ) : (
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
               <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-              {language === "bn" ? "পরবর্তী: " : "Next: "}{evalResult.nextAvailableDay || (language === "bn" ? "পরবর্তী শিডিউল" : "Next Schedule")}
+              {t("uiNext")}{evalResult.nextAvailableDay || (t("uiNextSchedule"))}
             </span>
           )}
 
@@ -59,7 +59,7 @@ export function DoctorScheduleDisplay({
           {evalResult.dayStatusList.map((d) => (
             <span
               key={d.day}
-              title={`${d.fullDay}: ${d.isActive ? (language === "bn" ? "সাক্ষাতের দিন" : "Visiting Day") : (language === "bn" ? "বন্ধের দিন" : "Off Day")}`}
+              title={`${d.fullDay}: ${d.isActive ? (t("visitingDay")) : (t("offDay"))}`}
               className={`w-6 h-5 rounded-md text-[9px] flex items-center justify-center font-bold tracking-tight transition-all ${
                 d.isActive
                   ? "bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] font-extrabold"
@@ -87,7 +87,7 @@ export function DoctorScheduleDisplay({
           ) : (
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
               <span className="w-2 h-2 rounded-full bg-slate-400" />
-              {language === "bn" ? "পরবর্তী: " : "Next: "}{evalResult.nextAvailableDay || (language === "bn" ? "পরবর্তী সাক্ষাতের দিন" : "Next Visiting Day")}
+              {t("uiNext")}{evalResult.nextAvailableDay || (t("nextVisitingDay"))}
             </span>
           )}
         </div>
@@ -101,8 +101,8 @@ export function DoctorScheduleDisplay({
       {/* 7-Day Visual Schedule Strip */}
       <div>
         <div className="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-          <span>{language === "bn" ? "সাপ্তাহিক সাক্ষাতের দিনসমূহ" : "Weekly Visiting Days"}</span>
-          <span className="text-[9px] lowercase font-normal opacity-80">{language === "bn" ? "(রিং নির্দেশ করে আজ)" : "(ring indicates today)"}</span>
+          <span>{t("uiWeeklyVisitingDays")}</span>
+          <span className="text-[9px] lowercase font-normal opacity-80">{t("uiRingIndicatesToday")}</span>
         </div>
         <div className="grid grid-cols-7 gap-1">
           {evalResult.dayStatusList.map((d) => (

@@ -122,25 +122,25 @@ export function HomeView({
                 <div className="flex items-center gap-1.5 justify-center">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                   <span className="font-medium">
-                    {language === "bn" ? "১০০% অফলাইন ও ইন্ট্রানেট উপযোগী" : "100% Intranet Ready"}
+                    {t("uiIntranetReady")}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 justify-center">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                   <span className="font-medium">
-                    {language === "bn" ? "মাল্টি-পেজ A4 প্রিন্ট" : "Multi-Page A4 Print"}
+                    {t("uiMultiPageA4Print")}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 justify-center">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                   <span className="font-medium">
-                    {language === "bn" ? "১-ক্লিক ক্লিনিকাল প্রিসেট" : "1-Click Presets"}
+                    {t("uiClickPresets")}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 justify-center">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                   <span className="font-medium">
-                    {language === "bn" ? "৫টি আকর্ষণীয় থিম" : "5 Dynamic Themes"}
+                    {t("uiDynamicThemes")}
                   </span>
                 </div>
               </div>
@@ -163,7 +163,7 @@ export function HomeView({
                 {t.statTotalDoctors}
               </div>
               <p className="text-[11px] text-slate-400">
-                {language === "bn" ? "সক্রিয় বিশেষজ্ঞ চেম্বার" : "Active specialist chambers"}
+                {t("uiActiveSpecialistChambers")}
               </p>
             </div>
 
@@ -175,7 +175,7 @@ export function HomeView({
                 {t.statTotalPrescriptions}
               </div>
               <p className="text-[11px] text-slate-400">
-                {language === "bn" ? "ডিজিটাল স্বাস্থ্য রেকর্ড" : "Digital clinical records"}
+                {t("uiDigitalClinicalRecords")}
               </p>
             </div>
 
@@ -187,7 +187,7 @@ export function HomeView({
                 {t.statTotalClinics}
               </div>
               <p className="text-[11px] text-slate-400">
-                {language === "bn" ? "নিবন্ধিত হাসপাতাল ও ক্লিনিক" : "Active clinics & chambers"}
+                {t("uiActiveClinicsChambers")}
               </p>
             </div>
 
@@ -199,7 +199,7 @@ export function HomeView({
                 {t.statTotalMedicines}
               </div>
               <p className="text-[11px] text-slate-400">
-                {language === "bn" ? "ক্লিনিকাল ঔষধ তালিকা" : "Standard clinical drugs"}
+                {t("uiStandardClinicalDrugs")}
               </p>
             </div>
           </div>
@@ -218,9 +218,7 @@ export function HomeView({
               <span>{t.whyChooseTitle}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
-              {language === "bn"
-                ? "আপনার ক্লিনিকের সব প্রয়োজনীয় সুবিধা। শূন্য পুনরাবৃত্তি।"
-                : "Everything Your Clinic Needs. Zero Redundant Interactions."}
+              {t("uiEverythingYourClinicNeedsZero")}
             </h2>
             <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
               {t.whyChooseSubtitle}
@@ -244,13 +242,13 @@ export function HomeView({
               </div>
               <div className="pt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold text-[var(--brand-text)]">
                 <span className="px-2 py-0.5 rounded-md bg-[var(--brand-surface)]">
-                  {language === "bn" ? "ডোজ চিপস" : "Dosage Chips"}
+                  {t("uiDosageChips")}
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-[var(--brand-surface)]">
-                  {language === "bn" ? "অটো-ফিল ডিরেকশন" : "Auto-fill Directions"}
+                  {t("uiAutoFillDirections")}
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-[var(--brand-surface)]">
-                  {language === "bn" ? "ঔষধ ক্যাটালগ" : "Formulary Search"}
+                  {t("uiFormularySearch")}
                 </span>
               </div>
             </div>
@@ -270,13 +268,13 @@ export function HomeView({
               </div>
               <div className="pt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold text-sky-600 dark:text-sky-400">
                 <span className="px-2 py-0.5 rounded-md bg-sky-500/10">
-                  {language === "bn" ? "টেমপ্লেট ডিজাইনার" : "WYSIWYG Designer"}
+                  {t("uiWysiwygDesigner")}
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-sky-500/10">
-                  {language === "bn" ? "ওয়াটারমার্ক সিল" : "Watermark"}
+                  {t("uiWatermark")}
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-sky-500/10">
-                  {language === "bn" ? "A4 পেজিনেশন" : "Paginated Print"}
+                  {t("uiPaginatedPrint")}
                 </span>
               </div>
             </div>
@@ -296,13 +294,13 @@ export function HomeView({
               </div>
               <div className="pt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold text-amber-600 dark:text-amber-400">
                 <span className="px-2 py-0.5 rounded-md bg-amber-500/10">
-                  {language === "bn" ? "লাইভ সিরিয়াল" : "Live Token Ticker"}
+                  {t("uiLiveTokenTicker")}
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-amber-500/10">
-                  {language === "bn" ? "লবি মনিটর" : "Next in Lobby"}
+                  {t("uiNextInLobby")}
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-amber-500/10">
-                  {language === "bn" ? "ভিড়মুক্ত চেম্বার" : "Zero Crowding"}
+                  {t("uiZeroCrowding")}
                 </span>
               </div>
             </div>
@@ -314,23 +312,21 @@ export function HomeView({
               </div>
               <div className="space-y-1.5 flex-grow-1">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                  {language === "bn" ? "ফ্রন্ট ডেস্ক ও ট্রায়াজ ম্যানেজমেন্ট" : "Front Desk & Receptionist Triage"}
+                  {t("uiFrontDeskReceptionistTriage")}
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                  {language === "bn"
-                    ? "সরাসরি উপস্থিত রোগীদের দ্রুত নিবন্ধন, রক্তচাপ ও তাপমাত্রা রেকর্ড এবং তাৎক্ষণিক সিরিয়াল টিকিট প্রিন্টিং সুবিধা।"
-                    : "Dedicated front desk portal for rapid walk-in registration, pre-consultation vitals recording, and instant ticket print."}
+                  {t("uiDedicatedFrontDeskPortalFor")}
                 </p>
               </div>
               <div className="pt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
                 <span className="px-2 py-0.5 rounded-md bg-emerald-500/10">
-                  {language === "bn" ? "রোগী চেক-ইন" : "Walk-in Intake"}
+                  {t("uiWalkInIntake")}
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-emerald-500/10">
-                  {language === "bn" ? "প্রাথমিক ভাইটালস" : "Pre-chamber Vitals"}
+                  {t("uiPreChamberVitals")}
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-emerald-500/10">
-                  {language === "bn" ? "টোকেন প্রিন্ট" : "Token Printing"}
+                  {t("uiTokenPrinting")}
                 </span>
               </div>
             </div>
@@ -342,25 +338,21 @@ export function HomeView({
               </div>
               <div className="space-y-1.5 flex-grow-1">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                  {language === "bn"
-                    ? "ডিজিটাল প্রেসক্রিপশন ও ঔষধ রিমাইন্ডার"
-                    : "Patient Electronic Prescriptions & Medication Reminders"}
+                  {t("rolePatientElectronicPrescriptionsAndMedicationReminders")}
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                  {language === "bn"
-                    ? "রোগী নিরাপদে যেকোনো সময় প্রেসক্রিপশন দেখতে পারেন, ঔষধ সেবনের রিমাইন্ডার সেট করতে পারেন এবং চিকিৎসকের সাথে যুক্ত থাকতে পারেন।"
-                    : "Patients securely access digital prescriptions, review revision histories, and configure automated medicine dosage schedules directly within their verified health portal."}
+                  {t("rolePatientsSecurelyAccessDigitalPrescriptionsReviewRevisionHistoriesAndConfigureAutomatedMedicineDosageSchedule")}
                 </p>
               </div>
               <div className="pt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400">
                 <span className="px-2 py-0.5 rounded-md bg-indigo-500/10">
-                  {language === "bn" ? "ভার্সন হিস্ট্রি" : "Version History"}
+                  {t("uiVersionHistory")}
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-indigo-500/10">
-                  {language === "bn" ? "ডোজ রিমাইন্ডার" : "Dosage Reminders"}
+                  {t("uiDosageReminders")}
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-indigo-500/10">
-                  {language === "bn" ? "সহজ প্রিন্ট" : "Instant Print"}
+                  {t("uiInstantPrint")}
                 </span>
               </div>
             </div>
@@ -380,13 +372,13 @@ export function HomeView({
               </div>
               <div className="pt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold text-rose-600 dark:text-rose-400">
                 <span className="px-2 py-0.5 rounded-md bg-rose-500/10">
-                  {language === "bn" ? "কাস্টম সাবডোমেন" : "Subdomains"}
+                  {t("uiSubdomains")}
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-rose-500/10">
-                  {language === "bn" ? "স্ট্রাইপ বিলিং" : "Stripe Billing"}
+                  {t("uiStripeBilling")}
                 </span>
                 <span className="px-2 py-0.5 rounded-md bg-rose-500/10">
-                  {language === "bn" ? "ভূমিকা ও অনুমতি" : "RBAC Access"}
+                  {t("uiRbacAccess")}
                 </span>
               </div>
             </div>
@@ -403,17 +395,13 @@ export function HomeView({
           <div className="text-center max-w-3xl mx-auto space-y-3">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-bold uppercase tracking-wider border border-[var(--brand-border)]">
               <Layers className="w-3.5 h-3.5" />
-              <span>{language === "bn" ? "কার্যপদ্ধতি ও ধাপসমূহ" : "End-to-End Chamber Ergonomics"}</span>
+              <span>{t("uiEndToEndChamberErgonomics")}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
-              {language === "bn"
-                ? "সহজ ৪-ধাপের দ্রুত ও আধুনিক ক্লিনিকাল সেবা"
-                : "How It Works: Streamlined 4-Step Clinical Journey"}
+              {t("uiHowItWorksStreamlinedStep")}
             </h2>
             <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
-              {language === "bn"
-                ? "ওয়েটিং রুমের ভিড় কমাতে, কাগজের ঝামেলা দূর করতে এবং ডাক্তারকে পূর্ব-প্রস্তুত তথ্য দিতে সহায়ক।"
-                : "Designed to minimize waiting room clutter, eliminate manual paperwork, and provide doctors with pre-triaged patient vitals."}
+              {t("uiDesignedToMinimizeWaitingRoom")}
             </p>
           </div>
 
@@ -426,16 +414,14 @@ export function HomeView({
                   01
                 </span>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  {language === "bn" ? "ফ্রন্ট ডেস্ক / অনলাইন" : "Front Desk / Online"}
+                  {t("uiFrontDeskOnline")}
                 </span>
               </div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white pt-2">
-                {language === "bn" ? "রোগী গ্রহণ ও সিরিয়াল বরাদ্দ" : "Patient Intake & Serial Allocation"}
+                {t("rolePatientIntakeAndSerialAllocation")}
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                {language === "bn"
-                  ? "রোগী অনলাইনে বা সরাসরি এসে নিবন্ধন করেন। স্বয়ংক্রিয়ভাবে সিরিয়াল টিকিট তৈরি হয়ে ডাক্তারের সক্রিয় কিউতে যোগ হয়।"
-                  : "Patients book online or check in with front desk receptionists. A serial ticket is automatically generated and added to the doctor's active queue."}
+                {t("rolePatientsBookOnlineOrCheckInWithFrontDeskReceptionistsASerialTicketIsAutomaticallyGenerated")}
               </p>
             </div>
 
@@ -446,16 +432,14 @@ export function HomeView({
                   02
                 </span>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  {language === "bn" ? "চেম্বার ট্রায়াজ" : "Pre-Chamber Triage"}
+                  {t("uiPreChamberTriage")}
                 </span>
               </div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white pt-2">
-                {language === "bn" ? "প্রাথমিক স্বাস্থ্য পরীক্ষা (ভাইটালস)" : "Vitals Recording & Triage"}
+                {t("uiVitalsRecordingTriage")}
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                {language === "bn"
-                  ? "কর্মী রক্তচাপ, পালস, তাপমাত্রা ও ওজন গ্রহণ করেন। ডাক্তার চেম্বারে ঢোকার আগেই সব ডেটা স্ক্রিনে পেয়ে যান।"
-                  : "Staff record Blood Pressure, Pulse, Temperature, SpO2, and Weight. The doctor enters the chamber with patient baseline diagnostics ready on screen."}
+                {t("uiStaffRecordBloodPressurePulse")}
               </p>
             </div>
 
@@ -466,16 +450,14 @@ export function HomeView({
                   03
                 </span>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  {language === "bn" ? "প্রেসক্রিপশন রচনা" : "Doctor Prescribing"}
+                  {t("roleDoctorPrescribing")}
                 </span>
               </div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white pt-2">
-                {language === "bn" ? "দ্রুত ১-ক্লিক প্রেসক্রিপশন" : "Rapid 1-Click Prescribing"}
+                {t("uiRapidClickPrescribing")}
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                {language === "bn"
-                  ? "১-ক্লিকে প্রধান সমস্যা ও রোগ নির্ণয় নির্বাচন করুন। ঔষধ সিলেক্ট করলেই সঠিক মাত্রা ও সময়সূচী স্বয়ংক্রিয়ভাবে বসে যায়।"
-                  : "Doctor chooses Chief Complaints and Diagnosis presets with 1 click. Medicines auto-populate dose frequencies and instructions without typing."}
+                {t("roleDoctorChoosesChiefComplaintsAndDiagnosisPresetsWithClickMedicinesAutoPopulateDoseFrequenciesAndInstructions")}
               </p>
             </div>
 
@@ -486,16 +468,14 @@ export function HomeView({
                   04
                 </span>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  {language === "bn" ? "প্রিন্ট ও সংরক্ষণ" : "Print & Archive"}
+                  {t("uiPrintArchive")}
                 </span>
               </div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white pt-2">
-                {language === "bn" ? "A4 লেজার প্রিন্টিং ও শেয়ার" : "Multi-Page A4 Laser Printing"}
+                {t("uiMultiPageA4LaserPrinting")}
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                {language === "bn"
-                  ? "এক ক্লিকে প্রাতিষ্ঠানিক প্যাড, কিউআর কোড ও চিকিৎসকের স্বাক্ষর সহ ঝকঝকে A4 প্রেসক্রিপশন প্রিন্ট করুন।"
-                  : "One click outputs a paginated A4 prescription with official hospital header, QR verification code, watermark insignia, and legal digital signature."}
+                {t("uiOneClickOutputsAPaginated")}
               </p>
             </div>
           </div>
@@ -512,15 +492,13 @@ export function HomeView({
             <div className="space-y-2">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-bold uppercase tracking-wider border border-[var(--brand-border)]">
                 <Stethoscope className="w-3.5 h-3.5" />
-                <span>{language === "bn" ? "চিকিৎসক তালিকা ও সময়সূচী" : "Clinical Directory & Visiting Schedules"}</span>
+                <span>{t("uiClinicalDirectoryVisitingSchedules")}</span>
               </div>
               <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
                 {t.doctors}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl">
-                {language === "bn"
-                  ? "চেম্বারের সময়সূচী, বর্তমান সিরিয়াল নম্বর দেখতে অথবা অ্যাপয়েন্টমেন্ট বুকিং করতে যেকোনো ডাক্তার নির্বাচন করুন।"
-                  : "Select a doctor to view chamber timings, current live serial counter in chamber, or book a consultation appointment in advance."}
+                {t("uiSelectADoctorToView")}
               </p>
             </div>
 
@@ -529,12 +507,12 @@ export function HomeView({
                 href="/doctors"
                 className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] hover:bg-[var(--brand-primary)] hover:text-white transition font-bold text-xs border border-[var(--brand-border)]/60"
               >
-                <span>{language === "bn" ? "সম্পূর্ণ ডিরেক্টরি দেখুন" : "Full Directory Page"}</span>
+                <span>{t("uiFullDirectoryPage")}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
               <span className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-500/20">
                 <Activity className="w-3.5 h-3.5 animate-pulse" />
-                <span>{language === "bn" ? "সিরিয়াল চালু আছে" : "Queue Active"}</span>
+                <span>{t("uiQueueActive")}</span>
               </span>
             </div>
           </div>
@@ -558,17 +536,13 @@ export function HomeView({
             <div className="space-y-3 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 text-xs font-bold uppercase tracking-wider border border-teal-500/30">
                 <PhoneCall className="w-3.5 h-3.5" />
-                <span>{language === "bn" ? "২৪/৭ জরুরি স্বাস্থ্যসেবা ও অ্যাম্বুলেন্স" : "24/7 Clinical Emergency & Ambulance"}</span>
+                <span>{t("uiClinicalEmergencyAmbulance")}</span>
               </div>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white">
-                {language === "bn"
-                  ? "জরুরি চিকিৎসা সহায়তা বা অ্যাম্বুলেন্স প্রয়োজন?"
-                  : "Need Immediate Medical Assistance or Ambulance?"}
+                {t("uiNeedImmediateMedicalAssistanceOr")}
               </h2>
               <p className="text-xs sm:text-sm text-teal-100/80 max-w-xl">
-                {language === "bn"
-                  ? "আমাদের জরুরি বিভাগ ও আইসিইউ অ্যাম্বুলেন্স সপ্তাহের ৭ দিন ২৪ ঘণ্টাই সার্বক্ষণিকভাবে প্রস্তুত।"
-                  : "Our emergency triage and intensive care ambulance coordination are operating 24 hours a day, 7 days a week."}
+                {t("uiOurEmergencyTriageAndIntensive")}
               </p>
             </div>
 
@@ -586,7 +560,7 @@ export function HomeView({
                 href="/doctors"
                 className="px-6 py-4 rounded-2xl border border-teal-400/30 hover:border-teal-400 text-teal-100 hover:text-white font-bold text-xs sm:text-sm transition"
               >
-                {language === "bn" ? "বহির্বিভাগের সময়সূচী দেখুন" : "View OPD Chamber Hours"}
+                {t("uiViewOPDChamberHours")}
               </Link>
             </div>
           </div>

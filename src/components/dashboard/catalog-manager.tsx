@@ -356,7 +356,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                 onChange={(val) => setSelectedType(val)}
                 options={medicineTypes.map((tName) => ({
                   value: tName,
-                  label: tName === "ALL" ? (language === "bn" ? "সকল ধরন" : "All Forms") : tName,
+                  label: tName === "ALL" ? (t("uiAllForms")) : tName,
                 }))}
                 searchable={false}
               />
@@ -372,7 +372,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredMedicines.length === 0 ? (
             <div className="col-span-full p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800">
-              <p className="text-sm text-slate-500">{language === "bn" ? "কোনো ঔষধ পাওয়া যায়নি।" : "No medicines found matching your criteria."}</p>
+              <p className="text-sm text-slate-500">{t("uiNoMedicinesFoundMatchingYour")}</p>
             </div>
           ) : (
             filteredMedicines.map((med) => (
@@ -423,7 +423,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredTests.length === 0 ? (
             <div className="col-span-full p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800">
-              <p className="text-sm text-slate-500">{language === "bn" ? "কোনো ডায়াগনস্টিক টেস্ট পাওয়া যায়নি।" : "No diagnostic tests found matching your criteria."}</p>
+              <p className="text-sm text-slate-500">{t("uiNoDiagnosticTestsFoundMatching")}</p>
             </div>
           ) : (
             filteredTests.map((test) => (
@@ -434,7 +434,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400">
-                      {language === "bn" ? "পরীক্ষা" : "Investigation"}
+                      {t("uiInvestigation")}
                     </span>
                   </div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1.5">
@@ -442,7 +442,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                   </h3>
                   {test.instructions && (
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      📋 {language === "bn" ? "নির্দেশনা:" : "Instructions:"} {test.instructions}
+                      📋 {t("uiInstructions")} {test.instructions}
                     </p>
                   )}
                 </div>
@@ -476,8 +476,8 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 {editingMedId
-                  ? (language === "bn" ? "ঔষধের তথ্য সম্পাদনা" : "Edit Pharmaceutical")
-                  : (language === "bn" ? "নতুন ঔষধ যুক্ত করুন" : "Add New Pharmaceutical")}
+                  ? (t("uiEditPharmaceutical"))
+                  : (t("uiAddNewPharmaceutical"))}
               </h3>
               <button
                 type="button"
@@ -506,7 +506,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                       required
                       value={medName}
                       onChange={(e) => setMedName(e.target.value)}
-                      placeholder={language === "bn" ? "যেমন: Maxpro, Napa Extra" : "e.g. Maxpro, Napa Extra"}
+                      placeholder={t("uiEGMaxproNapaExtra")}
                       className={inputClasses}
                     />
                   </div>
@@ -518,14 +518,14 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                       value={medType}
                       onChange={(val) => setMedType(val)}
                       options={[
-                        { value: "Tablet", label: language === "bn" ? "ট্যাবলেট" : "Tablet" },
-                        { value: "Capsule", label: language === "bn" ? "ক্যাপসুল" : "Capsule" },
-                        { value: "Syrup", label: language === "bn" ? "সিরাপ" : "Syrup" },
-                        { value: "Suspension", label: language === "bn" ? "সাসপেনশন" : "Suspension" },
-                        { value: "Injection", label: language === "bn" ? "ইনজেকশন" : "Injection" },
-                        { value: "Inhaler", label: language === "bn" ? "ইনহেলার" : "Inhaler" },
-                        { value: "Eye Drops", label: language === "bn" ? "আই ড্রপস" : "Eye Drops" },
-                        { value: "Ointment", label: language === "bn" ? "মলম (Ointment)" : "Ointment" },
+                        { value: "Tablet", label: t("typeTablet") },
+                        { value: "Capsule", label: t("typeCapsule") },
+                        { value: "Syrup", label: t("typeSyrup") },
+                        { value: "Suspension", label: t("uiSuspension") },
+                        { value: "Injection", label: t("typeInjection") },
+                        { value: "Inhaler", label: t("typeInhaler") },
+                        { value: "Eye Drops", label: t("uiEyeDrops") },
+                        { value: "Ointment", label: t("uiOintment") },
                       ]}
                       searchable={false}
                     />
@@ -548,13 +548,13 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
 
                 <div>
                   <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
-                    {language === "bn" ? "ডিফল্ট সেবনবিধি" : "Default Intake Instructions"}
+                    {t("uiDefaultIntakeInstructions")}
                   </label>
                   <textarea
                     rows={2}
                     value={medInstructions}
                     onChange={(e) => setMedInstructions(e.target.value)}
-                    placeholder={language === "bn" ? "যেমন: ১টি করে ক্যাপসুল দিনে ২ বার খাওয়ার ৩০ মিনিট পূর্বে" : "e.g. 1 capsule 30 minutes before breakfast & dinner"}
+                    placeholder={t("uiEGCapsuleMinutesBefore")}
                     className={textareaClasses}
                   />
                 </div>
@@ -573,7 +573,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                   disabled={isPending}
                   className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-semibold hover:opacity-90 disabled:opacity-50 cursor-pointer shadow-xs"
                 >
-                  {isPending ? t.saving : editingMedId ? (language === "bn" ? "আপডেট করুন" : "Update Medicine") : (language === "bn" ? "সংরক্ষণ করুন" : "Save to Catalog")}
+                  {isPending ? t.saving : editingMedId ? (t("uiUpdateMedicine")) : (t("uiSaveToCatalog"))}
                 </button>
               </div>
             </form>
@@ -588,8 +588,8 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 {editingTestId
-                  ? (language === "bn" ? "ডায়াগনস্টিক টেস্ট সম্পাদনা" : "Edit Diagnostic Test")
-                  : (language === "bn" ? "নতুন টেস্ট যুক্ত করুন" : "Add New Diagnostic Test")}
+                  ? (t("uiEditDiagnosticTest"))
+                  : (t("uiAddNewDiagnosticTest"))}
               </h3>
               <button
                 type="button"
@@ -610,7 +610,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
 
                 <div>
                   <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
-                    {language === "bn" ? "পরীক্ষার নাম *" : "Investigation Name *"}
+                    {t("uiInvestigationName")}
                   </label>
                   <input
                     type="text"
@@ -624,13 +624,13 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
 
                 <div>
                   <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">
-                    {language === "bn" ? "প্রস্তুতিমূলক নির্দেশনা" : "Preparation Instructions"}
+                    {t("uiPreparationInstructions")}
                   </label>
                   <textarea
                     rows={2}
                     value={testInstructions}
                     onChange={(e) => setTestInstructions(e.target.value)}
-                    placeholder={language === "bn" ? "যেমন: ১০-১২ ঘণ্টা খালি পেটে থাকতে হবে" : "e.g. 10-12 hours overnight fasting mandatory, clean catch mid-stream urine"}
+                    placeholder={t("uiEGHoursOvernightFasting")}
                     className={textareaClasses}
                   />
                 </div>
@@ -649,7 +649,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
                   disabled={isPending}
                   className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-semibold hover:opacity-90 disabled:opacity-50 cursor-pointer shadow-xs"
                 >
-                  {isPending ? t.saving : editingTestId ? (language === "bn" ? "আপডেট করুন" : "Update Test") : (language === "bn" ? "টেস্ট সংরক্ষণ" : "Save Test")}
+                  {isPending ? t.saving : editingTestId ? (t("uiUpdateTest")) : (t("uiSaveTest"))}
                 </button>
               </div>
             </form>

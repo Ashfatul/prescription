@@ -207,12 +207,8 @@ export function ClinicSubscriptionView() {
               </h2>
               <p className="text-xs text-slate-500 mt-1 max-w-xl">
                 {sub.isTrial
-                  ? (language === "bn"
-                      ? "আপনার ক্লিনিক ১৪ দিনের ফ্রি ট্রায়াল মোডে পরিচালিত হচ্ছে। সম্পূর্ণ মাল্টি-ডাক্তার প্রেসক্রিপশন ও কিউ সুবিধা গ্রহণ করুন।"
-                      : "Your clinic is operating under the 14-day zero-card trial. Experience complete multi-doctor prescribing, queue dispensing, and patient management.")
-                  : (language === "bn"
-                      ? "আপনার ক্লিনিকের সাবস্ক্রিপশন সক্রিয় রয়েছে। এনক্রিপ্ট করা স্টোরেজ, সতর্কতা ও সীমাহীন ওয়ার্কফ্লো সুবিধা চালু।"
-                      : "Your clinic has full active access with encrypted prescription storage, automated alerts, and unlimited clinical workflows.")}
+                  ? (t("uiYourClinicIsOperatingUnder"))
+                  : (t("uiYourClinicHasFullActive"))}
               </p>
             </div>
 
@@ -220,13 +216,13 @@ export function ClinicSubscriptionView() {
               <div className="inline-flex items-center gap-2 p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-800 dark:text-amber-300">
                 <Clock className="w-4 h-4 text-amber-600 shrink-0" />
                 <span>
-                  {language === "bn" ? "মেয়াদ শেষ হবে:" : "Trial Ends:"}{" "}
-                  {new Date(sub.trialEndsAt).toLocaleDateString(language === "bn" ? "bn-BD" : "en-US", {
+                  {t("uiTrialEnds")}{" "}
+                  {new Date(sub.trialEndsAt).toLocaleDateString(t("uiEnUS"), {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
                   })}{" "}
-                  ({sub.daysLeft} {t.days}, {sub.hoursLeft} {t.hours} {language === "bn" ? "বাকি" : "remaining"})
+                  ({sub.daysLeft} {t.days}, {sub.hoursLeft} {t.hours} {t("uiRemaining")})
                 </span>
               </div>
             )}
@@ -259,10 +255,10 @@ export function ClinicSubscriptionView() {
           <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)]">
             <div className="flex items-center gap-2 text-slate-400 mb-1">
               <Users className="w-3.5 h-3.5" />
-              <span className="text-[11px] font-semibold uppercase">{language === "bn" ? "স্টাফ / ফ্রন্ট ডেস্ক" : "Staff / Desk"}</span>
+              <span className="text-[11px] font-semibold uppercase">{t("uiStaffDesk")}</span>
             </div>
             <p className="text-lg font-black text-slate-900 dark:text-white">
-              {sub.counts.staff} <span className="text-xs font-normal text-slate-400">{language === "bn" ? "জন" : "members"}</span>
+              {sub.counts.staff} <span className="text-xs font-normal text-slate-400">{t("uiMembers")}</span>
             </p>
           </div>
 
@@ -272,7 +268,7 @@ export function ClinicSubscriptionView() {
               <span className="text-[11px] font-semibold uppercase">{t.prescriptions}</span>
             </div>
             <p className="text-lg font-black text-slate-900 dark:text-white">
-              {sub.counts.prescriptions} <span className="text-xs font-normal text-slate-400">{language === "bn" ? "প্রদত্ত" : "issued"}</span>
+              {sub.counts.prescriptions} <span className="text-xs font-normal text-slate-400">{t("uiIssued")}</span>
             </p>
           </div>
 
@@ -282,7 +278,7 @@ export function ClinicSubscriptionView() {
               <span className="text-[11px] font-semibold uppercase">{t.appointments}</span>
             </div>
             <p className="text-lg font-black text-slate-900 dark:text-white">
-              {sub.counts.appointments} <span className="text-xs font-normal text-slate-400">{language === "bn" ? "বুকিং" : "booked"}</span>
+              {sub.counts.appointments} <span className="text-xs font-normal text-slate-400">{t("uiBooked")}</span>
             </p>
           </div>
         </div>

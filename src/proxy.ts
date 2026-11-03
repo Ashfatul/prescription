@@ -129,6 +129,7 @@ export async function proxy(req: NextRequest) {
       pathname === "/api/stripe/webhook" ||
       pathname === "/api/public/doctors" ||
       pathname === "/api/pricing-plans" ||
+      pathname === "/api/i18n" ||
       pathname === "/api/organizations" ||
       pathname === "/api/organizations/check-slug" ||
       pathname.startsWith("/api/public/") ||

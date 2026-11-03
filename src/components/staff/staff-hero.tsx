@@ -60,7 +60,7 @@ export function StaffHero({
               <Activity className="w-3.5 h-3.5 animate-pulse" />
               <span>
                 {staffCount}{" "}
-                {language === "bn" ? "জন সক্রিয় কর্মী" : "Active Staff Members"}
+                {t("uiActiveStaffMembers")}
               </span>
             </div>
             <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">

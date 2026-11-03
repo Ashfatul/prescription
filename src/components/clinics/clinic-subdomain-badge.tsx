@@ -58,7 +58,7 @@ export function ClinicSubdomainBadge({ slug }: ClinicSubdomainBadgeProps) {
     <div className="flex flex-wrap items-center gap-2 pt-1">
       <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs font-mono font-medium text-slate-700 dark:text-slate-300 shadow-2xs">
         <Globe className="w-3.5 h-3.5 text-[var(--brand-primary)] shrink-0" />
-        <span className="text-slate-400 select-none">{language === "bn" ? "সাবডোমেইন:" : "Subdomain:"}</span>
+        <span className="text-slate-400 select-none">{t("uiSubdomain")}</span>
         <strong className="text-[var(--brand-text)] font-bold">
           {displayHost || `${slug}.localhost:3000`}
         </strong>

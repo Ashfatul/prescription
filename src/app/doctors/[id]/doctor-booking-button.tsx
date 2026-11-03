@@ -26,7 +26,7 @@ export function DoctorBookingButton({
     );
   }
 
-  const shortDoctorName = doctorName.split(" ")[0] || (language === "bn" ? "ডাক্তার" : "Doctor");
+  const shortDoctorName = doctorName.split(" ")[0] || (t("roleDoctor"));
 
   return (
     <>

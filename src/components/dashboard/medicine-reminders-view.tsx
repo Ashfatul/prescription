@@ -226,7 +226,7 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
                     </p>
                     {reminder.notes && (
                       <p className="text-[11px] text-slate-400 italic pt-1">
-                        {language === "bn" ? "বিশেষ দ্রষ্টব্য: " : "Note: "}{reminder.notes}
+                        {t("uiNote3")}{reminder.notes}
                       </p>
                     )}
                   </div>

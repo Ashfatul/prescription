@@ -190,7 +190,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
                 setSearchQuery(e.target.value);
                 setIsExpanded(true); // Auto-expand when searching
               }}
-              placeholder={language === "bn" ? "ডাক্তারের নাম, বিশেষজ্ঞ বিভাগ বা ডিগ্রি দিয়ে খুঁজুন..." : "Search by physician name, department, or degree..."}
+              placeholder={t("searchDoctorsPlaceholder")}
               className="w-full input-icon-left !pl-11 pr-4 py-2.5 rounded-2xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)] transition"
             />
           </div>
@@ -373,7 +373,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
                           {t.reportReview}
                         </span>
                         <span className="font-black text-xs text-emerald-600 dark:text-emerald-400 font-mono">
-                          {language === "bn" ? "ফ্রি ($0)" : "Free ($0)"}
+                          {t("uiFree3")}
                         </span>
                       </div>
                     </div>
@@ -392,8 +392,8 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
                           </span>
                           <span className="text-[10px] text-slate-400">
                             {doctor.currentSerial && doctor.currentSerial > 0
-                              ? (language === "bn" ? "চেম্বারে" : "in chamber")
-                              : (language === "bn" ? "কিউ অপেক্ষমান" : "Queue waiting")}
+                              ? (t("uiInChamber"))
+                              : (t("uiQueueWaiting"))}
                           </span>
                         </div>
                       </div>

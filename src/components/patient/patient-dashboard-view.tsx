@@ -426,7 +426,7 @@ export function PatientDashboardView({
             {language === "bn" ? `স্বাগতম, ${patientName}` : `Welcome back, ${patientName}`}
           </h1>
           <p className="text-xs text-slate-500 mt-1 max-w-xl">
-            {language === "bn" ? "আপনার সিরিয়াল বুকিং করুন, ডাক্তারদের সময়সূচী দেখুন এবং ডিজিটাল প্রেসক্রিপশন পর্যালোচনা করুন।" : "Reserve your consultation queue serials, track visiting physician schedules, and review your official digital prescriptions."}
+            {t("uiReserveYourConsultationQueueSerials")}
           </p>
         </div>
 
@@ -449,7 +449,7 @@ export function PatientDashboardView({
           <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight font-mono">
             {prescriptions.length}
           </span>
-          <p className="text-[11px] text-slate-500 mt-1">{language === "bn" ? "অফিসিয়াল ডিজিটাল প্রেসক্রিপশন" : "Official digital records"}</p>
+          <p className="text-[11px] text-slate-500 mt-1">{t("uiOfficialDigitalRecords")}</p>
         </div>
 
         <div className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
@@ -545,7 +545,7 @@ export function PatientDashboardView({
                         {doc.specialization}
                       </p>
                       <p className="text-[10px] text-slate-400 truncate mt-0.5">
-                        {doc.chamberAddress || doc.hospital || (language === "bn" ? "চেম্বার উন্মুক্ত" : "Chamber Open")}
+                        {doc.chamberAddress || doc.hospital || (t("uiChamberOpen"))}
                       </p>
                     </div>
                   </div>
@@ -589,8 +589,8 @@ export function PatientDashboardView({
                 </div>
 
                 <div className="pt-2 flex items-center justify-between gap-2 border-t border-slate-200/60 dark:border-slate-800/60">
-                  <span className="text-[10px] text-slate-400 italic truncate" title={language === "bn" ? "জরুরি প্রয়োজনে সময়সূচী পরিবর্তিত হতে পারে" : "Schedule may adjust for clinical emergencies"}>
-                    {language === "bn" ? "জরুরি প্রয়োজনে সময় পরিবর্তিত হতে পারে" : "Schedule may adjust in emergencies"}
+                  <span className="text-[10px] text-slate-400 italic truncate" title={t("uiScheduleMayAdjustForClinical")}>
+                    {t("uiScheduleMayAdjustInEmergencies")}
                   </span>
                   <button
                     type="button"
@@ -626,7 +626,7 @@ export function PatientDashboardView({
               </div>
 
               <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                {initialAppointments.length} {language === "bn" ? "বুকড" : "Booked"}
+                {initialAppointments.length} {t("uiBooked2")}
               </span>
             </div>
 
@@ -722,8 +722,8 @@ export function PatientDashboardView({
                               {item.paymentStatus === "PAID"
                                 ? (language === "bn" ? `পরিশোধিত (${item.paymentMethod || "স্ট্রাইপ"})` : `PAID (${item.paymentMethod || "Stripe"})`)
                                 : item.paymentStatus === "WAIVED"
-                                ? (language === "bn" ? "ফি মওকুফ" : "FEE WAIVED")
-                                : (language === "bn" ? "পেমেন্ট বাকি" : "PAYMENT PENDING")}
+                                ? (t("uiFeeWAIVED"))
+                                : (t("uiPaymentPENDING"))}
                             </span>
                           </div>
 
@@ -757,13 +757,13 @@ export function PatientDashboardView({
                                   }`}
                                 >
                                   {isPending
-                                    ? (language === "bn" ? "যাচাইকরণের অপেক্ষায়" : "Pending Verification")
+                                    ? (t("uiPendingVerification"))
                                     : isConfirmed
-                                    ? (language === "bn" ? "নিশ্চিত" : "Confirmed")
+                                    ? (t("uiConfirmed"))
                                     : isCompleted
-                                    ? (language === "bn" ? "সম্পন্ন" : "Completed")
+                                    ? (t("completed"))
                                     : isCancelled
-                                    ? (language === "bn" ? "বাতিলকৃত" : "Cancelled")
+                                    ? (t("uiCancelled"))
                                     : item.status}
                                 </span>
 
@@ -780,7 +780,7 @@ export function PatientDashboardView({
                                         })}
                                         target="_blank"
                                         rel="noreferrer"
-                                        title={language === "bn" ? "গুগল ক্যালেন্ডারে যোগ করুন" : "Add to Google Calendar"}
+                                        title={t("addToGoogleCalendar")}
                                         className="p-1.5 rounded-lg border border-amber-200 dark:border-amber-900/50 hover:bg-amber-50 text-amber-600 dark:text-amber-400 transition cursor-pointer text-xs"
                                       >
                                         <Calendar className="w-3.5 h-3.5" />
@@ -789,7 +789,7 @@ export function PatientDashboardView({
                                       <button
                                         type="button"
                                         onClick={() => setSelectedSlip(item)}
-                                        title={language === "bn" ? "অ্যাপয়েন্টমেন্ট স্লিপ দেখুন" : "View Appointment Slip"}
+                                        title={t("uiViewAppointmentSlip")}
                                         className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition cursor-pointer text-xs"
                                       >
                                         <Printer className="w-3.5 h-3.5" />
@@ -827,10 +827,10 @@ export function PatientDashboardView({
                         <div className="mt-2.5 p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs flex items-center justify-between text-amber-700 dark:text-amber-300">
                           <span className="flex items-center gap-1.5 font-medium">
                             <Clock className="w-3.5 h-3.5 text-amber-500" />
-                            {language === "bn" ? "ক্লিনিক ফ্রন্ট-ডেস্ক যাচাইকরণ ও নিশ্চিতকরণের অপেক্ষায়" : "Awaiting Clinic Front-Desk Verification & Confirmation"}
+                            {t("uiAwaitingClinicFrontDeskVerification")}
                           </span>
                           <span className="text-[11px] opacity-80">
-                            {t.serialNumber} #{item.serialNumber} {language === "bn" ? "সংরক্ষিত" : "reserved"}
+                            {t.serialNumber} #{item.serialNumber} {t("uiReserved")}
                           </span>
                         </div>
                       )}
@@ -839,20 +839,20 @@ export function PatientDashboardView({
                       {isCancelled && (
                         <div className="mt-2.5 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-800 dark:text-rose-200 space-y-1">
                           <div className="flex items-center justify-between font-semibold">
-                            <span>{language === "bn" ? "অ্যাপয়েন্টমেন্ট বাতিল করা হয়েছে" : "Appointment Cancelled"}</span>
+                            <span>{t("uiAppointmentCancelled")}</span>
                             {item.refundStatus === "REFUNDED" ? (
                               <span className="px-2 py-0.5 rounded-md bg-emerald-600 text-white text-[10px] font-black uppercase">
-                                ✓ {language === "bn" ? "রিফান্ড প্রদান করা হয়েছে:" : "Refund Issued:"} ${item.refundAmount || item.fee}
+                                ✓ {t("uiRefundIssued")} ${item.refundAmount || item.fee}
                               </span>
                             ) : item.refundStatus === "REFUND_PENDING" ? (
                               <span className="px-2 py-0.5 rounded-md bg-amber-500 text-white text-[10px] font-black uppercase">
-                                ⏳ {language === "bn" ? "রিফান্ড প্রক্রিয়াধীন:" : "Refund Processing:"} ${item.refundAmount || item.fee}
+                                ⏳ {t("uiRefundProcessing")} ${item.refundAmount || item.fee}
                               </span>
                             ) : null}
                           </div>
                           {item.cancellationReason && (
                             <p className="text-[11px] opacity-85 italic">
-                              {language === "bn" ? "কারণ:" : "Reason:"} {item.cancellationReason}
+                              {t("uiReason")} {item.cancellationReason}
                             </p>
                           )}
                         </div>
@@ -864,7 +864,7 @@ export function PatientDashboardView({
                           <div className="flex items-center gap-1.5 text-xs">
                             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                             <span className="text-slate-600 dark:text-slate-400">
-                              {language === "bn" ? "প্রদেয় ফি:" : "Payment Due:"} <strong className="font-mono text-slate-900 dark:text-white">${item.fee}</strong>
+                              {t("uiPaymentDue")} <strong className="font-mono text-slate-900 dark:text-white">${item.fee}</strong>
                             </span>
                           </div>
                           <button
@@ -876,7 +876,7 @@ export function PatientDashboardView({
                             {payingAppointmentId === item.id ? (
                               <>
                                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                <span>{language === "bn" ? "স্ট্রাইপ লোড হচ্ছে..." : "Opening Stripe..."}</span>
+                                <span>{t("uiOpeningStripe")}</span>
                               </>
                             ) : (
                               <>
@@ -911,7 +911,7 @@ export function PatientDashboardView({
             </div>
 
             <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-              {prescriptions.length} {language === "bn" ? "রেকর্ড" : "Records"}
+              {prescriptions.length} {t("uiRecords")}
             </span>
           </div>
 
@@ -968,7 +968,7 @@ export function PatientDashboardView({
 
                       {latestReason && item.version && item.version > 1 && (
                         <p className="text-[11px] text-amber-700 dark:text-amber-400 mt-0.5 font-medium">
-                          ↳ {language === "bn" ? "নোট:" : "Note:"} {latestReason}
+                          ↳ {t("uiNote")} {latestReason}
                         </p>
                       )}
                     </div>
@@ -980,7 +980,7 @@ export function PatientDashboardView({
                           onClick={() => setSelectedHistoryPrescription(item)}
                           className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                         >
-                          📜 {language === "bn" ? "সংস্করণসমূহ" : "Versions"}
+                          📜 {t("uiVersions")}
                         </button>
                       )}
 
@@ -1012,7 +1012,7 @@ export function PatientDashboardView({
                       >
                         <Clock className="w-3.5 h-3.5" />
                         <span className="hidden sm:inline">
-                          {generatingRemindersId === item.id ? (language === "bn" ? "সেট হচ্ছে..." : "Setting...") : (language === "bn" ? "রিমাইন্ডার" : "Reminders")}
+                          {generatingRemindersId === item.id ? (t("uiSetting")) : (t("uiReminders"))}
                         </span>
                       </button>
                     </div>
@@ -1071,13 +1071,13 @@ export function PatientDashboardView({
                   })}
                 </p>
                 <p className="text-[11px] text-slate-400">
-                  {t.chamberLocation}: {selectedSlip.doctor.chamberAddress || (language === "bn" ? "ডাক্তার পরামর্শ চেম্বার" : "Doctor Consultation Chamber")}
+                  {t.chamberLocation}: {selectedSlip.doctor.chamberAddress || (t("roleDoctorConsultationChamber"))}
                 </p>
 
                 {/* Consultation Fee & Visit Type */}
                 <div className="pt-3 border-t border-[var(--brand-primary)]/20 grid grid-cols-2 gap-2 text-left text-xs">
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-bold">{language === "bn" ? "ভিজিটের ধরন:" : "Visit Type:"}</span>
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">{t("uiVisitType")}</span>
                     <span className="font-bold text-slate-900 dark:text-white">
                       {selectedSlip.visitType === "REPORT_REVIEW"
                         ? t.freeReportReviewNotice
@@ -1087,16 +1087,16 @@ export function PatientDashboardView({
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-bold">{language === "bn" ? "ফি ও পেমেন্ট:" : "Fee & Payment:"}</span>
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">{t("uiFeePayment2")}</span>
                     <span className="font-bold text-slate-900 dark:text-white">
                       {selectedSlip.visitType === "REPORT_REVIEW" || selectedSlip.fee === 0
-                        ? (language === "bn" ? "ফ্রি ($০.০০)" : "Free ($0.00)")
+                        ? (t("uiFree5"))
                         : `$${selectedSlip.fee} • ${
                             selectedSlip.paymentStatus === "PAID"
-                              ? (language === "bn" ? "পরিশোধিত" : "Paid")
+                              ? (t("paidBadge"))
                               : selectedSlip.paymentStatus === "WAIVED"
-                              ? (language === "bn" ? "মওকুফ" : "Waived")
-                              : (language === "bn" ? "বাকি" : "Pending")
+                              ? (t("uiWaived"))
+                              : (t("uiPending"))
                           }`}
                     </span>
                   </div>
@@ -1132,13 +1132,13 @@ export function PatientDashboardView({
             <div className="modal-header shrink-0 flex items-start justify-between gap-4 p-6 pb-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                  {language === "bn" ? "প্রেসক্রিপশন সংস্করণ টাইমলাইন" : "Prescription Version Timeline"}
+                  {t("uiPrescriptionVersionTimeline")}
                 </span>
                 <h3 className="text-xl font-black text-slate-900 dark:text-white mt-1">
                   Dr. {selectedHistoryPrescription.doctor.user.name}
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  {selectedHistoryPrescription.doctor.specialization} • {language === "bn" ? "মোট সংস্করণ:" : "Total Revisions:"} <strong>{selectedHistoryPrescription.versions?.length || 1}</strong>
+                  {selectedHistoryPrescription.doctor.specialization} • {t("uiTotalRevisions")} <strong>{selectedHistoryPrescription.versions?.length || 1}</strong>
                 </p>
               </div>
 
@@ -1185,7 +1185,7 @@ export function PatientDashboardView({
                           </span>
                           {isLatest && (
                             <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                              {language === "bn" ? "● বর্তমান সক্রিয়" : "● Current Active"}
+                              {t("uiCurrentActive")}
                             </span>
                           )}
                           <span className="text-xs text-slate-500">
@@ -1194,7 +1194,7 @@ export function PatientDashboardView({
                         </div>
 
                         <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-2">
-                          ↳ {language === "bn" ? "কারণ:" : "Reason:"} {ver.changeReason || (language === "bn" ? "প্রেসক্রিপশন সংশোধন" : "Prescription revision")}
+                          ↳ {t("uiReason")} {ver.changeReason || (t("uiPrescriptionRevision"))}
                         </p>
                       </div>
 
@@ -1285,7 +1285,7 @@ export function PatientDashboardView({
                   <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200 space-y-2">
                     <p className="font-bold flex items-center gap-1.5">
                       <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-                      {language === "bn" ? "ক্লিনিক অ্যাপয়েন্টমেন্ট বাতিল নীতিমালা" : "Clinic Cancellation Policy Notice"}
+                      {t("uiClinicCancellationPolicyNotice")}
                     </p>
                     <p className="leading-relaxed">
                       {language === "bn"
@@ -1311,7 +1311,7 @@ export function PatientDashboardView({
                       onClick={() => setCancellationTarget(null)}
                       className="px-6 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 transition cursor-pointer"
                     >
-                      {language === "bn" ? "বুঝেছি" : "Understood"}
+                      {t("uiUnderstood")}
                     </button>
                   </div>
                 </div>
@@ -1334,7 +1334,7 @@ export function PatientDashboardView({
                   {wasPaid && (
                     <div className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 space-y-2">
                       <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                        {language === "bn" ? "রিফান্ড গণনা" : "Refund Calculation"}
+                        {t("uiRefundCalculation")}
                       </span>
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-slate-600 dark:text-slate-400">{t.paidConsultationFee}</span>
@@ -1387,7 +1387,7 @@ export function PatientDashboardView({
                       rows={2}
                       value={cancellationReason}
                       onChange={(e) => setCancellationReason(e.target.value)}
-                      placeholder={language === "bn" ? "ক্লিনিক কর্মীদের জন্য অতিরিক্ত তথ্য লিখুন..." : "Add any additional details for clinic staff..."}
+                      placeholder={t("uiAddAnyAdditionalDetailsFor")}
                       className="w-full mt-1.5 p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[var(--brand-primary)]"
                     />
                   </div>

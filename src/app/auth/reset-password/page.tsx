@@ -85,12 +85,10 @@ function ResetPasswordInner() {
                 <KeyRound className="w-6 h-6" />
               </div>
               <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                {language === "bn" ? "নতুন পাসওয়ার্ড তৈরি করুন" : "Create New Password"}
+                {t("uiCreateNewPassword")}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
-                {language === "bn"
-                  ? "নিচে আপনার নতুন পাসওয়ার্ড প্রদান করুন। কমপক্ষে ৮ অক্ষরের হতে হবে।"
-                  : "Enter your new password below. Ensure it is at least 8 characters long."}
+                {t("uiEnterYourNewPasswordBelow")}
               </p>
             </div>
 
@@ -98,9 +96,7 @@ function ResetPasswordInner() {
               <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-xs flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                 <span className="leading-relaxed font-medium">
-                  {language === "bn"
-                    ? "রিসেট টোকেন অনুপস্থিত। অনুগ্রহ করে ইমেইলে পাওয়া লিংকে ক্লিক করুন।"
-                    : "Missing reset token. Please open the link received in your email."}
+                  {t("uiMissingResetTokenPleaseOpen")}
                 </span>
               </div>
             )}
@@ -115,7 +111,7 @@ function ResetPasswordInner() {
             <form onSubmit={(e) => void handleSubmit(e)} className="space-y-3.5">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
-                  {t.newPassword} ({language === "bn" ? "কমপক্ষে ৮ অক্ষর" : "min 8 chars"})
+                  {t.newPassword} ({t("uiMinChars")})
                 </label>
                 <div className="relative">
                   <input
@@ -189,8 +185,8 @@ function ResetPasswordInner() {
                 href="/auth/forgot-password"
                 className="text-xs font-medium text-slate-500 hover:text-[var(--brand-primary)] transition"
               >
-                {language === "bn" ? "লিংকের মেয়াদ শেষ? " : "Link expired or broken? "}
-                <span className="font-bold underline">{language === "bn" ? "নতুন লিংকের অনুরোধ করুন" : "Request a new one"}</span>
+                {t("uiLinkExpiredOrBroken")}
+                <span className="font-bold underline">{t("uiRequestANewOne")}</span>
               </Link>
             </div>
           </>
@@ -202,12 +198,10 @@ function ResetPasswordInner() {
 
             <div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                {language === "bn" ? "পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে!" : "Password Successfully Reset!"}
+                {t("uiPasswordSuccessfullyReset")}
               </h2>
               <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 max-w-sm mx-auto leading-relaxed">
-                {language === "bn"
-                  ? "আপনার অ্যাকাউন্টের পাসওয়ার্ড সফলভাবে আপডেট করা হয়েছে। এখন নতুন পাসওয়ার্ড দিয়ে লগইন করতে পারেন।"
-                  : "Your account password has been updated. You can now log into your clinical dashboard using your new credentials."}
+                {t("uiYourAccountPasswordHasBeen")}
               </p>
             </div>
 
@@ -236,24 +230,22 @@ export default function ResetPasswordPage() {
       {/* Desktop Informative Hero Panel (Left 5 Columns, Fixed / Sticky, Guaranteed No Scroll) */}
       <div className="lg:col-span-5 xl:col-span-5 hidden lg:flex flex-col sticky top-0 h-screen max-h-screen overflow-hidden">
         <AuthBrandingPanel
-          badge={language === "bn" ? "ক্রেডেনশিয়াল নিরাপত্তা" : "Credentials Security"}
-          title={language === "bn" ? "অ্যাকাউন্টের পাসওয়ার্ড নিরাপদভাবে আপডেট করুন" : "Update Account Credentials Securely"}
-          highlightText={language === "bn" ? "সর্বোচ্চ নিরাপত্তা।" : "Zero Compromise."}
-          description={language === "bn"
-            ? "সংবেদনশীল রোগীর রেকর্ড সুরক্ষিত রাখতে আপনার ক্লিনিকাল অ্যাকাউন্টের জন্য একটি শক্তিশালী পাসওয়ার্ড কনফিগার করুন।"
-            : "Configure a resilient password for your clinical user account to protect sensitive patient records."}
+          badge={t("uiCredentialsSecurity")}
+          title={t("uiUpdateAccountCredentialsSecurely")}
+          highlightText={t("uiZeroCompromise")}
+          description={t("uiConfigureAResilientPasswordFor")}
           features={[
             {
               icon: <Lock className="w-4 h-4 text-teal-400" />,
-              title: language === "bn" ? "আধুনিক ক্রিপ্টোগ্রাফিক হ্যাশিং সুরক্ষা" : "Modern Cryptographic Hashing Protection",
+              title: t("uiModernCryptographicHashingProtection"),
             },
             {
               icon: <ShieldCheck className="w-4 h-4 text-emerald-400" />,
-              title: language === "bn" ? "স্বয়ংক্রিয় লিগ্যাসি সেশন বাতিলকরণ" : "Automatic Legacy Session Invalidation",
+              title: t("uiAutomaticLegacySessionInvalidation"),
             },
             {
               icon: <Sparkles className="w-4 h-4 text-sky-400" />,
-              title: language === "bn" ? "তাৎক্ষণিক মাল্টি-চেম্বার ক্রেডেনশিয়াল সিঙ্ক" : "Instant Multi-Chamber Credential Sync",
+              title: t("uiInstantMultiChamberCredentialSync"),
             },
           ]}
         />
@@ -280,7 +272,7 @@ export default function ResetPasswordPage() {
 
           <div className="hidden lg:flex items-center gap-2 text-xs text-slate-500 font-medium">
             <KeyRound className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-            <span>{language === "bn" ? "ক্রিপ্টোগ্রাফিক ক্রেডেনশিয়াল রিসেট" : "Cryptographic Credential Reset"}</span>
+            <span>{t("uiCryptographicCredentialReset")}</span>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
@@ -302,7 +294,7 @@ export default function ResetPasswordPage() {
             fallback={
               <div className="p-6 max-w-md mx-auto rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-xs text-slate-500 text-center">
                 <RefreshCw className="w-4 h-4 animate-spin mx-auto mb-2 text-[var(--brand-primary)]" />
-                {language === "bn" ? "রিসেট ইন্টারফেস লোড হচ্ছে..." : "Loading reset interface..."}
+                {t("uiLoadingResetInterface")}
               </div>
             }
           >
@@ -312,7 +304,7 @@ export default function ResetPasswordPage() {
 
         {/* Bottom Footer */}
         <div className="pt-4 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
-          <span>{language === "bn" ? "বিএমডিসি ও স্বাস্থ্য নিরাপত্তা মানদণ্ড দ্বারা সুরক্ষিত।" : "Protected by HIPAA & BMDC compliant security standards."}</span>
+          <span>{t("uiProtectedByHIPAABMDCCompliant")}</span>
           <div className="flex items-center gap-3">
             <Link href="/privacy" className="hover:text-[var(--brand-primary)] transition font-medium">
               {t.footerPrivacyPolicy}

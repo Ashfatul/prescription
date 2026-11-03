@@ -348,7 +348,7 @@ export function NotificationBell() {
               {/* Medicine & Broadcasts */}
               <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] space-y-2.5">
                 <span className="font-bold text-slate-800 dark:text-slate-200 block">
-                  {language === "bn" ? "ঔষধ রিমাইন্ডার ও হাসপাতাল নোটিশ" : "Medicine Reminders & Announcements"}
+                  {t("uiMedicineRemindersAnnouncements")}
                 </span>
 
                 <label className="flex items-center justify-between cursor-pointer">

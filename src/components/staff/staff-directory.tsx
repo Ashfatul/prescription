@@ -129,7 +129,7 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
           label: role,
           badgeClass: "bg-slate-500/10 text-slate-600 border-slate-500/20",
           icon: <Users className="w-3.5 h-3.5" />,
-          department: language === "bn" ? "ক্লিনিকাল সেবা" : "Clinical Services",
+          department: t("uiClinicalServices"),
         };
     }
   };
@@ -346,7 +346,7 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
                 <div className="pt-5 mt-5 border-t border-[var(--border-subtle)] flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>{language === "bn" ? "যাচাইকৃত" : "Verified"}</span>
+                    <span>{t("verified")}</span>
                   </div>
 
                   {member.organization ? (
@@ -354,7 +354,7 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
                       href={`/clinics/${member.organization.slug}`}
                       className="px-3.5 py-1.5 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] hover:bg-[var(--brand-primary)] hover:text-white border border-[var(--brand-border)] text-xs font-bold transition flex items-center gap-1"
                     >
-                      <span>{language === "bn" ? "ক্লিনিক প্রোফাইল" : "Clinic Profile"}</span>
+                      <span>{t("uiClinicProfile")}</span>
                       <ArrowRight className="w-3 h-3" />
                     </Link>
                   ) : (
@@ -362,7 +362,7 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
                       href="/clinics"
                       className="px-3 py-1.5 rounded-xl border border-[var(--border-subtle)] text-xs text-slate-500 font-semibold"
                     >
-                      {language === "bn" ? "ক্লিনিকসমূহ দেখুন" : "View Clinics"}
+                      {t("uiViewClinics")}
                     </Link>
                   )}
                 </div>

@@ -62,7 +62,7 @@ export function DoctorsHero({
               <Stethoscope className="w-3.5 h-3.5" />
               <span>
                 {clinic
-                  ? `${clinic.name} ${language === "bn" ? "বিশেষজ্ঞবৃন্দ" : "Specialists"}`
+                  ? `${clinic.name} ${t("uiSpecialists")}`
                   : t.outpatientChamberSpecialists}
               </span>
             </div>
@@ -84,12 +84,10 @@ export function DoctorsHero({
             {clinic && (
               <div className="pt-1 flex items-center gap-2 text-xs font-semibold text-[var(--brand-text)]">
                 <span>
-                  {language === "bn"
-                    ? "শুধুমাত্র এই প্রতিষ্ঠানে নিয়মিত উপস্থিত অনুমোদিত চিকিৎসকদের প্রদর্শন করা হচ্ছে।"
-                    : "Showing verified practitioners practicing strictly at this facility."}
+                  {t("uiShowingVerifiedPractitionersPracticingStrictly")}
                 </span>
                 <Link href="/doctors" className="underline hover:opacity-80">
-                  {language === "bn" ? "সকল ক্লিনিক দেখুন" : "View all clinics"}
+                  {t("uiViewAllClinics")}
                 </Link>
               </div>
             )}
@@ -104,13 +102,13 @@ export function DoctorsHero({
             <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">
               <Clock className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
               <span>
-                {language === "bn" ? "সাক্ষাতের সময়:" : "Visiting Hours:"} <strong className="text-[var(--text-primary)]">{opdVisitingHours}</strong>
+                {t("uiVisitingHours2")} <strong className="text-[var(--text-primary)]">{opdVisitingHours}</strong>
               </span>
             </div>
             <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">
               <CalendarDays className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
               <span>
-                {language === "bn" ? "সাক্ষাতের দিন:" : "Days:"} <strong className="text-[var(--text-primary)]">{chamberDays}</strong>
+                {t("uiDays2")} <strong className="text-[var(--text-primary)]">{chamberDays}</strong>
               </span>
             </div>
           </div>

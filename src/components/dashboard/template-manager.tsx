@@ -540,7 +540,7 @@ export function TemplateManager() {
           className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 transition-all cursor-pointer self-start md:self-auto shrink-0"
         >
           <span>✨</span>
-          <span>{language === "bn" ? "নতুন মাস্টার টেমপ্লেট তৈরি করুন" : "Create Master Template"}</span>
+          <span>{t("uiCreateMasterTemplate")}</span>
         </button>
       </div>
 
@@ -560,11 +560,11 @@ export function TemplateManager() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {loading ? (
           <div className="col-span-full p-12 text-center text-xs text-slate-400">
-            {language === "bn" ? "প্রেসক্রিপশন টেমপ্লেট লোড হচ্ছে..." : "Loading prescription templates..."}
+            {t("uiLoadingPrescriptionTemplates")}
           </div>
         ) : templates.length === 0 ? (
           <div className="col-span-full p-12 text-center text-xs text-slate-400">
-            {language === "bn" ? "কোনো টেমপ্লেট কনফিগার করা হয়নি। উপরে ক্লিক করে তৈরি করুন!" : "No templates configured yet. Click above to design one!"}
+            {t("uiNoTemplatesConfiguredYetClick")}
           </div>
         ) : (
           templates.map((tpl) => {
@@ -596,11 +596,11 @@ export function TemplateManager() {
                     </div>
                     {tpl.isDefault ? (
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200">
-                        {language === "bn" ? "ডিফল্ট মাস্টার" : "Default Master"}
+                        {t("uiDefaultMaster")}
                       </span>
                     ) : (
                       <span className="text-[10px] text-slate-400">
-                        {language === "bn" ? "চেম্বার লেআউট" : "Chamber Layout"}
+                        {t("uiChamberLayout")}
                       </span>
                     )}
                   </div>
@@ -691,7 +691,7 @@ export function TemplateManager() {
                 }`}
               >
                 <SlidersHorizontal className="w-3.5 h-3.5" />
-                <span>{language === "bn" ? "কন্ট্রোলস" : "Controls"}</span>
+                <span>{t("uiControls")}</span>
               </button>
               <button
                 type="button"
@@ -1465,7 +1465,7 @@ export function TemplateManager() {
                           <div className="flex items-center justify-between gap-2 pt-1">
                             <div className="flex items-center gap-1.5">
                               <span className="text-[10px] text-slate-400">
-                                {language === "bn" ? "ফন্ট:" : "Font:"}
+                                {t("uiFont")}
                               </span>
                               <input
                                 type="number"
@@ -1480,7 +1480,7 @@ export function TemplateManager() {
 
                             <div className="flex items-center gap-1.5">
                               <span className="text-[10px] text-slate-400">
-                                {language === "bn" ? "রং:" : "Color:"}
+                                {t("uiColor")}
                               </span>
                               <input
                                 type="color"
@@ -1498,7 +1498,7 @@ export function TemplateManager() {
                                 className="w-3.5 h-3.5 rounded"
                               />
                               <span className="text-[10px] font-bold">
-                                {language === "bn" ? "বোল্ড" : "Bold"}
+                                {t("uiBold")}
                               </span>
                             </label>
                           </div>
@@ -1517,7 +1517,7 @@ export function TemplateManager() {
                   className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-[var(--brand-surface)] text-[var(--brand-primary)] border border-[var(--brand-border)] hover:bg-[var(--brand-primary)] hover:text-white transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                 >
                   <Eye className="w-4 h-4" />
-                  <span>{language === "bn" ? "লাইভ A4 ক্যানভাস প্রিভিউ দেখুন →" : "View Live A4 Canvas Preview →"}</span>
+                  <span>{t("uiViewLiveA4CanvasPreview")}</span>
                 </button>
               </div>
             </div>
@@ -1537,10 +1537,10 @@ export function TemplateManager() {
                     className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 cursor-pointer shadow-xs"
                   >
                     <SlidersHorizontal className="w-3.5 h-3.5" />
-                    <span>{language === "bn" ? "কন্ট্রোলস" : "Controls"}</span>
+                    <span>{t("uiControls")}</span>
                   </button>
                   <span className="text-xs font-bold text-slate-600 dark:text-slate-300 hidden sm:inline">
-                    {language === "bn" ? "লাইভ A4 প্রিভিউ (আসল মাপ)" : "Live A4 Preview (Real Scale)"}
+                    {t("uiLiveA4PreviewRealScale")}
                   </span>
                 </div>
 
@@ -1717,22 +1717,22 @@ export function TemplateManager() {
                         </h2>
                         <p className="font-bold text-slate-700">MBBS, FCPS (Medicine), MACP (USA)</p>
                         <p className="text-[11px] text-slate-600">
-                          {language === "bn" ? "সিনিয়র কনসালট্যান্ট, মেডিসিন বিভাগ" : "Senior Consultant, Department of Internal Medicine"}
+                          {t("uiSeniorConsultantDepartmentOfInternal")}
                         </p>
                         <p className="text-[10px] text-slate-400">
-                          {language === "bn" ? "বিএমডিসি রেজি নং: BMDC-A-41285" : "BMDC Reg No: BMDC-A-41285"}
+                          {t("uiBmdcRegNoBMDCA")}
                         </p>
                       </div>
 
                       <div className="text-right text-[11px]">
                         <p className="font-bold text-slate-800">
-                          {language === "bn" ? "চেম্বার: রুম ৩০১, ৩য় তলা" : "Chamber: Room 301, 3rd Floor"}
+                          {t("uiChamberRoomRdFloor")}
                         </p>
                         <p className="text-slate-500">
-                          {language === "bn" ? "রোগী দেখার সময়: সকাল ৯:০০ - দুপুর ১:০০" : "Visiting Hours: 09:00 AM - 01:00 PM"}
+                          {t("uiVisitingHoursAMPM")}
                         </p>
                         <p className="text-slate-500">
-                          {language === "bn" ? "যোগাযোগ: +880 1711-234567" : "Contact: +880 1711-234567"}
+                          {t("uiContact")}
                         </p>
                       </div>
                     </div>
@@ -1745,10 +1745,10 @@ export function TemplateManager() {
                         borderColor: `${themeColor}33`,
                       }}
                     >
-                      <span>{t.patientName}: <strong>{language === "bn" ? "নুসরাত জাহান" : "Nusrat Jahan"}</strong></span>
-                      <span>{t.age}: <strong>{language === "bn" ? "৩২ বছর" : "32 Yrs"}</strong></span>
-                      <span>{t.gender}: <strong>{language === "bn" ? "মহিলা" : "Female"}</strong></span>
-                      <span>{language === "bn" ? "তারিখ:" : "Date:"} <strong>{language === "bn" ? "০১ নভেম্বর ২০২৬" : "01 Nov 2026"}</strong></span>
+                      <span>{t.patientName}: <strong>{t("uiNusratJahan")}</strong></span>
+                      <span>{t.age}: <strong>{t("uiYrs")}</strong></span>
+                      <span>{t.gender}: <strong>{t("genderFemale")}</strong></span>
+                      <span>{t("uiDate")} <strong>{t("uiNov")}</strong></span>
                       <span>Rx ID: <code className="font-mono text-[10px]">#RX-7892</code></span>
                     </div>
 
@@ -1756,12 +1756,12 @@ export function TemplateManager() {
                     {showVitals && (
                       <div className="flex items-center gap-3 p-2 rounded-lg bg-slate-50 border border-slate-200 text-[10px] font-medium text-slate-600">
                         <span className="font-bold uppercase tracking-wider text-slate-400">
-                          {language === "bn" ? "ভাইটালস:" : "Vitals:"}
+                          {t("uiVitals")}
                         </span>
                         <span>BP: <strong>120/80 mmHg</strong></span>
-                        <span>{language === "bn" ? "পালস:" : "Pulse:"} <strong>76 bpm</strong></span>
-                        <span>{language === "bn" ? "ওজন:" : "Weight:"} <strong>62 kg</strong></span>
-                        <span>{language === "bn" ? "তাপমাত্রা:" : "Temp:"} <strong>98.6 °F</strong></span>
+                        <span>{t("uiPulse")} <strong>76 bpm</strong></span>
+                        <span>{t("uiWeight")} <strong>62 kg</strong></span>
+                        <span>{t("tempVariant2")} <strong>98.6 °F</strong></span>
                       </div>
                     )}
 
@@ -1791,7 +1791,7 @@ export function TemplateManager() {
                                 {t.clinicalDiagnosis}
                               </h4>
                               <p style={{ fontSize: `${bodyFontSize}px` }} className="font-bold text-slate-800 leading-snug">
-                                {language === "bn" ? "তীব্র ফ্যারিঞ্জাইটিস এবং শ্বাসতন্ত্রের সংক্রমণ" : "Acute Pharyngitis with Upper Respiratory Infection"}
+                                {t("uiAcutePharyngitisWithUpperRespiratory")}
                               </p>
                             </div>
                           )}
@@ -1805,15 +1805,15 @@ export function TemplateManager() {
                             Rx
                           </span>
                           <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                            {language === "bn" ? "ঔষধ ও সেবনবিধি" : "Medications & Dosage"}
+                            {t("uiMedicationsDosage")}
                           </span>
                         </div>
 
                         <div className="space-y-2.5">
                           {[
-                            { name: "Tab. Ciprocin 500mg", type: "Tablet", freq: "1+0+1", dur: language === "bn" ? "৭ দিন" : "7 days", inst: language === "bn" ? "খাবারের পর প্রচুর পানিসহ" : "After meal with plenty of water" },
-                            { name: "Tab. Napa Extra 500mg+65mg", type: "Tablet", freq: "1+1+1", dur: language === "bn" ? "৩ দিন" : "3 days", inst: language === "bn" ? "জ্বর ১০০°F এর বেশি হলে" : "If fever exceeds 100°F" },
-                            { name: "Cap. Maxpro 20mg", type: "Capsule", freq: "1+0+1", dur: language === "bn" ? "১৪ দিন" : "14 days", inst: language === "bn" ? "সকাল ও রাতের খাবারের ৩০ মিনিট আগে" : "30 minutes before breakfast & dinner" },
+                            { name: "Tab. Ciprocin 500mg", type: "Tablet", freq: "1+0+1", dur: t("uiDays4"), inst: t("uiAfterMealWithPlentyOf") },
+                            { name: "Tab. Napa Extra 500mg+65mg", type: "Tablet", freq: "1+1+1", dur: t("uiDays"), inst: t("uiIfFeverExceedsF") },
+                            { name: "Cap. Maxpro 20mg", type: "Capsule", freq: "1+0+1", dur: t("uiDays7"), inst: t("uiMinutesBeforeBreakfastDinner") },
                           ].map((med, i) => (
                             <div key={i} className="pb-1.5 border-b border-slate-100 last:border-b-0">
                               <p className="font-bold text-slate-900" style={{ fontSize: `${rxItemFontSize}px` }}>
@@ -1837,14 +1837,14 @@ export function TemplateManager() {
                         style={{ transform: `translateY(${signatureOffsetY}px)` }}
                       >
                         <div className="text-[10px] text-slate-400">
-                          <p>{language === "bn" ? "মেট্রোপলিটন হেলথ ক্লিনিকাল স্যুট দ্বারা প্রদত্ত" : "Issued by Metropolitan Health Clinical Suite"}</p>
-                          <p>{language === "bn" ? "প্রেসক্রিপশন যাচাইকরণ:" : "Prescription Verification:"} <strong>VERIFIED-2026-OK</strong></p>
+                          <p>{t("uiIssuedByMetropolitanHealthClinical")}</p>
+                          <p>{t("uiPrescriptionVerification")} <strong>VERIFIED-2026-OK</strong></p>
                         </div>
                         <div className="text-right">
                           <div className="w-40 border-b border-slate-400 mb-1" />
                           <p className="text-[11px] font-bold text-slate-800">Dr. Fahim Rahman</p>
                           <p className="text-[10px] text-slate-400">
-                            {language === "bn" ? "নিবন্ধিত চিকিৎসা কর্মকর্তা (বিএমডিসি)" : "Registered Medical Practitioner"}
+                            {t("uiRegisteredMedicalPractitioner")}
                           </p>
                         </div>
                       </div>

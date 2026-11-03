@@ -214,7 +214,7 @@ function VerifyEmailInner() {
                   className="w-full min-h-[46px] rounded-xl bg-[var(--brand-primary)] hover:opacity-95 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  {language === "bn" ? "লগইন পেজে ফিরুন" : "Return to Sign In"}
+                  {t("uiReturnToSignIn")}
                 </Link>
               ) : (
                 <button
@@ -225,7 +225,7 @@ function VerifyEmailInner() {
                   }}
                   className="w-full min-h-[46px] rounded-xl bg-[var(--brand-primary)] hover:opacity-95 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
                 >
-                  {language === "bn" ? "ড্যাশবোর্ডে প্রবেশ করুন" : "Continue to Dashboard"}
+                  {t("uiContinueToDashboard")}
                   <ArrowRight className="w-4 h-4" />
                 </button>
               )}
@@ -249,9 +249,7 @@ function VerifyEmailInner() {
                 {t.checkYourInbox}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-                {language === "bn"
-                  ? "রোগীর রেকর্ড ও ক্লিনিক্যাল টুলস ব্যবহারের পূর্বে আপনার ইমেইল নিশ্চিত করার জন্য আমরা একটি নিরাপদ ভেরিফিকেশন লিংক পাঠিয়েছি।"
-                  : "We sent a secure verification link to confirm your email before granting access to patient records and clinical tools."}
+                {t("uiWeSentASecureVerification")}
               </p>
             </div>
 
@@ -266,7 +264,7 @@ function VerifyEmailInner() {
             ) : (
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                  {language === "bn" ? "আপনার নিবন্ধিত ইমেইল লিখুন" : "Enter Your Registered Email"}
+                  {t("uiEnterYourRegisteredEmail")}
                 </label>
                 <div className="relative">
                   <input
@@ -308,7 +306,7 @@ function VerifyEmailInner() {
                 {resending ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>{language === "bn" ? "নতুন লিংক পাঠানো হচ্ছে..." : "Sending Fresh Link..."}</span>
+                    <span>{t("uiSendingFreshLink")}</span>
                   </>
                 ) : cooldown > 0 ? (
                   language === "bn" ? `${cooldown} সেকেন্ড পর পুনরায় পাঠানো যাবে` : `Resend available in ${cooldown}s`
@@ -334,14 +332,10 @@ function VerifyEmailInner() {
                     )}
                   </li>
                   <li>
-                    {language === "bn"
-                      ? "আপনার ক্লিনিকের ডোমেন থেকে পাঠানো বার্তা অনুমোদন করা আছে কিনা তা নিশ্চিত করুন।"
-                      : "Ensure your email service allows messages from our clinic domain."}
+                    {t("uiEnsureYourEmailServiceAllows")}
                   </li>
                   <li>
-                    {language === "bn"
-                      ? "১-২ মিনিট অপেক্ষা করুন অথবা ওপরের বাটনটি দিয়ে পুনরায় লিংক পাঠান।"
-                      : "Wait 1-2 minutes or click resend link above."}
+                    {t("uiWaitMinutesOrClickResend")}
                   </li>
                 </ul>
               </div>
@@ -360,7 +354,7 @@ function VerifyEmailInner() {
                   className="w-full text-xs font-semibold text-[var(--brand-primary)] hover:underline flex items-center justify-center gap-1.5 py-1 cursor-pointer"
                 >
                   <Edit3 className="w-3.5 h-3.5" />
-                  {language === "bn" ? "ভুল ইমেইল দিয়েছেন? ঠিকানা পরিবর্তন করে পুনরায় পাঠান" : "Mistyped email? Change address & resend"}
+                  {t("uiMistypedEmailChangeAddressResend")}
                 </button>
               ) : (
                 <form onSubmit={(e) => void handleChangeEmail(e)} className="space-y-3 pt-2">
@@ -396,7 +390,7 @@ function VerifyEmailInner() {
 
                   <div>
                     <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                      {language === "bn" ? "অ্যাকাউন্টের পাসওয়ার্ড (পরিচয় নিশ্চিতের জন্য)" : "Account Password (to confirm identity)"}
+                      {t("uiAccountPasswordToConfirmIdentity")}
                     </label>
                     <div className="relative">
                       <input
@@ -412,7 +406,7 @@ function VerifyEmailInner() {
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer p-1"
-                        title={showPassword ? (language === "bn" ? "পাসওয়ার্ড লুকান" : "Hide password") : (language === "bn" ? "পাসওয়ার্ড দেখুন" : "Show password")}
+                        title={showPassword ? (t("uiHidePassword")) : (t("uiShowPassword"))}
                       >
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -425,8 +419,8 @@ function VerifyEmailInner() {
                     className="w-full min-h-[44px] rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-bold text-xs flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
                   >
                     {changingEmail
-                      ? (language === "bn" ? "আপডেট ও পাঠানো হচ্ছে..." : "Updating & Dispatching...")
-                      : (language === "bn" ? "ইমেইল আপডেট করে পুনরায় লিংক পাঠান" : "Update Email & Resend")}
+                      ? (t("uiUpdatingDispatching"))
+                      : (t("uiUpdateEmailResend"))}
                   </button>
                 </form>
               )}
@@ -446,24 +440,22 @@ export default function VerifyEmailPage() {
       {/* Desktop Informative Hero Panel (Left 5 Columns, Fixed / Sticky, Guaranteed No Scroll) */}
       <div className="lg:col-span-5 xl:col-span-5 hidden lg:flex flex-col sticky top-0 h-screen max-h-screen overflow-hidden">
         <AuthBrandingPanel
-          badge={language === "bn" ? "ইমেইল প্রমাণীকরণ" : "Email Authentication"}
-          title={language === "bn" ? "ক্লিনিক্যাল তথ্য ও পরিচয় যাচাই" : "Verifying Clinical Credentials & Contacts"}
-          highlightText={language === "bn" ? "সম্পূর্ণ আপসহীন।" : "Zero Compromise."}
-          description={language === "bn"
-            ? "রোগীর প্রেসক্রিপশন ও ল্যাব টেস্টের সংবেদনশীল তথ্যের নিরাপত্তা নিশ্চিত করতে আমরা চিকিৎসকদের ইমেইল যাচাই করি।"
-            : "We verify email addresses to ensure that sensitive prescription notifications and lab results reach authenticated clinicians and patients."}
+          badge={t("uiEmailAuthentication")}
+          title={t("uiVerifyingClinicalCredentialsContacts")}
+          highlightText={t("uiZeroCompromise2")}
+          description={t("uiWeVerifyEmailAddressesTo")}
           features={[
             {
               icon: <ShieldCheck className="w-4 h-4 text-teal-400" />,
-              title: language === "bn" ? "যাচাইকৃত ডিজিটাল প্রেসক্রিপশন ও সতর্কতা" : "Verified Electronic Dispense & Rx Alerts",
+              title: t("uiVerifiedElectronicDispenseRxAlerts"),
             },
             {
               icon: <Lock className="w-4 h-4 text-emerald-400" />,
-              title: language === "bn" ? "একক-ব্যবহারযোগ্য ক্রিপ্টোগ্রাফিক ভেরিফিকেশন টোকেন" : "Cryptographic Single-Use Verification Tokens",
+              title: t("uiCryptographicSingleUseVerificationTokens"),
             },
             {
               icon: <Sparkles className="w-4 h-4 text-sky-400" />,
-              title: language === "bn" ? "এক-ক্লিক অ্যাক্টিভেশন ও সরাসরি ড্যাশবোর্ড" : "One-Click Activation & Direct Redirection",
+              title: t("uiOneClickActivationDirectRedirection"),
             },
           ]}
         />
@@ -490,7 +482,7 @@ export default function VerifyEmailPage() {
 
           <div className="hidden lg:flex items-center gap-2 text-xs text-slate-500 font-medium">
             <Mail className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-            <span>{language === "bn" ? "ইমেইল পরিচয় প্রমাণীকরণ" : "Email Identity Authentication"}</span>
+            <span>{t("uiEmailIdentityAuthentication")}</span>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
@@ -512,7 +504,7 @@ export default function VerifyEmailPage() {
             fallback={
               <div className="p-6 max-w-md mx-auto rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-xs text-slate-500 text-center">
                 <RefreshCw className="w-4 h-4 animate-spin mx-auto mb-2 text-[var(--brand-primary)]" />
-                {language === "bn" ? "প্যানেল লোড করা হচ্ছে..." : "Loading verification panel..."}
+                {t("uiLoadingVerificationPanel")}
               </div>
             }
           >
@@ -522,7 +514,7 @@ export default function VerifyEmailPage() {
 
         {/* Bottom Footer */}
         <div className="pt-4 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
-          <span>{language === "bn" ? "বিএমডিসি ও স্বাস্থ্যসেবা নিরাপত্তা মান দ্বারা সুরক্ষিত।" : "Protected by HIPAA & BMDC compliant security standards."}</span>
+          <span>{t("uiProtectedByHIPAABMDCCompliantVariant2")}</span>
           <div className="flex items-center gap-3">
             <Link href="/privacy" className="hover:text-[var(--brand-primary)] transition font-medium">
               {t.privacyPolicy}

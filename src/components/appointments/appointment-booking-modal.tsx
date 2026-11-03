@@ -428,7 +428,7 @@ export function AppointmentBookingModal({
                   <div>
                     <span className="text-slate-400 block text-[11px] font-medium">{t.chamberLocation}</span>
                     <span className="font-bold text-slate-900 dark:text-white">
-                      {confirmedAppointment.doctor.chamberAddress || (language === "bn" ? "প্রধান বহির্বিভাগ চেম্বার" : "Main OPD Consultation Wing")}
+                      {confirmedAppointment.doctor.chamberAddress || (t("uiMainOPDConsultationWing"))}
                     </span>
                   </div>
 
@@ -579,11 +579,11 @@ export function AppointmentBookingModal({
                                 {docSched.isAvailableToday ? (
                                   <span className="shrink-0 text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-extrabold flex items-center gap-1">
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                    {language === "bn" ? "আজকে" : "Today"}
+                                    {t("uiToday")}
                                   </span>
                                 ) : (
                                   <span className="shrink-0 text-[9px] px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold">
-                                    {docSched.nextAvailableDay || (language === "bn" ? "পরবর্তী দিন" : "Next Day")}
+                                    {docSched.nextAvailableDay || (t("uiNextDay"))}
                                   </span>
                                 )}
                               </div>
@@ -591,7 +591,7 @@ export function AppointmentBookingModal({
                                 {doc.specialization}
                               </p>
                               <p className="text-[10px] text-slate-400 truncate mt-0.5">
-                                {doc.chamberAddress || doc.hospital || (language === "bn" ? "চেম্বার উন্মুক্ত" : "Chamber Open")}
+                                {doc.chamberAddress || doc.hospital || (t("uiChamberOpen"))}
                               </p>
                             </div>
                           </div>
@@ -621,13 +621,13 @@ export function AppointmentBookingModal({
                           {/* Pricing Pills Row */}
                           <div className="flex items-center justify-between gap-1 w-full pt-1 border-t border-slate-200/50 dark:border-slate-800/50 text-[10px]">
                             <span className="font-extrabold text-blue-700 dark:text-blue-300">
-                              {language === "bn" ? "১ম সাক্ষাৎ" : "1st"}: ${doc.newPatientFee ?? 50}
+                              {t("uiSt")}: ${doc.newPatientFee ?? 50}
                             </span>
                             <span className="font-extrabold text-teal-700 dark:text-teal-300">
-                              {language === "bn" ? "ফলো-আপ" : "Return"}: ${doc.followupFee ?? 30}
+                              {t("uiReturn")}: ${doc.followupFee ?? 30}
                             </span>
                             <span className="font-extrabold text-emerald-600 dark:text-emerald-400">
-                              {language === "bn" ? "রিপোর্ট: ফ্রি" : "Report: Free"}
+                              {t("uiReportFree")}
                             </span>
                           </div>
                         </button>
@@ -663,7 +663,7 @@ export function AppointmentBookingModal({
 
                   {/* Consultation Fee Banner */}
                   <div className="flex flex-wrap items-center gap-2 pt-1.5 border-t border-slate-200/60 dark:border-slate-800/60 text-[11px]">
-                    <span className="font-semibold text-slate-500">{language === "bn" ? "ভিজিটিং রেট:" : "Visiting Rates:"}</span>
+                    <span className="font-semibold text-slate-500">{t("uiVisitingRates")}</span>
                     <span className="font-bold text-blue-700 dark:text-blue-300 bg-blue-500/10 px-2 py-0.5 rounded-md">
                       {t.firstVisit}: ${selectedDoctor.newPatientFee ?? 50}
                     </span>
@@ -817,7 +817,7 @@ export function AppointmentBookingModal({
                     </span>
                   </div>
                   {loadingFee && (
-                    <span className="text-[10px] text-slate-400 animate-pulse">{language === "bn" ? "ফি হিসাব করা হচ্ছে..." : "Calculating rate..."}</span>
+                    <span className="text-[10px] text-slate-400 animate-pulse">{t("uiCalculatingRate")}</span>
                   )}
                 </div>
 
@@ -911,8 +911,8 @@ export function AppointmentBookingModal({
                         <div className="space-y-1">
                           <span className="font-bold block">
                             {effectiveBreakdown.followupEligible
-                              ? (language === "bn" ? "ফলো-আপ পরামর্শ যাচাইকৃত" : "Follow-up Consultation Verified")
-                              : (language === "bn" ? "ফলো-আপ রেটের অযোগ্য" : "Follow-up Rate Ineligible")}
+                              ? (t("followUpConsultationVerified"))
+                              : (t("followUpRateIneligible"))}
                           </span>
                           <p className="text-[11px] leading-relaxed">
                             {effectiveBreakdown.followupEligible
@@ -963,8 +963,8 @@ export function AppointmentBookingModal({
                         <div className="space-y-1">
                           <span className="font-bold block">
                             {effectiveBreakdown.isFreeReportReview
-                              ? (language === "bn" ? "বিনামূল্যে ডায়াগনস্টিক রিপোর্ট পর্যালোচনা যোগ্য" : "Free Diagnostic Report Review Qualified")
-                              : (language === "bn" ? "রিপোর্ট পর্যালোচনার সময়সীমা শেষ / অযোগ্য" : "Report Review Window Expired / Ineligible")}
+                              ? (t("uiFreeDiagnosticReportReviewQualified"))
+                              : (t("uiReportReviewWindowExpiredIneligible"))}
                           </span>
                           <p className="text-[11px] leading-relaxed">
                             {effectiveBreakdown.isFreeReportReview
@@ -1000,7 +1000,7 @@ export function AppointmentBookingModal({
                         <ShieldCheck className="w-4 h-4 text-[var(--brand-primary)] shrink-0 mt-0.5" />
                         <div className="space-y-0.5">
                           <span className="font-bold text-[var(--brand-text)] block">
-                            {language === "bn" ? "প্রথম সাক্ষাৎ পরামর্শ রেট:" : "First Visit Consultation Rate:"}
+                            {t("uiFirstVisitConsultationRate")}
                           </span>
                           <p className="text-[11px] leading-relaxed">
                             {language === "bn"
@@ -1022,10 +1022,10 @@ export function AppointmentBookingModal({
                         </div>
                         <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-extrabold">
                           {selectedVisitType === "REPORT_REVIEW"
-                            ? (language === "bn" ? "বিনামূল্যে ($০.০০)" : "Complimentary ($0.00)")
+                            ? (t("uiComplimentary"))
                             : selectedVisitType === "FOLLOWUP"
-                            ? (language === "bn" ? "ফলো-আপ রেট" : "Returning Patient Rate")
-                            : (language === "bn" ? "প্রথম পরামর্শ" : "Standard First Consultation")}
+                            ? (t("uiReturningPatientRate"))
+                            : (t("uiStandardFirstConsultation"))}
                         </span>
                       </div>
 
@@ -1045,7 +1045,7 @@ export function AppointmentBookingModal({
                         <div className="flex justify-between text-slate-600 dark:text-slate-400">
                           <span>{t.queueSerialIssuance}</span>
                           <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">
-                            {language === "bn" ? "$০.০০ (অন্তর্ভুক্ত)" : "$0.00 (Included)"}
+                            {t("uiIncluded")}
                           </span>
                         </div>
                         <div className="pt-2 border-t border-[var(--border-subtle)] flex justify-between items-baseline">
@@ -1082,7 +1082,7 @@ export function AppointmentBookingModal({
                     </div>
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-400">{language === "bn" ? "পরামর্শের রেট দেখতে উপরে একজন ডাক্তার নির্বাচন করুন।" : "Select a doctor above to view consultation rates."}</p>
+                  <p className="text-xs text-slate-400">{t("uiSelectADoctorAboveTo")}</p>
                 )}
               </div>
 

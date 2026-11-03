@@ -4,7 +4,7 @@ import { HeartPulse, Printer, ShieldCheck, Zap } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
 
 export default function HeroRightTicketPreview() {
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   const isBn = language === "bn";
 
   return (
@@ -17,13 +17,13 @@ export default function HeroRightTicketPreview() {
         {/* Floating Accolade Badge Top-Right */}
         <div className="absolute -top-4 -right-2 sm:-right-4 z-20 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-strong)]/40 shadow-md text-xs font-bold text-slate-800 dark:text-slate-200">
           <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
-          <span>{isBn ? "< ২০ সেকেন্ডে দ্রুত প্রেসক্রিপশন" : "< 20s Fast Prescribing"}</span>
+          <span>{t("uiSFastPrescribing")}</span>
         </div>
 
         {/* Floating Accolade Badge Bottom-Left */}
         <div className="absolute -bottom-4 -left-2 sm:-left-4 z-20 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-strong)]/40 shadow-md text-xs font-bold text-slate-800 dark:text-slate-200">
           <Printer className="w-4 h-4 text-[var(--brand-primary)]" />
-          <span>{isBn ? "বিএমডিসি বৈধ A4 ফরম্যাট" : "BMDC Legal A4 Format"}</span>
+          <span>{t("uiBmdcLegalA4Format")}</span>
         </div>
 
         {/* Main Hero Card Simulation: Clean Electronic Prescription */}
@@ -34,22 +34,22 @@ export default function HeroRightTicketPreview() {
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-[var(--brand-primary)]" />
                 <h2 className="text-sm font-black text-slate-900 dark:text-white tracking-tight">
-                  {isBn ? "মেট্রোপলিটন স্পেশালাইজড হাসপাতাল" : "Metropolitan Specialized Hospital"}
+                  {t("uiMetropolitanSpecializedHospital")}
                 </h2>
               </div>
               <p className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
-                {isBn ? "ডাঃ ফাহিম রহমান " : "Dr. Fahim Rahman "}
+                {t("uiDrFahimRahman")}
                 <span className="font-normal text-slate-400">
-                  {isBn ? "• এমবিবিএস, এফসিপিএস (মেডিসিন)" : "• MBBS, FCPS (Medicine)"}
+                  {t("uiMbbsFCPSMedicine")}
                 </span>
               </p>
               <p className="text-[10px] text-slate-400 font-mono">
-                {isBn ? "বিএমডিসি রেজি: এ-৫৪২১০ • চেম্বার ৩০১" : "BMDC Reg: A-54910 • Chamber 301"}
+                {t("uiBmdcRegAChamber")}
               </p>
             </div>
 
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--brand-surface)] border border-[var(--brand-border)] text-[var(--brand-text)] text-[10px] font-bold">
-              <span>{isBn ? "A4 ভেরিফাইড" : "A4 Verified"}</span>
+              <span>{t("uiA4Verified")}</span>
             </div>
           </div>
 
@@ -58,9 +58,9 @@ export default function HeroRightTicketPreview() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
                 <HeartPulse className="w-4 h-4 text-[var(--brand-primary)]" />
-                <span>{isBn ? "তারিকুল ইসলাম" : "Tariqul Islam"}</span>
+                <span>{t("uiTariqulIslam")}</span>
                 <span className="text-slate-400 font-normal">
-                  {isBn ? " • ৪২ বছর / পুরুষ" : " • 42y / Male"}
+                  {t("uiYMale")}
                 </span>
               </div>
               <span className="text-[10px] font-mono font-bold text-[var(--brand-text)] bg-[var(--brand-surface)] px-2 py-0.5 rounded-md">
@@ -74,9 +74,9 @@ export default function HeroRightTicketPreview() {
                 <span className="font-extrabold text-slate-800 dark:text-slate-200">120/80</span>
               </div>
               <div className="p-1.5 rounded-lg bg-[var(--bg-surface)] text-center border border-[var(--border-subtle)]">
-                <span className="block text-slate-400 font-medium">{isBn ? "পালস" : "Pulse"}</span>
+                <span className="block text-slate-400 font-medium">{t("pulse")}</span>
                 <span className="font-extrabold text-slate-800 dark:text-slate-200">
-                  {isBn ? "৭৪ bpm" : "74 bpm"}
+                  {t("uiBpm")}
                 </span>
               </div>
               <div className="p-1.5 rounded-lg bg-[var(--bg-surface)] text-center border border-[var(--border-subtle)]">
@@ -84,7 +84,7 @@ export default function HeroRightTicketPreview() {
                 <span className="font-extrabold text-emerald-600">99%</span>
               </div>
               <div className="p-1.5 rounded-lg bg-[var(--bg-surface)] text-center border border-[var(--border-subtle)]">
-                <span className="block text-slate-400 font-medium">{isBn ? "তাপমাত্রা" : "Temp"}</span>
+                <span className="block text-slate-400 font-medium">{t("temp")}</span>
                 <span className="font-extrabold text-slate-800 dark:text-slate-200">98.4°F</span>
               </div>
             </div>
@@ -94,21 +94,21 @@ export default function HeroRightTicketPreview() {
           <div className="space-y-1.5 text-xs">
             <div className="flex items-center gap-1.5 text-[11px]">
               <span className="font-bold text-slate-700 dark:text-slate-300">
-                {isBn ? "রোগ নির্ণয়:" : "Diagnosis:"}
+                {t("uiDiagnosis")}
               </span>
               <span className="px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] font-semibold text-[10px]">
-                {isBn ? "তীব্র শ্বাসনালীর সংক্রমণ" : "Acute Upper Respiratory Infection"}
+                {t("uiAcuteUpperRespiratoryInfection")}
               </span>
             </div>
             <div className="flex flex-wrap gap-1 text-[10px]">
               <span className="px-2 py-0.5 rounded-full bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 font-medium border border-[var(--border-subtle)]">
-                {isBn ? "জ্বর ৩ দিন" : "Fever x 3 days"}
+                {t("uiFeverXDays")}
               </span>
               <span className="px-2 py-0.5 rounded-full bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 font-medium border border-[var(--border-subtle)]">
-                {isBn ? "শুকনো কাশি" : "Dry Cough"}
+                {t("uiDryCough")}
               </span>
               <span className="px-2 py-0.5 rounded-full bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 font-medium border border-[var(--border-subtle)]">
-                {isBn ? "গলা ব্যথা" : "Throat Pain"}
+                {t("uiThroatPain")}
               </span>
             </div>
           </div>
@@ -120,10 +120,10 @@ export default function HeroRightTicketPreview() {
                 <span className="text-base font-serif italic font-bold text-[var(--brand-text)]">
                   ℞
                 </span>
-                <span>{isBn ? "প্রেসক্রিপশনভুক্ত ওষুধসমূহ" : "Prescribed Medications"}</span>
+                <span>{t("uiPrescribedMedications")}</span>
               </span>
               <span className="text-[10px] text-[var(--brand-text)] font-semibold">
-                {isBn ? "স্বয়ংক্রিয় ডোজ পূরণ" : "Auto-Populated Dosage"}
+                {t("uiAutoPopulatedDosage")}
               </span>
             </div>
 
@@ -134,7 +134,7 @@ export default function HeroRightTicketPreview() {
                     Tab. Napa Extra 500mg+65mg
                   </strong>
                   <span className="text-[10px] text-slate-500">
-                    {isBn ? "প্যারাসিটামল + ক্যাফেইন • খাওয়ার পর" : "Paracetamol + Caffeine • After meal"}
+                    {t("uiParacetamolCaffeineAfterMeal")}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-[10px] font-bold">
@@ -142,7 +142,7 @@ export default function HeroRightTicketPreview() {
                     ১+০+১
                   </span>
                   <span className="px-2 py-0.5 rounded-md bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200">
-                    {isBn ? "৫ দিন" : "5 Days"}
+                    {t("uiDays6")}
                   </span>
                 </div>
               </div>
@@ -153,7 +153,7 @@ export default function HeroRightTicketPreview() {
                     Cap. Maxpro 20mg
                   </strong>
                   <span className="text-[10px] text-slate-500">
-                    {isBn ? "ইসোমেপ্রাজল • খাওয়ার ৩০ মিনিট পূর্বে" : "Esomeprazole • 30 mins before meal"}
+                    {t("uiEsomeprazoleMinsBeforeMeal")}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-[10px] font-bold">
@@ -161,7 +161,7 @@ export default function HeroRightTicketPreview() {
                     ১+০+১
                   </span>
                   <span className="px-2 py-0.5 rounded-md bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200">
-                    {isBn ? "১৪ দিন" : "14 Days"}
+                    {t("uiDays5")}
                   </span>
                 </div>
               </div>
@@ -171,12 +171,12 @@ export default function HeroRightTicketPreview() {
           {/* Doctor Signature & Advice Footer */}
           <div className="pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-[11px]">
             <div className="text-slate-500 text-[10px] max-w-[210px] truncate">
-              {isBn ? "পরামর্শ: সম্পূর্ণ বিশ্রাম, কুসুম গরম পানি পান করুন।" : "Advice: Complete bed rest, warm fluids."}
+              {t("uiAdviceCompleteBedRestWarm")}
             </div>
 
             <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[10px]">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>{isBn ? "ডিজিটালি যাচাইকৃত" : "Digitally Verified"}</span>
+              <span>{t("uiDigitallyVerified")}</span>
             </div>
           </div>
         </div>

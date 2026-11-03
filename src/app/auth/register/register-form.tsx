@@ -123,9 +123,7 @@ export function RegisterForm() {
       if (trimmed.length < 3) {
         setSlugStatus("unavailable");
         setSlugMessage(
-          language === "bn"
-            ? "সাবডোমেন কমপক্ষে ৩ অক্ষরের হতে হবে।"
-            : "Subdomain must be at least 3 characters."
+          t("uiSubdomainMustBeAtLeast")
         );
         return;
       }
@@ -137,31 +135,25 @@ export function RegisterForm() {
         if (json.success && json.data) {
           if (json.data.available) {
             setSlugStatus("available");
-            setSlugMessage(language === "bn" ? "সাবডোমেনটি খালি আছে!" : "Subdomain is available!");
+            setSlugMessage(t("subdomainAvailable"));
           } else {
             setSlugStatus("unavailable");
             setSlugMessage(
               json.data.reason ||
-                (language === "bn"
-                  ? "সাবডোমেনটি ইতোমধ্যে ব্যবহৃত বা অনুপলব্ধ।"
-                  : "Subdomain is already taken or unavailable.")
+                (t("uiSubdomainIsAlreadyTakenOr"))
             );
           }
         } else {
           setSlugStatus("unavailable");
           setSlugMessage(
             json.message ||
-              (language === "bn"
-                ? "সাবডোমেন যাচাই করতে ব্যর্থ হয়েছে।"
-                : "Failed to validate subdomain.")
+              (t("uiFailedToValidateSubdomain"))
           );
         }
       } catch {
         setSlugStatus("unavailable");
         setSlugMessage(
-          language === "bn"
-            ? "সাবডোমেন যাচাইয়ে নেটওয়ার্ক ত্রুটি।"
-            : "Network error validating subdomain."
+          t("uiNetworkErrorValidatingSubdomain")
         );
       }
     }, 300);
@@ -213,25 +205,25 @@ export function RegisterForm() {
     try {
       if (mode === "clinic") {
         if (!clinicName.trim()) {
-          throw new Error(language === "bn" ? "ক্লিনিক বা হাসপাতালের নাম আবশ্যক।" : "Clinic or Hospital name is required.");
+          throw new Error(t("uiClinicOrHospitalNameIs"));
         }
         if (!clinicSlug.trim()) {
-          throw new Error(language === "bn" ? "ক্লিনিকের ইউআরএল সাবডোমেন আবশ্যক।" : "Clinic identifier URL slug is required.");
+          throw new Error(t("uiClinicIdentifierURLSlugIs"));
         }
         if (slugStatus === "checking") {
-          throw new Error(language === "bn" ? "ক্লিনিকের সাবডোমেন যাচাই করা হচ্ছে। অনুগ্রহ করে অপেক্ষা করুন..." : "Validating clinic subdomain availability. Please wait...");
+          throw new Error(t("uiValidatingClinicSubdomainAvailabilityPlease"));
         }
         if (slugStatus === "unavailable") {
-          throw new Error(slugMessage || (language === "bn" ? "আপনার ক্লিনিকের জন্য একটি বৈধ ও খালি সাবডোমেন প্রদান করুন।" : "Please enter a valid, available subdomain for your clinic."));
+          throw new Error(slugMessage || (t("uiPleaseEnterAValidAvailable")));
         }
         if (!name.trim()) {
-          throw new Error(language === "bn" ? "অ্যাডমিনিস্ট্রেটরের পূর্ণ নাম আবশ্যক।" : "Administrator full name is required.");
+          throw new Error(t("uiAdministratorFullNameIsRequired"));
         }
         if (!email.trim() || !email.includes("@")) {
-          throw new Error(language === "bn" ? "বৈধ কাজের ইমেইল ঠিকানা আবশ্যক।" : "Valid work email address is required.");
+          throw new Error(t("uiValidWorkEmailAddressIs"));
         }
         if (password.length < 6) {
-          throw new Error(language === "bn" ? "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।" : "Password must be at least 6 characters.");
+          throw new Error(t("uiPasswordMustBeAtLeast"));
         }
 
         const res = await fetch("/api/auth/register", {
@@ -252,7 +244,7 @@ export function RegisterForm() {
 
         const data = await res.json();
         if (!res.ok || !data.success) {
-          throw new Error(data.message || data.error || (language === "bn" ? "ক্লিনিক নিবন্ধন ব্যর্থ হয়েছে।" : "Failed to register clinic."));
+          throw new Error(data.message || data.error || (t("uiFailedToRegisterClinic")));
         }
 
         setSuccess(true);
@@ -272,9 +264,9 @@ export function RegisterForm() {
         }
       } else {
         // Patient registration
-        if (!name.trim()) throw new Error(language === "bn" ? "পূর্ণ নাম আবশ্যক।" : "Full name is required.");
-        if (!email.trim() || !email.includes("@")) throw new Error(language === "bn" ? "বৈধ ইমেইল ঠিকানা আবশ্যক।" : "Valid email address is required.");
-        if (password.length < 6) throw new Error(language === "bn" ? "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।" : "Password must be at least 6 characters.");
+        if (!name.trim()) throw new Error(t("uiFullNameIsRequired"));
+        if (!email.trim() || !email.includes("@")) throw new Error(t("uiValidEmailAddressIsRequired"));
+        if (password.length < 6) throw new Error(t("uiPasswordMustBeAtLeast"));
 
         const res = await fetch("/api/auth/register", {
           method: "POST",
@@ -294,7 +286,7 @@ export function RegisterForm() {
 
         const data = await res.json();
         if (!res.ok || !data.success) {
-          throw new Error(data.message || data.error || (language === "bn" ? "রোগীর অ্যাকাউন্ট তৈরি করতে ব্যর্থ হয়েছে।" : "Failed to create patient account."));
+          throw new Error(data.message || data.error || (t("uiFailedToCreatePatientAccount")));
         }
 
         setSuccess(true);
@@ -316,9 +308,7 @@ export function RegisterForm() {
       setError(
         err instanceof Error
           ? err.message
-          : language === "bn"
-          ? "নিবন্ধন ব্যর্থ হয়েছে।"
-          : "Registration failed."
+          : t("uiRegistrationFailed")
       );
     } finally {
       setLoading(false);
@@ -342,7 +332,7 @@ export function RegisterForm() {
           }`}
         >
           <Building2 className="w-4 h-4 text-[var(--brand-primary)]" />
-          <span>{language === "bn" ? "নতুন ক্লিনিক (১৪ দিনের ফ্রি ট্রায়াল)" : "New Clinic (14-Day Free Trial)"}</span>
+          <span>{t("uiNewClinicDayFreeTrial")}</span>
         </button>
 
         <button
@@ -374,9 +364,7 @@ export function RegisterForm() {
               {t.registerClinicTitle}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500">
-              {language === "bn"
-                ? "আপনার নিজস্ব ক্লিনিক তৈরি করুন। ডাক্তার যোগ করুন, রিসেপশন কিউ ম্যানেজ করুন এবং ডিজিটাল প্রেসক্রিপশন লিখুন।"
-                : "Create your independent clinical tenant. Add doctors, configure receptionist queue, prescribe digitally, and manage clinical formulary."}
+              {t("uiCreateYourIndependentClinicalTenant")}
             </p>
           </div>
         ) : (
@@ -389,9 +377,7 @@ export function RegisterForm() {
               {t.createAccount}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500">
-              {language === "bn"
-                ? "প্রেসক্রিপশন দেখুন, ঔষধের রিমাইন্ডার সেট করুন এবং ডাক্তারের সাথে অ্যাপয়েন্টমেন্ট নিন।"
-                : "Access your prescriptions, medicine reminders, and doctor appointments."}
+              {t("uiAccessYourPrescriptionsMedicineReminders")}
             </p>
           </div>
         )}
@@ -407,12 +393,8 @@ export function RegisterForm() {
             <CheckCircle2 className="w-4 h-4 shrink-0" />
             <span>
               {mode === "clinic"
-                ? language === "bn"
-                  ? "১৪ দিনের ফ্রি ট্রায়ালসহ ক্লিনিক সফলভাবে তৈরি হয়েছে! ড্যাশবোর্ডে নিয়ে যাওয়া হচ্ছে..."
-                  : "Clinic created with 14-day free trial! Redirecting to admin dashboard..."
-                : language === "bn"
-                ? "অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! পেশেন্ট ড্যাশবোর্ডে নিয়ে যাওয়া হচ্ছে..."
-                : "Account created successfully! Redirecting to patient dashboard..."}
+                ? t("uiClinicCreatedWithDayFree")
+                : t("uiAccountCreatedSuccessfullyRedirectingTo")}
             </span>
           </div>
         )}
@@ -425,7 +407,7 @@ export function RegisterForm() {
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
                     <Building2 className="w-3 h-3 text-[var(--brand-primary)]" />
-                    <span>{language === "bn" ? "ক্লিনিক বা হাসপাতালের নাম *" : "Clinic / Hospital Name *"}</span>
+                    <span>{t("uiClinicHospitalName")}</span>
                   </label>
                   <div className="relative">
                     <input
@@ -433,7 +415,7 @@ export function RegisterForm() {
                       required
                       value={clinicName}
                       onChange={(e) => handleClinicNameChange(e.target.value)}
-                      placeholder={language === "bn" ? "যেমন: কেয়ারওয়েল মেডিকেল সেন্টার" : "e.g. CareWell Medical Center"}
+                      placeholder={t("uiEGCareWellMedicalCenter")}
                       className={iconInputClasses}
                     />
                     <Building2 className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -449,19 +431,19 @@ export function RegisterForm() {
                     {slugStatus === "checking" && (
                       <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
                         <Loader2 className="w-3 h-3 animate-spin text-[var(--brand-primary)]" />
-                        <span>{language === "bn" ? "যাচাই করা হচ্ছে..." : "Validating..."}</span>
+                        <span>{t("uiValidating")}</span>
                       </span>
                     )}
                     {slugStatus === "available" && (
                       <span className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                         <CheckCircle2 className="w-3 h-3" />
-                        <span>{language === "bn" ? "খালি আছে" : "Available"}</span>
+                        <span>{t("uiAvailable")}</span>
                       </span>
                     )}
                     {slugStatus === "unavailable" && (
                       <span className="text-[10px] font-extrabold text-rose-600 dark:text-rose-400 flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />
-                        <span>{language === "bn" ? "উপলব্ধ নয়" : "Unavailable"}</span>
+                        <span>{t("uiUnavailable")}</span>
                       </span>
                     )}
                   </div>
@@ -513,11 +495,11 @@ export function RegisterForm() {
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                     <Globe className="w-3 h-3 text-[var(--brand-primary)]" />
-                    {language === "bn" ? "আপনার ডেডিকেটেড ক্লিনিক ইউআরএল" : "Your Dedicated Clinic URL"}
+                    {t("uiYourDedicatedClinicURL")}
                   </span>
                   {slugStatus === "available" && (
                     <span className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-                      {language === "bn" ? "ব্যবহারযোগ্য" : "Ready to Claim"}
+                      {t("uiReadyToClaim")}
                     </span>
                   )}
                 </div>
@@ -537,9 +519,7 @@ export function RegisterForm() {
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-500 pt-0.5">
-                  {language === "bn"
-                    ? "এই সাবডোমেনের মাধ্যমে আপনার রোগী ও ডাক্তাররা সরাসরি আপনার ক্লিনিকের পেজে প্রবেশ করবেন।"
-                    : "This subdomain will serve your dedicated clinic profile, patient token booking, and consulting doctor roster."}
+                  {t("uiThisSubdomainWillServeYour")}
                 </p>
               </div>
 
@@ -547,7 +527,7 @@ export function RegisterForm() {
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
                     <User className="w-3 h-3" />
-                    <span>{language === "bn" ? "অ্যাডমিনিস্ট্রেটরের পূর্ণ নাম *" : "Administrator Name *"}</span>
+                    <span>{t("uiAdministratorName")}</span>
                   </label>
                   <div className="relative">
                     <input
@@ -555,7 +535,7 @@ export function RegisterForm() {
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder={language === "bn" ? "যেমন: ডা. রায়ান চৌধুরী" : "e.g. Dr. Rayan Chowdhury"}
+                      placeholder={t("uiEGDrRayanChowdhury")}
                       className={iconInputClasses}
                     />
                     <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -565,7 +545,7 @@ export function RegisterForm() {
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
                     <Mail className="w-3 h-3" />
-                    <span>{language === "bn" ? "অফিসিয়াল ইমেইল *" : "Work Email Address *"}</span>
+                    <span>{t("uiWorkEmailAddress")}</span>
                   </label>
                   <div className="relative">
                     <input
@@ -602,7 +582,7 @@ export function RegisterForm() {
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
                     <Lock className="w-3 h-3" />
-                    <span>{language === "bn" ? "পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর) *" : "Password (min. 6 chars) *"}</span>
+                    <span>{t("uiPasswordMinChars")}</span>
                   </label>
                   <div className="relative">
                     <input
@@ -637,7 +617,7 @@ export function RegisterForm() {
                     type="text"
                     value={clinicAddress}
                     onChange={(e) => setClinicAddress(e.target.value)}
-                    placeholder={language === "bn" ? "যেমন: বাড়ি ৪৫, রোড ১১, বনানী, ঢাকা" : "e.g. House 45, Road 11, Banani, Dhaka"}
+                    placeholder={t("uiEGHouseRoadBanani")}
                     className={iconInputClasses}
                   />
                   <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -648,7 +628,7 @@ export function RegisterForm() {
               <div className="space-y-2 pt-2">
                 <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
                   <Sparkles className="w-3 h-3 text-[var(--brand-primary)]" />
-                  <span>{language === "bn" ? "১৪ দিনের ফ্রি ট্রায়ালের জন্য প্যাকেজ নির্বাচন করুন" : "Choose Package for 14-Day Free Trial"}</span>
+                  <span>{t("uiChoosePackageForDayFree")}</span>
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   {plans.map((plan) => {
@@ -665,7 +645,7 @@ export function RegisterForm() {
                       >
                         {plan.isPopular && (
                           <span className="absolute -top-2 right-2 px-1.5 py-0.5 rounded-full bg-[var(--brand-primary)] text-white text-[8px] font-bold uppercase tracking-wider">
-                            {language === "bn" ? "জনপ্রিয়" : "Popular"}
+                            {t("uiPopular")}
                           </span>
                         )}
                         <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
@@ -701,7 +681,7 @@ export function RegisterForm() {
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder={language === "bn" ? "যেমন: ফাতেমা রহমান" : "e.g. Fatima Rahman"}
+                      placeholder={t("uiEGFatimaRahman")}
                       className={iconInputClasses}
                     />
                     <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -731,7 +711,7 @@ export function RegisterForm() {
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
                     <Lock className="w-3 h-3" />
-                    <span>{language === "bn" ? "পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর) *" : "Password (min. 6 chars) *"}</span>
+                    <span>{t("uiPasswordMinChars")}</span>
                   </label>
                   <div className="relative">
                     <input
@@ -798,7 +778,7 @@ export function RegisterForm() {
                     value={dateOfBirth}
                     onChange={(val) => setDateOfBirth(val)}
                     maxDate={new Date().toISOString().split("T")[0]}
-                    placeholder={language === "bn" ? "জন্মতারিখ নির্বাচন করুন" : "Select birth date"}
+                    placeholder={t("uiSelectBirthDate")}
                     quickPresets={false}
                   />
                 </div>
@@ -807,13 +787,13 @@ export function RegisterForm() {
               <div className="grid sm:grid-cols-1 gap-4">
                 <div className="space-y-1.5">
                   <label className={labelClasses}>
-                    <span>{language === "bn" ? "প্রধান ক্লিনিক বা হাসপাতাল" : "Primary Clinic"}</span>
+                    <span>{t("uiPrimaryClinic")}</span>
                   </label>
                   <CustomSelect
                     value={organizationId}
                     onChange={(val) => setOrganizationId(val)}
                     options={orgs.map((org) => ({ value: org.id, label: org.name }))}
-                    placeholder={language === "bn" ? "ক্লিনিক নির্বাচন করুন..." : "Select clinic..."}
+                    placeholder={t("uiSelectClinic")}
                   />
                 </div>
               </div>
@@ -826,7 +806,7 @@ export function RegisterForm() {
                   rows={2}
                   value={medicalHistory}
                   onChange={(e) => setMedicalHistory(e.target.value)}
-                  placeholder={language === "bn" ? "যেমন: পেনিসিলিন এলার্জি, উচ্চ রক্তচাপ, এজমা" : "e.g. Penicillin allergy, Hypertension, Asthma"}
+                  placeholder={t("uiEGPenicillinAllergyHypertension")}
                   className={textareaClasses}
                 />
               </div>
@@ -846,8 +826,8 @@ export function RegisterForm() {
                 <Loader2 className="w-4 h-4 animate-spin" />
                 <span>
                   {mode === "clinic"
-                    ? (language === "bn" ? "ক্লিনিক তৈরি হচ্ছে..." : "Creating Clinic Tenant...")
-                    : (language === "bn" ? "অ্যাকাউন্ট তৈরি হচ্ছে..." : "Creating Account...")}
+                    ? (t("uiCreatingClinicTenant"))
+                    : (t("uiCreatingAccount"))}
                 </span>
               </>
             ) : (
@@ -859,8 +839,8 @@ export function RegisterForm() {
                 )}
                 <span>
                   {mode === "clinic"
-                    ? (language === "bn" ? "১৪ দিনের ফ্রি ট্রায়াল ও ক্লিনিক সেটআপ শুরু করুন" : "Start 14-Day Free Trial & Setup Clinic")
-                    : (language === "bn" ? "নিবন্ধন সম্পন্ন করুন" : "Complete Registration")}
+                    ? (t("uiStartDayFreeTrialSetup"))
+                    : (t("uiCompleteRegistration"))}
                 </span>
               </>
             )}

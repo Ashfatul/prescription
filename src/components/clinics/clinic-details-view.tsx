@@ -119,14 +119,14 @@ export function ClinicDetailsView({
                       }`}
                     />
                     {clinic.status === "ACTIVE"
-                      ? (language === "bn" ? "সক্রিয় ক্লিনিকাল চেম্বার" : "Active Clinical Chamber")
+                      ? (t("uiActiveClinicalChamber"))
                       : clinic.status}
                   </span>
 
                   {isDemoClinic && (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
                       <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
-                      {language === "bn" ? "ডেমো স্যান্ডবক্স সুবিধা" : "Demo Sandbox Facility"}
+                      {t("demoSandbox")}
                     </span>
                   )}
 
@@ -139,7 +139,7 @@ export function ClinicDetailsView({
 
                 <div className="flex flex-col gap-1.5 pt-1">
                   <p className="text-xs text-slate-500 font-mono">
-                    {language === "bn" ? "প্রতিষ্ঠানের আইডি:" : "Facility Identifier:"}{" "}
+                    {t("uiFacilityIdentifier")}{" "}
                     <span className="font-semibold text-slate-700 dark:text-slate-300">{clinic.slug}</span>
                   </p>
                   <ClinicSubdomainBadge slug={clinic.slug} clinicName={clinic.name} />
@@ -155,7 +155,7 @@ export function ClinicDetailsView({
                   className="px-4 py-2.5 rounded-2xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-xs font-bold text-slate-800 dark:text-slate-200 transition flex items-center gap-2"
                 >
                   <Phone className="w-3.5 h-3.5 text-slate-400" />
-                  <span>{language === "bn" ? "হটলাইন:" : "Call Hotline:"} {clinic.contactPhone}</span>
+                  <span>{t("uiCallHotline")} {clinic.contactPhone}</span>
                 </a>
               )}
 
@@ -164,7 +164,7 @@ export function ClinicDetailsView({
                 className="px-4 py-2.5 rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] text-[var(--brand-text)] hover:opacity-95 text-xs font-bold transition flex items-center gap-2 shadow-2xs"
               >
                 <Tv className="w-3.5 h-3.5" />
-                <span>{language === "bn" ? "লাইভ চেম্বার টিভি" : "Live Chamber TV"}</span>
+                <span>{t("uiLiveChamberTV")}</span>
               </Link>
 
               <Link
@@ -172,7 +172,7 @@ export function ClinicDetailsView({
                 className="px-5 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white hover:opacity-95 text-xs font-bold transition flex items-center gap-2 shadow-xs"
               >
                 <Calendar className="w-3.5 h-3.5" />
-                <span>{language === "bn" ? "অ্যাপয়েন্টমেন্ট / সিরিয়াল বুক করুন" : "Book Appointment / Token"}</span>
+                <span>{t("uiBookAppointmentToken")}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -182,10 +182,10 @@ export function ClinicDetailsView({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-4 border-t border-[var(--border-subtle)]">
             <div className="p-3.5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-0.5">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                {language === "bn" ? "স্বাস্থ্যসেবা টিম" : "Healthcare Team"}
+                {t("uiHealthcareTeam")}
               </span>
               <p className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
-                {staffMembers.length} {language === "bn" ? "জন কর্মী" : "Staff"}
+                {staffMembers.length} {t("uiStaff")}
               </p>
             </div>
 
@@ -194,7 +194,7 @@ export function ClinicDetailsView({
                 {t.consultingPhysicians}
               </span>
               <p className="text-lg sm:text-xl font-black text-[var(--brand-text)]">
-                {clinicDoctors.length} {language === "bn" ? "জন বিশেষজ্ঞ" : "Specialists"}
+                {clinicDoctors.length} {t("uiSpecialists2")}
               </p>
             </div>
 
@@ -203,7 +203,7 @@ export function ClinicDetailsView({
                 {t.enrolledPatients}
               </span>
               <p className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
-                {clinic._count.patients} {language === "bn" ? "জন রোগী" : "Patients"}
+                {clinic._count.patients} {t("rolePatientsVariant2")}
               </p>
             </div>
 
@@ -212,7 +212,7 @@ export function ClinicDetailsView({
                 {t.prescriptions}
               </span>
               <p className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
-                {clinic._count.prescriptions} {language === "bn" ? "টি প্রদত্ত" : "Issued"}
+                {clinic._count.prescriptions} {t("uiIssued2")}
               </p>
             </div>
           </div>
@@ -226,7 +226,7 @@ export function ClinicDetailsView({
           <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
             <MapPin className="w-5 h-5 text-[var(--brand-primary)]" />
             <h2 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
-              {language === "bn" ? "চেম্বারের ঠিকানা ও যোগাযোগের তথ্য" : "Chamber Address & Contact Information"}
+              {t("uiChamberAddressContactInformation")}
             </h2>
           </div>
 
@@ -234,17 +234,17 @@ export function ClinicDetailsView({
             <div className="space-y-1.5 p-4 rounded-2xl bg-[var(--bg-subtle)]/70 border border-[var(--border-subtle)]">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-                {language === "bn" ? "চেম্বারের অবস্থান" : "Chamber Physical Location"}
+                {t("uiChamberPhysicalLocation")}
               </span>
               <p className="font-semibold text-slate-900 dark:text-white leading-relaxed">
-                {clinic.address || (language === "bn" ? "চেম্বারের ঠিকানা ফাইলে নিবন্ধিত" : "Chamber address available on prescription voucher")}
+                {clinic.address || (t("uiChamberAddressAvailableOnPrescription"))}
               </p>
             </div>
 
             <div className="space-y-1.5 p-4 rounded-2xl bg-[var(--bg-subtle)]/70 border border-[var(--border-subtle)]">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                 <Phone className="w-3.5 h-3.5 text-slate-400" />
-                {language === "bn" ? "সরাসরি হটলাইন ও জরুরি সেবা" : "Direct Hotline & Emergency"}
+                {t("uiDirectHotlineEmergency")}
               </span>
               <p className="font-semibold text-slate-900 dark:text-white">
                 {clinic.contactPhone ? (
@@ -252,7 +252,7 @@ export function ClinicDetailsView({
                     {clinic.contactPhone}
                   </a>
                 ) : (
-                  language === "bn" ? "সিরিয়াল নিশ্চিতের পর হটলাইন প্রদান করা হবে" : "Hotline provided upon serial confirmation"
+                  t("uiHotlineProvidedUponSerialConfirmation")
                 )}
               </p>
             </div>
@@ -260,7 +260,7 @@ export function ClinicDetailsView({
             <div className="space-y-1.5 p-4 rounded-2xl bg-[var(--bg-subtle)]/70 border border-[var(--border-subtle)]">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                 <Mail className="w-3.5 h-3.5 text-slate-400" />
-                {language === "bn" ? "প্রশাসনিক যোগাযোগ" : "Administrative Contact"}
+                {t("uiAdministrativeContact")}
               </span>
               <p className="font-semibold text-slate-900 dark:text-white truncate">
                 {clinic.contactEmail ? (
@@ -268,7 +268,7 @@ export function ClinicDetailsView({
                     {clinic.contactEmail}
                   </a>
                 ) : (
-                  language === "bn" ? "সেন্ট্রাল হেল্পডেস্কে যোগাযোগ করুন" : "Inquiries via central helpdesk"
+                  t("uiInquiriesViaCentralHelpdesk")
                 )}
               </p>
             </div>
@@ -278,15 +278,15 @@ export function ClinicDetailsView({
           <div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-medium text-slate-600 dark:text-slate-400">
             <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-              {language === "bn" ? "বিএমডিসি অনুমোদিত প্রেসক্রিপশন প্রিন্টিং" : "BMDC Verified Prescription Printing"}
+              {t("uiBmdcVerifiedPrescriptionPrinting")}
             </span>
             <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
               <Tv className="w-4 h-4 text-[var(--brand-primary)]" />
-              {language === "bn" ? "লাইভ চেম্বার ওয়েটিং টিভি ডিসপ্লে" : "Live Chamber Waiting TV Display"}
+              {t("uiLiveChamberWaitingTVDisplay")}
             </span>
             <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
               <ShieldCheck className="w-4 h-4 text-sky-500" />
-              {language === "bn" ? "নিরাপদ ডিজিটাল EMR স্টোরেজ" : "HIPAA Aligned EMR Storage"}
+              {t("uiHipaaAlignedEMRStorage")}
             </span>
           </div>
         </div>
@@ -298,7 +298,7 @@ export function ClinicDetailsView({
               <div className="flex items-center gap-2">
                 <Users className="w-5 h-5 text-[var(--brand-primary)]" />
                 <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                  {language === "bn" ? "ক্লিনিক অপারেশন ও ফ্রন্ট ডেস্ক কর্মী" : "Clinic Operations & Front Desk Staff"}
+                  {t("uiClinicOperationsFrontDeskStaff")}
                 </h2>
               </div>
               <p className="text-xs text-slate-500">
@@ -312,7 +312,7 @@ export function ClinicDetailsView({
               href="/staff"
               className="text-xs font-bold text-[var(--brand-text)] hover:underline flex items-center gap-1"
             >
-              <span>{language === "bn" ? "সকল কর্মীর তালিকা দেখুন" : "View Global Staff Directory"}</span>
+              <span>{t("uiViewGlobalStaffDirectory")}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -350,8 +350,8 @@ export function ClinicDetailsView({
                           </h3>
                           <p className="text-[11px] text-slate-500 truncate">
                             {isAdmin
-                              ? (language === "bn" ? "ক্লিনিক প্রশাসক ও পরিচালনা" : "Clinic Administrator & Operations")
-                              : (language === "bn" ? "ফ্রন্ট ডেস্ক ও ট্রায়াজ অভ্যর্থনাকারী" : "Front Desk & Triage Receptionist")}
+                              ? (t("uiClinicAdministratorOperations"))
+                              : (t("uiFrontDeskTriageReceptionist"))}
                           </p>
                         </div>
                       </div>
@@ -370,16 +370,12 @@ export function ClinicDetailsView({
                     {/* Responsibilities */}
                     <div className="p-3 rounded-xl bg-[var(--bg-subtle)]/70 text-xs text-slate-600 dark:text-slate-300 space-y-1">
                       <p className="font-semibold text-[11px] text-slate-400 uppercase tracking-wider">
-                        {language === "bn" ? "প্রধান দায়িত্বসমূহ:" : "Key Responsibilities:"}
+                        {t("uiKeyResponsibilities")}
                       </p>
                       <p>
                         {isStaff
-                          ? (language === "bn"
-                              ? "রোগী চেক-ইন, ভাইটাল সাইন ট্রায়াজ, চেম্বার টোকেন কলিং ও অভ্যর্থনা দায়িত্ব।"
-                              : "Patient check-in, vital signs triage, chamber calling tokens & receptionist duties.")
-                          : (language === "bn"
-                              ? "চিকিৎসক অনবোর্ডিং, সময়সূচি ব্যবস্থাপনা ও কার্যক্রম তদারকি।"
-                              : "Doctor onboarding, clinic schedule management & operational oversight.")}
+                          ? (t("rolePatientCheckInVitalSignsTriageChamberCallingTokensAndReceptionistDuties"))
+                          : (t("roleDoctorOnboardingClinicScheduleManagementAndOperationalOversight"))}
                       </p>
                     </div>
 
@@ -408,12 +404,10 @@ export function ClinicDetailsView({
             <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-dashed border-[var(--border-default)] text-center space-y-2">
               <Users className="w-8 h-8 text-slate-400 mx-auto" />
               <h3 className="font-bold text-slate-900 dark:text-white">
-                {language === "bn" ? "এই ক্লিনিকে এখনও কোনো কর্মী নিযুক্ত করা হয়নি" : "No staff members assigned to this clinic yet"}
+                {t("uiNoStaffMembersAssignedTo")}
               </h3>
               <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                {language === "bn"
-                  ? "হাসপাতাল প্রশাসক কন্ট্রোল প্যানেল থেকে রিসেপশনিস্ট ও কোঅর্ডিনেটর যোগ করতে পারেন।"
-                  : "Hospital administrators can register receptionists and front desk coordinators from the administrative control panel."}
+                {t("uiHospitalAdministratorsCanRegisterReceptionists")}
               </p>
             </div>
           )}
@@ -440,7 +434,7 @@ export function ClinicDetailsView({
               href={`/doctors?clinic=${encodeURIComponent(clinic.slug)}`}
               className="text-xs font-bold text-[var(--brand-text)] hover:underline flex items-center gap-1"
             >
-              <span>{language === "bn" ? "সম্পূর্ণ সাক্ষাতের সময়সূচি দেখুন" : "View Full Visiting Schedules"}</span>
+              <span>{t("uiViewFullVisitingSchedules")}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -488,7 +482,7 @@ export function ClinicDetailsView({
 
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                      {language === "bn" ? "চেম্বার সক্রিয়" : "Chamber Active"}
+                      {t("uiChamberActive")}
                     </span>
                   </div>
 
@@ -496,21 +490,21 @@ export function ClinicDetailsView({
                   <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] text-xs text-slate-600 dark:text-slate-300 space-y-2">
                     <div className="flex items-center gap-2">
                       <Building2 className="w-3.5 h-3.5 text-[var(--brand-primary)] shrink-0" />
-                      <span>{language === "bn" ? "চেম্বার:" : "Chamber:"} <strong>{doc.chamberAddress || (language === "bn" ? "ডায়াগনস্টিক ও পরামর্শক ব্লক" : "Diagnostic & Consultation Block")}</strong></span>
+                      <span>{t("uiChamber")} <strong>{doc.chamberAddress || (t("uiDiagnosticConsultationBlock"))}</strong></span>
                     </div>
                     {doc.bmdcRegNo && (
                       <div className="flex items-center gap-2 text-[11px] text-slate-500">
                         <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                        <span>{language === "bn" ? "বিএমডিসি রেজি নং:" : "BMDC Registration:"} <strong className="font-mono">{doc.bmdcRegNo}</strong></span>
+                        <span>{t("uiBmdcRegistration")} <strong className="font-mono">{doc.bmdcRegNo}</strong></span>
                       </div>
                     )}
                   </div>
 
                   <div className="pt-2 flex items-center justify-between gap-3">
                     <div className="text-xs">
-                      <span className="text-slate-400">{language === "bn" ? "পরামর্শ ফি: " : "Consultation Fee: "}</span>
+                      <span className="text-slate-400">{t("uiConsultationFee")}</span>
                       <strong className="text-slate-900 dark:text-white font-black font-mono">
-                        {doc.newPatientFee ? `$${doc.newPatientFee}` : (language === "bn" ? "স্ট্যান্ডার্ড ওপিডি" : "Standard OPD")}
+                        {doc.newPatientFee ? `$${doc.newPatientFee}` : (t("uiStandardOPD"))}
                       </strong>
                     </div>
 
@@ -529,12 +523,10 @@ export function ClinicDetailsView({
             <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-dashed border-[var(--border-default)] text-center space-y-2">
               <Stethoscope className="w-8 h-8 text-slate-400 mx-auto" />
               <h3 className="font-bold text-slate-900 dark:text-white">
-                {language === "bn" ? "এই চেম্বারে এখনও কোনো চিকিৎসক নিযুক্ত করা হয়নি" : "No physicians assigned to this chamber yet"}
+                {t("uiNoPhysiciansAssignedToThis")}
               </h3>
               <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                {language === "bn"
-                  ? "চিকিৎসকবৃন্দ তাদের চেম্বার প্র্যাকটিস নিবন্ধন করতে পারেন বা অ্যাডমিন কর্তৃক নিযুক্ত হতে পারেন।"
-                  : "Physicians can register their chamber practice or be assigned by clinic administration."}
+                {t("uiPhysiciansCanRegisterTheirChamber")}
               </p>
             </div>
           )}

@@ -230,7 +230,7 @@ export function OrganizationManager() {
               {metrics.totalOrganizations}
             </div>
             <p className="text-[11px] text-slate-400">
-              {language === "bn" ? "পৃথক মাল্টি-টেন্যান্ট ক্লিনিকসমূহ" : "Partitioned multi-tenant clinics"}
+              {t("uiPartitionedMultiTenantClinics")}
             </p>
           </div>
 
@@ -241,11 +241,11 @@ export function OrganizationManager() {
             </div>
             <div className="text-3xl font-black text-slate-900 dark:text-white">
               {metrics.totalDoctors} <span className="text-xs font-normal text-slate-400">
-                {language === "bn" ? "ডাক্তার" : "Docs"} / {metrics.totalStaff} {language === "bn" ? "স্টাফ" : "Staff"}
+                {t("uiDocs")} / {metrics.totalStaff} {t("uiStaff2")}
               </span>
             </div>
             <p className="text-[11px] text-slate-400">
-              {language === "bn" ? "সক্রিয় চিকিৎসা পেশাজীবী" : "Active medical professionals"}
+              {t("uiActiveMedicalProfessionals")}
             </p>
           </div>
 
@@ -258,7 +258,7 @@ export function OrganizationManager() {
               {metrics.totalPrescriptions}
             </div>
             <p className="text-[11px] text-slate-400">
-              {language === "bn" ? "সকল সংযুক্ত ক্লিনিক জুড়ে" : "Across all connected clinics"}
+              {t("uiAcrossAllConnectedClinics")}
             </p>
           </div>
 
@@ -272,7 +272,7 @@ export function OrganizationManager() {
               <span className="text-xs font-normal text-slate-400">/mo</span>
             </div>
             <p className="text-[11px] text-slate-400">
-              {language === "bn" ? "আনুমানিক নিয়মিত মাসিক সফটওয়্যার আয়" : "Estimated recurring software revenue"}
+              {t("uiEstimatedRecurringSoftwareRevenue")}
             </p>
           </div>
         </div>
@@ -316,7 +316,7 @@ export function OrganizationManager() {
             onClick={() => setApprovalSuccess(null)}
             className="text-emerald-600 hover:text-emerald-800 dark:hover:text-emerald-200 cursor-pointer text-xs"
           >
-            {language === "bn" ? "বন্ধ করুন" : "Dismiss"}
+            {t("uiDismiss")}
           </button>
         </div>
       )}
@@ -332,7 +332,7 @@ export function OrganizationManager() {
               : "bg-[var(--bg-surface)] border border-[var(--border-default)] text-slate-600 dark:text-slate-300 hover:bg-[var(--bg-subtle)]"
           }`}
         >
-          {language === "bn" ? "সকল ক্লিনিক" : "All Clinics"} ({orgs.length})
+          {t("uiAllClinics")} ({orgs.length})
         </button>
 
         <button
@@ -374,7 +374,7 @@ export function OrganizationManager() {
               : "bg-[var(--bg-surface)] border border-[var(--border-default)] text-slate-600 dark:text-slate-300 hover:bg-[var(--bg-subtle)]"
           }`}
         >
-          {language === "bn" ? "ফ্রি ট্রায়াল" : "Free Trial"} ({orgs.filter((o) => o.status === "TRIAL").length})
+          {t("uiFreeTrial")} ({orgs.filter((o) => o.status === "TRIAL").length})
         </button>
 
         <button
@@ -395,22 +395,22 @@ export function OrganizationManager() {
         {loading ? (
           <div className="p-12 text-center text-xs text-slate-400">
             <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--brand-primary)] mb-2" />
-            <span>{language === "bn" ? "ক্লিনিক ডেটা লোড হচ্ছে..." : "Loading SaaS clinic tenants..."}</span>
+            <span>{t("uiLoadingSaaSClinicTenants")}</span>
           </div>
         ) : orgs.length === 0 ? (
           <div className="p-12 text-center text-xs text-slate-400">
-            {language === "bn" ? "কোনো ক্লিনিক পাওয়া যায়নি।" : "No clinics configured yet. Click Provision New Clinic to get started."}
+            {t("uiNoClinicsConfiguredYetClick")}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-[var(--border-subtle)] bg-[var(--bg-subtle)]/50 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                  <th className="py-3.5 px-4 sm:px-6">{language === "bn" ? "ক্লিনিক / সংস্থা" : "Clinic / Organization"}</th>
-                  <th className="py-3.5 px-4">{language === "bn" ? "আইডেন্টিফায়ার স্ল্যাগ" : "Identifier Slug"}</th>
-                  <th className="py-3.5 px-4">{language === "bn" ? "প্যাকেজ প্ল্যান" : "SaaS Tier Plan"}</th>
+                  <th className="py-3.5 px-4 sm:px-6">{t("uiClinicOrganization")}</th>
+                  <th className="py-3.5 px-4">{t("uiIdentifierSlug")}</th>
+                  <th className="py-3.5 px-4">{t("uiSaasTierPlan")}</th>
                   <th className="py-3.5 px-4">{t.statusLabel}</th>
-                  <th className="py-3.5 px-4">{language === "bn" ? "ডাক্তার / ব্যবহারকারী" : "Doctors / Users"}</th>
+                  <th className="py-3.5 px-4">{t("roleDoctorsUsers")}</th>
                   <th className="py-3.5 px-4">{t.prescriptions}</th>
                   <th className="py-3.5 px-4 text-right">{t.actions}</th>
                 </tr>
@@ -432,7 +432,7 @@ export function OrganizationManager() {
                           {org.name}
                         </strong>
                         <span className="text-[11px] text-slate-400">
-                          {org.contactEmail || org.contactPhone || (language === "bn" ? "কোনো তথ্য নেই" : "No contact info")}
+                          {org.contactEmail || org.contactPhone || (t("uiNoContactInfo"))}
                         </span>
                       </div>
                     </td>
@@ -445,7 +445,7 @@ export function OrganizationManager() {
                           {org.plan.name} (${org.plan.price}/mo)
                         </span>
                       ) : (
-                        <span className="text-slate-400 italic">{language === "bn" ? "কোনো প্ল্যান নেই" : "No plan"}</span>
+                        <span className="text-slate-400 italic">{t("uiNoPlan")}</span>
                       )}
                     </td>
                     <td className="py-3.5 px-4 whitespace-nowrap">
@@ -469,10 +469,10 @@ export function OrganizationManager() {
                       )}
                     </td>
                     <td className="py-3.5 px-4 whitespace-nowrap text-slate-700 dark:text-slate-300">
-                      <strong>{org._count.users}</strong> {language === "bn" ? "জন সদস্য" : "members"}
+                      <strong>{org._count.users}</strong> {t("uiMembers2")}
                     </td>
                     <td className="py-3.5 px-4 whitespace-nowrap text-slate-700 dark:text-slate-300">
-                      <strong>{org._count.prescriptions}</strong> {language === "bn" ? "টি তৈরি হয়েছে" : "generated"}
+                      <strong>{org._count.prescriptions}</strong> {t("uiGenerated")}
                     </td>
                     <td className="py-3.5 px-4 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1.5">
@@ -488,7 +488,7 @@ export function OrganizationManager() {
                             ) : (
                               <CheckCircle2 className="w-3.5 h-3.5" />
                             )}
-                            <span>{language === "bn" ? "অনুমোদন ও সক্রিয় করুন" : "Approve & Activate"}</span>
+                            <span>{t("uiApproveActivate")}</span>
                           </button>
                         )}
                         <button
@@ -515,7 +515,7 @@ export function OrganizationManager() {
           <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="font-bold text-slate-900 dark:text-white text-base">
-                {editingOrg ? `${language === "bn" ? "ক্লিনিক পরিচালনা" : "Manage Clinic"}: ${editingOrg.name}` : (language === "bn" ? "নতুন ক্লিনিক যুক্ত করুন" : "Provision New Clinic Organization")}
+                {editingOrg ? `${t("uiManageClinic")}: ${editingOrg.name}` : (t("uiProvisionNewClinicOrganization"))}
               </h3>
               <button
                 type="button"
@@ -537,7 +537,7 @@ export function OrganizationManager() {
                 <div className="grid sm:grid-cols-1 gap-3">
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      {language === "bn" ? "ক্লিনিক / হাসপাতালের নাম *" : "Clinic / Hospital Name *"}
+                      {t("uiClinicHospitalName2")}
                     </label>
                     <input
                       type="text"
@@ -556,7 +556,7 @@ export function OrganizationManager() {
 
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      {language === "bn" ? "টেন্যান্ট স্ল্যাগ *" : "Tenant Slug Identifier *"}
+                      {t("uiTenantSlugIdentifier")}
                     </label>
                     <input
                       type="text"
@@ -572,7 +572,7 @@ export function OrganizationManager() {
                 <div className="grid sm:grid-cols-1 gap-3">
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      {language === "bn" ? "প্যাকেজ প্ল্যান" : "SaaS Pricing Plan"}
+                      {t("uiSaasPricingPlan")}
                     </label>
                     <CustomSelect
                       value={planId}
@@ -581,7 +581,7 @@ export function OrganizationManager() {
                         value: p.id,
                         label: `${p.name} ($${p.price}/mo)`,
                       }))}
-                      placeholder={language === "bn" ? "প্যাকেজ নির্বাচন..." : "Select pricing plan..."}
+                      placeholder={t("uiSelectPricingPlan")}
                       searchable={false}
                     />
                   </div>
@@ -594,10 +594,10 @@ export function OrganizationManager() {
                       value={status}
                       onChange={(val) => setStatus(val as "ACTIVE" | "TRIAL" | "SUSPENDED" | "PENDING_APPROVAL")}
                       options={[
-                        { value: "ACTIVE", label: language === "bn" ? "সক্রিয় (ACTIVE)" : "ACTIVE", badge: "Live" },
-                        { value: "TRIAL", label: language === "bn" ? "ট্রায়াল (TRIAL)" : "TRIAL (14 Days)", badge: "Trial" },
-                        { value: "PENDING_APPROVAL", label: language === "bn" ? "অনুমোদন অপেক্ষমান" : "PENDING_APPROVAL", badge: "Review" },
-                        { value: "SUSPENDED", label: language === "bn" ? "স্থগিত (SUSPENDED)" : "SUSPENDED", badge: "Locked" },
+                        { value: "ACTIVE", label: t("uiActive"), badge: "Live" },
+                        { value: "TRIAL", label: t("uiTrialDays"), badge: "Trial" },
+                        { value: "PENDING_APPROVAL", label: t("uiPendingAPPROVAL"), badge: "Review" },
+                        { value: "SUSPENDED", label: t("uiSuspended"), badge: "Locked" },
                       ]}
                       searchable={false}
                     />
@@ -659,7 +659,7 @@ export function OrganizationManager() {
                   disabled={submitting}
                   className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold cursor-pointer hover:opacity-90 disabled:opacity-50 transition shadow-xs"
                 >
-                  {submitting ? (language === "bn" ? "সংরক্ষণ হচ্ছে..." : "Saving...") : editingOrg ? (language === "bn" ? "হালনাগাদ করুন" : "Update Clinic") : (language === "bn" ? "ক্লিনিক তৈরি করুন" : "Create Organization")}
+                  {submitting ? (t("uiSaving")) : editingOrg ? (t("uiUpdateClinic")) : (t("uiCreateOrganization"))}
                 </button>
               </div>
             </form>

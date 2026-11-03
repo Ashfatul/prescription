@@ -261,7 +261,7 @@ export function RolePermissionManager() {
             className="flex items-center gap-1.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] px-3 py-2 text-xs font-semibold text-[var(--text-secondary)] transition hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] cursor-pointer"
           >
             <Code className="h-3.5 w-3.5 text-[var(--brand-primary)]" />
-            {language === "bn" ? "ডেভেলপার গাইড" : "Developer Guide"}
+            {t("uiDeveloperGuide")}
             {showDevGuide ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           </button>
 
@@ -271,7 +271,7 @@ export function RolePermissionManager() {
             title="Reset to recommended default baseline"
           >
             <RotateCcw className="h-3.5 w-3.5" />
-            {language === "bn" ? "ডিফল্ট রিসেট" : "Reset Defaults"}
+            {t("uiResetDefaults")}
           </button>
 
           {hasUnsavedChanges && (
@@ -297,7 +297,7 @@ export function RolePermissionManager() {
             ) : (
               <Save className="h-4 w-4" />
             )}
-            {saving ? (language === "bn" ? "সংরক্ষণ হচ্ছে..." : "Saving...") : hasUnsavedChanges ? (language === "bn" ? "সংরক্ষণ করুন *" : "Save Changes *") : t.saved}
+            {saving ? (t("uiSaving")) : hasUnsavedChanges ? (t("uiSaveChanges")) : t.saved}
           </button>
         </div>
       </div>
@@ -338,31 +338,27 @@ export function RolePermissionManager() {
             <div className="space-y-3">
               <div>
                 <h3 className="text-sm font-bold text-teal-950 dark:text-teal-200">
-                  {language === "bn"
-                    ? "ডেভেলপার নির্দেশিকা: ভবিষ্যতের ফিচারের জন্য নতুন পারমিশন যুক্তকরণ"
-                    : "Developer Guide: Adding Future Feature Permissions"}
+                  {t("uiDeveloperGuideAddingFutureFeature")}
                 </h3>
                 <p className="mt-0.5 text-xs text-teal-800/80 dark:text-teal-400/80">
-                  {language === "bn"
-                    ? "আমাদের পারমিশন আর্কিটেকচার সেলফ-রেজিস্টারিং স্কিমা ব্যবহার করে। নতুন ফিচার বা এন্ডপয়েন্ট যোগ করার সময় নিচের ধাপগুলো অনুসরণ করুন।"
-                    : "Our permission architecture uses a zero-boilerplate, self-registering schema. Follow these instructions whenever adding a new feature or endpoint."}
+                  {t("uiOurPermissionArchitectureUsesA")}
                 </p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl border border-teal-500/20 bg-white/70 p-3.5 dark:bg-slate-900/60">
                   <span className="font-mono text-xs font-bold text-teal-700 dark:text-teal-400">
-                    {language === "bn" ? "ধাপ ১: রেজিস্ট্রি খুলুন" : "Step 1: Open Registry"}
+                    {t("uiStepOpenRegistry")}
                   </span>
                   <p className="mt-1 text-xs text-[var(--text-secondary)]">
-                    {language === "bn" ? "ফাইলটি ওপেন করুন: " : "Navigate to "}
+                    {t("uiNavigateTo")}
                     <code className="rounded bg-teal-100 px-1 py-0.5 text-[11px] font-mono dark:bg-teal-950">src/lib/auth/permissions.ts</code>.
                   </p>
                 </div>
 
                 <div className="rounded-2xl border border-teal-500/20 bg-white/70 p-3.5 dark:bg-slate-900/60">
                   <span className="font-mono text-xs font-bold text-teal-700 dark:text-teal-400">
-                    {language === "bn" ? "ধাপ ২: পারমিশন যুক্ত করুন" : "Step 2: Add Definition"}
+                    {t("uiStepAddDefinition")}
                   </span>
                   <p className="mt-1 text-xs text-[var(--text-secondary)]">
                     {language === "bn" ? (
@@ -380,7 +376,7 @@ export function RolePermissionManager() {
 
                 <div className="rounded-2xl border border-teal-500/20 bg-white/70 p-3.5 dark:bg-slate-900/60">
                   <span className="font-mono text-xs font-bold text-teal-700 dark:text-teal-400">
-                    {language === "bn" ? "ধাপ ৩: স্বয়ংক্রিয় প্রদর্শন" : "Step 3: Auto-Discovery"}
+                    {t("uiStepAutoDiscovery")}
                   </span>
                   <p className="mt-1 text-xs text-[var(--text-secondary)]">
                     {language === "bn" ? (
@@ -443,7 +439,7 @@ export function RolePermissionManager() {
 
               <div className="mt-4">
                 <div className="flex items-center justify-between text-[11px] text-[var(--text-secondary)]">
-                  <span>{language === "bn" ? "বরাদ্দকৃত অনুমতি" : "Assigned Permissions"}</span>
+                  <span>{t("uiAssignedPermissions")}</span>
                   <span className="font-bold text-[var(--text-primary)]">
                     {assignedCount} / {totalCount}
                   </span>
@@ -470,7 +466,7 @@ export function RolePermissionManager() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={language === "bn" ? "অনুমতির নাম, কিওয়ার্ড বা বিবরণ দিয়ে খুঁজুন..." : "Search permissions by capability name, keyword, key (e.g. 'medicines:create'), or description..."}
+              placeholder={t("uiSearchPermissionsByCapabilityName")}
               className="w-full min-h-[44px] rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-app)] py-2.5 input-icon-left !pl-11 pr-10 text-xs font-medium text-[var(--text-primary)] placeholder-[var(--text-muted)] transition focus:border-[var(--brand-primary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20"
             />
             {searchQuery && (
@@ -516,10 +512,10 @@ export function RolePermissionManager() {
         <div className="flex flex-col gap-2 pt-2 border-t border-[var(--border-subtle)]">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              {language === "bn" ? "ক্যাটাগরি ফিল্টার" : "Filter by Category"}
+              {t("uiFilterByCategory")}
             </span>
             <span className="text-[11px] text-[var(--text-muted)]">
-              {selectedCategory === "ALL" ? (language === "bn" ? "সকল ক্যাটাগরি প্রদর্শিত হচ্ছে" : "Showing all categories") : `${language === "bn" ? "ফিল্টারকৃত" : "Filtered"}: ${selectedCategory}`}
+              {selectedCategory === "ALL" ? (t("uiShowingAllCategories")) : `${t("uiFiltered")}: ${selectedCategory}`}
             </span>
           </div>
 
@@ -580,7 +576,7 @@ export function RolePermissionManager() {
         {/* Grouped Permissions Content */}
         {Object.entries(groupedPermissions).length === 0 ? (
           <div className="p-12 text-center text-xs text-[var(--text-muted)]">
-            {language === "bn" ? "কোনো পারমিশন পাওয়া যায়নি।" : "No permissions matching your search filters."}
+            {t("uiNoPermissionsMatchingYourSearch")}
           </div>
         ) : (
           Object.entries(groupedPermissions).map(([category, perms]) => (
@@ -593,7 +589,7 @@ export function RolePermissionManager() {
                     {category}
                   </span>
                   <span className="rounded-md bg-[var(--bg-subtle)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">
-                    {perms.length} {language === "bn" ? "টি সুবিধা" : "capabilities"}
+                    {perms.length} {t("uiCapabilities")}
                   </span>
                 </div>
 
@@ -703,7 +699,7 @@ export function RolePermissionManager() {
               disabled={saving}
               className="flex items-center gap-2 rounded-xl bg-[var(--brand-primary)] px-4 py-1.5 text-xs font-bold text-white shadow-sm hover:brightness-110 cursor-pointer"
             >
-              {saving ? (language === "bn" ? "সংরক্ষণ হচ্ছে..." : "Saving...") : t.saveChangesBtn}
+              {saving ? (t("uiSaving")) : t.saveChangesBtn}
             </button>
           </div>
         </div>

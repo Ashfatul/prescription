@@ -178,7 +178,7 @@ export function TrialCountdownBanner() {
                     <>
                       <span className="text-xs text-slate-400">•</span>
                       <span className="text-xs text-slate-500">
-                        {sub.plan.name} (${sub.plan.price}/{language === "bn" ? "মাস" : "mo"})
+                        {sub.plan.name} (${sub.plan.price}/{t("uiMo")})
                       </span>
                     </>
                   )}

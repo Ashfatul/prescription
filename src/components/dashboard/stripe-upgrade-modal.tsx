@@ -236,10 +236,10 @@ export function StripeUpgradeModal({
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                {language === "bn" ? "ক্লিনিক সাবস্ক্রিপশন আপগ্রেড" : "Upgrade Clinic Subscription"}
+                {t("uiUpgradeClinicSubscription")}
               </h3>
               <p className="text-xs text-slate-500">
-                {organizationName ? `${organizationName}` : (language === "bn" ? "সীমাহীন ক্লিনিকাল অপারেশন সক্রিয় করুন" : "Activate unlimited clinical operations")}
+                {organizationName ? `${organizationName}` : (t("uiActivateUnlimitedClinicalOperations"))}
               </p>
             </div>
           </div>
@@ -261,7 +261,7 @@ export function StripeUpgradeModal({
                 <CheckCircle2 className="w-10 h-10" />
               </div>
               <h4 className="text-xl font-bold text-slate-900 dark:text-white">
-                {language === "bn" ? "সাবস্ক্রিপশন সক্রিয় হয়েছে!" : "Subscription Activated!"}
+                {t("uiSubscriptionActivated")}
               </h4>
               <p className="text-sm text-slate-600 dark:text-slate-300 max-w-md mx-auto">
                 {language === "bn"
@@ -339,7 +339,7 @@ export function StripeUpgradeModal({
                         {t.payWithStripeCheckout}
                       </h5>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                        {language === "bn" ? "স্ট্রাইপের নিরাপদ হোস্টেড পেজে পেমেন্ট করুন" : "Pay via Stripe's authentic secure checkout page (Apple Pay, Google Pay & Cards)"}
+                        {t("uiPayViaStripeSAuthentic")}
                       </p>
                     </div>
                   </div>
@@ -357,7 +357,7 @@ export function StripeUpgradeModal({
                   {initiatingStripe ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      {language === "bn" ? "স্ট্রাইপ এপিআই সংযোগ করা হচ্ছে..." : "Connecting to Stripe API..."}
+                      {t("uiConnectingToStripeAPI")}
                     </>
                   ) : (
                     <>
@@ -383,7 +383,7 @@ export function StripeUpgradeModal({
                   <div className="flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-[var(--brand-primary)]" />
                     <span className="text-xs font-bold text-slate-900 dark:text-white">
-                      {language === "bn" ? "সরাসরি স্যান্ডবক্স কার্ড" : "Direct Sandbox Card"}
+                      {t("uiDirectSandboxCard")}
                     </span>
                     <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold border border-amber-500/20">
                       Sandbox Mode
@@ -508,7 +508,7 @@ export function StripeUpgradeModal({
                   {isPending ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>{language === "bn" ? "প্রক্রিয়াকরণ করা হচ্ছে..." : "Processing Stripe Sandbox..."}</span>
+                      <span>{t("uiProcessingStripeSandbox")}</span>
                     </>
                   ) : (
                     <>

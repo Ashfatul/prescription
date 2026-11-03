@@ -73,7 +73,7 @@ export function ClinicsHero({
             <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">
               <Clock className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
               <span>
-                {language === "bn" ? "জরুরি হটলাইন:" : "Emergency Service:"}{" "}
+                {t("uiEmergencyService")}{" "}
                 <strong className="text-[var(--text-primary)]">{emergencyHotline}</strong>
               </span>
             </div>

@@ -155,28 +155,24 @@ export function PrintablePrescriptionView({
   const hospitalName =
     tplContent.hospitalName ||
     doctor.hospitalAffiliation ||
-    (isBn ? "মেট্রোপলিটন স্পেশালাইজড হাসপাতাল" : "Metropolitan Specialized Hospital");
+    (t("uiMetropolitanSpecializedHospital"));
   const hospitalTagline =
     tplContent.hospitalTagline ||
-    (isBn
-      ? "উন্নত চিকিৎসা সেবা ও আন্তরিক রোগী পরিচর্যার বিশ্বস্ত প্রতিষ্ঠান"
-      : "Center of Medical Excellence & Compassionate Patient Care");
+    (t("uiCenterOfMedicalExcellenceCompassionate"));
   const hospitalAddress =
     tplContent.hospitalAddress ||
     doctor.chamber ||
-    (isBn ? "মেডিকেল এনক্লেভ, ঢাকা, বাংলাদেশ" : "Medical Enclave, Dhaka, Bangladesh");
+    (t("uiMedicalEnclaveDhakaBangladesh"));
   const hospitalPhone =
     tplContent.hospitalPhone ||
     doctor.contactPhone ||
     "+880 2-8901234 / 10678";
 
-  const defaultDisclaimer = isBn
-    ? "এটি একটি আইনগতভাবে বৈধ কম্পিউটার জেনারেটেড ডিজিটাল প্রেসক্রিপশন। যেকোনো হঠাৎ জরুরি অবস্থা বা স্বাস্থ্যের অবনতিতে অবিলম্বে নিকটস্থ হাসপাতালের জরুরি বিভাগে যোগাযোগ করুন।"
-    : "This is a legally valid computer-generated medical prescription. In case of sudden emergency or deterioration, report immediately to the nearest hospital emergency room.";
+  const defaultDisclaimer = t("uiThisIsALegallyValid");
 
   const disclaimer = tplContent.disclaimer || defaultDisclaimer;
 
-  const formattedDate = new Date(displayDate).toLocaleDateString(isBn ? "bn-BD" : "en-US", {
+  const formattedDate = new Date(displayDate).toLocaleDateString(t("uiEnUS"), {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -282,12 +278,12 @@ export function PrintablePrescriptionView({
                   )}
                   {doctor.bmdcRegNo && (
                     <p className="mt-0.5 text-[11px] font-mono opacity-70">
-                      {isBn ? "রেজি:" : "Reg:"} {doctor.bmdcRegNo}
+                      {t("uiReg")} {doctor.bmdcRegNo}
                     </p>
                   )}
                   {doctor.contactPhone && (
                     <p className="text-[11px] opacity-70">
-                      {isBn ? "ফোন:" : "Phone:"} {doctor.contactPhone}
+                      {t("uiPhone")} {doctor.contactPhone}
                     </p>
                   )}
                 </div>
@@ -318,7 +314,7 @@ export function PrintablePrescriptionView({
                   {tplContent.showHospitalContactBar !== false && (
                     <>
                       <p className="text-xs opacity-75">
-                        {isBn ? "হটলাইন:" : "Hotline:"} <span className="font-semibold">{hospitalPhone}</span>
+                        {t("uiHotline")} <span className="font-semibold">{hospitalPhone}</span>
                       </p>
                       {tplContent.hospitalEmail && (
                         <p className="text-[11px] opacity-70">{tplContent.hospitalEmail}</p>
@@ -344,17 +340,17 @@ export function PrintablePrescriptionView({
 
                 <div>
                   <span className="text-[11px] font-medium opacity-65">
-                    {isBn ? "লিঙ্গ / বয়স:" : "Gender / Age:"}
+                    {t("uiGenderAge")}
                   </span>
                   <p className="text-sm font-semibold">
-                    {patient.gender || (isBn ? "রোগী" : "Patient")}{" "}
-                    {patientAgeYears !== null ? `(${patientAgeYears} ${isBn ? "বছর" : "Yrs"})` : ""}
+                    {patient.gender || (t("rolePatient"))}{" "}
+                    {patientAgeYears !== null ? `(${patientAgeYears} ${t("uiYrs3")})` : ""}
                   </p>
                 </div>
 
                 <div>
                   <span className="text-[11px] font-medium opacity-65">
-                    {isBn ? "তারিখ ও সিরিয়াল:" : "Date & Serial:"}
+                    {t("uiDateSerialVariant2")}
                   </span>
                   <p className="text-sm font-semibold">
                     {formattedDate} {appointment ? `• #${appointment.serialNumber}` : ""}
@@ -363,7 +359,7 @@ export function PrintablePrescriptionView({
 
                 <div>
                   <span className="text-[11px] font-medium opacity-65">
-                    {isBn ? "প্রেসক্রিপশন নং:" : "Prescription No:"}
+                    {t("uiPrescriptionNo")}
                   </span>
                   <p className="text-xs font-mono font-bold break-all">
                     {id} • v{currentVersion}
@@ -431,7 +427,7 @@ export function PrintablePrescriptionView({
                 {clinicalInfo.medicalHistory && (
                   <div className="mb-5">
                     <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
-                      {isBn ? "পূর্ববর্তী চিকিৎসার ইতিহাস (Hx)" : "Medical History (Hx)"}
+                      {t("uiMedicalHistoryHx")}
                     </h3>
                     <div className="mt-1.5 whitespace-pre-line leading-relaxed text-xs font-medium bg-zinc-50/70 p-2.5 rounded-lg border border-zinc-200/80 print:bg-transparent print:border-zinc-300">
                       {clinicalInfo.medicalHistory}
@@ -443,7 +439,7 @@ export function PrintablePrescriptionView({
                 {clinicalInfo.allergies && (
                   <div className="mb-5">
                     <h3 className="text-xs font-bold uppercase tracking-wider text-rose-600 print:text-black">
-                      {isBn ? "ওষুধের অ্যালার্জি / সতর্কতা" : "Drug Allergies / Alerts"}
+                      {t("uiDrugAllergiesAlerts")}
                     </h3>
                     <div className="mt-1.5 whitespace-pre-line leading-relaxed text-xs font-semibold text-rose-900 bg-rose-50/70 p-2.5 rounded-lg border border-rose-200 print:bg-transparent print:text-black print:border-zinc-300">
                       {clinicalInfo.allergies}
@@ -464,7 +460,7 @@ export function PrintablePrescriptionView({
                 {tplContent.showDiagnosis !== false && clinicalInfo.diagnosis && (
                   <div className="mb-5">
                     <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
-                      {isBn ? "রোগ নির্ণয় / মূল্যায়ন (Dx)" : "Diagnosis / Assessment"}
+                      {t("uiDiagnosisAssessment")}
                     </h3>
                     <div className="mt-1.5 rounded-lg border border-teal-200 bg-teal-50/50 p-2.5 text-xs font-semibold text-teal-900 whitespace-pre-line leading-relaxed print:bg-transparent print:border-zinc-300">
                       {clinicalInfo.diagnosis}
@@ -497,7 +493,7 @@ export function PrintablePrescriptionView({
                 {tplContent.showClinicalNotes !== false && notes && (
                   <div className="mb-5">
                     <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
-                      {isBn ? "ক্লিনিক্যাল নোট" : "Clinical Notes"}
+                      {t("uiClinicalNotes")}
                     </h3>
                     <p className="mt-1.5 opacity-75">{notes}</p>
                   </div>
@@ -512,7 +508,7 @@ export function PrintablePrescriptionView({
                     ℞
                   </span>
                   <span className="text-xs font-bold uppercase tracking-widest opacity-60">
-                    {isBn ? "প্রেসক্রিপশন ও ওষুধ" : "Prescription & Medication"}
+                    {t("uiPrescriptionMedication")}
                   </span>
                 </div>
 
@@ -589,7 +585,7 @@ export function PrintablePrescriptionView({
                 {attachments && attachments.length > 0 && (
                   <div className="mt-6 rounded-xl border border-zinc-200/80 bg-zinc-50/70 p-3.5 print:bg-transparent print:border-zinc-300">
                     <h4 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
-                      📎 {isBn ? "সংযুক্ত ডায়াগনস্টিক রিপোর্ট ও রেকর্ডসমূহ" : "Attached Diagnostic Reports & Records"} ({attachments.length})
+                      📎 {t("uiAttachedDiagnosticReportsRecords")} ({attachments.length})
                     </h4>
                     <div className="mt-2 flex flex-wrap gap-2 text-xs">
                       {attachments.map((att) => (
@@ -656,7 +652,7 @@ export function PrintablePrescriptionView({
                   {doctor.specialization && <p className="text-[11px] opacity-75">{doctor.specialization}</p>}
                   {doctor.bmdcRegNo && (
                     <p className="text-[10px] font-mono opacity-70">
-                      {isBn ? "বিএমডিসি:" : "BMDC:"} {doctor.bmdcRegNo}
+                      {t("uiBmdc")} {doctor.bmdcRegNo}
                     </p>
                   )}
                   <p className="text-[10px] opacity-60">{t.doctorsSignature}</p>

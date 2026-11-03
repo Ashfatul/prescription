@@ -196,11 +196,11 @@ export function SaasPricingManager() {
       {loading ? (
         <div className="p-12 text-center text-xs text-slate-400">
           <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--brand-primary)] mb-2" />
-          <span>{language === "bn" ? "প্যাকেজ লোড হচ্ছে..." : "Loading SaaS plans..."}</span>
+          <span>{t("uiLoadingSaaSPlans")}</span>
         </div>
       ) : plans.length === 0 ? (
         <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs text-slate-400">
-          {language === "bn" ? "কোনো প্যাকেজ তৈরি করা হয়নি।" : "No pricing plans configured."}
+          {t("uiNoPricingPlansConfigured")}
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-3">
@@ -232,7 +232,7 @@ export function SaasPricingManager() {
                         : "bg-slate-200 text-slate-600"
                     }`}
                   >
-                    {plan.isActive ? (language === "bn" ? "ল্যান্ডিং পেজে সক্রিয়" : "Active on Landing Page") : (language === "bn" ? "লুকায়িত" : "Hidden")}
+                    {plan.isActive ? (t("uiActiveOnLandingPage")) : (t("uiHidden"))}
                   </span>
                 </div>
 
@@ -242,7 +242,7 @@ export function SaasPricingManager() {
                       ${plan.price}
                     </span>
                     <span className="text-xs text-slate-400 font-semibold">
-                      /{plan.billingCycle || (language === "bn" ? "মাস" : "month")}
+                      /{plan.billingCycle || (t("uiMonth"))}
                     </span>
                   </div>
                   {plan.description && (
@@ -255,7 +255,7 @@ export function SaasPricingManager() {
                 {/* Features list */}
                 <div className="pt-2 border-t border-[var(--border-subtle)] space-y-2 text-xs">
                   <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">
-                    {language === "bn" ? "প্যাকেজের অন্তর্ভুক্ত সুবিধা" : "Included Features"}
+                    {t("uiIncludedFeatures")}
                   </span>
                   <ul className="space-y-1.5">
                     {Array.isArray(plan.features) &&
@@ -277,7 +277,7 @@ export function SaasPricingManager() {
                   className="px-3.5 py-1.5 rounded-xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-xs font-bold text-slate-700 dark:text-slate-300 transition flex items-center gap-1 cursor-pointer"
                 >
                   <Edit className="w-3.5 h-3.5" />
-                  <span>{language === "bn" ? "প্যাকেজ সম্পাদনা" : "Edit Plan"}</span>
+                  <span>{t("uiEditPlan")}</span>
                 </button>
 
                 <button
@@ -300,7 +300,7 @@ export function SaasPricingManager() {
           <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="font-bold text-slate-900 dark:text-white text-base">
-                {editingPlan ? `${language === "bn" ? "প্যাকেজ সম্পাদনা" : "Edit Plan"}: ${editingPlan.name}` : (language === "bn" ? "নতুন প্রাইসিং প্ল্যান তৈরি করুন" : "Create SaaS Pricing Plan")}
+                {editingPlan ? `${t("uiEditPlan")}: ${editingPlan.name}` : (t("uiCreateSaaSPricingPlan"))}
               </h3>
               <button
                 type="button"
@@ -322,7 +322,7 @@ export function SaasPricingManager() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      {language === "bn" ? "প্যাকেজের নাম *" : "Plan Name *"}
+                      {t("uiPlanName")}
                     </label>
                     <input
                       type="text"
@@ -336,7 +336,7 @@ export function SaasPricingManager() {
 
                   <div className="space-y-1.5">
                     <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                      {language === "bn" ? "মূল্য (USD / মাস) *" : "Price (USD / mo) *"}
+                      {t("uiPriceUSDMo")}
                     </label>
                     <input
                       type="number"
@@ -352,7 +352,7 @@ export function SaasPricingManager() {
 
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    {language === "bn" ? "সংক্ষিপ্ত বিবরণ" : "Short Description"}
+                    {t("uiShortDescription")}
                   </label>
                   <input
                     type="text"
@@ -365,7 +365,7 @@ export function SaasPricingManager() {
 
                 <div className="space-y-1.5">
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    {language === "bn" ? "ফিচার তালিকা (প্রতি লাইনে একটি) *" : "Feature Checklist (1 Feature per line) *"}
+                    {t("uiFeatureChecklistFeaturePerLine")}
                   </label>
                   <textarea
                     required
@@ -398,7 +398,7 @@ export function SaasPricingManager() {
                       className="w-4 h-4 accent-[var(--brand-primary)]"
                     />
                     <span className="font-bold text-slate-800 dark:text-slate-200">
-                      {language === "bn" ? "ল্যান্ডিং পেজে প্রদর্শন করুন" : "Live on Landing Page"}
+                      {t("uiLiveOnLandingPage")}
                     </span>
                   </label>
                 </div>
@@ -417,7 +417,7 @@ export function SaasPricingManager() {
                   disabled={submitting}
                   className="px-5 py-2 rounded-xl bg-[var(--brand-primary)] text-white font-bold cursor-pointer hover:opacity-90 disabled:opacity-50 transition shadow-xs"
                 >
-                  {submitting ? (language === "bn" ? "সংরক্ষণ হচ্ছে..." : "Saving...") : t.save}
+                  {submitting ? (t("uiSaving")) : t.save}
                 </button>
               </div>
             </form>

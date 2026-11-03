@@ -24,35 +24,27 @@ export function AuthBrandingPanel({
   description,
   features,
 }: AuthBrandingPanelProps) {
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
 
-  const defaultBadge = badge || (language === "bn" ? "ক্লিনিকাল অপারেটিং সিস্টেম" : "Clinical Operating System");
-  const defaultTitle = title || (language === "bn" ? "আধুনিক স্বাস্থ্যসেবার ডিজিটাল প্ল্যাটফর্ম" : "Unified Platform for Healthcare Practice");
-  const defaultDesc = description || (language === "bn"
-    ? "হাসপাতাল প্রশাসক, চিকিৎসক, ট্রায়াজ স্টাফ এবং রোগীদের সংযোগকারী আধুনিক স্বাস্থ্য প্ল্যাটফর্ম।"
-    : "A streamlined workspace connecting hospital administrators, consulting physicians, triage staff, and patients with zero redundant data entry.");
+  const defaultBadge = badge || (t("uiClinicalOperatingSystem2"));
+  const defaultTitle = title || (t("uiUnifiedPlatformForHealthcarePractice"));
+  const defaultDesc = description || (t("uiAStreamlinedWorkspaceConnectingHospital"));
 
   const defaultPillars: FeaturePoint[] = [
     {
       icon: <Pill className="w-4 h-4 text-teal-400" />,
-      title: language === "bn" ? "দ্রুত ১-ক্লিক প্রেসক্রিপশন" : "Fast 1-Click Clinical Prescribing",
-      description: language === "bn"
-        ? "স্বয়ংক্রিয় ঔষধ তালিকা, ডোজ ও নির্দেশিকা এবং নিখুঁত A4 প্রিন্ট।"
-        : "Auto-populating drug formulary, dosage directions, and multi-page A4 printouts.",
+      title: t("uiFastClickClinicalPrescribing"),
+      description: t("uiAutoPopulatingDrugFormularyDosage"),
     },
     {
       icon: <Clock className="w-4 h-4 text-teal-400" />,
-      title: language === "bn" ? "লাইভ চেম্বার সিরিয়াল ও ট্রায়াজ" : "Live Chamber Queue & Triage",
-      description: language === "bn"
-        ? "রিয়েল-টাইম রোগী কলিং, টোকেন প্রিন্ট এবং ওয়েটিং ডিসপ্লে।"
-        : "Real-time doctor calling serials, walk-in token printing, and patient display screens.",
+      title: t("uiLiveChamberQueueTriage"),
+      description: t("uiRealTimeDoctorCallingSerials"),
     },
     {
       icon: <Building2 className="w-4 h-4 text-teal-400" />,
-      title: language === "bn" ? "সকলের জন্য স্বতন্ত্র প্রবেশাধিকার" : "Multi-Role Clinical Workspaces",
-      description: language === "bn"
-        ? "অ্যাডমিন, চিকিৎসক, স্টাফ এবং রোগীর জন্য আলাদা ও সুরক্ষিত ড্যাশবোর্ড।"
-        : "Dedicated interfaces for Super Admins, Clinic Admins, Doctors, Staff, and Patients.",
+      title: t("uiMultiRoleClinicalWorkspaces"),
+      description: t("uiDedicatedInterfacesForSuperAdmins"),
     },
   ];
 
@@ -89,7 +81,7 @@ export function AuthBrandingPanel({
 
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-300 text-[11px] font-semibold">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span>{language === "bn" ? "সিস্টেম সক্রিয়" : "System Active"}</span>
+          <span>{t("uiSystemActive")}</span>
         </div>
       </div>
 
@@ -144,18 +136,18 @@ export function AuthBrandingPanel({
         <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
           <span className="flex items-center gap-1.5 font-medium">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span>{language === "bn" ? "মাল্টি-টেন্যান্ট ক্লিনিক সাপোর্ট" : "Multi-Tenant Clinic Scoping"}</span>
+            <span>{t("uiMultiTenantClinicScoping")}</span>
           </span>
           <span className="text-slate-600">•</span>
           <span className="flex items-center gap-1.5 font-medium">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span>{language === "bn" ? "A4 পেজিনেটেড অনুমোদিত Rx" : "A4 Paginated Legal Rx"}</span>
+            <span>{t("uiA4PaginatedLegalRx")}</span>
           </span>
         </div>
 
         <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-          <span>{language === "bn" ? "ভূমিকা-ভিত্তিক প্রবেশাধিকার • বিএমডিসি মানসম্পন্ন ফরম্যাট" : "Role-Based Access Control • BMDC Practice Standard Format"}</span>
+          <span>{t("uiRoleBasedAccessControlBMDC")}</span>
         </div>
       </div>
     </div>

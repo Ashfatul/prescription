@@ -198,7 +198,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
 
             {/* Sort Selector */}
             <div className="flex items-center gap-2 text-xs">
-              <span className="text-slate-400 hidden sm:inline font-semibold">{language === "bn" ? "সাজান:" : "Sort:"}</span>
+              <span className="text-slate-400 hidden sm:inline font-semibold">{t("uiSort")}</span>
               <div className="w-48">
                 <CustomSelect
                   size="sm"
@@ -286,13 +286,13 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                               clinic.status === "ACTIVE" ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
                             }`}
                           />
-                          {clinic.status === "ACTIVE" ? (language === "bn" ? "সক্রিয়" : "Active") : clinic.status}
+                          {clinic.status === "ACTIVE" ? (t("active")) : clinic.status}
                         </span>
 
                         {clinic.isDemo && (
                           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 shrink-0">
                             <Sparkles className="w-3 h-3" />
-                            <span>{language === "bn" ? "ডেমো স্যান্ডবক্স" : "Demo Sandbox"}</span>
+                            <span>{t("uiDemoSandbox")}</span>
                           </span>
                         )}
 
@@ -310,7 +310,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] text-[11px] font-mono font-medium text-slate-600 dark:text-slate-300 hover:text-[var(--brand-text)] border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition group/sub shadow-2xs"
-                          title={language === "bn" ? "ক্লিনিকের ডেডিকেটেড সাবডোমেনে যান" : "Visit this clinic's dedicated SaaS subdomain"}
+                          title={t("uiVisitThisClinicSDedicated")}
                         >
                           <Globe className="w-3 h-3 text-[var(--brand-primary)] shrink-0" />
                           <span className="font-semibold text-[var(--brand-text)] truncate max-w-[220px] sm:max-w-none">
@@ -437,7 +437,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
 
                             <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20 shrink-0">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                              {language === "bn" ? "সক্রিয়" : "Active"}
+                              {t("active")}
                             </span>
                           </div>
                         ))}
@@ -556,7 +556,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
             <span>{t.launchYourPractice}</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-            {language === "bn" ? "আপনার ক্লিনিক, চেম্বার বা পলিক্লিনিক নিবন্ধন করুন" : "Register Your Clinic, Chamber or Polyclinic"}
+            {t("uiRegisterYourClinicChamberOr")}
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
             {t.registerClinicDesc}

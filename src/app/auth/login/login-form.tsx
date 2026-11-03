@@ -169,12 +169,10 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
       {/* Desktop Informative Hero Panel (Left 5 Columns, Fixed / Sticky, Guaranteed No Scroll) */}
       <div className="lg:col-span-5 xl:col-span-5 hidden lg:flex flex-col sticky top-0 h-screen max-h-screen overflow-hidden">
         <AuthBrandingPanel
-          badge={language === "bn" ? "ক্লিনিক্যাল অপারেটিং সিস্টেম" : "Clinical Operating System"}
-          title={language === "bn" ? "আধুনিক স্বাস্থ্যসেবায় ডিজিটাল প্রেসক্রিপশন" : "Intelligent Prescriptions for Modern Healthcare"}
-          highlightText={language === "bn" ? "সহজ ও নির্ভরযোগ্য।" : "Zero Friction."}
-          description={language === "bn"
-            ? "ইলেকট্রনিক প্রেসক্রিপশন প্রদান, চেম্বার পরামর্শ কিউ নিয়ন্ত্রণ এবং রোগীর স্বাস্থ্য রেকর্ড দেখতে আপনার ক্লিনিকাল ওয়ার্কস্পেসে লগইন করুন।"
-            : "Sign in to your clinical workspace to issue electronic prescriptions, manage chamber consultation queues, and review patient health records."}
+          badge={t("uiClinicalOperatingSystem")}
+          title={t("uiIntelligentPrescriptionsForModernHealthcare")}
+          highlightText={t("uiZeroFriction")}
+          description={t("loginWorkspaceDescription")}
         />
       </div>
 
@@ -198,7 +196,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
 
           <div className="hidden lg:flex items-center gap-2 text-xs text-slate-500 font-medium">
             <Sparkles className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-            <span>{language === "bn" ? "নিরাপদ এন্টারপ্রাইজ সিঙ্গেল সাইন-অন" : "Secure Enterprise Single Sign-On"}</span>
+            <span>{t("uiSecureEnterpriseSingleSignOn")}</span>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
@@ -227,7 +225,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
                   {useBackupCode
-                    ? (language === "bn" ? "অ্যাকাউন্টে প্রবেশ করতে একটি অব্যবহৃত ৮-সংখ্যার ব্যাকআপ রিকভারি কোড লিখুন।" : "Enter an unused 8-character recovery backup code to access your account.")
+                    ? (t("uiEnterAnUnusedCharacterRecovery"))
                     : (language === "bn" ? `আপনার অথেনটিকেটর অ্যাপ থেকে ৬-সংখ্যার কোডটি প্রবেশ করান (${maskedEmail || "আপনার অ্যাকাউন্ট"})।` : `Enter the 6-digit code from your authenticator app for ${maskedEmail || "your account"}.`)}
                 </p>
               </div>
@@ -235,7 +233,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
               <form className="space-y-4" onSubmit={onVerify2FASubmit}>
                 <div>
                   <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    {useBackupCode ? (language === "bn" ? "ব্যাকআপ রিকভারি কোড" : "Recovery Backup Code") : (language === "bn" ? "৬-সংখ্যার অথেনটিকেটর কোড" : "6-Digit Authenticator Code")}
+                    {useBackupCode ? (t("uiRecoveryBackupCode")) : (t("uiDigitAuthenticatorCode"))}
                   </label>
                   <div className="relative">
                     <input
@@ -298,7 +296,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
                     className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer flex items-center gap-1"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
-                    <span>{language === "bn" ? "লগইনে ফিরে যান" : "Back to login"}</span>
+                    <span>{t("uiBackToLogin")}</span>
                   </button>
                 </div>
               </form>
@@ -308,15 +306,15 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
               <div className="space-y-1.5">
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-[11px] font-bold">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>{language === "bn" ? "ভেরিফায়েড ক্লিনিকাল পোর্টাল" : "Verified Clinical Access"}</span>
+              <span>{t("uiVerifiedClinicalAccess")}</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
               {t.welcomeBack}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
               {isDemoMode
-                ? (language === "bn" ? "আপনার ইমেইল দিয়ে লগইন করুন অথবা নিচের ডেমো প্রোফাইল নির্বাচন করুন।" : "Sign in with your email or select an instant demo clinical profile below.")
-                : (language === "bn" ? "আপনার নিবন্ধিত পিপিএমএস অ্যাকাউন্টে লগইন করুন।" : "Sign in with your verified PPMS healthcare credentials.")}
+                ? (t("uiSignInWithYourEmail"))
+                : (t("uiSignInWithYourVerified"))}
             </p>
           </div>
 
@@ -401,7 +399,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
           {/* Account Registration Callouts */}
           <div className="pt-4 border-t border-[var(--border-subtle)] space-y-2.5">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
-              {language === "bn" ? "নতুন ব্যবহারকারী? অ্যাকাউন্ট খুলুন:" : "New to PPMS? Create an Account:"}
+              {t("uiNewToPPMSCreateAn")}
             </span>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -415,12 +413,12 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[var(--brand-text)] transition truncate">
-                      {language === "bn" ? "ক্লিনিক নিবন্ধন" : "Register Clinic"}
+                      {t("registerClinicBtn")}
                     </span>
                     <ArrowRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0 ml-1" />
                   </div>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                    {language === "bn" ? "১৪ দিনের ফ্রি ট্রায়াল • কার্ড লাগবে না" : "14-Day Free Trial • No Card"}
+                    {t("uiDayFreeTrialNoCard")}
                   </p>
                 </div>
               </Link>
@@ -435,12 +433,12 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-rose-500 transition truncate">
-                      {language === "bn" ? "রোগীর পোর্টাল" : "Patient Portal"}
+                      {t("rolePatientPortal")}
                     </span>
                     <ArrowRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0 ml-1" />
                   </div>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                    {language === "bn" ? "ডাক্তার বুকিং ও প্রেসক্রিপশন" : "Book doctors & view Rx"}
+                    {t("patientPortalDesc")}
                   </p>
                 </div>
               </Link>
@@ -458,7 +456,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
                   </span>
                 </div>
                 <span className="rounded-full bg-[var(--brand-surface)] px-2.5 py-0.5 text-[10px] font-bold text-[var(--brand-text)] border border-[var(--brand-border)]">
-                  {language === "bn" ? "সরাসরি প্রবেশ" : "Instant Access"}
+                  {t("instantDemoAccess")}
                 </span>
               </div>
 
@@ -510,10 +508,10 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
 
         {/* Bottom Footer legal text */}
         <div className="pt-6 border-t border-[var(--border-subtle)] text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-500">
-          <span>© {new Date().getFullYear()} PPMS Clinical OS. {language === "bn" ? "সর্বস্বত্ব সংরক্ষিত।" : "All rights reserved."}</span>
+          <span>© {new Date().getFullYear()} PPMS Clinical OS. {t("allRightsReserved")}</span>
           <span className="flex items-center gap-1">
             <Lock className="w-3 h-3 text-emerald-500" />
-            {language === "bn" ? "বিএমডিসি ও স্বাস্থ্য নিরাপত্তা নিয়ন্ত্রিত" : "HIPAA & BMDC Compliant"}
+            {t("uiHipaaBMDCCompliant")}
           </span>
         </div>
       </div>

@@ -716,7 +716,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     className="px-5 py-2.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition inline-flex items-center gap-1.5"
                   >
                     <LayoutDashboard className="w-3.5 h-3.5" />
-                    <span>{language === "bn" ? "ড্যাশবোর্ডে প্রবেশ করুন" : "Go to Dashboard"}</span>
+                    <span>{t("uiGoToDashboard")}</span>
                   </Link>
                 ) : (
                   <Link
@@ -725,7 +725,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     className="px-5 py-2.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition inline-flex items-center gap-1.5"
                   >
                     <LogIn className="w-3.5 h-3.5" />
-                    <span>{language === "bn" ? "লগইন করুন" : "Sign In to EMR"}</span>
+                    <span>{t("uiSignInToEMR")}</span>
                   </Link>
                 )}
               </div>

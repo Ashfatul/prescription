@@ -41,6 +41,7 @@ import {
   CheckCircle2,
   UserPlus,
   FileSearch,
+  Languages,
 } from "lucide-react";
 
 interface DashboardShellProps {
@@ -182,13 +183,20 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             tabKey: "templates",
             icon: <FileCode2 className="w-4 h-4" />,
           },
-          {
-            section: t.configuration,
-            label: t.hospitalSettings,
-            href: "/dashboard/admin?tab=settings",
-            tabKey: "settings",
-            icon: <Building2 className="w-4 h-4" />,
-          },
+           {
+             section: t.configuration,
+             label: t.hospitalSettings,
+             href: "/dashboard/admin?tab=settings",
+             tabKey: "settings",
+             icon: <Building2 className="w-4 h-4" />,
+           },
+           {
+             section: t.configuration,
+             label: t.languageManagement,
+             href: "/dashboard/admin?tab=translations",
+             tabKey: "translations",
+             icon: <Languages className="w-4 h-4" />,
+           },
         ]
       : []),
 

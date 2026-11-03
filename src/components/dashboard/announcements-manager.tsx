@@ -172,21 +172,21 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
   const roleFilterOptions = useMemo(() => {
     if (currentRole === "SUPER_ADMIN" || currentRole === "STAFF") {
       return [
-        { value: "ALL", label: language === "bn" ? "সকল পাঠক" : "All Audiences" },
-        { value: "DOCTOR", label: language === "bn" ? "চিকিৎসকবৃন্দ" : "Doctors & Physicians", badge: "Doctor" },
-        { value: "PATIENT", label: language === "bn" ? "রোগী ও সাধারণ জনগণ" : "Patients & Public", badge: "Patient" },
-        { value: "STAFF", label: language === "bn" ? "হাসপাতাল ফ্রন্ট ডেস্ক" : "Hospital Front Desk", badge: "Staff" },
+        { value: "ALL", label: t("uiAllAudiences") },
+        { value: "DOCTOR", label: t("roleDoctorsAndPhysicians"), badge: "Doctor" },
+        { value: "PATIENT", label: t("rolePatientsAndPublic"), badge: "Patient" },
+        { value: "STAFF", label: t("uiHospitalFrontDesk"), badge: "Staff" },
       ];
     }
     if (currentRole === "DOCTOR") {
       return [
-        { value: "ALL", label: language === "bn" ? "সকল নোটিশ" : "All Visible Notices" },
-        { value: "DOCTOR", label: language === "bn" ? "চিকিৎসকদের নোটিশ" : "Doctor-Only Bulletins", badge: "Physicians" },
+        { value: "ALL", label: t("uiAllVisibleNotices") },
+        { value: "DOCTOR", label: t("roleDoctorOnlyBulletins"), badge: "Physicians" },
       ];
     }
     return [
-      { value: "ALL", label: language === "bn" ? "সকল নোটিশ" : "All Visible Notices" },
-      { value: "PATIENT", label: language === "bn" ? "রোগীদের নোটিশ" : "Patient Care Notices", badge: "Patients" },
+      { value: "ALL", label: t("uiAllVisibleNotices") },
+      { value: "PATIENT", label: t("rolePatientCareNotices"), badge: "Patients" },
     ];
   }, [currentRole, language]);
 
@@ -354,7 +354,7 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
             <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
               {searchTerm || roleFilter !== "ALL" || priorityFilter !== "ALL"
                 ? t.noMatchingAnnouncementsDesc
-                : (language === "bn" ? "বর্তমানে আপনার বিভাগের জন্য কোনো সক্রিয় নোটিশ নেই।" : "There are currently no active announcements for your department.")}
+                : (t("uiThereAreCurrentlyNoActive"))}
             </p>
           </div>
         </div>
@@ -502,11 +502,11 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
                       value={targetRole}
                       onChange={(val) => setTargetRole(val)}
                       options={[
-                        { value: "ALL", label: language === "bn" ? "সকল ব্যবহারকারী (পাবলিক)" : "All Users (Public)" },
-                        { value: "ADMIN", label: language === "bn" ? "শুধুমাত্র ক্লিনিক প্রশাসক" : "Clinic Administrators Only" },
-                        { value: "DOCTOR", label: language === "bn" ? "শুধুমাত্র চিকিৎসকবৃন্দ" : "Physicians & Doctors Only" },
-                        { value: "PATIENT", label: language === "bn" ? "শুধুমাত্র রোগীগণ" : "Patients Only" },
-                        { value: "STAFF", label: language === "bn" ? "শুধুমাত্র ফ্রন্ট ডেস্ক ও স্টাফ" : "Front Desk & Staff Only" },
+                        { value: "ALL", label: t("uiAllUsersPublic") },
+                        { value: "ADMIN", label: t("uiClinicAdministratorsOnly") },
+                        { value: "DOCTOR", label: t("uiPhysiciansDoctorsOnly") },
+                        { value: "PATIENT", label: t("rolePatientsOnly") },
+                        { value: "STAFF", label: t("uiFrontDeskStaffOnly") },
                       ]}
                       searchable={false}
                     />

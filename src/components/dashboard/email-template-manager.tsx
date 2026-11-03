@@ -300,7 +300,7 @@ export function EmailTemplateManager() {
           </div>
         ) : templates.length === 0 ? (
           <div className="p-12 text-center text-xs text-slate-400">
-            {language === "bn" ? "এখনও কোনো ইমেইল টেমপ্লেট সংরক্ষিত নেই।" : "No email templates configured yet."}
+            {t("uiNoEmailTemplatesConfiguredYet")}
           </div>
         ) : (
           <div className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -331,7 +331,7 @@ export function EmailTemplateManager() {
 
                   <p className="text-xs text-slate-500 font-medium">
                     <strong className="text-slate-700 dark:text-slate-300">
-                      {language === "bn" ? "বিষয়:" : "Subject:"}
+                      {t("uiSubject")}
                     </strong>{" "}
                     {tpl.subject}
                   </p>
@@ -345,7 +345,7 @@ export function EmailTemplateManager() {
                   {Array.isArray(tpl.availableVars) && tpl.availableVars.length > 0 && (
                     <div className="flex flex-wrap items-center gap-1 pt-1">
                       <span className="text-[10px] font-semibold text-slate-400 mr-1">
-                        {language === "bn" ? "ভেরিয়েবলসমূহ:" : "Variables:"}
+                        {t("uiVariables")}
                       </span>
                       {tpl.availableVars.map((v) => (
                         <span
@@ -624,9 +624,7 @@ export function EmailTemplateManager() {
             <form onSubmit={handleSendTestEmail} className="flex flex-col flex-1 min-h-0 overflow-hidden">
               <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4 text-xs">
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  {language === "bn"
-                    ? "এটি আপনার এসএমটিপি কনফিগারেশন যাচাই করার জন্য মক ডেটা সহ একটি পরীক্ষামূলক নমুনা ইমেইল পাঠাবে।"
-                    : "This will send a live sample email rendered with mock test data to verify your SMTP configuration."}
+                  {t("uiThisWillSendALive")}
                 </p>
 
                 {testResult && (

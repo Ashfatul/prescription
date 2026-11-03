@@ -45,7 +45,7 @@ export function ThemeCustomizer({
 }: ThemeCustomizerProps) {
   const { theme, setTheme } = useTheme();
   const { user, updatePreferences } = useAuth();
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   const isBn = language === "bn";
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
@@ -172,7 +172,7 @@ export function ThemeCustomizer({
         <button
           type="button"
           onClick={handleToggle}
-          title={isBn ? "থিম ও কালার সেটিংস" : "Theme & Accent Settings"}
+          title={t("uiThemeAccentSettings")}
           className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shadow-xs cursor-pointer"
         >
           <span
@@ -180,7 +180,7 @@ export function ThemeCustomizer({
             style={{ backgroundColor: ACCENTS.find((a) => a.id === accent)?.color || "#0f766e" }}
           />
           <span className="capitalize hidden sm:inline">
-            {theme === "system" ? (isBn ? "সিস্টেম" : "System") : theme === "dark" ? (isBn ? "ডার্ক" : "Dark") : (isBn ? "লাইট" : "Light")}
+            {theme === "system" ? (t("uiSystem")) : theme === "dark" ? (t("uiDark")) : (t("uiLight"))}
           </span>
           <svg
             className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${
@@ -206,7 +206,7 @@ export function ThemeCustomizer({
           >
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5">
-                  {isBn ? "থিম মোড" : "Appearance Mode"}
+                  {t("uiAppearanceMode")}
                 </p>
                 <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl">
                   {(["light", "dark", "system"] as const).map((m) => (
@@ -220,7 +220,7 @@ export function ThemeCustomizer({
                           : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                       }`}
                     >
-                      {m === "light" ? (isBn ? "লাইট" : "Light") : m === "dark" ? (isBn ? "ডার্ক" : "Dark") : (isBn ? "সিস্টেম" : "System")}
+                      {m === "light" ? (t("uiLight")) : m === "dark" ? (t("uiDark")) : (t("uiSystem"))}
                     </button>
                   ))}
                 </div>
@@ -228,7 +228,7 @@ export function ThemeCustomizer({
 
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5">
-                  {isBn ? "অ্যাকসেন্ট কালার" : "Accent Color"}
+                  {t("uiAccentColor")}
                 </p>
                 <div className="flex items-center justify-between gap-1.5 pt-0.5">
                   {ACCENTS.map((item) => (
@@ -262,10 +262,10 @@ export function ThemeCustomizer({
       <div className="flex items-center justify-between">
         <div>
           <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
-            {isBn ? "কাজের পরিবেশের রূপরেখা" : "Workspace Appearance"}
+            {t("uiWorkspaceAppearance")}
           </h4>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            {isBn ? "কনট্রাস্ট ও অ্যাকসেন্ট রঙ কাস্টমাইজ করুন" : "Personalize contrast & accent palette"}
+            {t("uiPersonalizeContrastAccentPalette")}
           </p>
         </div>
       </div>
@@ -273,13 +273,13 @@ export function ThemeCustomizer({
       <div className="space-y-3">
         <div>
           <label className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5 block">
-            {isBn ? "ইন্টারফেস থিম" : "Interface Theme"}
+            {t("uiInterfaceTheme")}
           </label>
           <div className="grid grid-cols-3 gap-2">
             {[
-              { id: "light", label: isBn ? "লাইট" : "Light", icon: "☀️" },
-              { id: "dark", label: isBn ? "ডার্ক" : "Dark", icon: "🌙" },
-              { id: "system", label: isBn ? "সিস্টেম" : "System", icon: "💻" },
+              { id: "light", label: t("uiLight"), icon: "☀️" },
+              { id: "dark", label: t("uiDark"), icon: "🌙" },
+              { id: "system", label: t("uiSystem"), icon: "💻" },
             ].map((m) => (
               <button
                 key={m.id}
@@ -300,7 +300,7 @@ export function ThemeCustomizer({
 
         <div>
           <label className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5 block">
-            {isBn ? "প্রধান অ্যাকসেন্ট প্যালেট" : "Primary Accent Palette"}
+            {t("uiPrimaryAccentPalette")}
           </label>
           <div className="grid grid-cols-5 gap-2">
             {ACCENTS.map((item) => (

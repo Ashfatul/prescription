@@ -47,24 +47,22 @@ export default function ForgotPasswordPage() {
       {/* Desktop Informative Hero Panel (Left 5 Columns, Fixed / Sticky, Guaranteed No Scroll) */}
       <div className="lg:col-span-5 xl:col-span-5 hidden lg:flex flex-col sticky top-0 h-screen max-h-screen overflow-hidden">
         <AuthBrandingPanel
-          badge={language === "bn" ? "অ্যাকাউন্ট নিরাপত্তা" : "Account Security"}
-          title={language === "bn" ? "স্বাস্থ্যসেবা কর্মীদের জন্য নিরাপদ অ্যাক্সেস পুনরুদ্ধার" : "Secure Access Recovery for Healthcare Teams"}
-          highlightText={language === "bn" ? "সর্বোচ্চ নিরাপত্তা।" : "Zero Compromise."}
-          description={language === "bn"
-            ? "আমাদের অ্যাকাউন্ট পুনরুদ্ধার প্রক্রিয়া সংবেদনশীল মেডিকেল এবং প্রেসক্রিপশন রেকর্ড সুরক্ষিত রাখতে সিঙ্গল-ইউজ ক্রিপ্টোগ্রাফিক টোকেন ও রেট লিমিটিং ব্যবহার করে।"
-            : "Our account recovery system uses single-use cryptographic tokens with rate limiting to safeguard sensitive medical and prescription records."}
+          badge={t("uiAccountSecurity")}
+          title={t("uiSecureAccessRecoveryForHealthcare")}
+          highlightText={t("uiZeroCompromise")}
+          description={t("uiOurAccountRecoverySystemUses")}
           features={[
             {
               icon: <KeyRound className="w-4 h-4 text-teal-400" />,
-              title: language === "bn" ? "ক্রিপ্টোগ্রাফিক সিঙ্গল-ইউজ রিসেট টোকেন" : "Cryptographic Single-Use Reset Tokens",
+              title: t("uiCryptographicSingleUseResetTokens"),
             },
             {
               icon: <ShieldCheck className="w-4 h-4 text-emerald-400" />,
-              title: language === "bn" ? "OWASP-সম্মত অ্যাকাউন্ট এনামারেশন প্রতিরোধ" : "OWASP-Compliant Account Enumeration Defense",
+              title: t("uiOwaspCompliantAccountEnumerationDefense"),
             },
             {
               icon: <Sparkles className="w-4 h-4 text-sky-400" />,
-              title: language === "bn" ? "নিরাপত্তা ও আইপি অডিট লগিং" : "Comprehensive Security & IP Audit Logging",
+              title: t("uiComprehensiveSecurityIPAuditLogging"),
             },
           ]}
         />
@@ -91,7 +89,7 @@ export default function ForgotPasswordPage() {
 
           <div className="hidden lg:flex items-center gap-2 text-xs text-slate-500 font-medium">
             <ShieldCheck className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-            <span>{language === "bn" ? "ক্রিপ্টোগ্রাফিক অ্যাকাউন্ট পুনরুদ্ধার" : "Cryptographic Account Recovery"}</span>
+            <span>{t("uiCryptographicAccountRecovery")}</span>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
@@ -120,9 +118,7 @@ export default function ForgotPasswordPage() {
                     {t.forgotPassword}
                   </h2>
                   <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
-                    {language === "bn"
-                      ? "আপনার নিবন্ধিত ইমেইল ঠিকানা প্রদান করুন, আমরা পাসওয়ার্ড রিসেট করার নিরাপদ লিংক পাঠাব।"
-                      : "Enter your account email address and we’ll dispatch a secure, single-use password reset link."}
+                    {t("uiEnterYourAccountEmailAddress")}
                   </p>
                 </div>
 
@@ -163,7 +159,7 @@ export default function ForgotPasswordPage() {
                       </>
                     ) : (
                       <>
-                        <span>{language === "bn" ? "রিসেট লিংক পাঠান" : "Send Reset Instructions"}</span>
+                        <span>{t("uiSendResetInstructions")}</span>
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}
@@ -175,7 +171,7 @@ export default function ForgotPasswordPage() {
                     href="/auth/login"
                     className="text-xs font-medium text-slate-500 hover:text-[var(--brand-primary)] transition"
                   >
-                    {language === "bn" ? "পাসওয়ার্ড মনে পড়েছে? " : "Remember your password? "}
+                    {t("uiRememberYourPassword")}
                     <span className="font-bold underline">{t.signIn}</span>
                   </Link>
                 </div>
@@ -188,7 +184,7 @@ export default function ForgotPasswordPage() {
 
                 <div>
                   <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                    {language === "bn" ? "ইমেইল পাঠানো হয়েছে" : "Instructions Dispatched"}
+                    {t("uiInstructionsDispatched")}
                   </h2>
                   <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 max-w-sm mx-auto leading-relaxed">
                     {language === "bn"
@@ -198,9 +194,9 @@ export default function ForgotPasswordPage() {
                 </div>
 
                 <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[11px] text-slate-500 dark:text-slate-400 text-left space-y-1 leading-relaxed">
-                  <p className="font-semibold text-slate-700 dark:text-slate-300">{language === "bn" ? "পরবর্তী করণীয়:" : "Next Steps:"}</p>
-                  <p>{language === "bn" ? "১. আপনার ইনবক্স চেক করে ১ ঘণ্টার মধ্যে লিংকে ক্লিক করুন।" : "1. Open your inbox and click the reset link within 1 hour."}</p>
-                  <p>{language === "bn" ? "২. ইমেইল না পেলে স্প্যাম বা জাঙ্ক ফোল্ডার চেক করুন।" : "2. If you don't receive an email, check your Spam or Junk folder."}</p>
+                  <p className="font-semibold text-slate-700 dark:text-slate-300">{t("uiNextSteps")}</p>
+                  <p>{t("uiOpenYourInboxAndClick")}</p>
+                  <p>{t("uiIfYouDonTReceive")}</p>
                 </div>
 
                 <div className="pt-1 flex flex-col gap-2">
@@ -209,13 +205,13 @@ export default function ForgotPasswordPage() {
                     onClick={() => setSubmitted(false)}
                     className="text-xs font-semibold text-[var(--brand-primary)] hover:underline py-1 cursor-pointer"
                   >
-                    {language === "bn" ? "অন্য ইমেইল দিয়ে চেষ্টা করুন" : "Try another email address"}
+                    {t("uiTryAnotherEmailAddress")}
                   </button>
                   <Link
                     href="/auth/login"
                     className="w-full min-h-[42px] rounded-xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center transition"
                   >
-                    {language === "bn" ? "লগইনে ফিরে যান" : "Return to Login"}
+                    {t("uiReturnToLogin")}
                   </Link>
                 </div>
               </div>
@@ -225,7 +221,7 @@ export default function ForgotPasswordPage() {
 
         {/* Bottom Footer */}
         <div className="pt-4 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
-          <span>{language === "bn" ? "বিএমডিসি ও স্বাস্থ্য নিরাপত্তা মানদণ্ড দ্বারা সুরক্ষিত।" : "Protected by HIPAA & BMDC compliant security standards."}</span>
+          <span>{t("uiProtectedByHIPAABMDCCompliant")}</span>
           <div className="flex items-center gap-3">
             <Link href="/privacy" className="hover:text-[var(--brand-primary)] transition font-medium">
               {t.footerPrivacyPolicy}

@@ -158,8 +158,8 @@ function PrescriptionPageSheet({
               {hospitalInfo?.address || doctor.chamberAddress || "Diagnostic & Consultation Block, Dhaka"}
             </p>
             <div className="text-[11px] text-slate-500 flex flex-wrap sm:justify-end gap-x-2">
-              <span><strong>{language === "bn" ? "হটলাইন:" : "Hotline:"}</strong> {hospitalInfo?.phone || doctor.contactNumber || "+880 2-8901234"}</span>
-              <span><strong>{language === "bn" ? "জরুরি:" : "Emerg:"}</strong> 10678 (24h)</span>
+              <span><strong>{t("uiHotline")}</strong> {hospitalInfo?.phone || doctor.contactNumber || "+880 2-8901234"}</span>
+              <span><strong>{t("uiEmerg")}</strong> 10678 (24h)</span>
             </div>
             <p className="text-[10px] font-mono font-bold text-slate-500">
               Rx: {prescriptionId || "PREVIEW-DRAFT"} • v{version || 1}
@@ -180,7 +180,7 @@ function PrescriptionPageSheet({
           <div className="flex items-center gap-5">
             <div>
               <span className="text-slate-400 font-medium">{t.patientName}: </span>
-              <strong className="text-slate-900 font-bold">{patient.name || (language === "bn" ? "সাধারণ রোগী" : "Walk-in Patient")}</strong>
+              <strong className="text-slate-900 font-bold">{patient.name || (t("uiWalkInPatient"))}</strong>
             </div>
             {patient.gender && (
               <div>
@@ -191,7 +191,7 @@ function PrescriptionPageSheet({
             {patient.age && (
               <div>
                 <span className="text-slate-400 font-medium">{t.patientAge}: </span>
-                <strong className="text-slate-900">{patient.age} {language === "bn" ? "বছর" : "Yrs"}</strong>
+                <strong className="text-slate-900">{patient.age} {t("uiYrs3")}</strong>
               </div>
             )}
           </div>
@@ -256,7 +256,7 @@ function PrescriptionPageSheet({
                 <h3 className="font-bold uppercase tracking-wider text-rose-600 text-[11px] pb-1 border-b border-rose-200 flex items-center justify-between">
                   <span>{t.drugAllergiesAlert}</span>
                   <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-rose-100 text-rose-700">
-                    {language === "bn" ? "সতর্কতা" : "Alert"}
+                    {t("uiAlert")}
                   </span>
                 </h3>
                 <div className="text-rose-900 leading-relaxed whitespace-pre-line pt-1 font-medium bg-rose-50/60 p-2.5 rounded-xl border border-rose-200/60">
@@ -326,7 +326,7 @@ function PrescriptionPageSheet({
             <div className="space-y-4">
               {page.medicines.length === 0 ? (
                 <p className="text-xs text-slate-400 italic">
-                  {language === "bn" ? "এই পৃষ্ঠায় কোনো ঔষধ নেই।" : "No medicines on this page."}
+                  {t("uiNoMedicinesOnThisPage")}
                 </p>
               ) : (
                 page.medicines.map((med, idx) => (
@@ -396,9 +396,7 @@ function PrescriptionPageSheet({
         <div className="max-w-lg space-y-1">
           <p className="text-[11px] leading-tight">
             {hospitalInfo?.disclaimer ||
-              (language === "bn"
-                ? "এই প্রেসক্রিপশনটি কম্পিউটার দ্বারা প্রস্তুতকৃত এবং পরামর্শের জন্য বৈধ। পরবর্তী সাক্ষাতের জন্য প্রেসক্রিপশনটি সংরক্ষণ করুন।"
-                : "This prescription is computer generated and valid for medical consultation. Keep safe for follow-up visits. For emergencies, contact hospital emergency 24/7.")}
+              (t("uiThisPrescriptionIsComputerGenerated"))}
           </p>
           <p className="text-[10px] text-slate-400">
             {language === "bn"
@@ -420,7 +418,7 @@ function PrescriptionPageSheet({
               <div className="h-8 border-dashed border-b border-slate-300 w-36" />
             )}
           </div>
-          <p className="font-bold text-slate-900">{doctor.name || (language === "bn" ? "বিশেষজ্ঞ চিকিৎসক" : "Consultant Physician")}</p>
+          <p className="font-bold text-slate-900">{doctor.name || (t("uiConsultantPhysician"))}</p>
           <p className="text-[11px] text-slate-600 leading-tight">{doctor.specialization}</p>
           {doctor.bmdcRegNo && (
             <p className="text-[10px] font-mono text-slate-500">BMDC: {doctor.bmdcRegNo}</p>
@@ -574,7 +572,7 @@ export function PrescriptionPreviewModal({
             <p className="text-[11px] text-slate-400 truncate">
               {totalPages > 1
                 ? (language === "bn" ? `পৃষ্ঠা ${activePageIndex} / ${totalPages}` : `Viewing Page ${activePageIndex} of ${totalPages}`)
-                : (language === "bn" ? "এক পাতার প্রেসক্রিপশন" : "Single Page Prescription")}
+                : (t("uiSinglePagePrescription"))}
             </p>
           </div>
         </div>

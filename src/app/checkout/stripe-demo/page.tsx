@@ -85,7 +85,7 @@ function StripeDemoContent() {
 
         <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
           <Lock className="w-3.5 h-3.5 text-emerald-600" />
-          <span>{language === "bn" ? "স্ট্রাইপ এন্ড-টু-এন্ড এনক্রিপশন (২৫৬-বিট SSL)" : "Stripe End-to-End Encryption (256-bit SSL)"}</span>
+          <span>{t("uiStripeEndToEndEncryption")}</span>
         </div>
       </div>
 

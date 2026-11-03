@@ -10,16 +10,16 @@ export function LegalNav({ title, lastUpdated }: { title?: string; lastUpdated?:
   const { t, language } = useLanguage();
 
   const links = [
-    { href: "/privacy", label: language === "bn" ? "গোপনীয়তা ও স্বাস্থ্য ডেটা" : "Privacy & Health Data", icon: ShieldCheck },
+    { href: "/privacy", label: t("uiPrivacyHealthData"), icon: ShieldCheck },
     { href: "/terms", label: t.termsOfService, icon: Scale },
     { href: "/disclaimer", label: t.medicalDisclaimer, icon: AlertCircle },
   ];
 
   const defaultTitle = pathname === "/privacy"
-    ? (language === "bn" ? "গোপনীয়তা নীতি ও স্বাস্থ্য ডেটা সুরক্ষা" : "Privacy Policy & Health Data Protection")
+    ? (t("uiPrivacyPolicyHealthDataProtection"))
     : pathname === "/terms"
-    ? (language === "bn" ? "সেবার শর্তাবলী ও ক্লিনিক্যাল ব্যবহারের চুক্তি" : "Terms of Service & Clinical Usage Agreement")
-    : (language === "bn" ? "মেডিকেল ডিসক্লেইমার ও প্রেসক্রিপশন মানদণ্ড" : "Medical Disclaimer & Prescribing Standards");
+    ? (t("uiTermsOfServiceClinicalUsage"))
+    : (t("uiMedicalDisclaimerPrescribingStandards"));
 
   return (
     <div className="w-full bg-[var(--bg-surface)] border-b border-[var(--border-subtle)]">
@@ -31,7 +31,7 @@ export function LegalNav({ title, lastUpdated }: { title?: string; lastUpdated?:
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-[var(--brand-text)] transition"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>{language === "bn" ? "হাসপাতাল হোমে ফিরে যান" : "Back to Hospital Home"}</span>
+            <span>{t("uiBackToHospitalHome")}</span>
           </Link>
 
           <button
@@ -40,20 +40,20 @@ export function LegalNav({ title, lastUpdated }: { title?: string; lastUpdated?:
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-subtle)] text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-[var(--bg-subtle)] transition print:hidden cursor-pointer"
           >
             <Printer className="w-3.5 h-3.5" />
-            <span>{language === "bn" ? "আইনি নোটিশ প্রিন্ট করুন" : "Print Legal Notice"}</span>
+            <span>{t("uiPrintLegalNotice")}</span>
           </button>
         </div>
 
         {/* Page Title & Last Updated Tag */}
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-bold uppercase tracking-wider border border-[var(--brand-border)]">
-            <span>{language === "bn" ? "নিয়ন্ত্রক ও ক্লিনিকাল প্রশাসন" : "Regulatory & Clinical Governance"}</span>
+            <span>{t("uiRegulatoryClinicalGovernance")}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
             {title || defaultTitle}
           </h1>
           <p className="text-xs text-slate-500">
-            {language === "bn" ? "কার্যকর তারিখ:" : "Effective Date:"} {lastUpdated || (language === "bn" ? "১ নভেম্বর, ২০২৬" : "November 1, 2026")} • {language === "bn" ? "সংস্করণ ২.৪.০ (বিএমডিসি ও স্বাস্থ্য ডেটা সুরক্ষা মানদণ্ড)" : "Version 2.4.0 (BMDC & Data Protection Standard)"}
+            {t("uiEffectiveDate")} {lastUpdated || (t("uiNovember"))} • {t("uiVersionBMDCDataProtectionStandard")}
           </p>
         </div>
 

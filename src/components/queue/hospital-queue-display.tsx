@@ -304,7 +304,7 @@ export function HospitalQueueDisplay({
               type="button"
               onClick={handlePrevDoctor}
               className="p-1.5 rounded-lg border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 transition"
-              title={language === "bn" ? "পূর্ববর্তী ডাক্তার" : "Previous Doctor"}
+              title={t("uiPreviousDoctor")}
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -316,7 +316,7 @@ export function HospitalQueueDisplay({
                   ? "bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400"
                   : "border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300"
               }`}
-              title={isPaused ? (language === "bn" ? "অটো-সাইকেল চালু করুন" : "Resume Auto-Cycling") : (language === "bn" ? "এই ডাক্তারের উপর থামুন" : "Pause on this Doctor")}
+              title={isPaused ? (t("uiResumeAutoCycling")) : (t("uiPauseOnThisDoctor"))}
             >
               {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
             </button>
@@ -324,7 +324,7 @@ export function HospitalQueueDisplay({
               type="button"
               onClick={handleNextDoctor}
               className="p-1.5 rounded-lg border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 transition"
-              title={language === "bn" ? "পরবর্তী ডাক্তার" : "Next Doctor"}
+              title={t("uiNextDoctor")}
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -344,7 +344,7 @@ export function HospitalQueueDisplay({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="text-[11px] text-slate-500">
-              {isPaused ? (language === "bn" ? "অটো-সাইকেল স্থগিত" : "Auto-cycling paused") : (language === "bn" ? `${secondsRemaining} সেকেন্ডে পরিবর্তন` : `Cycling in ${secondsRemaining}s`)}
+              {isPaused ? (t("uiAutoCyclingPaused")) : (language === "bn" ? `${secondsRemaining} সেকেন্ডে পরিবর্তন` : `Cycling in ${secondsRemaining}s`)}
             </span>
             <div className="w-24 h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
               <div
@@ -367,7 +367,7 @@ export function HospitalQueueDisplay({
               <span>{t.consultingPhysicians} ({doctors.length})</span>
             </span>
             <span className="text-[10px] text-emerald-600 font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10">
-              {language === "bn" ? "লাইভ আপডেট" : "Live Updates"}
+              {t("uiLiveUpdates")}
             </span>
           </div>
 
@@ -412,7 +412,7 @@ export function HospitalQueueDisplay({
                       </h4>
                       <p className="text-[11px] text-slate-500 truncate">{doc.specialization}</p>
                       <p className="text-[10px] text-slate-400 truncate">
-                        {doc.chamberAddress || (language === "bn" ? "ওপিডি চেম্বার কক্ষ" : "OPD Chamber Room")}
+                        {doc.chamberAddress || (t("uiOpdChamberRoom"))}
                       </p>
                     </div>
                   </div>
@@ -430,7 +430,7 @@ export function HospitalQueueDisplay({
                       #{doc.currentSerial || "0"}
                     </span>
                     <span className="text-[10px] text-slate-500 font-medium">
-                      {doc.waitingCount} {language === "bn" ? "অপেক্ষমাণ" : "waiting"}
+                      {doc.waitingCount} {t("uiWaiting2")}
                     </span>
                   </div>
                 </button>
@@ -441,12 +441,10 @@ export function HospitalQueueDisplay({
           {/* Patient Instruction Card */}
           <div className="p-3.5 rounded-2xl bg-[var(--bg-app)] border border-[var(--border-subtle)] text-[11px] text-slate-500 space-y-1">
             <span className="font-bold text-slate-700 dark:text-slate-300 block">
-              {language === "bn" ? "রোগীদের জন্য নির্দেশিকা:" : "Patient Guidance:"}
+              {t("rolePatientGuidance")}
             </span>
             <p className="leading-relaxed">
-              {language === "bn"
-                ? "এই ডিসপ্লেটি স্বয়ংক্রিয়ভাবে সকল চেম্বারের তথ্য প্রদর্শন করে। নির্দিষ্ট চিকিৎসকের জন্য উপরের তালিকায় ক্লিক করুন বা তাদের প্রোফাইল দেখুন।"
-                : "This display rotates automatically through all chambers. If you are waiting for a specific physician, click their name above or visit their direct page."}
+              {t("uiThisDisplayRotatesAutomaticallyThrough")}
             </p>
           </div>
         </div>
@@ -481,11 +479,11 @@ export function HospitalQueueDisplay({
                     {selectedDoctor.name}
                   </h2>
                   <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-                    {selectedDoctor.degrees || (language === "bn" ? "বিশেষজ্ঞ চিকিৎসক" : "Specialist Physician")}{" "}
+                    {selectedDoctor.degrees || (t("uiSpecialistPhysician"))}{" "}
                     {selectedDoctor.designation ? `• ${selectedDoctor.designation}` : ""}
                   </p>
                   <p className="text-[11px] text-slate-500 font-mono">
-                    {selectedDoctor.chamberAddress || "OPD Chamber 301, 3rd Floor"} • BMDC: {selectedDoctor.bmdcRegNo || (language === "bn" ? "ভেরিফায়েড" : "Verified")}
+                    {selectedDoctor.chamberAddress || "OPD Chamber 301, 3rd Floor"} • BMDC: {selectedDoctor.bmdcRegNo || (t("uiVerified"))}
                   </p>
                 </div>
               </div>
@@ -496,11 +494,11 @@ export function HospitalQueueDisplay({
                   href={`/doctors/${selectedDoctor.id}`}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] hover:bg-[var(--brand-primary)] hover:text-white transition font-bold text-xs border border-[var(--brand-border)] shadow-2xs"
                 >
-                  <span>{language === "bn" ? "ডাক্তারের বিস্তারিত ও সময়সূচী" : "Open Doctor Details & Schedule"}</span>
+                  <span>{t("uiOpenDoctorDetailsSchedule")}</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </Link>
                 <span className="text-[10px] text-slate-400 font-medium">
-                  {language === "bn" ? "রোগী দেখার সময়:" : "Visiting:"} {selectedDoctor.visitingHours || (language === "bn" ? "শনি - বৃহঃ বিকাল ৫:০০ - রাত ৯:০০" : "Sat - Thu: 5:00 PM - 9:00 PM")}
+                  {t("uiVisiting")} {selectedDoctor.visitingHours || (t("uiSatThuPMPM"))}
                 </span>
               </div>
             </div>
@@ -525,7 +523,7 @@ export function HospitalQueueDisplay({
                   </div>
 
                   <p className="text-xs sm:text-sm text-slate-500 font-semibold">
-                    {t.pleaseProceedTo} {selectedDoctor.chamberAddress || (language === "bn" ? "ডাক্তার পরামর্শ চেম্বার" : "Doctor Consultation Chamber")}
+                    {t.pleaseProceedTo} {selectedDoctor.chamberAddress || (t("roleDoctorConsultationChamber"))}
                   </p>
                 </>
               ) : (
@@ -560,10 +558,10 @@ export function HospitalQueueDisplay({
                     <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 block truncate">
                       {selectedDoctor.previousPatient.safeName}
                     </span>
-                    <span className="text-[10px] text-emerald-600 font-medium">{language === "bn" ? "সম্পন্ন" : "Completed"}</span>
+                    <span className="text-[10px] text-emerald-600 font-medium">{t("completed")}</span>
                   </div>
                 ) : (
-                  <span className="text-xs text-slate-400 block pt-1 font-medium">{language === "bn" ? "আজকে এখনও নেই" : "None yet today"}</span>
+                  <span className="text-xs text-slate-400 block pt-1 font-medium">{t("uiNoneYetToday")}</span>
                 )}
               </div>
 
@@ -584,7 +582,7 @@ export function HospitalQueueDisplay({
                     <span className="text-[10px] text-amber-600 font-medium">{t.pleaseBeReady}</span>
                   </div>
                 ) : (
-                  <span className="text-xs text-slate-400 block pt-1 font-medium">{language === "bn" ? "লাইনে কোনো রোগী নেই" : "No patient next in line"}</span>
+                  <span className="text-xs text-slate-400 block pt-1 font-medium">{t("uiNoPatientNextInLine")}</span>
                 )}
               </div>
 
@@ -624,7 +622,7 @@ export function HospitalQueueDisplay({
                   {t.upcomingQueueInLine}
                 </span>
                 <span className="text-[11px] text-slate-500">
-                  {language === "bn" ? "আজকের মোট বুকিং:" : "Total Booked Today:"} <strong>{selectedDoctor.totalToday}</strong> • {language === "bn" ? "অপেক্ষমাণ:" : "Waiting:"}{" "}
+                  {t("uiTotalBookedToday")} <strong>{selectedDoctor.totalToday}</strong> • {t("uiWaiting")}{" "}
                   <strong>{selectedDoctor.waitingCount}</strong>
                 </span>
               </div>
@@ -647,7 +645,7 @@ export function HospitalQueueDisplay({
                 </div>
               ) : (
                 <p className="text-xs text-slate-400 py-2">
-                  {language === "bn" ? "বর্তমানে কিউতে কোনো অপেক্ষমাণ রোগী নেই।" : "No additional patients currently queued in line."}
+                  {t("uiNoAdditionalPatientsCurrentlyQueued")}
                 </p>
               )}
             </div>
@@ -661,7 +659,7 @@ export function HospitalQueueDisplay({
                 </span>
               </div>
               <span className="text-[11px] font-medium text-slate-400">
-                {language === "bn" ? "চিকিৎসক ও ক্লিনিক্যাল কর্মীরা চেম্বার থেকে সিরিয়াল নম্বর পরিবর্তন করেন।" : "Calling serials are advanced by clinical staff and doctors inside the consulting room."}
+                {t("uiCallingSerialsAreAdvancedBy")}
               </span>
             </div>
           </div>

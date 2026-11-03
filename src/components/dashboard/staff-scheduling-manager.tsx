@@ -245,11 +245,11 @@ export function StaffSchedulingManager() {
                   <div className="p-3 rounded-2xl bg-[var(--bg-subtle)] space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
                     <div className="flex items-center gap-2">
                       <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t.visitingHoursLabel}: <strong>{doc.visitingHours || (language === "bn" ? "নির্দিষ্ট নয়" : "Not specified")}</strong></span>
+                      <span>{t.visitingHoursLabel}: <strong>{doc.visitingHours || (t("uiNotSpecified"))}</strong></span>
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t.chamberLabel}: <strong>{doc.chamberAddress || (language === "bn" ? "মূল ওপিডি" : "Main OPD")}</strong></span>
+                      <span>{t.chamberLabel}: <strong>{doc.chamberAddress || (t("uiMainOPD"))}</strong></span>
                     </div>
                     {doc.contactNumber && (
                       <div className="flex items-center gap-2">

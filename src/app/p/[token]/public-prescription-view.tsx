@@ -149,7 +149,7 @@ export function PublicPrescriptionView({
               </span>
             </div>
             <p className="text-xs text-slate-500">
-              Rx #{prescription.id.slice(-8).toUpperCase()} • {language === "bn" ? "প্রদানকারী চিকিৎসক: " : "Authored by "}{doc.user.name}
+              Rx #{prescription.id.slice(-8).toUpperCase()} • {t("uiAuthoredBy")}{doc.user.name}
             </p>
           </div>
         </div>
@@ -179,19 +179,19 @@ export function PublicPrescriptionView({
               </h1>
             </div>
             <p className="text-xs text-slate-500">
-              {prescription.organization?.address || (language === "bn" ? "ক্লিনিক্যাল সেবা ও প্রেসক্রিপশন কেন্দ্র" : "Clinical Prescribing & Patient Care Services")}
+              {prescription.organization?.address || (t("uiClinicalPrescribingPatientCareServices"))}
             </p>
             <p className="text-xs font-semibold text-teal-800">
-              {language === "bn" ? "যোগাযোগ:" : "Contact:"} {prescription.organization?.contactPhone || doc.contactNumber || "+880 2-8901234"}
+              {t("uiContact2")} {prescription.organization?.contactPhone || doc.contactNumber || "+880 2-8901234"}
             </p>
           </div>
 
           <div className="text-left sm:text-right space-y-0.5">
             <h2 className="text-lg font-bold text-teal-900">{doc.user.name}</h2>
             <p className="text-xs font-semibold text-slate-700">{doc.degrees || "MBBS"}</p>
-            <p className="text-xs text-slate-600">{doc.specialization} • {doc.designation || (language === "bn" ? "কনসালট্যান্ট" : "Consultant")}</p>
+            <p className="text-xs text-slate-600">{doc.specialization} • {doc.designation || (t("uiConsultant"))}</p>
             <p className="text-xs text-slate-500">
-              {language === "bn" ? "বিএমডিসি রেজি নং:" : "BMDC Reg No:"} <strong className="text-slate-800">{doc.bmdcRegNo || "BMDC-A-41285"}</strong>
+              {t("uiBmdcRegNo")} <strong className="text-slate-800">{doc.bmdcRegNo || "BMDC-A-41285"}</strong>
             </p>
           </div>
         </div>
@@ -211,7 +211,7 @@ export function PublicPrescriptionView({
           <div>
             <span className="text-[10px] uppercase font-bold text-teal-700 block">{t.dateOfIssue}</span>
             <span className="font-semibold text-slate-800">
-              {new Date(prescription.createdAt).toLocaleDateString(language === "bn" ? "bn-BD" : "en-US", {
+              {new Date(prescription.createdAt).toLocaleDateString(t("uiEnUS"), {
                 day: "numeric",
                 month: "short",
                 year: "numeric",
@@ -350,7 +350,7 @@ export function PublicPrescriptionView({
                         {m.timing && <span>• {m.timing}</span>}
                         {m.duration && (
                           <span>
-                            • {language === "bn" ? "চলবে: " : "Continue for: "}
+                            • {t("uiContinueFor")}
                             <strong>{m.duration}</strong>
                           </span>
                         )}
@@ -358,7 +358,7 @@ export function PublicPrescriptionView({
 
                       {m.instructions && (
                         <p className="text-[11px] text-slate-500 italic pt-0.5">
-                          {language === "bn" ? "নির্দেশনা: " : "Note: "}{m.instructions}
+                          {t("uiNote2")}{m.instructions}
                         </p>
                       )}
                     </div>
@@ -422,7 +422,7 @@ export function PublicPrescriptionView({
             </div>
             <p className="font-bold text-slate-800">{doc.user.name}</p>
             <p className="text-[10px] text-slate-500">
-              {language === "bn" ? "বিএমডিসি রেজি নং:" : "BMDC Reg No:"} {doc.bmdcRegNo || "A-41285"}
+              {t("uiBmdcRegNo")} {doc.bmdcRegNo || "A-41285"}
             </p>
           </div>
         </div>

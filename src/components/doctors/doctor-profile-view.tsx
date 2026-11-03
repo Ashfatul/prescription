@@ -134,7 +134,7 @@ export function DoctorProfileView({
                       doctor.available ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
                     }`}
                   />
-                  <span>{doctor.available ? (language === "bn" ? "চেম্বার খোলা" : "Chamber Open") : (language === "bn" ? "চেম্বার সাময়িক বন্ধ / অনুপস্থিত" : "Chamber Paused / Away")}</span>
+                  <span>{doctor.available ? (t("uiChamberOpen2")) : (t("chamberPausedAway"))}</span>
                 </span>
               </div>
 
@@ -164,13 +164,13 @@ export function DoctorProfileView({
                 {doctor.bmdcRegNo && (
                   <span className="flex items-center gap-1 font-mono font-medium">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                    <span>{language === "bn" ? "বিএমডিসি রেজি:" : "BMDC Reg:"} {doctor.bmdcRegNo}</span>
+                    <span>{t("uiBmdcReg")} {doctor.bmdcRegNo}</span>
                   </span>
                 )}
                 {doctor.experienceYears && (
                   <span className="flex items-center gap-1 font-medium">
                     <Award className="w-3.5 h-3.5 text-amber-500" />
-                    <span>{language === "bn" ? "অভিজ্ঞতা:" : "Experience:"} {doctor.experienceYears} {language === "bn" ? "বছর" : "Years"}</span>
+                    <span>{t("uiExperience")} {doctor.experienceYears} {t("uiYears")}</span>
                   </span>
                 )}
               </div>
@@ -216,8 +216,8 @@ export function DoctorProfileView({
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] text-[11px] font-bold uppercase tracking-wider border border-[var(--brand-border)]">
               <Activity className="w-3.5 h-3.5 animate-pulse" />
               <span>
-                {language === "bn" ? "লাইভ রুম ক্রম • " : "Live Room Sequence • "}
-                {doctor.chamberAddress || (language === "bn" ? "চেম্বার কনসালটেশন রুম" : "Chamber Consultation Room")}
+                {t("uiLiveRoomSequence")}
+                {doctor.chamberAddress || (t("uiChamberConsultationRoom"))}
               </span>
             </div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -251,8 +251,8 @@ export function DoctorProfileView({
             </div>
             <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 block">
               {queue.currentSerial
-                ? (language === "bn" ? "চেম্বারে উপস্থিত" : "Inside Chamber")
-                : (language === "bn" ? "চেম্বার প্রস্তুত" : "Chamber Ready")}
+                ? (t("uiInsideChamber"))
+                : (t("uiChamberReady"))}
             </span>
           </div>
 
@@ -267,8 +267,8 @@ export function DoctorProfileView({
             </div>
             <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400 block">
               {queue.nextSerial
-                ? (language === "bn" ? "লবিতে অপেক্ষা করুন" : "Please wait in lobby")
-                : (language === "bn" ? "কিউতে কোনো রোগী নেই" : "No patient queued")}
+                ? (t("uiPleaseWaitInLobby"))
+                : (t("uiNoPatientQueued"))}
             </span>
           </div>
 
@@ -283,8 +283,8 @@ export function DoctorProfileView({
             </div>
             <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 block">
               {queue.previousSerial
-                ? (language === "bn" ? "পরামর্শ সম্পন্ন" : "Completed")
-                : (language === "bn" ? "প্রথম পরামর্শ" : "First consultation")}
+                ? (t("uiCompleted"))
+                : (t("uiFirstConsultation"))}
             </span>
           </div>
 
@@ -340,10 +340,10 @@ export function DoctorProfileView({
             </span>
             <div>
               <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                {language === "bn" ? "সাক্ষাতের সময়সূচি" : "Visiting Schedule"}
+                {t("uiVisitingSchedule")}
               </h3>
               <p className="text-[11px] text-slate-500">
-                {language === "bn" ? "চেম্বার পরামর্শের সময়" : "Chamber consultation hours"}
+                {t("uiChamberConsultationHours")}
               </p>
             </div>
           </div>
@@ -360,7 +360,7 @@ export function DoctorProfileView({
             {doctor.chamberAddress && (
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
-                  {language === "bn" ? "চেম্বারের অবস্থান:" : "Chamber Location:"}
+                  {t("uiChamberLocation")}
                 </span>
                 <p className="font-semibold text-slate-800 dark:text-slate-200 flex items-start gap-1">
                   <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
@@ -372,7 +372,7 @@ export function DoctorProfileView({
             {/* Multi-Tier Consultation Fee & Visiting Policy */}
             <div className="pt-2 border-t border-[var(--border-subtle)] space-y-2.5">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-                {language === "bn" ? "পরামর্শ ফি ও নীতিমালা:" : "Consultation Fees & Policy:"}
+                {t("uiConsultationFeesPolicy")}
               </span>
               
               <div className="space-y-1.5 rounded-2xl bg-[var(--bg-subtle)] p-3 border border-[var(--border-subtle)]">
@@ -392,7 +392,7 @@ export function DoctorProfileView({
                   <span className="font-bold text-[var(--brand-text)] font-mono">
                     ${doctor.followupFee ?? 30}{" "}
                     <span className="text-[10px] text-slate-400 font-normal">
-                      ({doctor.followupValidityDays ?? 90}{language === "bn" ? "দিন মেয়াদ" : "d validity"})
+                      ({doctor.followupValidityDays ?? 90}{t("uiDValidity")})
                     </span>
                   </span>
                 </div>
@@ -402,9 +402,9 @@ export function DoctorProfileView({
                     {t.reportReview}:
                   </span>
                   <span className="font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
-                    {language === "bn" ? "বিনামূল্যে ($০)" : "FREE ($0)"}{" "}
+                    {t("uiFree")}{" "}
                     <span className="text-[10px] opacity-80 font-normal">
-                      ({doctor.reportFreeDays ?? 2}{language === "bn" ? " দিনের মধ্যে" : "d window"})
+                      ({doctor.reportFreeDays ?? 2}{t("uiDWindow")})
                     </span>
                   </span>
                 </div>
@@ -412,7 +412,7 @@ export function DoctorProfileView({
 
               {doctor.consultationFee && (
                 <p className="text-[11px] text-slate-500 italic">
-                  {language === "bn" ? "চেম্বার নোট: " : "Chamber note: "}{doctor.consultationFee}
+                  {t("uiChamberNote")}{doctor.consultationFee}
                 </p>
               )}
             </div>
@@ -420,7 +420,7 @@ export function DoctorProfileView({
             {doctor.contactNumber && (
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
-                  {language === "bn" ? "অ্যাপয়েন্টমেন্ট ফোন:" : "Appointment Phone:"}
+                  {t("uiAppointmentPhone")}
                 </span>
                 <p className="font-mono font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
                   <PhoneCall className="w-3.5 h-3.5 text-slate-400" />
@@ -437,7 +437,7 @@ export function DoctorProfileView({
           <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs space-y-3">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Award className="w-4 h-4 text-[var(--brand-primary)]" />
-              <span>{language === "bn" ? "পরিচিতি ও পেশাদার অভিজ্ঞতা" : "About & Professional Experience"}</span>
+              <span>{t("uiAboutProfessionalExperience")}</span>
             </h3>
 
             <div className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed space-y-2">
@@ -457,7 +457,7 @@ export function DoctorProfileView({
           <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs space-y-4">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-500" />
-              <span>{language === "bn" ? "অনুমোদন ও প্র্যাকটিস মানদণ্ড" : "Accreditation & Practice Standards"}</span>
+              <span>{t("uiAccreditationPracticeStandards")}</span>
             </h3>
 
             <div className="grid gap-3 sm:grid-cols-2 text-xs">
@@ -465,12 +465,10 @@ export function DoctorProfileView({
                 <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-bold text-slate-800 dark:text-slate-200">
-                    {language === "bn" ? "বিএমডিসি নিবন্ধিত" : "BMDC Registered"}
+                    {t("uiBmdcRegistered")}
                   </h4>
                   <p className="text-[11px] text-slate-500">
-                    {language === "bn"
-                      ? "অফিশিয়াল কম্পিউটারাইজড প্রেসক্রিপশন প্রদানের অনুমোদিত লাইসেন্সধারী চিকিৎসক।"
-                      : "Licensed physician eligible for official computerized digital prescriptions."}
+                    {t("uiLicensedPhysicianEligibleForOfficial")}
                   </p>
                 </div>
               </div>
@@ -479,12 +477,10 @@ export function DoctorProfileView({
                 <Activity className="w-4 h-4 text-[var(--brand-primary)] shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-bold text-slate-800 dark:text-slate-200">
-                    {language === "bn" ? "ডিজিটাল সংস্করণ ট্র্যাকিং" : "Digital Version Tracking"}
+                    {t("uiDigitalVersionTracking")}
                   </h4>
                   <p className="text-[11px] text-slate-500">
-                    {language === "bn"
-                      ? "এই চিকিৎসকের প্রতিটি প্রেসক্রিপশন সংস্করণ ইতিহাস এবং ল্যাব রিপোর্ট ট্র্যাকিং সমর্থন করে।"
-                      : "All prescriptions issued by this physician support version history and lab report follow-ups."}
+                    {t("uiAllPrescriptionsIssuedByThis")}
                   </p>
                 </div>
               </div>
@@ -493,7 +489,7 @@ export function DoctorProfileView({
             {doctor.signatureUrl && (
               <div className="pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs">
                 <span className="text-[11px] text-slate-400">
-                  {language === "bn" ? "অনুমোদিত ডিজিটাল স্বাক্ষর সংরক্ষিত:" : "Authorized Digital Signature on File:"}
+                  {t("uiAuthorizedDigitalSignatureOnFile")}
                 </span>
                 <div className="px-3 py-1 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
                   {/* eslint-disable-next-line @next/next/no-img-element */}

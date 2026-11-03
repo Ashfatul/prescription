@@ -237,10 +237,10 @@ export function UserManager() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-md bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 text-xs font-bold">
-              {language === "bn" ? "ব্যবহারকারী তালিকা ও ক্রেডেনশিয়াল" : "User Directory & Credentials"}
+              {t("uiUserDirectoryCredentials")}
             </span>
             <span className="text-xs text-slate-400 font-medium">
-              {language === "bn" ? "• অ্যাক্সেস ব্যবস্থাপনা" : "• Access Management"}
+              {t("uiAccessManagement")}
             </span>
           </div>
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -322,11 +322,11 @@ export function UserManager() {
       <div className="rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-xs text-slate-400">
-            {language === "bn" ? "অ্যাকাউন্ট লোড হচ্ছে..." : "Loading user accounts..."}
+            {t("uiLoadingUserAccounts")}
           </div>
         ) : filteredUsers.length === 0 ? (
           <div className="p-12 text-center text-xs text-slate-400">
-            {language === "bn" ? "কোনো অ্যাকাউন্ট পাওয়া যায়নি।" : "No accounts match your search criteria."}
+            {t("uiNoAccountsMatchYourSearch")}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -534,7 +534,7 @@ export function UserManager() {
                     <div className="grid grid-cols-2 gap-2.5">
                       <div>
                         <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
-                          {language === "bn" ? "বিএমডিসি রেজি. নং" : "BMDC Reg No"}
+                          {t("uiBmdcRegNo2")}
                         </label>
                         <input
                           type="text"
@@ -546,7 +546,7 @@ export function UserManager() {
                       </div>
                       <div>
                         <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
-                          {language === "bn" ? "রোগী দেখার সময়" : "Visiting Hours"}
+                          {t("uiVisitingHours")}
                         </label>
                         <input
                           type="text"
@@ -559,7 +559,7 @@ export function UserManager() {
                     </div>
                     <div>
                       <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">
-                        {language === "bn" ? "চেম্বার ও রুমের ঠিকানা" : "Chamber Address & Room"}
+                        {t("uiChamberAddressRoom")}
                       </label>
                       <input
                         type="text"
@@ -592,7 +592,7 @@ export function UserManager() {
                   disabled={isPending}
                   className="px-5 py-2 rounded-xl text-xs font-bold bg-[var(--brand-primary)] text-white shadow-md hover:opacity-90 disabled:opacity-50 cursor-pointer"
                 >
-                  {isPending ? (language === "bn" ? "তৈরি হচ্ছে..." : "Creating...") : t.saveAccount}
+                  {isPending ? (t("uiCreating")) : t.saveAccount}
                 </button>
               </div>
             </form>
@@ -659,7 +659,7 @@ export function UserManager() {
                   </div>
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                      {language === "bn" ? "পাসওয়ার্ড পরিবর্তন (ঐচ্ছিক)" : "Change Password (Optional)"}
+                      {t("uiChangePasswordOptional")}
                     </label>
                     <input
                       type="password"
@@ -718,7 +718,7 @@ export function UserManager() {
                   disabled={isPending}
                   className="px-5 py-2 rounded-xl text-xs font-bold bg-[var(--brand-primary)] text-white shadow-md hover:opacity-90 disabled:opacity-50 cursor-pointer"
                 >
-                  {isPending ? (language === "bn" ? "হালনাগাদ হচ্ছে..." : "Updating...") : t.updateAccount}
+                  {isPending ? (t("uiUpdating")) : t.updateAccount}
                 </button>
               </div>
             </form>

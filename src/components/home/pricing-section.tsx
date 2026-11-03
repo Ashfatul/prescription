@@ -120,18 +120,18 @@ export function PricingSection({ initialPlans }: { initialPlans: PricingPlanProp
                         ${displayPrice}
                       </span>
                       <span className="text-xs font-semibold text-slate-400">
-                        {t.perMonth} {billingCycle === "yearly" ? (language === "bn" ? "(বার্ষিক বিলিং)" : "(billed annually)") : ""}
+                        {t.perMonth} {billingCycle === "yearly" ? (t("uiBilledAnnually")) : ""}
                       </span>
                     </div>
                     <span className="text-[11px] text-emerald-600 font-semibold block">
-                      ✓ {language === "bn" ? "তাত্ক্ষণিক ক্লাউড অ্যাক্টিভেশন" : "Instant SaaS cloud provisioning"}
+                      ✓ {t("uiInstantSaaSCloudProvisioning")}
                     </span>
                   </div>
 
                   {/* Feature Checklist */}
                   <div className="space-y-3">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-                      {language === "bn" ? "এই প্যাকেজের সুবিধাসমূহ:" : "Everything in this plan:"}
+                      {t("uiEverythingInThisPlan")}
                     </span>
                     <ul className="space-y-2.5 text-xs text-slate-700 dark:text-slate-300">
                       {Array.isArray(plan.features) &&
@@ -159,7 +159,7 @@ export function PricingSection({ initialPlans }: { initialPlans: PricingPlanProp
                   </Link>
 
                   <p className="text-[10px] text-center text-slate-400">
-                    {language === "bn" ? "ক্রেডিট কার্ড লাগবে না • যে কোনো সময় বাতিলযোগ্য" : "No credit card required • Cancel anytime"}
+                    {t("uiNoCreditCardRequiredCancel")}
                   </p>
                 </div>
               </div>
@@ -175,12 +175,10 @@ export function PricingSection({ initialPlans }: { initialPlans: PricingPlanProp
             </div>
             <div className="space-y-1">
               <h4 className="text-base font-bold text-slate-900 dark:text-white">
-                {language === "bn" ? "কাস্টম প্রাইভেট ক্লাউড বা অন-প্রিমিসেস সার্ভার প্রয়োজন?" : "Need Dedicated On-Premises or Private Cloud SLA?"}
+                {t("uiNeedDedicatedOnPremisesOr")}
               </h4>
               <p className="text-xs text-slate-500 max-w-xl">
-                {language === "bn"
-                  ? "আমরা বড় হাসপাতাল, সরকারি বা প্রাতিষ্ঠানিক মেডিকেল সেন্টারের জন্য কাস্টম ডকার ক্লাস্টার, নিজস্ব ইন্ট্রানেট হোস্টিং ও বিএমডিসি লিগ্যাল আর্কাইভিং সুবিধা প্রদান করি।"
-                  : "We provide custom hospital intranet setups, private Docker container orchestrations, and BMDC legal archival for tertiary government and military medical complexes."}
+                {t("uiWeProvideCustomHospitalIntranet")}
               </p>
             </div>
           </div>
@@ -189,7 +187,7 @@ export function PricingSection({ initialPlans }: { initialPlans: PricingPlanProp
             href="/#doctors"
             className="px-6 py-3 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-default)] hover:border-[var(--brand-primary)] text-xs font-bold text-slate-800 dark:text-slate-200 transition shrink-0"
           >
-            {language === "bn" ? "হাসপাতাল প্রতিনিধির সাথে যোগাযোগ" : "Contact Hospital Sales"}
+            {t("uiContactHospitalSales")}
           </Link>
         </div>
       </div>

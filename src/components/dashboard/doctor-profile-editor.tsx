@@ -588,9 +588,9 @@ export function DoctorProfileEditor({
             <div className="space-y-0.5">
               <span className="font-bold block">{t.summaryOfChamberPolicy}</span>
               <p className="text-[11px] leading-relaxed opacity-90">
-                • <strong>{language === "bn" ? "নতুন রোগী:" : "New Patients:"}</strong> {language === "bn" ? `প্রথম পরামর্শে ফি $${newPatientFee}।` : `Charged $${newPatientFee} for first consultation.`}<br />
-                • <strong>{language === "bn" ? "টেস্টের রিপোর্ট প্রদর্শন:" : "Diagnostic Report Showing:"}</strong> {language === "bn" ? `ভিজিটের ${reportFreeDays} দিনের মধ্যে বিনামূল্যে ($০.০০)।` : `Free ($0.00) within ${reportFreeDays} days of initial visit.`}<br />
-                • <strong>{language === "bn" ? "ফলো-আপ ভিজিট:" : "Follow-up Visits:"}</strong> {language === "bn" ? `পূর্বের প্রেসক্রিপশনসহ ${followupValidityDays} দিনের মধ্যে আসলে ফি $${followupFee}।` : `Charged $${followupFee} if presenting within ${followupValidityDays} days with verified previous prescription.`}
+                • <strong>{t("firstVisitFees")}</strong> {language === "bn" ? `প্রথম পরামর্শে ফি $${newPatientFee}।` : `Charged $${newPatientFee} for first consultation.`}<br />
+                • <strong>{t("uiDiagnosticReportShowing")}</strong> {language === "bn" ? `ভিজিটের ${reportFreeDays} দিনের মধ্যে বিনামূল্যে ($০.০০)।` : `Free ($0.00) within ${reportFreeDays} days of initial visit.`}<br />
+                • <strong>{t("followUpVisits")}</strong> {language === "bn" ? `পূর্বের প্রেসক্রিপশনসহ ${followupValidityDays} দিনের মধ্যে আসলে ফি $${followupFee}।` : `Charged $${followupFee} if presenting within ${followupValidityDays} days with verified previous prescription.`}
               </p>
             </div>
           </div>

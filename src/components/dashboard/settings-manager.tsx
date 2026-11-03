@@ -89,7 +89,7 @@ export function SettingsManager() {
       <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-3">
         <RefreshCw className="w-6 h-6 animate-spin text-[var(--brand-primary)] mx-auto" />
         <p className="text-xs text-slate-500 font-medium">
-          {language === "bn" ? "হাসপাতাল সেটিংস লোড হচ্ছে..." : "Loading hospital settings..."}
+          {t("uiLoadingHospitalSettings")}
         </p>
       </div>
     );
@@ -101,10 +101,10 @@ export function SettingsManager() {
       <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-1.5">
           <span className="px-2.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-primary)] text-xs font-bold">
-            {language === "bn" ? "হাসপাতাল ওএস কনফিগারেশন" : "Hospital OS Configuration"}
+            {t("uiHospitalOSConfiguration")}
           </span>
           <span className="text-xs text-[var(--text-muted)] font-medium">
-            {language === "bn" ? "• পাবলিক পোর্টাল ও চেম্বার সেটিংস" : "• Public Portal & Chamber Variables"}
+            {t("uiPublicPortalChamberVariables")}
           </span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
@@ -121,9 +121,7 @@ export function SettingsManager() {
           <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
             <span>
-              {language === "bn"
-                ? "হাসপাতালের সেটিংস সফলভাবে সংরক্ষিত হয়েছে। সমস্ত পাবলিক পেজ, হেডার ও ফুটারে তথ্য আপডেট হয়েছে।"
-                : "Hospital settings saved successfully. All public pages, headers, footers, and doctor directories will reflect these values immediately."}
+              {t("uiHospitalSettingsSavedSuccessfullyAll")}
             </span>
           </div>
         )}
@@ -165,9 +163,7 @@ export function SettingsManager() {
                 )}
               </span>
               <p className="text-xs text-slate-500 leading-relaxed max-w-xl">
-                {language === "bn"
-                  ? "সক্রিয় থাকলে, প্রতিটি নিবন্ধিত চিকিৎসক, স্টাফ, ক্লিনিক অ্যাডমিন এবং রোগীকে ড্যাশবোর্ডে প্রবেশের পূর্বে তাদের ইমেইল ঠিকানা নিশ্চিত করতে হবে।"
-                  : "When enabled, every registered physician, staff member, clinic admin, and patient must confirm their email address before they can continue to dashboard or log in. Unverified users will be gated at the verification screen."}
+                {t("uiWhenEnabledEveryRegisteredPhysician")}
               </p>
             </div>
 
@@ -210,9 +206,7 @@ export function SettingsManager() {
                 )}
               </span>
               <p className="text-xs text-slate-500 leading-relaxed max-w-xl">
-                {language === "bn"
-                  ? "সক্রিয় থাকলে, প্ল্যাটফর্ম সুপার অ্যাডমিনের অনুমোদন না পাওয়া পর্যন্ত নতুন কোনো ক্লিনিক সংস্থা লগইন বা রোগী পরিচালনা করতে পারবে না।"
-                  : "When enabled, new clinic organizations cannot log in or manage patients until their account has been officially reviewed and confirmed by the platform Super Administrator."}
+                {t("uiWhenEnabledNewClinicOrganizations")}
               </p>
             </div>
 
@@ -255,9 +249,7 @@ export function SettingsManager() {
                 )}
               </span>
               <p className="text-xs text-slate-500 leading-relaxed max-w-xl">
-                {language === "bn"
-                  ? "সক্রিয় থাকলে, রোগী নিজে নিবন্ধন করার পর ক্লিনিক্যাল ফ্রন্ট ডেস্ক স্টাফ বা হাসপাতাল অ্যাডমিন তাদের পরিচয় যাচাই না করা পর্যন্ত অ্যাকাউন্ট পেন্ডিং থাকবে।"
-                  : "When enabled, newly self-registered patient accounts remain pending until clinical front desk staff or hospital administrators verify their identity. After verification, patients receive a confirmation email and gain login access."}
+                {t("uiWhenEnabledNewlySelfRegistered")}
               </p>
             </div>
 
@@ -352,7 +344,7 @@ export function SettingsManager() {
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                {language === "bn" ? "বহির্বিভাগ (OPD) সময়সূচী" : "OPD Visiting Hours"}
+                {t("uiOpdVisitingHours")}
               </label>
               <input
                 type="text"
