@@ -20,6 +20,10 @@ export async function PATCH(
     const updated = await updatePricingPlan(id, {
       ...body,
       price: body.price !== undefined ? Number(body.price) : undefined,
+      maxDoctors: body.maxDoctors == null || body.maxDoctors === "" ? null : Number(body.maxDoctors),
+      maxStaff: body.maxStaff == null || body.maxStaff === "" ? null : Number(body.maxStaff),
+      maxPatients: body.maxPatients == null || body.maxPatients === "" ? null : Number(body.maxPatients),
+      maxPrescriptionsPerMonth: body.maxPrescriptionsPerMonth == null || body.maxPrescriptionsPerMonth === "" ? null : Number(body.maxPrescriptionsPerMonth),
     });
     return ok(updated);
   });

@@ -8,6 +8,10 @@ export type CreatePricingPlanParams = {
   billingCycle?: string;
   description?: string;
   features: string[];
+  maxDoctors?: number | null;
+  maxStaff?: number | null;
+  maxPatients?: number | null;
+  maxPrescriptionsPerMonth?: number | null;
   isPopular?: boolean;
   isActive?: boolean;
 };
@@ -35,6 +39,10 @@ export async function createPricingPlan(params: CreatePricingPlanParams) {
       billingCycle: params.billingCycle || "monthly",
       description: params.description,
       features: params.features as unknown as Prisma.InputJsonValue,
+      maxDoctors: params.maxDoctors,
+      maxStaff: params.maxStaff,
+      maxPatients: params.maxPatients,
+      maxPrescriptionsPerMonth: params.maxPrescriptionsPerMonth,
       isPopular: params.isPopular || false,
       isActive: params.isActive !== undefined ? params.isActive : true,
     },
@@ -58,6 +66,10 @@ export async function updatePricingPlan(
       billingCycle: data.billingCycle,
       description: data.description,
       features: data.features !== undefined ? (data.features as unknown as Prisma.InputJsonValue) : undefined,
+      maxDoctors: data.maxDoctors,
+      maxStaff: data.maxStaff,
+      maxPatients: data.maxPatients,
+      maxPrescriptionsPerMonth: data.maxPrescriptionsPerMonth,
       isPopular: data.isPopular,
       isActive: data.isActive,
     },

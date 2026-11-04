@@ -122,6 +122,27 @@ export async function createPrescription(input: unknown) {
     },
   });
   const orgId = doc?.user?.organizationId || null;
+  if (orgId) {
+    const organization = await db.organization.findUnique({
+      where: { id: orgId },
+      select: { plan: { select: { maxPrescriptionsPerMonth: true } } },
+    });
+    const monthlyLimit = organization?.plan?.maxPrescriptionsPerMonth;
+    if (monthlyLimit !== null && monthlyLimit !== undefined) {
+      const monthStart = new Date();
+      monthStart.setDate(1);
+      monthStart.setHours(0, 0, 0, 0);
+      const monthlyCount = await db.prescription.count({
+        where: { organizationId: orgId, createdAt: { gte: monthStart } },
+      });
+      if (monthlyCount >= monthlyLimit) {
+        throw new AppError(
+          `This clinic has reached its plan limit of ${monthlyLimit} prescriptions per month. Upgrade the plan to continue.`,
+          403
+        );
+      }
+    }
+  }
   const shareToken = `rx-${crypto.randomBytes(8).toString("hex")}`;
 
   const created = await db.$transaction(async (tx) => {

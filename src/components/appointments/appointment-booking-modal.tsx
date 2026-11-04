@@ -204,7 +204,12 @@ export function AppointmentBookingModal({
   useEffect(() => {
     if (!isOpen) return;
 
-    fetch("/api/public/doctors")
+    const doctorParams = new URLSearchParams();
+    if (user?.organizationId) {
+      doctorParams.set("organizationId", user.organizationId);
+    }
+
+    fetch(`/api/public/doctors${doctorParams.toString() ? `?${doctorParams.toString()}` : ""}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.data)) {
@@ -222,7 +227,7 @@ export function AppointmentBookingModal({
       .finally(() => {
         setLoadingDoctors(false);
       });
-  }, [isOpen, initialDoctorId]);
+  }, [isOpen, initialDoctorId, user?.organizationId]);
 
   const handleClose = () => {
     setConfirmedAppointment(null);

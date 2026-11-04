@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider, useTheme } from "next-themes";
 import { LanguageProvider } from "@/lib/i18n/language-context";
 import { AuthProvider, AuthUser } from "@/lib/auth/auth-context";
 import { PwaRegister } from "@/components/common/pwa-register";
@@ -37,6 +37,24 @@ function AccentSync({ initialAccent }: { initialAccent?: string }) {
   return null;
 }
 
+function ThemeSync() {
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    const handleThemeChange = (event: Event) => {
+      const detail = (event as CustomEvent<{ theme?: string }>).detail;
+      if (detail?.theme) {
+        setTheme(detail.theme);
+      }
+    };
+
+    window.addEventListener("ppms_theme_changed", handleThemeChange);
+    return () => window.removeEventListener("ppms_theme_changed", handleThemeChange);
+  }, [setTheme]);
+
+  return null;
+}
+
 export function Providers({
   children,
   initialUser,
@@ -59,6 +77,7 @@ export function Providers({
         <ToastProvider>
           <AuthProvider initialUser={initialUser}>
             <AccentSync initialAccent={initialAccent} />
+            <ThemeSync />
             <PwaRegister />
             {children}
           </AuthProvider>

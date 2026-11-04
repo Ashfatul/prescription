@@ -40,12 +40,16 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   return withErrorHandling(req, async () => {
-    const auth = await requireUser(req, [RoleName.SUPER_ADMIN]);
+    const auth = await requireUser(req, [RoleName.SUPER_ADMIN, RoleName.ADMIN]);
     const body = await req.json();
 
     let targetOrgId = auth.organizationId;
     if (auth.role === RoleName.SUPER_ADMIN && body.organizationId) {
       targetOrgId = body.organizationId;
+    }
+
+    if (auth.role === RoleName.ADMIN && body.organizationId && body.organizationId !== auth.organizationId) {
+      throw new AppError("Clinic administrators can only upgrade their own clinic.", 403);
     }
 
     if (!targetOrgId) {

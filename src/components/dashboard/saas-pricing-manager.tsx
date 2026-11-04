@@ -21,6 +21,10 @@ type PricingPlanItem = {
   billingCycle: string;
   description?: string | null;
   features: string[];
+  maxDoctors?: number | null;
+  maxStaff?: number | null;
+  maxPatients?: number | null;
+  maxPrescriptionsPerMonth?: number | null;
   isPopular: boolean;
   isActive: boolean;
   createdAt: string;
@@ -43,6 +47,10 @@ export function SaasPricingManager() {
   const [billingCycle, setBillingCycle] = useState("monthly");
   const [description, setDescription] = useState("");
   const [featuresText, setFeaturesText] = useState("");
+  const [maxDoctors, setMaxDoctors] = useState<number | "">(2);
+  const [maxStaff, setMaxStaff] = useState<number | "">("");
+  const [maxPatients, setMaxPatients] = useState<number | "">("");
+  const [maxPrescriptionsPerMonth, setMaxPrescriptionsPerMonth] = useState<number | "">("");
   const [isPopular, setIsPopular] = useState(false);
   const [isActive, setIsActive] = useState(true);
 
@@ -87,6 +95,10 @@ export function SaasPricingManager() {
     setFeaturesText(
       "Up to 2 Doctor Accounts\n500 Prescriptions / month\nDrug Formulary Access\nA4 Printouts\nEmail Support"
     );
+    setMaxDoctors(2);
+    setMaxStaff("");
+    setMaxPatients("");
+    setMaxPrescriptionsPerMonth("");
     setIsPopular(false);
     setIsActive(true);
     setError(null);
@@ -100,6 +112,10 @@ export function SaasPricingManager() {
     setBillingCycle(plan.billingCycle || "monthly");
     setDescription(plan.description || "");
     setFeaturesText(Array.isArray(plan.features) ? plan.features.join("\n") : "");
+    setMaxDoctors(plan.maxDoctors ?? "");
+    setMaxStaff(plan.maxStaff ?? "");
+    setMaxPatients(plan.maxPatients ?? "");
+    setMaxPrescriptionsPerMonth(plan.maxPrescriptionsPerMonth ?? "");
     setIsPopular(plan.isPopular);
     setIsActive(plan.isActive);
     setError(null);
@@ -133,6 +149,10 @@ export function SaasPricingManager() {
           features: featuresArray,
           isPopular,
           isActive,
+          maxDoctors: maxDoctors === "" ? null : maxDoctors,
+          maxStaff: maxStaff === "" ? null : maxStaff,
+          maxPatients: maxPatients === "" ? null : maxPatients,
+          maxPrescriptionsPerMonth: maxPrescriptionsPerMonth === "" ? null : maxPrescriptionsPerMonth,
         }),
       });
 
@@ -368,6 +388,27 @@ export function SaasPricingManager() {
                     onChange={(e) => setDescription(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white"
                   />
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 rounded-2xl bg-[var(--bg-subtle)]">
+                  {[
+                    ["Max doctors", maxDoctors, setMaxDoctors],
+                    ["Max staff", maxStaff, setMaxStaff],
+                    ["Max patients", maxPatients, setMaxPatients],
+                    ["Prescriptions / month", maxPrescriptionsPerMonth, setMaxPrescriptionsPerMonth],
+                  ].map(([label, value, setter]) => (
+                    <label key={label as string} className="space-y-1 text-[11px] font-bold text-slate-500">
+                      <span>{label as string}</span>
+                      <input
+                        type="number"
+                        min={0}
+                        value={value as number | string}
+                        onChange={(event) => (setter as (value: number | "") => void)(event.target.value === "" ? "" : Number(event.target.value))}
+                        className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--bg-app)] px-3 py-2 text-sm text-slate-900 dark:text-white"
+                        placeholder="Unlimited"
+                      />
+                    </label>
+                  ))}
                 </div>
 
                 <div className="space-y-1.5">

@@ -761,7 +761,8 @@ export async function performSecureDatabaseReset(actorId: string) {
       where: {
         OR: [
           { id: actorId },
-          { isDemo: true, role: { name: { not: RoleName.SUPER_ADMIN } } },
+          { isDemo: true, role: { name: { not: RoleName.PATIENT } } },
+          { email: "patient@ppms.local" },
         ],
       },
       select: { id: true },

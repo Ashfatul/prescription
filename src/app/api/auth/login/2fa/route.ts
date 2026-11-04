@@ -7,6 +7,7 @@ import { withErrorHandling } from "@/lib/api-handler";
 import { AppError } from "@/lib/errors";
 import { logActivity } from "@/features/activity-log/activity-log.service";
 import { verifyLoginTwoFactor } from "@/features/auth/two-factor.service";
+import { isEmailVerificationRequired } from "@/features/settings/settings.service";
 
 const verify2FALoginSchema = z.object({
   tempToken: z.string().min(1, "Temporary authentication challenge token is required"),
@@ -31,6 +32,10 @@ export async function POST(req: NextRequest) {
 
     if (!user || !user.twoFactorEnabled) {
       throw new AppError("Invalid authentication request.", 401);
+    }
+
+    if (await isEmailVerificationRequired() && !user.emailVerified) {
+      throw new AppError("Please verify your email address before signing in.", 403);
     }
 
     // 3. Verify TOTP or Backup recovery code

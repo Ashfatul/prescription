@@ -6,6 +6,7 @@ import { hashPassword } from "@/lib/auth/password";
 import { createUserSchema, userPreferencesSchema, updateUserSchema } from "@/features/users/user.schema";
 import { logActivity } from "@/features/activity-log/activity-log.service";
 import { isEmailVerificationRequired, isPatientVerificationRequired } from "@/features/settings/settings.service";
+import { sendTemplatedEmail } from "@/features/email-templates/email-template.service";
 
 export async function listUsers(organizationId?: string) {
   return db.user.findMany({
@@ -27,18 +28,65 @@ export async function createUser(input: unknown, creatorUserId?: string) {
     throw new AppError("Email already exists", 409);
   }
 
-  // If organizationId not provided, default to the first active organization if available
+  // Provisioned accounts inherit the creator's clinic. Never fall back to another tenant.
   let orgId = data.organizationId;
-  if (!orgId) {
-    const defaultOrg = await db.organization.findFirst({
-      where: { status: { in: ["ACTIVE", "TRIAL"] } },
-      orderBy: { createdAt: "asc" },
+  if (creatorUserId) {
+    const creator = await db.user.findUnique({
+      where: { id: creatorUserId },
+      select: { organizationId: true, role: true },
     });
-    if (defaultOrg) orgId = defaultOrg.id;
+    if (creator?.organizationId) {
+      orgId = creator.organizationId;
+    }
+  }
+  if (!orgId) {
+    const requiresClinic =
+      data.role === RoleName.ADMIN ||
+      data.role === RoleName.DOCTOR ||
+      data.role === RoleName.STAFF ||
+      data.role === RoleName.PATIENT;
+    if (requiresClinic) {
+      throw new AppError("A clinic must be selected before creating this account.", 400);
+    }
+  }
+
+  if (
+    orgId &&
+    (data.role === RoleName.DOCTOR || data.role === RoleName.STAFF || data.role === RoleName.PATIENT)
+  ) {
+    const organization = await db.organization.findUnique({
+      where: { id: orgId },
+      select: {
+        plan: {
+          select: {
+            maxDoctors: true,
+            maxStaff: true,
+            maxPatients: true,
+          },
+        },
+      },
+    });
+    const limit = data.role === RoleName.DOCTOR
+      ? organization?.plan?.maxDoctors
+      : data.role === RoleName.STAFF
+      ? organization?.plan?.maxStaff
+      : organization?.plan?.maxPatients;
+
+    if (limit !== null && limit !== undefined) {
+      const currentCount = await db.user.count({
+        where: { organizationId: orgId, role: { name: data.role } },
+      });
+      if (currentCount >= limit) {
+        throw new AppError(
+          `Your current plan allows a maximum of ${limit} ${data.role.toLowerCase()} accounts. Upgrade your plan to add another account.`,
+          403
+        );
+      }
+    }
   }
 
   const requireVerification = await isEmailVerificationRequired();
-  const shouldRequireVerification = requireVerification && !creatorUserId;
+  const shouldRequireVerification = requireVerification;
   const verificationToken = shouldRequireVerification ? crypto.randomBytes(32).toString("hex") : null;
   const verificationExpiresAt = shouldRequireVerification ? new Date(Date.now() + 24 * 60 * 60 * 1000) : null;
 
@@ -131,6 +179,22 @@ export async function createUser(input: unknown, creatorUserId?: string) {
       entityType: "Patient",
       entityId: user.id,
       detailsJson: { name: user.name, email: user.email, gender: data.gender },
+    });
+  }
+
+  if (shouldRequireVerification && verificationToken) {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    await sendTemplatedEmail({
+      key: "EMAIL_VERIFICATION",
+      to: user.email,
+      variables: {
+        userName: user.name,
+        userEmail: user.email,
+        verifyUrl: `${appUrl}/auth/verify-email?token=${verificationToken}`,
+        token: verificationToken,
+        appName: process.env.NEXT_PUBLIC_APP_NAME || "PPMS",
+      },
+      organizationId: user.organizationId,
     });
   }
 

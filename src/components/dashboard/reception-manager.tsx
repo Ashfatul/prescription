@@ -2409,6 +2409,26 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
               </div>
             </div>
 
+            <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] p-3">
+              <span className="mr-auto text-[11px] font-semibold text-slate-500">{t("uiInformPatientBeforeCancel", "Inform patient before cancelling")}</span>
+              {staffCancelTarget.patient.user.phone && (
+                <a
+                  href={`tel:${staffCancelTarget.patient.user.phone}`}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 py-2 text-[11px] font-bold text-[var(--brand-text)] hover:bg-[var(--brand-surface)]"
+                >
+                  <Phone className="h-3.5 w-3.5" />
+                  {t("uiCallPatient", "Call patient")}
+                </a>
+              )}
+              <a
+                href={`mailto:${staffCancelTarget.patient.user.email}`}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 py-2 text-[11px] font-bold text-[var(--brand-text)] hover:bg-[var(--brand-surface)]"
+              >
+                <Mail className="h-3.5 w-3.5" />
+                {t("uiEmailPatient", "Email patient")}
+              </a>
+            </div>
+
             {/* Refund Options if payment was made */}
             {staffCancelTarget.paymentStatus === "PAID" && (staffCancelTarget.fee ?? 0) > 0 && (
               <div className="space-y-2">

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { CustomSelect } from "@/components/common/custom-select";
 
 export interface CustomDatePickerProps {
   value?: string; // Format: YYYY-MM-DD
@@ -75,10 +76,9 @@ export function CustomDatePicker({
 }: CustomDatePickerProps) {
   const { t, language } = useLanguage();
   const isBn = language === "bn";
-  const effectivePlaceholder = placeholder || (t("uiSelectDate"));
+  const effectivePlaceholder = placeholder || t("uiSelectDate");
   const monthNames = isBn ? MONTH_NAMES_BN : MONTH_NAMES_EN;
   const daysOfWeek = isBn ? DAYS_OF_WEEK_BN : DAYS_OF_WEEK_EN;
-
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -195,6 +195,14 @@ export function CustomDatePicker({
   // Helper to check if a date is today
   const todayISO = formatToISO(new Date());
 
+  const currentYear = new Date().getFullYear();
+  const yearStart = minDate ? parseISODate(minDate)?.getFullYear() ?? currentYear - 10 : currentYear - 10;
+  const yearEnd = maxDate ? parseISODate(maxDate)?.getFullYear() ?? currentYear + 10 : currentYear + 10;
+  const yearOptions = Array.from(
+    { length: Math.max(1, yearEnd - yearStart + 1) },
+    (_, index) => yearStart + index
+  );
+
   // Helper to check min/max date boundary
   const isDateDisabled = (d: Date) => {
     const iso = formatToISO(d);
@@ -272,9 +280,26 @@ export function CustomDatePicker({
             </button>
 
             <div className="flex items-center gap-1.5 font-bold text-sm text-slate-900 dark:text-white">
-              <span className="px-2.5 py-1 rounded-xl bg-[var(--bg-subtle)] text-xs font-black tracking-tight text-slate-800 dark:text-slate-100">
-                {monthNames[viewMonth]} {viewYear}
-              </span>
+              <div className="w-28">
+                <CustomSelect
+                  size="sm"
+                  value={String(viewMonth)}
+                  onChange={(selectedMonth) => setViewMonth(Number(selectedMonth))}
+                  options={monthNames.map((month, index) => ({ value: String(index), label: month }))}
+                  searchable
+                  allowClear={false}
+                />
+              </div>
+              <div className="w-20">
+                <CustomSelect
+                  size="sm"
+                  value={String(viewYear)}
+                  onChange={(selectedYear) => setViewYear(Number(selectedYear))}
+                  options={yearOptions.map((year) => ({ value: String(year), label: String(year) }))}
+                  searchable
+                  allowClear={false}
+                />
+              </div>
             </div>
 
             <button

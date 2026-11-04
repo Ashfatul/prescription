@@ -33,6 +33,10 @@ export async function POST(req: NextRequest) {
       billingCycle: body.billingCycle || "monthly",
       description: body.description,
       features: Array.isArray(body.features) ? body.features : [body.features].filter(Boolean),
+      maxDoctors: body.maxDoctors == null || body.maxDoctors === "" ? null : Number(body.maxDoctors),
+      maxStaff: body.maxStaff == null || body.maxStaff === "" ? null : Number(body.maxStaff),
+      maxPatients: body.maxPatients == null || body.maxPatients === "" ? null : Number(body.maxPatients),
+      maxPrescriptionsPerMonth: body.maxPrescriptionsPerMonth == null || body.maxPrescriptionsPerMonth === "" ? null : Number(body.maxPrescriptionsPerMonth),
       isPopular: !!body.isPopular,
       isActive: body.isActive !== undefined ? !!body.isActive : true,
     });

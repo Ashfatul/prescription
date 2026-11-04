@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 export function QuickPrescriptionForm({
   doctorId,
@@ -22,21 +23,32 @@ export function QuickPrescriptionForm({
     e.preventDefault();
     setSaving(true);
 
-    await fetch("/api/prescriptions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        doctorId,
-        patientId,
-        notes,
-        medicines: [{ name: medicine, dosage, instructions: "After meal" }],
-        tests: [],
-      }),
-    });
+    try {
+      const response = await fetch("/api/prescriptions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          doctorId,
+          patientId,
+          notes,
+          medicines: [{ name: medicine, dosage, instructions: "After meal" }],
+          tests: [],
+        }),
+      });
+
+      const payload = await response.json();
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.message || "Failed to create prescription");
+      }
+
+      notifyToast("Prescription created successfully.", "success");
+      setNotes("");
+      onSuccess?.();
+    } catch (error) {
+      notifyToast(error instanceof Error ? error.message : "Failed to create prescription", "error");
+    }
 
     setSaving(false);
-    setNotes("");
-    onSuccess?.();
   };
 
   return (

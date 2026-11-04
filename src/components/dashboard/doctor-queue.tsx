@@ -72,7 +72,7 @@ export function DoctorQueue({ doctorId }: { doctorId: string }) {
             {t("uiNowCalling")}
           </span>
           <span className="text-2xl font-black text-[var(--brand-text)] font-mono">
-            #{data.currentSerial || "1"}
+            {data.currentSerial > 0 ? `#${data.currentSerial}` : "#--"}
           </span>
         </div>
       </div>

@@ -177,6 +177,13 @@ export function NotificationBell() {
             </div>
 
             <div className="flex items-center gap-1">
+              <Link
+                href="/dashboard/notifications"
+                onClick={() => setIsOpen(false)}
+                className="px-2 py-1 rounded-lg text-[10px] font-bold text-slate-500 hover:text-[var(--brand-primary)] hover:bg-[var(--bg-subtle)] transition"
+              >
+                View all
+              </Link>
               {unreadCount > 0 && (
                 <button
                   type="button"

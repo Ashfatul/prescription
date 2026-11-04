@@ -62,6 +62,10 @@ model PricingPlan {
   billingCycle  String         @default("monthly")
   description   String?
   features      Json
+  maxDoctors    Int?
+  maxStaff      Int?
+  maxPatients   Int?
+  maxPrescriptionsPerMonth Int?
   isPopular     Boolean        @default(false)
   isActive      Boolean        @default(true)
   organizations Organization[]

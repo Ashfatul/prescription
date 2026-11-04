@@ -260,7 +260,7 @@ export function PrintablePrescriptionView({
                 {/* Left Column: Doctor Profile */}
                 <div className="max-w-md">
                   <h1
-                    className="text-xl sm:text-2xl font-bold tracking-tight"
+                    className="text-lg sm:text-xl font-bold tracking-tight"
                     style={{
                       color: themeColor,
                       fontSize: tplContent.doctorTitleSize ? `${tplContent.doctorTitleSize}px` : undefined,
@@ -299,7 +299,7 @@ export function PrintablePrescriptionView({
                     />
                   )}
                   <h2
-                    className="text-lg sm:text-xl font-black uppercase tracking-wider"
+                    className="text-base sm:text-lg font-black uppercase tracking-wider"
                     style={{
                       color: themeColor,
                       fontSize: tplContent.hospitalTitleSize ? `${tplContent.hospitalTitleSize}px` : undefined,

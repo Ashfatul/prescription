@@ -1,5 +1,5 @@
 import { endOfDay, startOfDay } from "date-fns";
-import { AppointmentStatus, RoleName } from "@prisma/client";
+import { AppointmentStatus, NotificationType, RoleName } from "@prisma/client";
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import {
@@ -7,6 +7,7 @@ import {
   appointmentUpdateSchema,
 } from "@/features/appointments/appointment.schema";
 import { getStripeServer, isStripeConfigured } from "@/lib/stripe/stripe";
+import { createNotification } from "@/features/notifications/notification.service";
 
 type ListOptions = {
   role: RoleName;
@@ -268,11 +269,25 @@ export async function createAppointment(
     throw new AppError("Doctor not found", 404);
   }
 
+  const patientRec = await db.patient.findUnique({
+    where: { id: finalPatientId },
+    select: { organizationId: true, userId: true },
+  });
+  if (!patientRec) throw new AppError("Patient not found", 404);
+
   const orgId =
     authUser?.organizationId ||
     doctorRec.organizationId ||
     doctorRec.user?.organizationId ||
     undefined;
+
+  const doctorOrgId = doctorRec.organizationId || doctorRec.user?.organizationId || null;
+  if (orgId && doctorOrgId && doctorOrgId !== orgId) {
+    throw new AppError("Doctor and appointment patient must belong to the same clinic.", 403);
+  }
+  if (orgId && patientRec.organizationId && patientRec.organizationId !== orgId) {
+    throw new AppError("Patient and appointment clinic do not match.", 403);
+  }
 
   // Calculate fees dynamically based on doctor policy and patient history
   const calculatedFee = await calculateDoctorConsultationFee(data.doctorId, finalPatientId);
@@ -487,7 +502,7 @@ export async function confirmAppointment(
     throw new AppError("Cannot confirm a cancelled appointment", 400);
   }
 
-  return db.appointment.update({
+  const confirmed = await db.appointment.update({
     where: { id },
     data: {
       status: AppointmentStatus.CONFIRMED,
@@ -497,6 +512,8 @@ export async function confirmAppointment(
     },
     include: appointmentInclude,
   });
+
+  return confirmed;
 }
 
 export async function cancelAppointment(
@@ -625,7 +642,7 @@ export async function cancelAppointment(
     refundStatus = "NOT_APPLICABLE";
   }
 
-  return db.appointment.update({
+  const cancelled = await db.appointment.update({
     where: { id },
     data: {
       status: AppointmentStatus.CANCELLED,
@@ -638,6 +655,16 @@ export async function cancelAppointment(
     },
     include: appointmentInclude,
   });
+
+  await createNotification({
+    userId: existing.patient.userId,
+    title: "Appointment cancelled by clinic",
+    message: `Your appointment with Dr. ${existing.doctor.user.name} (serial #${existing.serialNumber}) was cancelled by the clinic. ${input?.reason?.trim() || "Please contact the clinic for assistance."}`,
+    type: NotificationType.APPOINTMENT_BOOKED,
+    link: "/dashboard/patient",
+  }).catch(() => null);
+
+  return cancelled;
 }
 
 export async function updateAppointment(

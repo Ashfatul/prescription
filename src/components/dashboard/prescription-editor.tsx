@@ -440,9 +440,9 @@ export function PrescriptionEditor({
 
   // Triage Vitals (Staff prepared, Doctor can refine)
   const initV = (initialPrescriptionToRevise?.vitalsJson as Record<string, string>) || {};
-  const [bp, setBp] = useState(initV.bp || triage.bp || "120/80 mmHg");
-  const [pulse, setPulse] = useState(initV.pulse || triage.pulse || "72 bpm");
-  const [temp, setTemp] = useState(initV.temp || triage.temp || "98.6 °F");
+  const [bp, setBp] = useState(initV.bp || triage.bp || "");
+  const [pulse, setPulse] = useState(initV.pulse || triage.pulse || "");
+  const [temp, setTemp] = useState(initV.temp || triage.temp || "");
   const [weight, setWeight] = useState(initV.weight || triage.weight || "");
   const [bloodSugar, setBloodSugar] = useState(initV.bloodSugar || "");
   const [spo2, setSpo2] = useState(initV.spo2 || "");
@@ -474,6 +474,7 @@ export function PrescriptionEditor({
 
   const [medicalHistory, setMedicalHistory] = useState(initialHistory);
   const [allergies, setAllergies] = useState(initialAllergies);
+  const [clinicalContextEditable, setClinicalContextEditable] = useState(false);
 
   // Complaints & Diagnosis
   const [complaints, setComplaints] = useState(
@@ -1140,6 +1141,7 @@ export function PrescriptionEditor({
               rows={2}
               value={allergies}
               onChange={(e) => setAllergies(e.target.value)}
+              readOnly={!clinicalContextEditable}
               placeholder={t.allergiesInputPlaceholder}
               className="w-full px-3 py-2 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white focus:outline-none"
             />
@@ -1163,12 +1165,19 @@ export function PrescriptionEditor({
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
                 {t.medicalHistoryStaff}
               </span>
-              <span className="text-[10px] font-mono text-slate-400">Hx</span>
+              <button
+                type="button"
+                onClick={() => setClinicalContextEditable((current) => !current)}
+                className="text-[10px] font-bold text-[var(--brand-text)] hover:underline"
+              >
+                {clinicalContextEditable ? t("uiLockClinicalContext", "Lock") : t("uiEditClinicalContext", "Edit")}
+              </button>
             </div>
             <textarea
               rows={2}
               value={medicalHistory}
               onChange={(e) => setMedicalHistory(e.target.value)}
+              readOnly={!clinicalContextEditable}
               placeholder={t.chronicConditionsPlaceholder}
               className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white focus:outline-none"
             />
@@ -1471,7 +1480,9 @@ export function PrescriptionEditor({
                       {t.drugBrandSearchLabel}
                     </label>
                     <SearchableSelect
-                      options={catalogMedicines}
+                      options={catalogMedicines.filter(
+                        (option) => option.badge === med.type || option.value === med.name
+                      )}
                       value={med.name}
                       placeholder={t("uiSearchBrandOrGenericE")}
                       allowCustom

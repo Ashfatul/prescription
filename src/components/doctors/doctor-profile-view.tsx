@@ -185,7 +185,7 @@ export function DoctorProfileView({
               </span>
               <div className="flex items-baseline gap-2 mt-0.5">
                 <span className="text-3xl font-black text-[var(--brand-text)]">
-                  #{queue.currentSerial || "1"}
+                  {(queue.currentSerial ?? 0) > 0 ? `#${queue.currentSerial}` : "#--"}
                 </span>
                 <span className="text-xs text-slate-500 font-medium">{t.currentlyInChamber}</span>
               </div>

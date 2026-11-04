@@ -24,6 +24,7 @@ type DoctorItem = {
   chamberAddress?: string | null;
   contactNumber?: string | null;
   visitingHours?: string | null;
+  scheduleJson?: { days?: string[]; startTime?: string; endTime?: string; chamber?: string } | null;
   available: boolean;
   user: {
     name: string;
@@ -47,9 +48,11 @@ export function StaffSchedulingManager() {
 
   // Edit doctor schedule modal
   const [editingDoctor, setEditingDoctor] = useState<DoctorItem | null>(null);
-  const [visitingHours, setVisitingHours] = useState("");
   const [chamberAddress, setChamberAddress] = useState("");
   const [contactNumber, setContactNumber] = useState("");
+  const [scheduleDays, setScheduleDays] = useState<string[]>([]);
+  const [scheduleStart, setScheduleStart] = useState("09:00");
+  const [scheduleEnd, setScheduleEnd] = useState("13:00");
   const [saving, setSaving] = useState(false);
 
   // Search filter
@@ -104,9 +107,11 @@ export function StaffSchedulingManager() {
 
   const openEditModal = (doc: DoctorItem) => {
     setEditingDoctor(doc);
-    setVisitingHours(doc.visitingHours || "09:00 AM - 01:00 PM");
     setChamberAddress(doc.chamberAddress || "");
     setContactNumber(doc.contactNumber || "");
+    setScheduleDays(doc.scheduleJson?.days || ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"]);
+    setScheduleStart(doc.scheduleJson?.startTime || "09:00");
+    setScheduleEnd(doc.scheduleJson?.endTime || "13:00");
   };
 
   const handleSaveSchedule = async (e: React.FormEvent) => {
@@ -119,7 +124,13 @@ export function StaffSchedulingManager() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          visitingHours,
+          visitingHours: `${scheduleDays.join(", ")} ${scheduleStart} - ${scheduleEnd}`,
+          scheduleJson: {
+            days: scheduleDays,
+            startTime: scheduleStart,
+            endTime: scheduleEnd,
+            chamber: chamberAddress,
+          },
           chamberAddress,
           contactNumber,
         }),
@@ -414,14 +425,28 @@ export function StaffSchedulingManager() {
                   <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
                     {t.visitingHoursDays}
                   </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Sat-Thu 09:00 AM - 01:00 PM"
-                    value={visitingHours}
-                    onChange={(e) => setVisitingHours(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white"
-                  />
+                  <div className="flex flex-wrap gap-1.5">
+                    {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map((day) => (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => setScheduleDays((current) => current.includes(day) ? current.filter((item) => item !== day) : [...current, day])}
+                        className={`rounded-lg border px-2.5 py-1.5 text-[11px] font-bold ${scheduleDays.includes(day) ? "border-[var(--brand-primary)] bg-[var(--brand-primary)] text-white" : "border-[var(--border-default)] bg-[var(--bg-app)] text-slate-500"}`}
+                      >
+                        {day.slice(0, 3)}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 pt-1.5">
+                    <label className="space-y-1 text-[10px] font-bold text-slate-500">
+                      <span>Start time</span>
+                      <input type="time" required value={scheduleStart} onChange={(e) => setScheduleStart(e.target.value)} className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--bg-app)] px-3 py-2 text-sm text-slate-900 dark:text-white" />
+                    </label>
+                    <label className="space-y-1 text-[10px] font-bold text-slate-500">
+                      <span>End time</span>
+                      <input type="time" required value={scheduleEnd} onChange={(e) => setScheduleEnd(e.target.value)} className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--bg-app)] px-3 py-2 text-sm text-slate-900 dark:text-white" />
+                    </label>
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">

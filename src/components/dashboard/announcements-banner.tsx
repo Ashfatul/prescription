@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AlertCircle, Sparkles, X } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { useAuth } from "@/lib/auth/auth-context";
 
 type AnnouncementItem = {
   id: string;
@@ -18,6 +19,7 @@ const DISMISSED_STORAGE_KEY = "ppms_dismissed_announcements";
 
 export function AnnouncementsBanner() {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
   const [dismissed, setDismissed] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
@@ -30,7 +32,7 @@ export function AnnouncementsBanner() {
   });
 
   useEffect(() => {
-    fetch("/api/announcements")
+    fetch(`/api/announcements?targetRole=${encodeURIComponent(user?.role || "PATIENT")}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.data)) {
@@ -38,7 +40,7 @@ export function AnnouncementsBanner() {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [user?.role]);
 
   const handleDismiss = (id: string) => {
     setDismissed((prev) => {

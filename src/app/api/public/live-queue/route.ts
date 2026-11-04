@@ -29,6 +29,10 @@ export async function GET(req: NextRequest) {
     const clinicSlug = searchParams.get("clinic") || req.headers.get("x-clinic-slug") || null;
     const isDemoMode = isDemoModeActive();
 
+    if (!clinicSlug) {
+      return ok({ doctors: [], requiresClinicSelection: true, timestamp: new Date().toISOString() });
+    }
+
     const where: Prisma.DoctorWhereInput = {};
 
     if (clinicSlug) {

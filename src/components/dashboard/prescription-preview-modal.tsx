@@ -123,15 +123,15 @@ function PrescriptionPageSheet({
         >
           {/* Left Column: Doctor Profile & Qualifications */}
           <div className="space-y-0.5">
-            <h2 className="text-lg sm:text-xl font-black tracking-tight text-slate-900 leading-tight">
+            <h2 className="text-base sm:text-lg font-black tracking-tight text-slate-900 leading-tight">
               {doctor.name || "Consultant Physician"}
             </h2>
-            <p className="text-xs font-bold" style={{ color: primaryColor }}>
+            <p className="text-[11px] font-bold" style={{ color: primaryColor }}>
               {doctor.degrees ? `${doctor.degrees} • ` : ""}
               {doctor.specialization}
             </p>
             {doctor.designation && (
-              <p className="text-xs font-medium text-slate-600 leading-tight">{doctor.designation}</p>
+              <p className="text-[11px] font-medium text-slate-600 leading-tight">{doctor.designation}</p>
             )}
             <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 pt-0.5 text-[11px] text-slate-500">
               {doctor.bmdcRegNo && (
@@ -146,7 +146,7 @@ function PrescriptionPageSheet({
 
           {/* Right Column: Hospital / Clinic Branding */}
           <div className="text-left sm:text-right sm:border-l sm:pl-4 border-slate-200 space-y-0.5 shrink-0 max-w-xs">
-            <h1 className="text-base sm:text-lg font-black tracking-tight" style={{ color: primaryColor }}>
+            <h1 className="text-sm sm:text-base font-black tracking-tight" style={{ color: primaryColor }}>
               {hospitalInfo?.name || doctor.hospital || "Metropolitan Specialized Hospital"}
             </h1>
             {hospitalInfo?.tagline && (
