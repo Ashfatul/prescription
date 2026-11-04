@@ -13,106 +13,109 @@ const BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
  * Encodes a buffer into standard RFC 4648 Base32 string (without padding)
  */
 export function base32Encode(buffer: Buffer): string {
-  let bits = 0;
-  let value = 0;
-  let output = "";
+    let bits = 0;
+    let value = 0;
+    let output = "";
 
-  for (let i = 0; i < buffer.length; i++) {
-    value = (value << 8) | buffer[i];
-    bits += 8;
-    while (bits >= 5) {
-      output += BASE32_ALPHABET[(value >>> (bits - 5)) & 31];
-      bits -= 5;
+    for (let i = 0; i < buffer.length; i++) {
+        value = (value << 8) | buffer[i];
+        bits += 8;
+        while (bits >= 5) {
+            output += BASE32_ALPHABET[(value >>> (bits - 5)) & 31];
+            bits -= 5;
+        }
     }
-  }
 
-  if (bits > 0) {
-    output += BASE32_ALPHABET[(value << (5 - bits)) & 31];
-  }
+    if (bits > 0) {
+        output += BASE32_ALPHABET[(value << (5 - bits)) & 31];
+    }
 
-  return output;
+    return output;
 }
 
 /**
  * Decodes an RFC 4648 Base32 string back to Buffer
  */
 export function base32Decode(base32: string): Buffer {
-  const clean = base32.toUpperCase().replace(/=+$/, "").replace(/\s+/g, "");
-  let bits = 0;
-  let value = 0;
-  const bytes: number[] = [];
+    const clean = base32.toUpperCase().replace(/=+$/, "").replace(/\s+/g, "");
+    let bits = 0;
+    let value = 0;
+    const bytes: number[] = [];
 
-  for (let i = 0; i < clean.length; i++) {
-    const idx = BASE32_ALPHABET.indexOf(clean[i]);
-    if (idx === -1) continue;
-    value = (value << 5) | idx;
-    bits += 5;
-    if (bits >= 8) {
-      bytes.push((value >>> (bits - 8)) & 255);
-      bits -= 8;
+    for (let i = 0; i < clean.length; i++) {
+        const idx = BASE32_ALPHABET.indexOf(clean[i]);
+        if (idx === -1) continue;
+        value = (value << 5) | idx;
+        bits += 5;
+        if (bits >= 8) {
+            bytes.push((value >>> (bits - 8)) & 255);
+            bits -= 8;
+        }
     }
-  }
 
-  return Buffer.from(bytes);
+    return Buffer.from(bytes);
 }
 
 /**
  * Computes a 6-digit TOTP code according to RFC 6238 (HMAC-SHA1, 30s step)
  */
-export function generateTOTPCode(secretBase32: string, timeStepOffset = 0): string {
-  const secret = base32Decode(secretBase32);
-  const timeStep = Math.floor(Date.now() / 1000 / 30) + timeStepOffset;
-  const timeBuffer = Buffer.alloc(8);
-  timeBuffer.writeBigUInt64BE(BigInt(timeStep), 0);
+export function generateTOTPCode(
+    secretBase32: string,
+    timeStepOffset = 0,
+): string {
+    const secret = base32Decode(secretBase32);
+    const timeStep = Math.floor(Date.now() / 1000 / 30) + timeStepOffset;
+    const timeBuffer = Buffer.alloc(8);
+    timeBuffer.writeBigUInt64BE(BigInt(timeStep), 0);
 
-  const hmac = crypto.createHmac("sha1", secret).update(timeBuffer).digest();
-  const offset = hmac[hmac.length - 1] & 0x0f;
-  const binary =
-    ((hmac[offset] & 0x7f) << 24) |
-    ((hmac[offset + 1] & 0xff) << 16) |
-    ((hmac[offset + 2] & 0xff) << 8) |
-    (hmac[offset + 3] & 0xff);
+    const hmac = crypto.createHmac("sha1", secret).update(timeBuffer).digest();
+    const offset = hmac[hmac.length - 1] & 0x0f;
+    const binary =
+        ((hmac[offset] & 0x7f) << 24) |
+        ((hmac[offset + 1] & 0xff) << 16) |
+        ((hmac[offset + 2] & 0xff) << 8) |
+        (hmac[offset + 3] & 0xff);
 
-  return (binary % 1000000).toString().padStart(6, "0");
+    return (binary % 1000000).toString().padStart(6, "0");
 }
 
 /**
  * Verifies a 6-digit TOTP code against a secret with +/- 1 time step drift (30s tolerance)
  */
 export function verifyTOTPCode(token: string, secretBase32: string): boolean {
-  if (!token || !secretBase32) return false;
-  const clean = token.replace(/\s+/g, "").trim();
-  if (clean.length !== 6 || !/^\d{6}$/.test(clean)) return false;
+    if (!token || !secretBase32) return false;
+    const clean = token.replace(/\s+/g, "").trim();
+    if (clean.length !== 6 || !/^\d{6}$/.test(clean)) return false;
 
-  for (let offset = -1; offset <= 1; offset++) {
-    if (generateTOTPCode(secretBase32, offset) === clean) {
-      return true;
+    for (let offset = -1; offset <= 1; offset++) {
+        if (generateTOTPCode(secretBase32, offset) === clean) {
+            return true;
+        }
     }
-  }
 
-  return false;
+    return false;
 }
 
 /**
  * Generates an array of secure random one-time backup recovery codes
  */
 export function generateBackupCodes(count = 8): string[] {
-  const codes: string[] = [];
-  for (let i = 0; i < count; i++) {
-    const randomHex = crypto.randomBytes(4).toString("hex").toUpperCase();
-    codes.push(`${randomHex.slice(0, 4)}-${randomHex.slice(4, 8)}`);
-  }
-  return codes;
+    const codes: string[] = [];
+    for (let i = 0; i < count; i++) {
+        const randomHex = crypto.randomBytes(4).toString("hex").toUpperCase();
+        codes.push(`${randomHex.slice(0, 4)}-${randomHex.slice(4, 8)}`);
+    }
+    return codes;
 }
 
 /**
  * Dispatches an email notification when 2FA is activated
  */
 async function sendTwoFactorEnabledEmail(to: string, userName: string) {
-  const appName = env.appName || "CareFlow OS";
-  const now = new Date().toUTCString();
+    const appName = env.appName || "CareFlow";
+    const now = new Date().toUTCString();
 
-  const html = `<!DOCTYPE html>
+    const html = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -133,7 +136,7 @@ async function sendTwoFactorEnabledEmail(to: string, userName: string) {
     <h1 class="title">Two-Factor Authentication Enabled</h1>
     <p class="text">Hello <strong>${userName}</strong>,</p>
     <p class="text">Two-Factor Authentication (2FA) has been successfully activated on your <strong>${appName}</strong> account.</p>
-    
+
     <div class="info-box">
       <strong>Activation Timestamp:</strong> ${now}<br />
       <strong>Account Email:</strong> ${to}<br />
@@ -155,22 +158,22 @@ async function sendTwoFactorEnabledEmail(to: string, userName: string) {
 </body>
 </html>`;
 
-  await sendMail({
-    to,
-    subject: `[Security Notice] Two-Factor Authentication Enabled - ${appName}`,
-    html,
-    text: `Hello ${userName}, Two-Factor Authentication (2FA) has been enabled on your ${appName} account at ${now}. If you did not perform this change, please reset your password immediately.`,
-  });
+    await sendMail({
+        to,
+        subject: `[Security Notice] Two-Factor Authentication Enabled - ${appName}`,
+        html,
+        text: `Hello ${userName}, Two-Factor Authentication (2FA) has been enabled on your ${appName} account at ${now}. If you did not perform this change, please reset your password immediately.`,
+    });
 }
 
 /**
  * Dispatches an urgent email alert when 2FA is deactivated
  */
 async function sendTwoFactorDisabledEmail(to: string, userName: string) {
-  const appName = env.appName || "CareFlow OS";
-  const now = new Date().toUTCString();
+    const appName = env.appName || "CareFlow";
+    const now = new Date().toUTCString();
 
-  const html = `<!DOCTYPE html>
+    const html = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -191,7 +194,7 @@ async function sendTwoFactorDisabledEmail(to: string, userName: string) {
     <h1 class="title">Two-Factor Authentication Was Disabled</h1>
     <p class="text">Hello <strong>${userName}</strong>,</p>
     <p class="text">This is an urgent notification to inform you that Two-Factor Authentication (2FA) has been <strong>disabled</strong> on your <strong>${appName}</strong> account.</p>
-    
+
     <div class="alert-box">
       <strong>Action Timestamp:</strong> ${now}<br />
       <strong>Account Email:</strong> ${to}<br />
@@ -209,49 +212,53 @@ async function sendTwoFactorDisabledEmail(to: string, userName: string) {
 </body>
 </html>`;
 
-  await sendMail({
-    to,
-    subject: `[Urgent Security Alert] Two-Factor Authentication Disabled - ${appName}`,
-    html,
-    text: `Urgent Security Alert: Two-Factor Authentication has been disabled on your ${appName} account at ${now}. If you did not perform this change, please sign in and change your password immediately.`,
-  });
+    await sendMail({
+        to,
+        subject: `[Urgent Security Alert] Two-Factor Authentication Disabled - ${appName}`,
+        html,
+        text: `Urgent Security Alert: Two-Factor Authentication has been disabled on your ${appName} account at ${now}. If you did not perform this change, please sign in and change your password immediately.`,
+    });
 }
 
 /**
  * Initiates 2FA setup for an authenticated user:
  * Generates temporary secret, standard otpauth URI, QR Code data URL, and 8 recovery backup codes.
  */
-export async function setupTwoFactor(user: { id: string; email: string; name: string }) {
-  const appName = env.appName || "CareFlow OS";
-  // Generate 20 random cryptographically secure bytes (160 bits standard)
-  const randomBuffer = crypto.randomBytes(20);
-  const secret = base32Encode(randomBuffer);
+export async function setupTwoFactor(user: {
+    id: string;
+    email: string;
+    name: string;
+}) {
+    const appName = env.appName || "CareFlow";
+    // Generate 20 random cryptographically secure bytes (160 bits standard)
+    const randomBuffer = crypto.randomBytes(20);
+    const secret = base32Encode(randomBuffer);
 
-  // Standard OTPAuth URI
-  const issuer = appName.replace(/[:/?#]/g, "");
-  const account = user.email;
-  const otpauthUri = `otpauth://totp/${encodeURIComponent(issuer)}:${encodeURIComponent(account)}?secret=${secret}&issuer=${encodeURIComponent(issuer)}&algorithm=SHA1&digits=6&period=30`;
+    // Standard OTPAuth URI
+    const issuer = appName.replace(/[:/?#]/g, "");
+    const account = user.email;
+    const otpauthUri = `otpauth://totp/${encodeURIComponent(issuer)}:${encodeURIComponent(account)}?secret=${secret}&issuer=${encodeURIComponent(issuer)}&algorithm=SHA1&digits=6&period=30`;
 
-  // Generate QR code Data URL (PNG)
-  const qrCodeDataUrl = await qrcode.toDataURL(otpauthUri, {
-    errorCorrectionLevel: "M",
-    width: 280,
-    margin: 2,
-    color: {
-      dark: "#0f172a",
-      light: "#ffffff",
-    },
-  });
+    // Generate QR code Data URL (PNG)
+    const qrCodeDataUrl = await qrcode.toDataURL(otpauthUri, {
+        errorCorrectionLevel: "M",
+        width: 280,
+        margin: 2,
+        color: {
+            dark: "#0f172a",
+            light: "#ffffff",
+        },
+    });
 
-  // Generate 8 initial recovery backup codes
-  const backupCodes = generateBackupCodes(8);
+    // Generate 8 initial recovery backup codes
+    const backupCodes = generateBackupCodes(8);
 
-  return {
-    secret,
-    qrCodeDataUrl,
-    otpauthUri,
-    backupCodes,
-  };
+    return {
+        secret,
+        qrCodeDataUrl,
+        otpauthUri,
+        backupCodes,
+    };
 }
 
 /**
@@ -259,57 +266,64 @@ export async function setupTwoFactor(user: { id: string; email: string; name: st
  * Dispatches a confirmation email and records activity log.
  */
 export async function enableTwoFactor(
-  userId: string,
-  code: string,
-  tempSecret: string,
-  backupCodes: string[]
+    userId: string,
+    code: string,
+    tempSecret: string,
+    backupCodes: string[],
 ) {
-  const user = await db.user.findUnique({
-    where: { id: userId },
-    include: { role: true },
-  });
+    const user = await db.user.findUnique({
+        where: { id: userId },
+        include: { role: true },
+    });
 
-  if (!user) {
-    throw new AppError("User not found", 404);
-  }
+    if (!user) {
+        throw new AppError("User not found", 404);
+    }
 
-  // Validate the 6-digit TOTP code
-  const isValid = verifyTOTPCode(code, tempSecret);
-  if (!isValid) {
-    throw new AppError("Invalid verification code. Please check your authenticator app and try again.", 400);
-  }
+    // Validate the 6-digit TOTP code
+    const isValid = verifyTOTPCode(code, tempSecret);
+    if (!isValid) {
+        throw new AppError(
+            "Invalid verification code. Please check your authenticator app and try again.",
+            400,
+        );
+    }
 
-  // Persist 2FA settings to database
-  await db.user.update({
-    where: { id: userId },
-    data: {
-      twoFactorEnabled: true,
-      twoFactorSecret: tempSecret,
-      twoFactorBackupCodes: backupCodes,
-    },
-  });
+    // Persist 2FA settings to database
+    await db.user.update({
+        where: { id: userId },
+        data: {
+            twoFactorEnabled: true,
+            twoFactorSecret: tempSecret,
+            twoFactorBackupCodes: backupCodes,
+        },
+    });
 
-  // Log activity
-  await logActivity({
-    organizationId: user.organizationId,
-    userId: user.id,
-    userName: user.name,
-    userRole: user.role.name,
-    action: "USER_2FA_ENABLED",
-    entityType: "User",
-    entityId: user.id,
-    detailsJson: { email: user.email },
-  });
+    // Log activity
+    await logActivity({
+        organizationId: user.organizationId,
+        userId: user.id,
+        userName: user.name,
+        userRole: user.role.name,
+        action: "USER_2FA_ENABLED",
+        entityType: "User",
+        entityId: user.id,
+        detailsJson: { email: user.email },
+    });
 
-  // Send confirmation email asynchronously (does not block user response)
-  void sendTwoFactorEnabledEmail(user.email, user.name).catch((err) => {
-    console.warn("[2FA EMAIL WARNING] Failed to deliver 2FA activation email:", err);
-  });
+    // Send confirmation email asynchronously (does not block user response)
+    void sendTwoFactorEnabledEmail(user.email, user.name).catch((err) => {
+        console.warn(
+            "[2FA EMAIL WARNING] Failed to deliver 2FA activation email:",
+            err,
+        );
+    });
 
-  return {
-    success: true,
-    message: "Two-factor authentication has been successfully activated on your account.",
-  };
+    return {
+        success: true,
+        message:
+            "Two-factor authentication has been successfully activated on your account.",
+    };
 }
 
 /**
@@ -317,57 +331,69 @@ export async function enableTwoFactor(
  * Requires user's current password for strict authentication.
  * Dispatches an urgent alert email and records activity log.
  */
-export async function disableTwoFactor(userId: string, currentPassword: string) {
-  const user = await db.user.findUnique({
-    where: { id: userId },
-    include: { role: true },
-  });
+export async function disableTwoFactor(
+    userId: string,
+    currentPassword: string,
+) {
+    const user = await db.user.findUnique({
+        where: { id: userId },
+        include: { role: true },
+    });
 
-  if (!user) {
-    throw new AppError("User not found", 404);
-  }
+    if (!user) {
+        throw new AppError("User not found", 404);
+    }
 
-  if (!user.twoFactorEnabled) {
-    throw new AppError("Two-factor authentication is not currently enabled on your account.", 400);
-  }
+    if (!user.twoFactorEnabled) {
+        throw new AppError(
+            "Two-factor authentication is not currently enabled on your account.",
+            400,
+        );
+    }
 
-  // Verify password before allowing 2FA deactivation
-  const valid = await verifyPassword(currentPassword, user.passwordHash);
-  if (!valid) {
-    throw new AppError("Incorrect password. Current password is required to disable 2FA.", 401);
-  }
+    // Verify password before allowing 2FA deactivation
+    const valid = await verifyPassword(currentPassword, user.passwordHash);
+    if (!valid) {
+        throw new AppError(
+            "Incorrect password. Current password is required to disable 2FA.",
+            401,
+        );
+    }
 
-  // Disable 2FA in database
-  await db.user.update({
-    where: { id: userId },
-    data: {
-      twoFactorEnabled: false,
-      twoFactorSecret: null,
-      twoFactorBackupCodes: [],
-    },
-  });
+    // Disable 2FA in database
+    await db.user.update({
+        where: { id: userId },
+        data: {
+            twoFactorEnabled: false,
+            twoFactorSecret: null,
+            twoFactorBackupCodes: [],
+        },
+    });
 
-  // Log activity
-  await logActivity({
-    organizationId: user.organizationId,
-    userId: user.id,
-    userName: user.name,
-    userRole: user.role.name,
-    action: "USER_2FA_DISABLED",
-    entityType: "User",
-    entityId: user.id,
-    detailsJson: { email: user.email },
-  });
+    // Log activity
+    await logActivity({
+        organizationId: user.organizationId,
+        userId: user.id,
+        userName: user.name,
+        userRole: user.role.name,
+        action: "USER_2FA_DISABLED",
+        entityType: "User",
+        entityId: user.id,
+        detailsJson: { email: user.email },
+    });
 
-  // Send security alert email asynchronously
-  void sendTwoFactorDisabledEmail(user.email, user.name).catch((err) => {
-    console.warn("[2FA EMAIL WARNING] Failed to deliver 2FA deactivation alert email:", err);
-  });
+    // Send security alert email asynchronously
+    void sendTwoFactorDisabledEmail(user.email, user.name).catch((err) => {
+        console.warn(
+            "[2FA EMAIL WARNING] Failed to deliver 2FA deactivation alert email:",
+            err,
+        );
+    });
 
-  return {
-    success: true,
-    message: "Two-factor authentication has been disabled.",
-  };
+    return {
+        success: true,
+        message: "Two-factor authentication has been disabled.",
+    };
 }
 
 /**
@@ -378,83 +404,88 @@ export async function disableTwoFactor(userId: string, currentPassword: string) 
  * If a backup code is used, it is consumed (removed from the array) and updated in DB.
  */
 export async function verifyLoginTwoFactor(
-  userId: string,
-  code: string
+    userId: string,
+    code: string,
 ): Promise<{ success: boolean; usedBackupCode?: boolean }> {
-  const user = await db.user.findUnique({
-    where: { id: userId },
-  });
-
-  if (!user || !user.twoFactorEnabled || !user.twoFactorSecret) {
-    return { success: false };
-  }
-
-  const clean = code.trim().toUpperCase();
-
-  // 1. Check if it's a valid 6-digit TOTP code
-  if (/^\d{6}$/.test(clean.replace(/\s+/g, ""))) {
-    const isValid = verifyTOTPCode(clean, user.twoFactorSecret);
-    if (isValid) {
-      return { success: true, usedBackupCode: false };
-    }
-  }
-
-  // 2. Check if it matches an existing backup recovery code
-  const backupCodes = Array.isArray(user.twoFactorBackupCodes)
-    ? (user.twoFactorBackupCodes as string[])
-    : [];
-
-  const matchedIndex = backupCodes.findIndex(
-    (bc) => bc.toUpperCase() === clean || bc.replace("-", "").toUpperCase() === clean.replace("-", "")
-  );
-
-  if (matchedIndex !== -1) {
-    // Consume this single-use backup code
-    const updatedBackupCodes = [...backupCodes];
-    updatedBackupCodes.splice(matchedIndex, 1);
-
-    await db.user.update({
-      where: { id: userId },
-      data: { twoFactorBackupCodes: updatedBackupCodes },
+    const user = await db.user.findUnique({
+        where: { id: userId },
     });
 
-    return { success: true, usedBackupCode: true };
-  }
+    if (!user || !user.twoFactorEnabled || !user.twoFactorSecret) {
+        return { success: false };
+    }
 
-  return { success: false };
+    const clean = code.trim().toUpperCase();
+
+    // 1. Check if it's a valid 6-digit TOTP code
+    if (/^\d{6}$/.test(clean.replace(/\s+/g, ""))) {
+        const isValid = verifyTOTPCode(clean, user.twoFactorSecret);
+        if (isValid) {
+            return { success: true, usedBackupCode: false };
+        }
+    }
+
+    // 2. Check if it matches an existing backup recovery code
+    const backupCodes = Array.isArray(user.twoFactorBackupCodes)
+        ? (user.twoFactorBackupCodes as string[])
+        : [];
+
+    const matchedIndex = backupCodes.findIndex(
+        (bc) =>
+            bc.toUpperCase() === clean ||
+            bc.replace("-", "").toUpperCase() === clean.replace("-", ""),
+    );
+
+    if (matchedIndex !== -1) {
+        // Consume this single-use backup code
+        const updatedBackupCodes = [...backupCodes];
+        updatedBackupCodes.splice(matchedIndex, 1);
+
+        await db.user.update({
+            where: { id: userId },
+            data: { twoFactorBackupCodes: updatedBackupCodes },
+        });
+
+        return { success: true, usedBackupCode: true };
+    }
+
+    return { success: false };
 }
 
 /**
  * Regenerates 8 fresh recovery backup codes for a user with active 2FA.
  * Requires current password verification.
  */
-export async function regenerateBackupCodes(userId: string, currentPassword: string) {
-  const user = await db.user.findUnique({
-    where: { id: userId },
-  });
+export async function regenerateBackupCodes(
+    userId: string,
+    currentPassword: string,
+) {
+    const user = await db.user.findUnique({
+        where: { id: userId },
+    });
 
-  if (!user) {
-    throw new AppError("User not found", 404);
-  }
+    if (!user) {
+        throw new AppError("User not found", 404);
+    }
 
-  if (!user.twoFactorEnabled) {
-    throw new AppError("Two-factor authentication is not active.", 400);
-  }
+    if (!user.twoFactorEnabled) {
+        throw new AppError("Two-factor authentication is not active.", 400);
+    }
 
-  const valid = await verifyPassword(currentPassword, user.passwordHash);
-  if (!valid) {
-    throw new AppError("Incorrect password.", 401);
-  }
+    const valid = await verifyPassword(currentPassword, user.passwordHash);
+    if (!valid) {
+        throw new AppError("Incorrect password.", 401);
+    }
 
-  const newCodes = generateBackupCodes(8);
+    const newCodes = generateBackupCodes(8);
 
-  await db.user.update({
-    where: { id: userId },
-    data: { twoFactorBackupCodes: newCodes },
-  });
+    await db.user.update({
+        where: { id: userId },
+        data: { twoFactorBackupCodes: newCodes },
+    });
 
-  return {
-    success: true,
-    backupCodes: newCodes,
-  };
+    return {
+        success: true,
+        backupCodes: newCodes,
+    };
 }

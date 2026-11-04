@@ -192,7 +192,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
             </div>
             <div>
               <h1 className="text-base font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
-                CareFlow OS
+                CareFlow
               </h1>
               <p className="text-[10px] text-slate-500 dark:text-slate-400">
                 Healthcare Operating System
@@ -514,7 +514,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
 
         {/* Bottom Footer legal text */}
         <div className="pt-6 border-t border-[var(--border-subtle)] text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-500">
-          <span>© {new Date().getFullYear()} CareFlow OS. {t("allRightsReserved")}</span>
+          <span>© {new Date().getFullYear()} CareFlow. {t("allRightsReserved")}</span>
           <span className="flex items-center gap-1">
             <Lock className="w-3 h-3 text-emerald-500" />
             {t("uiHipaaBMDCCompliant")}

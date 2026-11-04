@@ -129,7 +129,7 @@ export function PublicPrescriptionView({
   const doc = prescription.doctor;
   const patient = prescription.patient;
   const hospitalName =
-    prescription.organization?.name || doc.hospital || "CareFlow OS";
+    prescription.organization?.name || doc.hospital || "CareFlow";
 
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-slate-900 dark:text-slate-100 flex flex-col py-8 px-4 sm:px-6 print:p-0 print:bg-white print:text-black">

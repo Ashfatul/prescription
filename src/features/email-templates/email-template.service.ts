@@ -490,7 +490,7 @@ export async function sendTemplatedEmail(params: {
     throw new AppError(`Email template with key '${params.key}' not found.`, 404);
   }
 
-  const appName = process.env.NEXT_PUBLIC_APP_NAME || "CareFlow OS";
+  const appName = process.env.NEXT_PUBLIC_APP_NAME || "CareFlow";
   const supportEmail = process.env.MAIL_FROM_ADDRESS || "support@ppms.local";
 
   const allVars: Record<string, string | number | undefined | null> = {

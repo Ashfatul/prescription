@@ -67,13 +67,13 @@ export function AuthBrandingPanel({
 
       {/* Top Header: Brand Identity */}
       <div className="relative z-10 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3" aria-label="CareFlow OS home">
+        <Link href="/" className="flex items-center gap-3" aria-label="CareFlow home">
           <div className="relative w-10 h-10 overflow-hidden rounded-2xl shadow-md shadow-teal-500/20">
-            <Image src="/icons/icon.svg" alt="CareFlow OS" fill sizes="40px" />
+            <Image src="/icons/icon.svg" alt="CareFlow" fill sizes="40px" />
           </div>
           <div>
             <span className="text-base font-black tracking-tight text-white block leading-tight">
-              CareFlow OS
+              CareFlow
             </span>
             <span className="text-[11px] text-teal-300/80 font-medium">
               Patient Prescription Management System

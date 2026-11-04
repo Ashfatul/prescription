@@ -523,11 +523,11 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           title="Return to Home Page"
         >
           <div className="relative w-10 h-10 overflow-hidden rounded-2xl shadow-md shadow-[var(--brand-primary)]/20 group-hover:scale-105 transition-transform">
-            <Image src="/icons/icon.svg" alt="CareFlow OS" fill sizes="40px" />
+            <Image src="/icons/icon.svg" alt="CareFlow" fill sizes="40px" />
           </div>
           <div>
             <h1 className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight group-hover:text-[var(--brand-text)] transition-colors">
-              CareFlow OS
+              CareFlow
             </h1>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
               Medical Suite v2.0

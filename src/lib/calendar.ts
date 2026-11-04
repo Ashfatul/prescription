@@ -24,7 +24,7 @@ export function createGoogleCalendarAppointmentUrl(params: {
     params.serialNumber ? `Queue Serial Token: #${params.serialNumber}` : "",
     params.chamberAddress ? `Chamber: ${params.chamberAddress}` : "",
     params.notes ? `Clinical Notes: ${params.notes}` : "",
-    "Managed via CareFlow OS clinic operations platform",
+    "Managed via CareFlow clinic operations platform",
   ]
     .filter(Boolean)
     .join("\n");

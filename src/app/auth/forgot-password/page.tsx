@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
             </div>
             <div>
               <h1 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
-                CareFlow OS
+                CareFlow
               </h1>
               <p className="text-[10px] text-slate-500 dark:text-slate-400">
                 Healthcare Operating System

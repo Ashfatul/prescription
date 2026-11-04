@@ -192,7 +192,7 @@ export async function createUser(input: unknown, creatorUserId?: string) {
         userEmail: user.email,
         verifyUrl: `${appUrl}/auth/verify-email?token=${verificationToken}`,
         token: verificationToken,
-        appName: process.env.NEXT_PUBLIC_APP_NAME || "CareFlow OS",
+        appName: process.env.NEXT_PUBLIC_APP_NAME || "CareFlow",
       },
       organizationId: user.organizationId,
     });

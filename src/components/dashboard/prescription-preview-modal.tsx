@@ -147,7 +147,7 @@ function PrescriptionPageSheet({
           {/* Right Column: Hospital / Clinic Branding */}
           <div className="text-left sm:text-right sm:border-l sm:pl-4 border-slate-200 space-y-0.5 shrink-0 max-w-xs">
             <h1 className="text-sm sm:text-base font-black tracking-tight" style={{ color: primaryColor }}>
-              {hospitalInfo?.name || doctor.hospital || "CareFlow OS"}
+              {hospitalInfo?.name || doctor.hospital || "CareFlow"}
             </h1>
             {hospitalInfo?.tagline && (
               <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">

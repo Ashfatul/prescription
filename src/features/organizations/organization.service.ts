@@ -339,7 +339,7 @@ export async function approveOrganization(id: string, approvedByUserName: string
         userName: adminUser?.name || "Clinic Administrator",
         clinicName: existing.name,
         loginUrl: `${host}/auth/login`,
-        appName: process.env.NEXT_PUBLIC_APP_NAME || "CareFlow OS",
+        appName: process.env.NEXT_PUBLIC_APP_NAME || "CareFlow",
         approvedBy: approvedByUserName,
       },
       organizationId: id,
