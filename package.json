@@ -7,7 +7,8 @@
   },
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/verify-production-env.mjs",
+    "postinstall": "prisma generate",
+    "prebuild": "prisma generate && node scripts/verify-production-env.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
