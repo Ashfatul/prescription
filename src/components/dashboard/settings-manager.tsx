@@ -21,14 +21,27 @@ import {
 import { ChangePasswordCard } from "@/components/common/change-password-card";
 import { TwoFactorAuthCard } from "@/components/common/two-factor-auth-card";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { useAuth } from "@/lib/auth/auth-context";
 
 export function SettingsManager() {
   const { t, language } = useLanguage();
+  const { user } = useAuth();
   const [settings, setSettings] = useState<HospitalSettings>(DEFAULT_HOSPITAL_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [customDomain, setCustomDomain] = useState("");
+  const [domainStatus, setDomainStatus] = useState("NONE");
+  const [domainDns, setDomainDns] = useState<{
+    cnameName: string;
+    cnameTarget: string;
+    txtName: string;
+    txtValue: string | null;
+  } | null>(null);
+  const [domainSaving, setDomainSaving] = useState(false);
+  const [domainVerifying, setDomainVerifying] = useState(false);
+  const canManageDomain = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -49,6 +62,57 @@ export function SettingsManager() {
 
     void fetchSettings();
   }, []);
+
+  useEffect(() => {
+    if (!canManageDomain) return;
+    fetch("/api/organizations/domain")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (json?.success && json.data) {
+          setCustomDomain(json.data.domain || "");
+          setDomainStatus(json.data.status || "NONE");
+          setDomainDns(json.data.dns || null);
+        }
+      })
+      .catch(() => {});
+  }, [canManageDomain]);
+
+  const saveCustomDomain = async () => {
+    setDomainSaving(true);
+    setErrorMsg(null);
+    try {
+      const res = await fetch("/api/organizations/domain", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: customDomain.trim() || null }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.message || "Failed to save custom domain");
+      setCustomDomain(json.data.domain || "");
+      setDomainStatus(json.data.status || "NONE");
+      setDomainDns(json.data.dns || null);
+    } catch (error) {
+      setErrorMsg(error instanceof Error ? error.message : "Failed to save custom domain");
+    } finally {
+      setDomainSaving(false);
+    }
+  };
+
+  const verifyCustomDomain = async () => {
+    setDomainVerifying(true);
+    setErrorMsg(null);
+    try {
+      const res = await fetch("/api/organizations/domain", { method: "POST" });
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.message || "Domain verification failed");
+      setDomainStatus(json.data.status || "VERIFIED");
+      setDomainDns(json.data.dns || null);
+    } catch (error) {
+      setErrorMsg(error instanceof Error ? error.message : "Domain verification failed");
+    } finally {
+      setDomainVerifying(false);
+    }
+  };
 
   const handleChange = (key: keyof HospitalSettings, val: string) => {
     setSettings((prev) => ({ ...prev, [key]: val }));
@@ -114,6 +178,50 @@ export function SettingsManager() {
           {t.hospitalSettingsSubtitle}
         </p>
       </div>
+
+      {canManageDomain && (
+        <section className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
+          <div className="flex items-center gap-2">
+            <Building2 className="h-5 w-5 text-[var(--brand-primary)]" />
+            <div>
+              <h2 className="text-base font-bold text-[var(--text-primary)]">Custom clinic domain</h2>
+              <p className="text-xs text-[var(--text-muted)]">Use your own domain for the clinic portal and patient booking pages.</p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <label className="flex-1 space-y-1.5">
+              <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Domain</span>
+              <input
+                type="text"
+                value={customDomain}
+                onChange={(event) => setCustomDomain(event.target.value)}
+                placeholder="clinic.example.com"
+                className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100"
+              />
+            </label>
+            <button type="button" onClick={() => void saveCustomDomain()} disabled={domainSaving} className="rounded-xl bg-[var(--brand-primary)] px-5 py-2.5 text-xs font-bold text-white disabled:opacity-60">
+              {domainSaving ? "Saving..." : "Save domain"}
+            </button>
+          </div>
+          {domainStatus !== "NONE" && (
+            <div className="space-y-3 rounded-2xl bg-[var(--bg-subtle)] p-4 text-xs text-slate-600 dark:text-slate-300">
+              <p className="font-bold">Status: {domainStatus}</p>
+              <p>Add these DNS records, then contact platform support to verify the domain.</p>
+              {domainDns && (
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <code className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-3">CNAME {domainDns.cnameName} → {domainDns.cnameTarget}</code>
+                  <code className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-3">TXT {domainDns.txtName} → {domainDns.txtValue}</code>
+                </div>
+              )}
+              {domainStatus !== "VERIFIED" && (
+                <button type="button" onClick={() => void verifyCustomDomain()} disabled={domainVerifying} className="rounded-xl border border-[var(--brand-border)] px-4 py-2 text-xs font-bold text-[var(--brand-text)] disabled:opacity-60">
+                  {domainVerifying ? "Checking DNS..." : "Verify DNS records"}
+                </button>
+              )}
+            </div>
+          )}
+        </section>
+      )}
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Success / Error Alerts */}

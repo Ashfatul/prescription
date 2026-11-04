@@ -77,6 +77,10 @@ model Organization {
   id                String             @id @default(cuid())
   name              String
   slug              String             @unique
+  customDomain      String?            @unique
+  customDomainStatus String?           @default("NONE")
+  customDomainVerificationToken String?
+  customDomainVerifiedAt DateTime?
   status            OrganizationStatus @default(ACTIVE)
   planId            String?
   plan              PricingPlan?       @relation(fields: [planId], references: [id])
