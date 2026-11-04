@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
 import { RoleName } from "@prisma/client";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
@@ -521,12 +522,12 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           className="flex items-center gap-3 px-3 py-2.5 mb-4 shrink-0 rounded-2xl hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition-all group cursor-pointer"
           title="Return to Home Page"
         >
-          <div className="w-10 h-10 rounded-2xl bg-[var(--brand-primary)] text-white flex items-center justify-center font-black text-lg shadow-md shadow-[var(--brand-primary)]/20 group-hover:scale-105 transition-transform">
-            Rx
+          <div className="relative w-10 h-10 overflow-hidden rounded-2xl shadow-md shadow-[var(--brand-primary)]/20 group-hover:scale-105 transition-transform">
+            <Image src="/icons/icon.svg" alt="CareFlow OS" fill sizes="40px" />
           </div>
           <div>
             <h1 className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight group-hover:text-[var(--brand-text)] transition-colors">
-              PPMS Clinical
+              CareFlow OS
             </h1>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
               Medical Suite v2.0

@@ -463,7 +463,7 @@ export const uiEn = {
   "uiMembers": "members",
   "uiMembers2": "members",
   "uiMetric": "Metric",
-  "uiMetropolitanSpecializedHospital": "Metropolitan Specialized Hospital",
+  "uiMetropolitanSpecializedHospital": "CareFlow OS",
   "uiMinChars": "min 8 chars",
   "uiMinutesBeforeBreakfastDinner": "30 minutes before breakfast & dinner",
   "uiMissingResetTokenPleaseOpen": "Missing reset token. Please open the link received in your email.",

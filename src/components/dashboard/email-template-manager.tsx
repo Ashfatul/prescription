@@ -557,7 +557,7 @@ export function EmailTemplateManager() {
                             .replace(/\{\{appName\}\}/g, "PPMS Health")
                             .replace(/\{\{verifyUrl\}\}/g, "http://localhost:3000/auth/verify-email?token=SAMPLE_TOKEN")
                             .replace(/\{\{resetUrl\}\}/g, "http://localhost:3000/auth/reset-password?token=SAMPLE_TOKEN")
-                            .replace(/\{\{clinicName\}\}/g, "Metropolitan Specialized Hospital"),
+                            .replace(/\{\{clinicName\}\}/g, "CareFlow OS"),
                         }}
                       />
                     </div>

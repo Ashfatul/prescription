@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import Image from "next/image";
 import { ShieldCheck, Pill, Building2, Clock, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
 
@@ -65,19 +67,19 @@ export function AuthBrandingPanel({
 
       {/* Top Header: Brand Identity */}
       <div className="relative z-10 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-teal-500 to-emerald-400 text-slate-950 flex items-center justify-center font-black text-base shadow-md shadow-teal-500/20">
-            Rx
+        <Link href="/" className="flex items-center gap-3" aria-label="CareFlow OS home">
+          <div className="relative w-10 h-10 overflow-hidden rounded-2xl shadow-md shadow-teal-500/20">
+            <Image src="/icons/icon.svg" alt="CareFlow OS" fill sizes="40px" />
           </div>
           <div>
             <span className="text-base font-black tracking-tight text-white block leading-tight">
-              PPMS Clinical OS
+              CareFlow OS
             </span>
             <span className="text-[11px] text-teal-300/80 font-medium">
               Patient Prescription Management System
             </span>
           </div>
-        </div>
+        </Link>
 
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-300 text-[11px] font-semibold">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />

@@ -145,7 +145,7 @@ export async function seedOrResetDemoClinic(
       planId: proPlan.id,
       contactEmail: "demo@ppms-clinic.local",
       contactPhone: "+880 1700-000000",
-      address: "Chamber Suite 101, PPMS Clinical Sandbox Facility, Dhaka",
+      address: "CareFlow OS demo clinic sandbox, Dhaka",
       lastDemoResetAt: now,
       status: "ACTIVE",
     },
@@ -156,7 +156,7 @@ export async function seedOrResetDemoClinic(
       planId: proPlan.id,
       contactEmail: "demo@ppms-clinic.local",
       contactPhone: "+880 1700-000000",
-      address: "Chamber Suite 101, PPMS Clinical Sandbox Facility, Dhaka",
+      address: "CareFlow OS demo clinic sandbox, Dhaka",
       lastDemoResetAt: now,
       status: "ACTIVE",
     },
@@ -728,6 +728,23 @@ export async function performSecureDatabaseReset(actorId: string) {
     // Restore the protected demo facility and accounts inside the same transaction.
     // The cleanup below then removes the seeded transactional sample data as well.
     const demoOrg = await seedOrResetDemoClinic(tx, { seedSampleData: false });
+    await Promise.all([
+      tx.systemSetting.upsert({
+        where: { key: "auth_require_email_verification" },
+        update: { value: "true", category: "auth" },
+        create: { key: "auth_require_email_verification", value: "true", category: "auth" },
+      }),
+      tx.systemSetting.upsert({
+        where: { key: "auth_require_org_approval" },
+        update: { value: "true", category: "auth" },
+        create: { key: "auth_require_org_approval", value: "true", category: "auth" },
+      }),
+      tx.systemSetting.upsert({
+        where: { key: "auth_require_patient_verification" },
+        update: { value: "true", category: "auth" },
+        create: { key: "auth_require_patient_verification", value: "true", category: "auth" },
+      }),
+    ]);
     const seededSuperAdmin = await tx.user.findUnique({
       where: { email: SUPER_ADMIN_EMAIL },
       select: { id: true },

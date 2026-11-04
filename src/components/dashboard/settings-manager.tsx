@@ -165,17 +165,17 @@ export function SettingsManager() {
       <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-1.5">
           <span className="px-2.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-primary)] text-xs font-bold">
-            {t("uiHospitalOSConfiguration")}
+            {t("uiSaaSPlatformConfiguration", "SaaS Platform Configuration")}
           </span>
           <span className="text-xs text-[var(--text-muted)] font-medium">
-            {t("uiPublicPortalChamberVariables")}
+            {t("uiPlatformGovernance", "Platform governance and support")}
           </span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
-          {t.hospitalSettingsTitle}
+          {t("uiPlatformAdministrationSettings", "Platform Administration Settings")}
         </h1>
         <p className="text-xs text-[var(--text-secondary)] mt-1">
-          {t.hospitalSettingsSubtitle}
+          {t("uiPlatformAdministrationSubtitle", "Manage platform-wide security, identity, support, and clinic tenancy. Clinic schedules and chamber details are managed inside each clinic workspace.")}
         </p>
       </div>
 
@@ -385,19 +385,19 @@ export function SettingsManager() {
           </div>
         </div>
 
-        {/* Section 1: Hospital Identity */}
+        {/* Section 1: Platform Identity */}
         <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
           <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
             <Building2 className="w-5 h-5 text-[var(--brand-primary)]" />
             <h2 className="text-base font-bold text-[var(--text-primary)]">
-              {t.hospitalIdentityTitle}
+              {t("uiPlatformIdentity", "Platform Identity")}
             </h2>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                {t.hospitalLegalName}
+                {t("uiPlatformName", "Platform name")}
               </label>
               <input
                 type="text"
@@ -405,26 +405,26 @@ export function SettingsManager() {
                 onChange={(e) => handleChange("hospitalName", e.target.value)}
                 required
                 className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
-                placeholder="e.g. Metropolitan Specialized Hospital"
+                placeholder="e.g. CareFlow OS"
               />
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                {t.branchAffiliation}
+                {t("uiPlatformOperations", "Platform operations")}
               </label>
               <input
                 type="text"
                 value={settings.hospitalBranch}
                 onChange={(e) => handleChange("hospitalBranch", e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
-                placeholder="e.g. Diagnostic & Consultation Block C"
+                placeholder="e.g. SaaS Operations"
               />
             </div>
 
             <div className="sm:col-span-2 space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                {t.fullPhysicalAddress}
+                {t("uiPlatformAddress", "Platform address or support location")}
               </label>
               <div className="relative">
                 <MapPin className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -433,15 +433,15 @@ export function SettingsManager() {
                   value={settings.hospitalAddress}
                   onChange={(e) => handleChange("hospitalAddress", e.target.value)}
                   className="w-full input-icon-left !pl-11 pr-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
-                  placeholder="e.g. Diagnostic Block C, 3rd Floor, Metropolitan Hospital, Dhaka"
+                  placeholder="e.g. Platform operations and support"
                 />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Section 2: Visiting Hours & Schedules */}
-        <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
+        {/* Section 2: Clinic schedules are configured inside each clinic workspace. */}
+        <div className="hidden rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
           <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
             <Clock className="w-5 h-5 text-[var(--brand-primary)]" />
             <h2 className="text-base font-bold text-[var(--text-primary)]">
@@ -492,86 +492,85 @@ export function SettingsManager() {
           </div>
         </div>
 
-        {/* Section 3: Emergency Hotlines & Contacts */}
+        {/* Section 2: Platform Support & Inquiries */}
         <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
           <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
             <PhoneCall className="w-5 h-5 text-[var(--brand-primary)]" />
             <h2 className="text-base font-bold text-[var(--text-primary)]">
-              {t.emergencyHotlinesTitle}
+              {t("uiPlatformSupportInquiries", "Platform Support & Inquiries")}
             </h2>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                {t.emergencyHotlineNumber}
+                {t("uiSupportPhone", "Support phone")}
               </label>
               <div className="relative">
                 <PhoneCall className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-rose-500 pointer-events-none" />
                 <input
                   type="text"
-                  value={settings.emergencyHotline}
-                  onChange={(e) => handleChange("emergencyHotline", e.target.value)}
-                  required
+                  value={settings.contactPhone}
+                  onChange={(e) => handleChange("contactPhone", e.target.value)}
                   className="w-full input-icon-left !pl-11 pr-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs font-bold text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
-                  placeholder="e.g. 10678"
+                  placeholder="Optional platform support number"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                {t.chamberContactPhone}
+                {t("uiSupportEmail", "Support email")}
               </label>
               <div className="relative">
                 <PhoneCall className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 <input
                   type="text"
-                  value={settings.contactPhone}
-                  onChange={(e) => handleChange("contactPhone", e.target.value)}
+                  value={settings.supportEmail}
+                  onChange={(e) => handleChange("supportEmail", e.target.value)}
                   className="w-full input-icon-left !pl-11 pr-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
-                  placeholder="e.g. +880 1711-234567"
+                  placeholder="support@example.com"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                {t.clinicalSupportEmail}
+                {t("uiSupportScope", "Support scope")}
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 <input
                   type="email"
-                  value={settings.supportEmail}
-                  onChange={(e) => handleChange("supportEmail", e.target.value)}
+                  value={settings.emergencyStatus}
+                  onChange={(e) => handleChange("emergencyStatus", e.target.value)}
                   className="w-full input-icon-left !pl-11 pr-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
-                  placeholder="e.g. support@hospital.org"
+                  placeholder="Product issue, security report, suggestion, or feature request"
                 />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Section 4: Emergency Medical Notice Banner Text */}
+        {/* Section 3: Platform Support Notice */}
         <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
           <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
             <AlertCircle className="w-5 h-5 text-amber-500" />
             <h2 className="text-base font-bold text-[var(--text-primary)]">
-              {t.emergencyNoticeTitle}
+              {t("uiPlatformSupportNotice", "Platform Support Notice")}
             </h2>
           </div>
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-              {t.emergencyNoticeLabel}
+              {t("uiSupportNoticeText", "Support notice")}
             </label>
             <textarea
               rows={3}
               value={settings.emergencyNotice}
               onChange={(e) => handleChange("emergencyNotice", e.target.value)}
               className="w-full p-3.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] leading-relaxed focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
-              placeholder="e.g. PPMS is a clinical management and prescription issuing tool..."
+              placeholder="Explain how users can report product issues, security concerns, suggestions, or feature requests."
             />
           </div>
         </div>
@@ -588,9 +587,9 @@ export function SettingsManager() {
               <span className="text-[11px] text-slate-500">{settings.hospitalAddress}</span>
             </div>
             <div className="flex items-center gap-3 text-[11px]">
-              <span className="font-semibold text-slate-600 dark:text-slate-300">OPD: {settings.opdVisitingHours}</span>
-              <span className="px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold">
-                Hotline: {settings.emergencyHotline}
+                <span className="font-semibold text-slate-600 dark:text-slate-300">Support: {settings.supportEmail || "Not configured"}</span>
+                <span className="px-2.5 py-1 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] font-bold">
+                  Platform operations
               </span>
             </div>
           </div>

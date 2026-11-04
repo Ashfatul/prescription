@@ -234,7 +234,7 @@ export function TwoFactorAuthCard() {
 
   // Download backup codes as .txt file
   const handleDownloadBackupCodes = (codes: string[]) => {
-    const text = `PPMS Clinical OS - Two-Factor Authentication Backup Recovery Codes\nGenerated: ${new Date().toUTCString()}\n\nKeep these codes stored securely. Each code can be used once to access your account if you lose access to your authenticator app:\n\n${codes.join("\n")}\n`;
+    const text = `CareFlow OS - Two-Factor Authentication Backup Recovery Codes\nGenerated: ${new Date().toUTCString()}\n\nKeep these codes stored securely. Each code can be used once to access your account if you lose access to your authenticator app:\n\n${codes.join("\n")}\n`;
     const element = document.createElement("a");
     const file = new Blob([text], { type: "text/plain" });
     element.href = URL.createObjectURL(file);

@@ -11,7 +11,7 @@ import { db } from "@/lib/db";
 
 export const metadata: Metadata = {
   title: "Registered Clinics & Medical Centers Directory | PPMS",
-  description: "Browse accredited polyclinics, specialized chambers, hospitals, and verified consulting physicians on PPMS Clinical OS.",
+  description: "Browse accredited polyclinics, specialized chambers, hospitals, and verified consulting physicians on CareFlow OS.",
 };
 
 export const dynamic = "force-dynamic";

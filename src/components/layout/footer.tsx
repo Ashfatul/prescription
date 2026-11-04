@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { 
   ShieldCheck, 
-  PhoneCall, 
   Clock, 
   MapPin, 
   Lock, 
@@ -47,8 +47,8 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
             <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="font-semibold">
-                {t("uiClinicalHealthNetwork")}
-                <strong>{settings.hospitalName} ({settings.hospitalBranch})</strong>
+                {t("uiPPMSPlatform")}
+                <strong>{settings.hospitalName}</strong>
               </span>
             </div>
 
@@ -61,13 +61,15 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
                 <Lock className="w-3.5 h-3.5 text-emerald-500" />
                 {t.footerEncryptedHealth}
               </span>
-              <a
-                href={`tel:${settings.emergencyHotline}`}
-                className="flex items-center gap-1 font-bold text-rose-600 dark:text-rose-400 hover:underline"
-              >
-                <PhoneCall className="w-3.5 h-3.5" />
-                {t.emergencyHotline}: {settings.emergencyHotline}
-              </a>
+              {settings.supportEmail && (
+                <a
+                  href={`mailto:${settings.supportEmail}`}
+                  className="flex items-center gap-1 font-bold text-[var(--brand-text)] hover:underline"
+                >
+                  <Mail className="w-3.5 h-3.5" />
+                  {t("uiPlatformSupport", "Platform support")}: {settings.supportEmail}
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -80,16 +82,16 @@ export function Footer({ initialSettings }: { initialSettings?: HospitalSettings
           {/* Column 1: Hospital Brand & System Overview (Spans 2 cols on lg) */}
           <div className="lg:col-span-2 space-y-4">
             <Link href="/" className="inline-flex items-center gap-2.5 group">
-              <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[var(--brand-primary)] to-[var(--brand-hover)] text-white flex items-center justify-center font-black text-base shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all">
-                Rx
+              <div className="relative w-9 h-9 overflow-hidden rounded-2xl shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all">
+                <Image src="/icons/icon.svg" alt="CareFlow OS" fill sizes="36px" />
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span className="font-extrabold tracking-tight text-slate-900 dark:text-white text-lg">
-                    PPMS
+                    {settings.hospitalName}
                   </span>
                   <span className="px-1.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] font-bold text-[10px] tracking-wider uppercase border border-[var(--brand-border)]/60">
-                    Clinical OS
+                    Clinic Operations Platform
                   </span>
                 </div>
                 <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">

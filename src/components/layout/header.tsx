@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
@@ -8,7 +9,7 @@ import {
   Calendar, 
   Menu, 
   X, 
-  PhoneCall, 
+  Mail,
   LayoutDashboard, 
   LogOut, 
   Sparkles, 
@@ -32,7 +33,7 @@ import { useLanguage } from "@/lib/i18n/language-context";
 import { useAuth } from "@/lib/auth/auth-context";
 
 interface SimpleSettings {
-  emergencyHotline?: string;
+  supportEmail?: string;
   hospitalName?: string;
 }
 
@@ -53,8 +54,8 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
   );
   
   const [settings, setSettings] = useState<SimpleSettings>({
-    emergencyHotline: "10678",
-    hospitalName: "PPMS Clinical",
+    supportEmail: "support@ppms.local",
+    hospitalName: "CareFlow OS",
   });
 
   const isLoggedIn = loggedIn !== undefined ? loggedIn : !!user;
@@ -65,8 +66,8 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
       .then((data) => {
         if (data?.success && data?.data) {
           setSettings({
-            emergencyHotline: data.data.emergencyHotline || "10678",
-            hospitalName: data.data.hospitalName || "PPMS Clinical",
+            supportEmail: data.data.supportEmail || "support@ppms.local",
+            hospitalName: data.data.hospitalName || "CareFlow OS",
           });
         }
       })
@@ -170,17 +171,17 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
             {/* Left: Brand Identity */}
             <div className="flex items-center gap-3 sm:gap-4 shrink-0">
               <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-                <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-[var(--brand-primary)] to-[var(--brand-hover)] text-white flex items-center justify-center font-black text-sm sm:text-base shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all shrink-0">
-                  <span>Rx</span>
+                <div className="relative w-9 h-9 sm:w-10 sm:h-10 overflow-hidden rounded-2xl shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all shrink-0">
+                  <Image src="/icons/icon.svg" alt="CareFlow OS" fill sizes="40px" />
                   <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-white dark:ring-slate-900 animate-pulse" />
                 </div>
                 <div className="flex flex-col">
                   <div className="flex items-center gap-1.5">
                     <span className="font-extrabold tracking-tight text-slate-900 dark:text-white text-base sm:text-lg whitespace-nowrap">
-                      PPMS
+                      {settings.hospitalName}
                     </span>
                     <span className="px-1.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] font-bold text-[9px] sm:text-[10px] tracking-wider uppercase border border-[var(--brand-border)]/60">
-                      Clinical
+                      Clinic Operations Platform
                     </span>
                   </div>
                   <span className="hidden sm:inline-block text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate max-w-[160px]">
@@ -308,12 +309,12 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                 onClick={(e) => handleNavClick(e, "/")}
                 className="flex items-center gap-2.5 group cursor-pointer"
               >
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[var(--brand-primary)] to-[var(--brand-hover)] text-white flex items-center justify-center font-black text-base shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all">
-                  Rx
+                <div className="relative w-10 h-10 overflow-hidden rounded-2xl shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all">
+                  <Image src="/icons/icon.svg" alt="CareFlow OS" fill sizes="40px" />
                 </div>
                 <div className="flex flex-col">
                   <span className="font-black tracking-tight text-slate-900 dark:text-white text-lg">
-                    PPMS Clinical
+                    {settings.hospitalName}
                   </span>
                   <span className="text-[11px] text-slate-500 font-medium">
                     Navigation Directory
@@ -644,25 +645,25 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     </div>
                   </Link>
 
-                  {/* Clean Hotline Link matching other cards in height, with urgent red emergency styling */}
+                  {/* Platform support contact */}
                   <a
-                    href={`tel:${settings.emergencyHotline}`}
-                    className="p-4 rounded-2xl bg-rose-50/60 dark:bg-rose-950/20 hover:bg-rose-100/70 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 transition-all group flex items-start gap-3.5 shadow-2xs block"
+                    href={`mailto:${settings.supportEmail}`}
+                    className="p-4 rounded-2xl bg-[var(--brand-surface)]/60 hover:bg-[var(--brand-surface)] border border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
                   >
-                    <div className="w-9 h-9 rounded-xl bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
-                      <PhoneCall className="w-4 h-4" />
+                    <div className="w-9 h-9 rounded-xl bg-[var(--bg-surface)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
+                      <Mail className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
-                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
-                          {t.emergencyHotline}
+                        <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[var(--brand-text)] transition-colors">
+                          {t("uiPlatformSupport", "Platform support")}
                         </span>
-                        <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-600 text-white shrink-0 shadow-2xs">
-                          {settings.emergencyHotline}
+                        <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-[var(--brand-primary)] text-white shrink-0 shadow-2xs">
+                          {settings.supportEmail}
                         </span>
                       </div>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        {t.immediateEmergencyHelpDesc}
+                        {t("uiReportIssuesSuggestionsFeatureRequests", "Report product issues, suggestions, security concerns, or feature requests.")}
                       </p>
                     </div>
                   </a>

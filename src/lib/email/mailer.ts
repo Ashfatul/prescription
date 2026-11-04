@@ -38,7 +38,7 @@ export function getSmtpConfig() {
   
   let fromName = cleanEnv(process.env.MAIL_FROM_NAME);
   if (!fromName || fromName.includes("${")) {
-    fromName = cleanEnv(process.env.NEXT_PUBLIC_APP_NAME) || "PPMS Clinical OS";
+    fromName = cleanEnv(process.env.NEXT_PUBLIC_APP_NAME) || "CareFlow OS";
   }
 
   const secure = encryption === "ssl" || port === 465;

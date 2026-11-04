@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   title: `${env.appName} | Patient Prescription Management System`,
   description: "A full-stack multi-clinic prescription and appointment management system.",
   manifest: "/manifest.webmanifest",
-  applicationName: "PPMS",
+  applicationName: "CareFlow OS",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

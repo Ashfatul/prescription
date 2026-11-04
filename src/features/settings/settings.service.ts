@@ -17,19 +17,19 @@ export interface HospitalSettings {
 }
 
 export const DEFAULT_HOSPITAL_SETTINGS: HospitalSettings = {
-  hospitalName: "Metropolitan Specialized Hospital",
-  hospitalBranch: "Diagnostic & Consultation Block C",
-  hospitalAddress: "Diagnostic Block C, 3rd Floor, Metropolitan Hospital, Dhaka",
-  opdVisitingHours: "08:00 AM - 10:00 PM (Daily)",
-  emergencyHotline: "10678",
-  contactPhone: "+880 1711-234567",
-  supportEmail: "clinical-support@metropolitan-hospital.org",
-  emergencyStatus: "OPD & Chamber 24/7 Active",
-  emergencyNotice: "PPMS is a clinical management and prescription issuing tool. In life-threatening emergencies, call 10678 or immediately proceed to the nearest hospital emergency room.",
-  chamberDays: "Saturday - Thursday",
+  hospitalName: "CareFlow OS",
+  hospitalBranch: "SaaS Operations",
+  hospitalAddress: "Platform operations and support",
+  opdVisitingHours: "Clinic-managed",
+  emergencyHotline: "",
+  contactPhone: "",
+  supportEmail: "support@ppms.local",
+  emergencyStatus: "Platform operational",
+  emergencyNotice: "For product issues, account support, security reports, or feature requests, contact the CareFlow OS platform support team.",
+  chamberDays: "Clinic-managed",
   requireEmailVerification: true,
-  requireOrgApproval: false,
-  requirePatientVerification: false,
+  requireOrgApproval: true,
+  requirePatientVerification: true,
 };
 
 export async function isEmailVerificationRequired(): Promise<boolean> {
@@ -64,7 +64,7 @@ export async function isOrgApprovalRequired(): Promise<boolean> {
     const setting = await db.systemSetting.findUnique({
       where: { key: "auth_require_org_approval" },
     });
-    if (!setting) return false;
+    if (!setting) return true;
     return setting.value === "true";
   } catch {
     return false;
@@ -102,7 +102,7 @@ export async function isPatientVerificationRequired(orgId?: string): Promise<boo
     const setting = await db.systemSetting.findUnique({
       where: { key: "auth_require_patient_verification" },
     });
-    if (!setting) return false;
+    if (!setting) return true;
     return setting.value === "true";
   } catch {
     return false;

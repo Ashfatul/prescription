@@ -26,7 +26,7 @@ export async function POST(req: NextRequest, context: { params: Promise<{ id: st
       throw new AppError("Template not found", 404);
     }
 
-    const appName = process.env.NEXT_PUBLIC_APP_NAME || "PPMS";
+    const appName = process.env.NEXT_PUBLIC_APP_NAME || "CareFlow OS";
     const smtpConfig = getSmtpConfig();
 
     const mockVariables: Record<string, string> = {
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest, context: { params: Promise<{ id: st
       supportEmail: smtpConfig.fromAddress,
       verifyUrl: `http://localhost:3000/auth/verify-email?token=SAMPLE_TEST_TOKEN`,
       resetUrl: `http://localhost:3000/auth/reset-password?token=SAMPLE_RESET_TOKEN`,
-      clinicName: "Metropolitan Specialized Hospital",
+      clinicName: "CareFlow OS",
       doctorName: "Dr. Jane Test",
       patientName: "John Doe",
       prescriptionUrl: `http://localhost:3000/prescriptions/sample-preview/print`,

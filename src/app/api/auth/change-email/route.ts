@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
         userEmail: newEmail,
         verifyUrl,
         token,
-        appName: process.env.NEXT_PUBLIC_APP_NAME || "PPMS",
+        appName: process.env.NEXT_PUBLIC_APP_NAME || "CareFlow OS",
       },
       organizationId: user.organizationId,
     });

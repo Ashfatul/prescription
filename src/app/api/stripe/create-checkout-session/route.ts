@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
               price_data: {
                 currency: "usd",
                 product_data: {
-                  name: `${plan.name} - PPMS Clinical Suite`,
+                  name: `${plan.name} - CareFlow OS`,
                   description: plan.description || `SaaS subscription for ${org.name}`,
                 },
                 unit_amount: Math.round(plan.price * 100),

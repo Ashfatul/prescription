@@ -1946,7 +1946,7 @@ export function PrescriptionEditor({
           age: patientAge,
         }}
         hospitalInfo={{
-          name: selectedTemplate?.contentJson?.hospitalName || docHospital || "Metropolitan Specialized Hospital",
+          name: selectedTemplate?.contentJson?.hospitalName || docHospital || "CareFlow OS",
           tagline: selectedTemplate?.contentJson?.hospitalTagline || "Center of Medical Excellence & Compassionate Care",
           address: selectedTemplate?.contentJson?.hospitalAddress || docChamber || "Plot 12, Road 4, Sector 7, Uttara, Dhaka-1230",
           phone: selectedTemplate?.contentJson?.hospitalPhone || docContact || "+880 2-8901234",

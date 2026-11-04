@@ -109,7 +109,7 @@ export function generateBackupCodes(count = 8): string[] {
  * Dispatches an email notification when 2FA is activated
  */
 async function sendTwoFactorEnabledEmail(to: string, userName: string) {
-  const appName = env.appName || "PPMS Clinical OS";
+  const appName = env.appName || "CareFlow OS";
   const now = new Date().toUTCString();
 
   const html = `<!DOCTYPE html>
@@ -167,7 +167,7 @@ async function sendTwoFactorEnabledEmail(to: string, userName: string) {
  * Dispatches an urgent email alert when 2FA is deactivated
  */
 async function sendTwoFactorDisabledEmail(to: string, userName: string) {
-  const appName = env.appName || "PPMS Clinical OS";
+  const appName = env.appName || "CareFlow OS";
   const now = new Date().toUTCString();
 
   const html = `<!DOCTYPE html>
@@ -222,7 +222,7 @@ async function sendTwoFactorDisabledEmail(to: string, userName: string) {
  * Generates temporary secret, standard otpauth URI, QR Code data URL, and 8 recovery backup codes.
  */
 export async function setupTwoFactor(user: { id: string; email: string; name: string }) {
-  const appName = env.appName || "PPMS";
+  const appName = env.appName || "CareFlow OS";
   // Generate 20 random cryptographically secure bytes (160 bits standard)
   const randomBuffer = crypto.randomBytes(20);
   const secret = base32Encode(randomBuffer);

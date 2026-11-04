@@ -48,7 +48,7 @@ export function RegisterView() {
             </div>
             <div>
               <h1 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
-                PPMS Clinical
+                CareFlow OS
               </h1>
               <p className="text-[10px] text-slate-500 dark:text-slate-400">
                 {t("uiHealthcarePracticePlatform")}

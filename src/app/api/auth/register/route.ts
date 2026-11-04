@@ -180,7 +180,7 @@ export async function POST(req: NextRequest) {
             userEmail: user.email,
             verifyUrl,
             token: verificationToken,
-            appName: process.env.NEXT_PUBLIC_APP_NAME || "PPMS",
+            appName: process.env.NEXT_PUBLIC_APP_NAME || "CareFlow OS",
           },
           organizationId: organization.id,
         });
@@ -302,7 +302,7 @@ export async function POST(req: NextRequest) {
           userEmail: user.email,
           verifyUrl,
           token: user.emailVerificationToken,
-          appName: process.env.NEXT_PUBLIC_APP_NAME || "PPMS",
+          appName: process.env.NEXT_PUBLIC_APP_NAME || "CareFlow OS",
         },
         organizationId: user.organizationId,
       });

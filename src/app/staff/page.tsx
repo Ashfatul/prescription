@@ -10,7 +10,7 @@ import { RoleName } from "@prisma/client";
 
 export const metadata: Metadata = {
   title: "Clinical Staff & Healthcare Team Directory | PPMS",
-  description: "Browse registered hospital receptionists, front-desk triage staff, clinic administrators, and clinical coordinators on PPMS Clinical OS.",
+  description: "Browse registered hospital receptionists, front-desk triage staff, clinic administrators, and clinical coordinators on CareFlow OS.",
 };
 
 export const dynamic = "force-dynamic";
