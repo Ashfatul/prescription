@@ -72,6 +72,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Organization suspension check: suspended clinics cannot log in
+    if (
+      user.role.name !== RoleName.SUPER_ADMIN &&
+      user.organization &&
+      user.organization.status === OrganizationStatus.SUSPENDED
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          suspendedOrg: true,
+          message:
+            "This clinic account has been suspended by the platform administrator. Please contact support or administration for assistance.",
+        },
+        { status: 403 }
+      );
+    }
+
     // Organization approval check: unapproved clinics cannot log in
     if (
       user.role.name !== RoleName.SUPER_ADMIN &&

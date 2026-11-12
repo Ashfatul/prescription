@@ -16,11 +16,95 @@ export type CreatePricingPlanParams = {
   isActive?: boolean;
 };
 
+export const DEFAULT_PRICING_PLANS = [
+  {
+    id: "default-starter-plan",
+    name: "Starter Clinic",
+    price: 49,
+    billingCycle: "monthly",
+    description: "Essential prescribing & patient management for solo practitioners.",
+    features: [
+      "Up to 2 Doctor Accounts",
+      "500 Prescriptions / month",
+      "Drug & Test Formulary Access",
+      "A4 Standard Printouts",
+      "Patient Records & History",
+      "Email Support",
+    ],
+    maxDoctors: 2,
+    maxStaff: 2,
+    maxPatients: 500,
+    maxPrescriptionsPerMonth: 500,
+    isPopular: false,
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "default-pro-plan",
+    name: "Professional Polyclinic",
+    price: 149,
+    billingCycle: "monthly",
+    description: "Complete clinical OS for multi-doctor chambers and medical centers.",
+    features: [
+      "Up to 15 Doctor Accounts",
+      "Unlimited Prescriptions",
+      "Live Chamber Queue Dispenser",
+      "QR Code & Public Link Prescription Sharing",
+      "Test Report Uploads (Doctor & Patient)",
+      "Google Calendar & Medicine Reminders",
+      "Staff & Receptionist Triage Portal",
+      "Patient-Doctor Approved Chat System",
+      "24/7 Priority Clinical Support",
+    ],
+    maxDoctors: 15,
+    maxStaff: 20,
+    maxPatients: null,
+    maxPrescriptionsPerMonth: null,
+    isPopular: true,
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "default-enterprise-plan",
+    name: "Hospital Enterprise",
+    price: 399,
+    billingCycle: "monthly",
+    description: "Comprehensive multi-specialty hospital infrastructure with custom integrations.",
+    features: [
+      "Unlimited Doctor & Staff Seats",
+      "Multi-Branch SaaS Clinic Partitioning",
+      "Custom Letterhead & Insignia Watermarking",
+      "Full Audit & System Activity Logging",
+      "Role-Based Admin Broadcast Announcements",
+      "Dedicated Database & SLA Guarantee",
+    ],
+    maxDoctors: null,
+    maxStaff: null,
+    maxPatients: null,
+    maxPrescriptionsPerMonth: null,
+    isPopular: false,
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
+
 export async function listPricingPlans(onlyActive = true) {
-  return db.pricingPlan.findMany({
-    where: onlyActive ? { isActive: true } : undefined,
-    orderBy: { price: "asc" },
-  });
+  try {
+    const plans = await db.pricingPlan.findMany({
+      where: onlyActive ? { isActive: true } : undefined,
+      orderBy: { price: "asc" },
+    });
+    if (plans && plans.length > 0) {
+      return plans;
+    }
+    return DEFAULT_PRICING_PLANS.filter((p) => (onlyActive ? p.isActive : true));
+  } catch (err) {
+    console.error("Failed to load pricing plans from database:", err);
+    return DEFAULT_PRICING_PLANS.filter((p) => (onlyActive ? p.isActive : true));
+  }
 }
 
 export async function createPricingPlan(params: CreatePricingPlanParams) {

@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { isDemoModeActive, DEMO_ACCOUNT_EMAILS, SUPER_ADMIN_EMAIL } from "@/features/demo/demo-reset.service";
 
 export interface TopStatItem {
   name: string;
@@ -6,24 +7,57 @@ export interface TopStatItem {
   percentage: number;
 }
 
-export async function getDashboardStats(organizationId?: string) {
-  const orgFilter = organizationId ? { organizationId } : undefined;
-  const doctorOrgFilter = organizationId
-    ? { OR: [{ organizationId }, { user: { organizationId } }] }
-    : undefined;
-  const patientOrgFilter = organizationId
-    ? { OR: [{ organizationId }, { user: { organizationId } }] }
-    : undefined;
+export async function getDashboardStats(organizationId?: string, includeDemo?: boolean) {
+  const isDemo = isDemoModeActive();
+  const shouldIncludeDemo = includeDemo !== undefined ? includeDemo : isDemo;
+
+  const demoOrgFilter = shouldIncludeDemo
+    ? {}
+    : {
+        organization: {
+          isDemo: false,
+          slug: { not: "ppms-clinic" },
+        },
+      };
+
+  const userWhere = {
+    ...(organizationId ? { organizationId } : {}),
+    ...(shouldIncludeDemo
+      ? {}
+      : {
+          isDemo: false,
+          NOT: [
+            { email: { in: DEMO_ACCOUNT_EMAILS.filter((e) => e !== SUPER_ADMIN_EMAIL) } },
+            { organization: { isDemo: true } },
+            { organization: { slug: "ppms-clinic" } },
+          ],
+        }),
+  };
+
+  const doctorWhere = {
+    ...(organizationId ? { OR: [{ organizationId }, { user: { organizationId } }] } : {}),
+    ...demoOrgFilter,
+  };
+
+  const patientWhere = {
+    ...(organizationId ? { OR: [{ organizationId }, { user: { organizationId } }] } : {}),
+    ...demoOrgFilter,
+  };
+
+  const orgScopedFilter = {
+    ...(organizationId ? { organizationId } : {}),
+    ...demoOrgFilter,
+  };
 
   const [users, doctors, patients, appointments, prescriptions, recentPrescriptions] =
     await Promise.all([
-      db.user.count({ where: orgFilter }),
-      db.doctor.count({ where: doctorOrgFilter }),
-      db.patient.count({ where: patientOrgFilter }),
-      db.appointment.count({ where: orgFilter }),
-      db.prescription.count({ where: orgFilter }),
+      db.user.count({ where: userWhere }),
+      db.doctor.count({ where: doctorWhere }),
+      db.patient.count({ where: patientWhere }),
+      db.appointment.count({ where: orgScopedFilter }),
+      db.prescription.count({ where: orgScopedFilter }),
       db.prescription.findMany({
-        where: orgFilter,
+        where: orgScopedFilter,
         select: {
           medicinesJson: true,
           clinicalInfoJson: true,

@@ -9,6 +9,12 @@ import { RoleName } from "@prisma/client";
 import { ok } from "@/lib/http";
 import { AppError } from "@/lib/errors";
 
+function parseLimitForCreate(val: unknown): number | null {
+  if (val === undefined || val === null || val === "" || val === "unlimited") return null;
+  const num = Number(val);
+  return isNaN(num) ? null : Math.max(0, Math.floor(num));
+}
+
 export async function GET(req: NextRequest) {
   return withErrorHandling(req, async () => {
     const { searchParams } = new URL(req.url);
@@ -33,10 +39,10 @@ export async function POST(req: NextRequest) {
       billingCycle: body.billingCycle || "monthly",
       description: body.description,
       features: Array.isArray(body.features) ? body.features : [body.features].filter(Boolean),
-      maxDoctors: body.maxDoctors == null || body.maxDoctors === "" ? null : Number(body.maxDoctors),
-      maxStaff: body.maxStaff == null || body.maxStaff === "" ? null : Number(body.maxStaff),
-      maxPatients: body.maxPatients == null || body.maxPatients === "" ? null : Number(body.maxPatients),
-      maxPrescriptionsPerMonth: body.maxPrescriptionsPerMonth == null || body.maxPrescriptionsPerMonth === "" ? null : Number(body.maxPrescriptionsPerMonth),
+      maxDoctors: parseLimitForCreate(body.maxDoctors),
+      maxStaff: parseLimitForCreate(body.maxStaff),
+      maxPatients: parseLimitForCreate(body.maxPatients),
+      maxPrescriptionsPerMonth: parseLimitForCreate(body.maxPrescriptionsPerMonth),
       isPopular: !!body.isPopular,
       isActive: body.isActive !== undefined ? !!body.isActive : true,
     });

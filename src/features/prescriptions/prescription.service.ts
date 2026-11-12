@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { Prisma, RoleName, AppointmentStatus } from "@prisma/client";
+import { Prisma, RoleName, AppointmentStatus, OrganizationStatus } from "@prisma/client";
 import { startOfDay, endOfDay } from "date-fns";
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
@@ -125,8 +125,31 @@ export async function createPrescription(input: unknown) {
   if (orgId) {
     const organization = await db.organization.findUnique({
       where: { id: orgId },
-      select: { plan: { select: { maxPrescriptionsPerMonth: true } } },
+      select: {
+        status: true,
+        trialEndsAt: true,
+        plan: { select: { maxPrescriptionsPerMonth: true } },
+      },
     });
+
+    if (organization?.status === OrganizationStatus.SUSPENDED) {
+      throw new AppError(
+        "Clinic operations are currently suspended. Please contact platform administration.",
+        403
+      );
+    }
+
+    if (
+      organization?.status === OrganizationStatus.TRIAL &&
+      organization?.trialEndsAt &&
+      new Date(organization.trialEndsAt) < new Date()
+    ) {
+      throw new AppError(
+        "Your clinic's free trial period has expired. Please upgrade to a paid subscription plan to create new prescriptions.",
+        403
+      );
+    }
+
     const monthlyLimit = organization?.plan?.maxPrescriptionsPerMonth;
     if (monthlyLimit !== null && monthlyLimit !== undefined) {
       const monthStart = new Date();

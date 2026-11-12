@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["prescription.test", "*.prescription.test"],
   images: {
     remotePatterns: [
       {

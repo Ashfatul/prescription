@@ -8,6 +8,13 @@ import {
 import { RoleName } from "@prisma/client";
 import { ok } from "@/lib/http";
 
+function parseOptionalLimit(val: unknown): number | null | undefined {
+  if (val === undefined) return undefined;
+  if (val === null || val === "" || val === "unlimited") return null;
+  const num = Number(val);
+  return isNaN(num) ? null : Math.max(0, Math.floor(num));
+}
+
 export async function PATCH(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -20,10 +27,10 @@ export async function PATCH(
     const updated = await updatePricingPlan(id, {
       ...body,
       price: body.price !== undefined ? Number(body.price) : undefined,
-      maxDoctors: body.maxDoctors == null || body.maxDoctors === "" ? null : Number(body.maxDoctors),
-      maxStaff: body.maxStaff == null || body.maxStaff === "" ? null : Number(body.maxStaff),
-      maxPatients: body.maxPatients == null || body.maxPatients === "" ? null : Number(body.maxPatients),
-      maxPrescriptionsPerMonth: body.maxPrescriptionsPerMonth == null || body.maxPrescriptionsPerMonth === "" ? null : Number(body.maxPrescriptionsPerMonth),
+      maxDoctors: parseOptionalLimit(body.maxDoctors),
+      maxStaff: parseOptionalLimit(body.maxStaff),
+      maxPatients: parseOptionalLimit(body.maxPatients),
+      maxPrescriptionsPerMonth: parseOptionalLimit(body.maxPrescriptionsPerMonth),
     });
     return ok(updated);
   });

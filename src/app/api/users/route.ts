@@ -11,15 +11,17 @@ export async function GET(req: NextRequest) {
     const user = await requireUser(req);
     const { searchParams } = new URL(req.url);
     const queryOrgId = searchParams.get("organizationId");
+    const includeDemoParam = searchParams.get("includeDemo");
+    const includeDemo = includeDemoParam !== null ? includeDemoParam === "true" : undefined;
 
     // Clinic admins and staff are scoped strictly to their own clinic
-    // Root platform super-admin (no organizationId) can inspect any clinic or all
+    // Root platform super-admin can inspect any clinic or all
     let orgId: string | undefined = user.organizationId || undefined;
-    if (user.role === RoleName.SUPER_ADMIN && !user.organizationId) {
+    if (user.role === RoleName.SUPER_ADMIN) {
       orgId = queryOrgId || undefined;
     }
 
-    return ok(await listUsers(orgId));
+    return ok(await listUsers(orgId, includeDemo));
   });
 }
 

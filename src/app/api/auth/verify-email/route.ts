@@ -56,6 +56,19 @@ export async function GET(req: NextRequest) {
       detailsJson: { email: user.email },
     });
 
+    const isOrgSuspended =
+      updatedUser.role.name !== RoleName.SUPER_ADMIN &&
+      updatedUser.organization &&
+      updatedUser.organization.status === OrganizationStatus.SUSPENDED;
+
+    if (isOrgSuspended) {
+      return NextResponse.json({
+        success: false,
+        suspendedOrg: true,
+        message: "Email address verified, but this clinic account has been suspended by the platform administrator.",
+      }, { status: 403 });
+    }
+
     const isOrgPending =
       updatedUser.role.name !== RoleName.SUPER_ADMIN &&
       updatedUser.organization &&

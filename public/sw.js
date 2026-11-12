@@ -57,8 +57,9 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 1. API & Auth calls: Strict Network-Only / Network-First (Never serve stale medical/Rx data)
-  if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/auth/")) {
+  // 1. API calls: Strict Network-Only / Network-First (Never serve stale medical/Rx data)
+  // Only intercept data API requests (/api/*). Page navigations (/auth/*, /dashboard/*) are handled in section 3.
+  if (url.pathname.startsWith("/api/")) {
     event.respondWith(
       fetch(request).catch(() => {
         return new Response(

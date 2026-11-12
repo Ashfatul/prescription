@@ -20,25 +20,47 @@ export default async function Home() {
     totalClinics,
     totalMedicines,
   ] = await Promise.all([
-    getCurrentUserFromCookie(),
+    getCurrentUserFromCookie().catch(() => null),
     getHospitalSettings(),
     listPricingPlans(true),
-    db.doctor.count({
-      where: {
-        available: true,
-        ...(isDemoMode ? {} : { organization: { slug: { not: "ppms-clinic" } } }),
-      },
+    db.doctor
+      .count({
+        where: {
+          available: true,
+          ...(isDemoMode
+            ? {}
+            : { organization: { isDemo: false, slug: { not: "ppms-clinic" } } }),
+        },
+      })
+      .catch((err) => {
+        console.error("Failed to count doctors:", err);
+        return 0;
+      }),
+    db.prescription
+      .count({
+        where: isDemoMode
+          ? {}
+          : { organization: { isDemo: false, slug: { not: "ppms-clinic" } } },
+      })
+      .catch((err) => {
+        console.error("Failed to count prescriptions:", err);
+        return 0;
+      }),
+    db.organization
+      .count({
+        where: {
+          status: "ACTIVE",
+          ...(isDemoMode ? {} : { isDemo: false, slug: { not: "ppms-clinic" } }),
+        },
+      })
+      .catch((err) => {
+        console.error("Failed to count clinics:", err);
+        return 0;
+      }),
+    db.medicine.count().catch((err) => {
+      console.error("Failed to count medicines:", err);
+      return 0;
     }),
-    db.prescription.count({
-      where: isDemoMode ? {} : { organization: { slug: { not: "ppms-clinic" } } },
-    }),
-    db.organization.count({
-      where: {
-        status: "ACTIVE",
-        ...(isDemoMode ? {} : { slug: { not: "ppms-clinic" } }),
-      },
-    }),
-    db.medicine.count(),
   ]);
   const isLoggedIn = !!user;
 

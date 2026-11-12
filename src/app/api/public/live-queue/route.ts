@@ -39,10 +39,11 @@ export async function GET(req: NextRequest) {
       where.organization = {
         slug: clinicSlug,
         status: { not: "SUSPENDED" },
-        ...(isDemoMode ? {} : { slug: { not: "ppms-clinic" } }),
+        ...(isDemoMode ? {} : { isDemo: false, slug: { not: "ppms-clinic" } }),
       };
     } else if (!isDemoMode) {
       where.organization = {
+        isDemo: false,
         slug: { not: "ppms-clinic" },
         status: { not: "SUSPENDED" },
       };

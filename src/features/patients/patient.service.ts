@@ -1,4 +1,4 @@
-import { RoleName } from "@prisma/client";
+import { RoleName, OrganizationStatus } from "@prisma/client";
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import { hashPassword } from "@/lib/auth/password";
@@ -50,6 +50,42 @@ export async function createPatient(input: unknown, organizationId?: string) {
   if (!userId) {
     if (!data.name) {
       throw new AppError("Either userId or patient name is required", 400);
+    }
+
+    if (orgId) {
+      const organization = await db.organization.findUnique({
+        where: { id: orgId },
+        select: {
+          status: true,
+          trialEndsAt: true,
+          plan: { select: { maxPatients: true } },
+        },
+      });
+
+      if (organization?.status === OrganizationStatus.SUSPENDED) {
+        throw new AppError("Clinic operations are currently suspended. Cannot register patients.", 403);
+      }
+
+      if (
+        organization?.status === OrganizationStatus.TRIAL &&
+        organization?.trialEndsAt &&
+        new Date(organization.trialEndsAt) < new Date()
+      ) {
+        throw new AppError("Clinic trial period has expired. Please upgrade subscription.", 403);
+      }
+
+      const limit = organization?.plan?.maxPatients;
+      if (limit !== null && limit !== undefined) {
+        const currentCount = await db.user.count({
+          where: { organizationId: orgId, role: { name: RoleName.PATIENT } },
+        });
+        if (currentCount >= limit) {
+          throw new AppError(
+            `Your current plan allows a maximum of ${limit} patient accounts. Upgrade your plan to add more patients.`,
+            403
+          );
+        }
+      }
     }
 
     const patientRole = await db.role.findUnique({

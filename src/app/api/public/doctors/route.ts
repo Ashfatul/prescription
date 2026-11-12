@@ -28,11 +28,12 @@ export async function GET(req: NextRequest) {
       where.organization = {
         slug: clinicSlug,
         status: { not: "SUSPENDED" },
-        ...(isDemoMode ? {} : { slug: { not: "ppms-clinic" } }),
+        ...(isDemoMode ? {} : { isDemo: false, slug: { not: "ppms-clinic" } }),
       };
     } else if (!isDemoMode) {
       // Exclude demo clinic entirely when Demo Mode is off
       where.organization = {
+        isDemo: false,
         slug: { not: "ppms-clinic" },
         status: { not: "SUSPENDED" },
       };

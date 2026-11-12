@@ -1,5 +1,5 @@
 import { startOfDay, endOfDay } from "date-fns";
-import { AppointmentStatus, Prisma } from "@prisma/client";
+import { AppointmentStatus, Prisma, OrganizationStatus } from "@prisma/client";
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import { doctorSchema, doctorUpdateSchema } from "@/features/doctors/doctor.schema";
@@ -41,6 +41,29 @@ export async function createDoctor(input: unknown, organizationId?: string) {
   if (!orgId && data.userId) {
     const u = await db.user.findUnique({ where: { id: data.userId }, select: { organizationId: true } });
     if (u?.organizationId) orgId = u.organizationId;
+  }
+
+  if (orgId) {
+    const organization = await db.organization.findUnique({
+      where: { id: orgId },
+      select: {
+        status: true,
+        trialEndsAt: true,
+        plan: { select: { maxDoctors: true } },
+      },
+    });
+
+    if (organization?.status === OrganizationStatus.SUSPENDED) {
+      throw new AppError("Clinic operations are currently suspended. Cannot configure doctor.", 403);
+    }
+
+    if (
+      organization?.status === OrganizationStatus.TRIAL &&
+      organization?.trialEndsAt &&
+      new Date(organization.trialEndsAt) < new Date()
+    ) {
+      throw new AppError("Clinic free trial period has expired. Please upgrade subscription.", 403);
+    }
   }
 
   return db.doctor.create({

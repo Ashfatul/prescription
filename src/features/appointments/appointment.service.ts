@@ -1,5 +1,5 @@
 import { endOfDay, startOfDay } from "date-fns";
-import { AppointmentStatus, NotificationType, RoleName } from "@prisma/client";
+import { AppointmentStatus, NotificationType, RoleName, OrganizationStatus } from "@prisma/client";
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import {
@@ -287,6 +287,29 @@ export async function createAppointment(
   }
   if (orgId && patientRec.organizationId && patientRec.organizationId !== orgId) {
     throw new AppError("Patient and appointment clinic do not match.", 403);
+  }
+
+  if (orgId) {
+    const org = await db.organization.findUnique({
+      where: { id: orgId },
+      select: { status: true, trialEndsAt: true },
+    });
+    if (org?.status === OrganizationStatus.SUSPENDED) {
+      throw new AppError(
+        "Clinic operations are currently suspended. Appointments cannot be scheduled at this time.",
+        403
+      );
+    }
+    if (
+      org?.status === OrganizationStatus.TRIAL &&
+      org?.trialEndsAt &&
+      new Date(org.trialEndsAt) < new Date()
+    ) {
+      throw new AppError(
+        "This clinic's free trial period has expired. Please upgrade subscription to accept appointments.",
+        403
+      );
+    }
   }
 
   // Calculate fees dynamically based on doctor policy and patient history

@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { RoleName } from "@prisma/client";
+import { RoleName, OrganizationStatus, Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import { hashPassword } from "@/lib/auth/password";
@@ -7,10 +7,28 @@ import { createUserSchema, userPreferencesSchema, updateUserSchema } from "@/fea
 import { logActivity } from "@/features/activity-log/activity-log.service";
 import { isEmailVerificationRequired, isPatientVerificationRequired } from "@/features/settings/settings.service";
 import { sendTemplatedEmail } from "@/features/email-templates/email-template.service";
+import { isDemoModeActive, DEMO_ACCOUNT_EMAILS, SUPER_ADMIN_EMAIL } from "@/features/demo/demo-reset.service";
 
-export async function listUsers(organizationId?: string) {
+export async function listUsers(organizationId?: string, includeDemo?: boolean) {
+  const isDemo = isDemoModeActive();
+  const shouldIncludeDemo = includeDemo !== undefined ? includeDemo : isDemo;
+
+  const whereClause: Prisma.UserWhereInput = {
+    ...(organizationId ? { organizationId } : {}),
+    ...(shouldIncludeDemo
+      ? {}
+      : {
+          isDemo: false,
+          NOT: [
+            { email: { in: DEMO_ACCOUNT_EMAILS.filter((e) => e !== SUPER_ADMIN_EMAIL) } },
+            { organization: { isDemo: true } },
+            { organization: { slug: "ppms-clinic" } },
+          ],
+        }),
+  };
+
   return db.user.findMany({
-    where: organizationId ? { organizationId } : undefined,
+    where: whereClause,
     include: { role: true, doctor: true, patient: true, organization: true },
     orderBy: { createdAt: "desc" },
   });
@@ -57,6 +75,8 @@ export async function createUser(input: unknown, creatorUserId?: string) {
     const organization = await db.organization.findUnique({
       where: { id: orgId },
       select: {
+        status: true,
+        trialEndsAt: true,
         plan: {
           select: {
             maxDoctors: true,
@@ -66,6 +86,25 @@ export async function createUser(input: unknown, creatorUserId?: string) {
         },
       },
     });
+
+    if (organization?.status === OrganizationStatus.SUSPENDED) {
+      throw new AppError(
+        "Clinic operations are currently suspended. Cannot create user accounts.",
+        403
+      );
+    }
+
+    if (
+      organization?.status === OrganizationStatus.TRIAL &&
+      organization?.trialEndsAt &&
+      new Date(organization.trialEndsAt) < new Date()
+    ) {
+      throw new AppError(
+        "Your clinic's free trial period has expired. Please upgrade subscription to add accounts.",
+        403
+      );
+    }
+
     const limit = data.role === RoleName.DOCTOR
       ? organization?.plan?.maxDoctors
       : data.role === RoleName.STAFF

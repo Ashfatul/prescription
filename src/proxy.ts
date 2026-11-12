@@ -48,6 +48,28 @@ function extractSubdomain(req: NextRequest): string | null {
   return null;
 }
 
+function applySecurityHeaders(res: NextResponse, req?: NextRequest): NextResponse {
+  const requestId = req?.headers.get("x-request-id") || crypto.randomUUID();
+  res.headers.set("x-request-id", requestId);
+  res.headers.set("X-Content-Type-Options", "nosniff");
+  res.headers.set("X-Frame-Options", "SAMEORIGIN");
+  res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.headers.set("X-XSS-Protection", "1; mode=block");
+  res.headers.set(
+    "Permissions-Policy",
+    "camera=(), microphone=(), geolocation=(), browsing-topics=()"
+  );
+
+  if (process.env.NODE_ENV === "production") {
+    res.headers.set(
+      "Strict-Transport-Security",
+      "max-age=31536000; includeSubDomains; preload"
+    );
+  }
+
+  return res;
+}
+
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const subdomain = extractSubdomain(req);
@@ -69,14 +91,14 @@ export async function proxy(req: NextRequest) {
       },
     });
     rewriteResponse.headers.set("x-clinic-slug", subdomain);
-    return rewriteResponse;
+    return applySecurityHeaders(rewriteResponse, req);
   }
 
   // If user is already on the subdomain and navigates to "/clinics/:subdomain", canonicalize to "/"
   if (subdomain && pathname === `/clinics/${subdomain}`) {
     const url = req.nextUrl.clone();
     url.pathname = "/";
-    return NextResponse.redirect(url);
+    return applySecurityHeaders(NextResponse.redirect(url), req);
   }
 
   const token =
@@ -88,41 +110,50 @@ export async function proxy(req: NextRequest) {
   // If user is already authenticated and visits /auth/login or /auth/register, redirect to /dashboard
   if (pathname === "/auth/login" || pathname === "/auth/register") {
     if (payload) {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
+      return applySecurityHeaders(NextResponse.redirect(new URL("/dashboard", req.url)), req);
     }
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
+    return applySecurityHeaders(
+      NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      }),
+      req
+    );
   }
 
   // Dashboard routes require valid auth
   if (pathname.startsWith("/dashboard")) {
     if (!payload) {
-      return NextResponse.redirect(new URL("/auth/login", req.url));
+      return applySecurityHeaders(NextResponse.redirect(new URL("/auth/login", req.url)), req);
     }
 
     if (!canAccessDashboardPath(pathname, payload.role)) {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
+      return applySecurityHeaders(NextResponse.redirect(new URL("/dashboard", req.url)), req);
     }
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
+    return applySecurityHeaders(
+      NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      }),
+      req
+    );
   }
 
   // Prescription print / view routes require auth (except public share route /p/:token)
   if (pathname.startsWith("/prescriptions")) {
     if (!payload) {
-      return NextResponse.redirect(new URL("/auth/login", req.url));
+      return applySecurityHeaders(NextResponse.redirect(new URL("/auth/login", req.url)), req);
     }
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
+    return applySecurityHeaders(
+      NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      }),
+      req
+    );
   }
 
   // Protected API routes
@@ -147,23 +178,32 @@ export async function proxy(req: NextRequest) {
       pathname.startsWith("/api/demo/");
 
     if (!isPublicApi && !payload) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized" },
-        { status: 401 }
+      return applySecurityHeaders(
+        NextResponse.json(
+          { success: false, message: "Unauthorized" },
+          { status: 401 }
+        ),
+        req
       );
     }
-    return NextResponse.next({
+    return applySecurityHeaders(
+      NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      }),
+      req
+    );
+  }
+
+  return applySecurityHeaders(
+    NextResponse.next({
       request: {
         headers: requestHeaders,
       },
-    });
-  }
-
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  });
+    }),
+    req
+  );
 }
 
 export const config = {
