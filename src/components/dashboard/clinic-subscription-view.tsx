@@ -9,9 +9,6 @@ import {
   Sparkles,
   ShieldCheck,
   Building2,
-  Users,
-  FileText,
-  Calendar,
   AlertTriangle,
   Loader2,
 } from "lucide-react";
@@ -25,10 +22,15 @@ interface PricingPlan {
   billingCycle: string;
   description: string | null;
   features: string[];
+  maxDoctors?: number | null;
+  maxStaff?: number | null;
+  maxPatients?: number | null;
+  maxPrescriptionsPerMonth?: number | null;
   isPopular?: boolean;
 }
 
 interface SubscriptionData {
+  isSuperAdmin?: boolean;
   organizationId: string;
   organizationName: string;
   slug: string;
@@ -49,8 +51,23 @@ interface SubscriptionData {
   counts: {
     doctors: number;
     staff: number;
-    prescriptions: number;
+    patients: number;
+    prescriptionsThisMonth: number;
+    totalPrescriptions: number;
     appointments: number;
+  };
+  limits: {
+    maxDoctors: number | null;
+    maxStaff: number | null;
+    maxPatients: number | null;
+    maxPrescriptionsPerMonth: number | null;
+  };
+  usagePercent: {
+    overall: number;
+    doctors: number | null;
+    staff: number | null;
+    patients: number | null;
+    prescriptions: number | null;
   };
 }
 
@@ -176,113 +193,222 @@ export function ClinicSubscriptionView() {
       )}
 
       {/* Top Banner: Current Subscription Card */}
-      <div className="p-6 sm:p-8 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-xs relative overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-3">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${
-                  sub.isTrial
-                    ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20"
-                    : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
-                }`}
-              >
-                {sub.isTrial ? t.trialActiveBadge : t.activeSubscription}
+      {sub.isSuperAdmin ? (
+        <div className="p-4 sm:p-5 rounded-2xl border border-purple-500/20 bg-purple-500/5 dark:bg-purple-950/20 shadow-xs relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20">
+                {t.roleSuperAdmin || "Super Admin"}
               </span>
-              <span className="text-xs text-slate-400">•</span>
-              <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-slate-400" />
-                <span>{sub.organizationName}</span>
-              </span>
+              <span className="text-xs text-purple-600 dark:text-purple-400 font-semibold">• {t.unlimitedQuota}</span>
             </div>
-
-            <div>
-              <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-baseline gap-2">
-                <span>{sub.plan?.name || t.freeTrialPackage}</span>
-                {sub.plan && (
-                  <span className="text-sm font-semibold text-slate-400">
-                    (${sub.plan.price}/{sub.plan.billingCycle})
-                  </span>
-                )}
-              </h2>
-              <p className="text-xs text-slate-500 mt-1 max-w-xl">
-                {sub.isTrial
-                  ? (t("uiYourClinicIsOperatingUnder"))
-                  : (t("uiYourClinicHasFullActive"))}
-              </p>
-            </div>
-
-            {sub.isTrial && sub.trialEndsAt && (
-              <div className="inline-flex items-center gap-2 p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-800 dark:text-amber-300">
-                <Clock className="w-4 h-4 text-amber-600 shrink-0" />
-                <span>
-                  {t("uiTrialEnds")}{" "}
-                  {new Date(sub.trialEndsAt).toLocaleDateString(t("uiEnUS"), {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}{" "}
-                  ({sub.daysLeft} {t.days}, {sub.hoursLeft} {t.hours} {t("uiRemaining")})
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl">
+              {t("platformMasterDesc", "As the SaaS Super Administrator, your account operates the entire platform with unlimited authority. Super Admins do not require a clinic subscription. To inspect and manage tenant clinic subscriptions, visit the SaaS Organizations tab.")}
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="p-6 sm:p-8 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-xs relative overflow-hidden">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${
+                    sub.isTrial
+                      ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20"
+                      : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
+                  }`}
+                >
+                  {sub.isTrial ? t.trialActiveBadge : t.activeSubscription}
+                </span>
+                <span className="text-xs text-slate-400">•</span>
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-slate-400" />
+                  <span>{sub.organizationName}</span>
                 </span>
               </div>
-            )}
+
+              <div>
+                <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-baseline gap-2">
+                  <span>{sub.plan?.name || t.freeTrialPackage}</span>
+                  {sub.plan && (
+                    <span className="text-sm font-semibold text-slate-400">
+                      (${sub.plan.price}/{sub.plan.billingCycle})
+                    </span>
+                  )}
+                </h2>
+                <p className="text-xs text-slate-500 mt-1 max-w-xl">
+                  {sub.isTrial
+                    ? (t("uiYourClinicIsOperatingUnder"))
+                    : (t("uiYourClinicHasFullActive"))}
+                </p>
+              </div>
+
+              {sub.isTrial && sub.trialEndsAt && (
+                <div className="inline-flex items-center gap-2 p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-800 dark:text-amber-300">
+                  <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>
+                    {t("uiTrialEnds")}{" "}
+                    {new Date(sub.trialEndsAt).toLocaleDateString(t("uiEnUS"), {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}{" "}
+                    ({sub.daysLeft} {t.days}, {sub.hoursLeft} {t.hours} {t("uiRemaining")})
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={() => handleOpenUpgrade()}
+                className="px-6 py-3 rounded-2xl bg-[var(--brand-primary)] hover:opacity-95 text-white text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>{sub.isTrial ? t.upgradeWithStripeSandbox : t.changePackage}</span>
+              </button>
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
-            <button
-              type="button"
-              onClick={() => handleOpenUpgrade()}
-              className="px-6 py-3 rounded-2xl bg-[var(--brand-primary)] hover:opacity-95 text-white text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>{sub.isTrial ? t.upgradeWithStripeSandbox : t.changePackage}</span>
-            </button>
+          {/* Live Clinic Quota & Usage Meter */}
+          <div className="mt-8 pt-6 border-t border-[var(--border-subtle)] space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  {t("overallQuotaUsage", "Overall Quota Usage")}
+                </span>
+                <span className={`text-xs font-black px-2.5 py-0.5 rounded-full ${
+                  (sub.usagePercent?.overall ?? 0) >= 90
+                    ? "bg-rose-500/10 text-rose-600 border border-rose-500/20"
+                    : (sub.usagePercent?.overall ?? 0) >= 70
+                    ? "bg-amber-500/10 text-amber-600 border border-amber-500/20"
+                    : "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
+                }`}>
+                  {sub.usagePercent?.overall ?? 0}% {t("quotaCapUsed", "Limit Used")}
+                </span>
+              </div>
+              <span className="text-[11px] text-slate-400 font-medium">
+                {sub.plan?.name || "Standard Plan"}
+              </span>
+            </div>
+
+            {/* Overall progress bar */}
+            <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${
+                  (sub.usagePercent?.overall ?? 0) >= 90
+                    ? "bg-rose-500"
+                    : (sub.usagePercent?.overall ?? 0) >= 70
+                    ? "bg-amber-500"
+                    : "bg-[var(--brand-primary)]"
+                }`}
+                style={{ width: `${Math.min(100, sub.usagePercent?.overall ?? 0)}%` }}
+              />
+            </div>
+
+            {/* 4 Quota Metric Tiles */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+              {/* Doctors */}
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)] space-y-2">
+                <div className="flex items-center justify-between text-slate-400">
+                  <span className="text-[11px] font-semibold uppercase">{t.doctors}</span>
+                  <span className="text-[10px] font-bold text-slate-500">
+                    {sub.usagePercent?.doctors !== null ? `${sub.usagePercent.doctors}%` : t("unlimitedQuota", "Unlimited")}
+                  </span>
+                </div>
+                <p className="text-lg font-black text-slate-900 dark:text-white">
+                  {sub.counts.doctors}
+                  <span className="text-xs font-normal text-slate-400">
+                    {sub.limits?.maxDoctors ? ` / ${sub.limits.maxDoctors}` : ` ${t.activeStatus}`}
+                  </span>
+                </p>
+                {sub.usagePercent?.doctors !== null && (
+                  <div className="h-1 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[var(--brand-primary)] rounded-full transition-all duration-300"
+                      style={{ width: `${Math.min(100, sub.usagePercent.doctors)}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Staff */}
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)] space-y-2">
+                <div className="flex items-center justify-between text-slate-400">
+                  <span className="text-[11px] font-semibold uppercase">{t("uiStaffDesk")}</span>
+                  <span className="text-[10px] font-bold text-slate-500">
+                    {sub.usagePercent?.staff !== null ? `${sub.usagePercent.staff}%` : t("unlimitedQuota", "Unlimited")}
+                  </span>
+                </div>
+                <p className="text-lg font-black text-slate-900 dark:text-white">
+                  {sub.counts.staff}
+                  <span className="text-xs font-normal text-slate-400">
+                    {sub.limits?.maxStaff ? ` / ${sub.limits.maxStaff}` : ` ${t("uiMembers")}`}
+                  </span>
+                </p>
+                {sub.usagePercent?.staff !== null && (
+                  <div className="h-1 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[var(--brand-primary)] rounded-full transition-all duration-300"
+                      style={{ width: `${Math.min(100, sub.usagePercent.staff)}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Patients */}
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)] space-y-2">
+                <div className="flex items-center justify-between text-slate-400">
+                  <span className="text-[11px] font-semibold uppercase">{t("patientsEnrolled", "Patients")}</span>
+                  <span className="text-[10px] font-bold text-slate-500">
+                    {sub.usagePercent?.patients !== null ? `${sub.usagePercent.patients}%` : t("unlimitedQuota", "Unlimited")}
+                  </span>
+                </div>
+                <p className="text-lg font-black text-slate-900 dark:text-white">
+                  {sub.counts.patients}
+                  <span className="text-xs font-normal text-slate-400">
+                    {sub.limits?.maxPatients ? ` / ${sub.limits.maxPatients}` : ` ${t("uiEnrolledPatients")}`}
+                  </span>
+                </p>
+                {sub.usagePercent?.patients !== null && (
+                  <div className="h-1 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[var(--brand-primary)] rounded-full transition-all duration-300"
+                      style={{ width: `${Math.min(100, sub.usagePercent.patients)}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Prescriptions */}
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)] space-y-2">
+                <div className="flex items-center justify-between text-slate-400">
+                  <span className="text-[11px] font-semibold uppercase">{t("prescriptionsThisMonth", "Rx (Month)")}</span>
+                  <span className="text-[10px] font-bold text-slate-500">
+                    {sub.usagePercent?.prescriptions !== null ? `${sub.usagePercent.prescriptions}%` : t("unlimitedQuota", "Unlimited")}
+                  </span>
+                </div>
+                <p className="text-lg font-black text-slate-900 dark:text-white">
+                  {sub.counts.prescriptionsThisMonth}
+                  <span className="text-xs font-normal text-slate-400">
+                    {sub.limits?.maxPrescriptionsPerMonth ? ` / ${sub.limits.maxPrescriptionsPerMonth}` : ` ${t("uiIssued")}`}
+                  </span>
+                </p>
+                {sub.usagePercent?.prescriptions !== null && (
+                  <div className="h-1 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[var(--brand-primary)] rounded-full transition-all duration-300"
+                      style={{ width: `${Math.min(100, sub.usagePercent.prescriptions)}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Live Clinic Metrics Meter */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-6 border-t border-[var(--border-subtle)]">
-          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)]">
-            <div className="flex items-center gap-2 text-slate-400 mb-1">
-              <Users className="w-3.5 h-3.5" />
-              <span className="text-[11px] font-semibold uppercase">{t.doctors}</span>
-            </div>
-            <p className="text-lg font-black text-slate-900 dark:text-white">
-              {sub.counts.doctors} <span className="text-xs font-normal text-slate-400">{t.activeStatus}</span>
-            </p>
-          </div>
-
-          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)]">
-            <div className="flex items-center gap-2 text-slate-400 mb-1">
-              <Users className="w-3.5 h-3.5" />
-              <span className="text-[11px] font-semibold uppercase">{t("uiStaffDesk")}</span>
-            </div>
-            <p className="text-lg font-black text-slate-900 dark:text-white">
-              {sub.counts.staff} <span className="text-xs font-normal text-slate-400">{t("uiMembers")}</span>
-            </p>
-          </div>
-
-          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)]">
-            <div className="flex items-center gap-2 text-slate-400 mb-1">
-              <FileText className="w-3.5 h-3.5" />
-              <span className="text-[11px] font-semibold uppercase">{t.prescriptions}</span>
-            </div>
-            <p className="text-lg font-black text-slate-900 dark:text-white">
-              {sub.counts.prescriptions} <span className="text-xs font-normal text-slate-400">{t("uiIssued")}</span>
-            </p>
-          </div>
-
-          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)]">
-            <div className="flex items-center gap-2 text-slate-400 mb-1">
-              <Calendar className="w-3.5 h-3.5" />
-              <span className="text-[11px] font-semibold uppercase">{t.appointments}</span>
-            </div>
-            <p className="text-lg font-black text-slate-900 dark:text-white">
-              {sub.counts.appointments} <span className="text-xs font-normal text-slate-400">{t("uiBooked")}</span>
-            </p>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Available SaaS Packages Section */}
       <div className="space-y-4">

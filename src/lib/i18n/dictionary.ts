@@ -13,7 +13,7 @@ export const dictionary = {
 
 export type BuiltInLanguage = keyof typeof dictionary;
 export type Language = string;
-export type Dictionary = typeof en;
+export type Dictionary = typeof dictionary.en;
 export type TranslationKey = keyof Dictionary;
 
 export const BUILT_IN_LANGUAGES = [

@@ -25,6 +25,10 @@ async function main() {
       price: 49,
       billingCycle: "monthly",
       description: "Essential prescribing & patient management for solo practitioners.",
+      maxDoctors: 2,
+      maxStaff: 5,
+      maxPatients: 500,
+      maxPrescriptionsPerMonth: 500,
       features: [
         "Up to 2 Doctor Accounts",
         "500 Prescriptions / month",
@@ -41,6 +45,10 @@ async function main() {
       price: 49,
       billingCycle: "monthly",
       description: "Essential prescribing & patient management for solo practitioners.",
+      maxDoctors: 2,
+      maxStaff: 5,
+      maxPatients: 500,
+      maxPrescriptionsPerMonth: 500,
       features: [
         "Up to 2 Doctor Accounts",
         "500 Prescriptions / month",
@@ -60,6 +68,10 @@ async function main() {
       price: 149,
       billingCycle: "monthly",
       description: "Complete clinical OS for multi-doctor chambers and medical centers.",
+      maxDoctors: 15,
+      maxStaff: 30,
+      maxPatients: 5000,
+      maxPrescriptionsPerMonth: 5000,
       features: [
         "Up to 15 Doctor Accounts",
         "Unlimited Prescriptions",
@@ -79,6 +91,10 @@ async function main() {
       price: 149,
       billingCycle: "monthly",
       description: "Complete clinical OS for multi-doctor chambers and medical centers.",
+      maxDoctors: 15,
+      maxStaff: 30,
+      maxPatients: 5000,
+      maxPrescriptionsPerMonth: 5000,
       features: [
         "Up to 15 Doctor Accounts",
         "Unlimited Prescriptions",

@@ -4,9 +4,9 @@ import { requireUser } from "@/lib/auth/session";
 import { RoleName } from "@prisma/client";
 import { ok } from "@/lib/http";
 import { AppError } from "@/lib/errors";
-import { db } from "@/lib/db";
 import {
   getClinicSubscription,
+  getPlatformSuperAdminSubscription,
   processStripeSandboxUpgrade,
 } from "@/features/subscription/subscription.service";
 
@@ -16,21 +16,18 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const requestedOrgId = searchParams.get("organizationId");
 
+    // Root platform super-admin without a requested organization is the platform owner
+    if (auth.role === RoleName.SUPER_ADMIN && !requestedOrgId && !auth.organizationId) {
+      return ok(getPlatformSuperAdminSubscription());
+    }
+
     let orgId = auth.organizationId;
     if (auth.role === RoleName.SUPER_ADMIN && requestedOrgId) {
       orgId = requestedOrgId;
     }
 
     if (!orgId) {
-      // If root platform admin without specific org, get first org or return null
-      const firstOrg = await db.organization.findFirst({
-        orderBy: { createdAt: "asc" },
-      });
-      if (firstOrg) {
-        orgId = firstOrg.id;
-      } else {
-        throw new AppError("No organization found to inspect subscription", 404);
-      }
+      return ok(getPlatformSuperAdminSubscription());
     }
 
     const subscription = await getClinicSubscription(orgId);

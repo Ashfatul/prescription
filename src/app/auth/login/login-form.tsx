@@ -29,7 +29,7 @@ const DEMO_ACCOUNTS = [
   {
     role: "Super Admin",
     name: "Super Admin",
-    facility: "PPMS Clinic (Global Master)",
+    facility: "Super Admin",
     email: "ashfatul.islam@gmail.com",
     password: "aniyasfather",
     badge: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",

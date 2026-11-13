@@ -1,9 +1,10 @@
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
-import { OrganizationStatus } from "@prisma/client";
+import { OrganizationStatus, RoleName } from "@prisma/client";
 import { logActivity } from "@/features/activity-log/activity-log.service";
 
 export type ClinicSubscriptionInfo = {
+  isSuperAdmin?: boolean;
   organizationId: string;
   organizationName: string;
   slug: string;
@@ -15,6 +16,10 @@ export type ClinicSubscriptionInfo = {
     billingCycle: string;
     description: string | null;
     features: string[];
+    maxDoctors: number | null;
+    maxStaff: number | null;
+    maxPatients: number | null;
+    maxPrescriptionsPerMonth: number | null;
   } | null;
   isTrial: boolean;
   trialEndsAt: string | null;
@@ -31,10 +36,85 @@ export type ClinicSubscriptionInfo = {
   counts: {
     doctors: number;
     staff: number;
-    prescriptions: number;
+    patients: number;
+    prescriptionsThisMonth: number;
+    totalPrescriptions: number;
     appointments: number;
   };
+  limits: {
+    maxDoctors: number | null;
+    maxStaff: number | null;
+    maxPatients: number | null;
+    maxPrescriptionsPerMonth: number | null;
+  };
+  usagePercent: {
+    overall: number;
+    doctors: number | null;
+    staff: number | null;
+    patients: number | null;
+    prescriptions: number | null;
+  };
 };
+
+export function getPlatformSuperAdminSubscription(): ClinicSubscriptionInfo {
+  return {
+    isSuperAdmin: true,
+    organizationId: "",
+    organizationName: "CareFlow Platform HQ",
+    slug: "super-admin",
+    status: OrganizationStatus.ACTIVE,
+    plan: {
+      id: "super-admin",
+      name: "Super Admin",
+      price: 0,
+      billingCycle: "lifetime",
+      description: "Root SaaS Platform Owner Account",
+      features: [
+        "Global Super Admin Authority",
+        "Unlimited Organizations",
+        "Unlimited Doctor & Staff Seats",
+        "Full System Configuration & Policy Control",
+      ],
+      maxDoctors: null,
+      maxStaff: null,
+      maxPatients: null,
+      maxPrescriptionsPerMonth: null,
+    },
+    isTrial: false,
+    trialEndsAt: null,
+    msLeft: 0,
+    daysLeft: 0,
+    hoursLeft: 0,
+    minutesLeft: 0,
+    secondsLeft: 0,
+    isTrialExpired: false,
+    subscriptionStatus: "active",
+    subscriptionEndsAt: null,
+    stripeCustomerId: null,
+    stripeSubscriptionId: null,
+    counts: {
+      doctors: 0,
+      staff: 0,
+      patients: 0,
+      prescriptionsThisMonth: 0,
+      totalPrescriptions: 0,
+      appointments: 0,
+    },
+    limits: {
+      maxDoctors: null,
+      maxStaff: null,
+      maxPatients: null,
+      maxPrescriptionsPerMonth: null,
+    },
+    usagePercent: {
+      overall: 0,
+      doctors: null,
+      staff: null,
+      patients: null,
+      prescriptions: null,
+    },
+  };
+}
 
 export async function getClinicSubscription(organizationId: string): Promise<ClinicSubscriptionInfo> {
   const org = await db.organization.findUnique({
@@ -54,20 +134,49 @@ export async function getClinicSubscription(organizationId: string): Promise<Cli
     throw new AppError("Organization not found", 404);
   }
 
-  const [doctorsCount, staffCount] = await Promise.all([
-    db.user.count({
+  const startOfMonth = new Date();
+  startOfMonth.setDate(1);
+  startOfMonth.setHours(0, 0, 0, 0);
+
+  const [doctorsCount, staffCount, patientsCount, prescriptionsThisMonth] = await Promise.all([
+    db.doctor.count({
       where: {
         organizationId: org.id,
-        role: { name: "DOCTOR" },
       },
     }),
     db.user.count({
       where: {
         organizationId: org.id,
-        role: { name: "STAFF" },
+        role: { name: RoleName.STAFF },
+      },
+    }),
+    db.patient.count({
+      where: {
+        organizationId: org.id,
+      },
+    }),
+    db.prescription.count({
+      where: {
+        organizationId: org.id,
+        createdAt: { gte: startOfMonth },
       },
     }),
   ]);
+
+  const maxDoctors = org.plan?.maxDoctors ?? null;
+  const maxStaff = org.plan?.maxStaff ?? null;
+  const maxPatients = org.plan?.maxPatients ?? null;
+  const maxPrescriptionsPerMonth = org.plan?.maxPrescriptionsPerMonth ?? null;
+
+  const docPercent = maxDoctors ? Math.min(100, Math.round((doctorsCount / maxDoctors) * 100)) : null;
+  const staffPercent = maxStaff ? Math.min(100, Math.round((staffCount / maxStaff) * 100)) : null;
+  const patPercent = maxPatients ? Math.min(100, Math.round((patientsCount / maxPatients) * 100)) : null;
+  const rxPercent = maxPrescriptionsPerMonth ? Math.min(100, Math.round((prescriptionsThisMonth / maxPrescriptionsPerMonth) * 100)) : null;
+
+  const validPercents = [docPercent, staffPercent, patPercent, rxPercent].filter((p): p is number => p !== null);
+  const overallPercent = validPercents.length > 0
+    ? Math.round(validPercents.reduce((a, b) => a + b, 0) / validPercents.length)
+    : 0;
 
   const isTrial = org.status === OrganizationStatus.TRIAL;
   const trialEndsDate = org.trialEndsAt ? new Date(org.trialEndsAt) : null;
@@ -99,6 +208,10 @@ export async function getClinicSubscription(organizationId: string): Promise<Cli
           billingCycle: org.plan.billingCycle,
           description: org.plan.description,
           features: Array.isArray(org.plan.features) ? (org.plan.features as string[]) : [],
+          maxDoctors: org.plan.maxDoctors,
+          maxStaff: org.plan.maxStaff,
+          maxPatients: org.plan.maxPatients,
+          maxPrescriptionsPerMonth: org.plan.maxPrescriptionsPerMonth,
         }
       : null,
     isTrial,
@@ -116,8 +229,23 @@ export async function getClinicSubscription(organizationId: string): Promise<Cli
     counts: {
       doctors: doctorsCount,
       staff: staffCount,
-      prescriptions: org._count.prescriptions,
+      patients: patientsCount,
+      prescriptionsThisMonth,
+      totalPrescriptions: org._count.prescriptions,
       appointments: org._count.appointments,
+    },
+    limits: {
+      maxDoctors,
+      maxStaff,
+      maxPatients,
+      maxPrescriptionsPerMonth,
+    },
+    usagePercent: {
+      overall: overallPercent,
+      doctors: docPercent,
+      staff: staffPercent,
+      patients: patPercent,
+      prescriptions: rxPercent,
     },
   };
 }

@@ -12,6 +12,7 @@ import { StripeUpgradeModal } from "./stripe-upgrade-modal";
 import { useLanguage } from "@/lib/i18n/language-context";
 
 interface SubscriptionState {
+  isSuperAdmin?: boolean;
   organizationId: string;
   organizationName: string;
   slug: string;
@@ -97,7 +98,7 @@ export function TrialCountdownBanner() {
     return () => clearInterval(interval);
   }, [sub]);
 
-  if (loading || !sub || !sub.isTrial) {
+  if (loading || !sub || sub.isSuperAdmin || !sub.isTrial) {
     return null;
   }
 

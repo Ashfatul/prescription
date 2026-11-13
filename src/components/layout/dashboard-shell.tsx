@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -53,6 +53,15 @@ interface DashboardShellProps {
     role: {
       name: RoleName;
     };
+    organization?: {
+      id?: string;
+      name?: string;
+      slug?: string;
+      status?: string;
+      plan?: {
+        name?: string;
+      } | null;
+    } | null;
   };
   children: React.ReactNode;
 }
@@ -76,11 +85,72 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
   const { logout } = useAuth();
   const { t } = useLanguage();
 
+  const [subInfo, setSubInfo] = useState<{
+    isSuperAdmin?: boolean;
+    organizationName?: string;
+    planName?: string;
+    isTrial?: boolean;
+    daysLeft?: number;
+    usagePercent: {
+      overall: number;
+      doctors: number | null;
+      staff: number | null;
+      patients: number | null;
+      prescriptions: number | null;
+    };
+    counts?: {
+      doctors: number;
+      staff: number;
+      patients: number;
+      prescriptionsThisMonth: number;
+    };
+    limits?: {
+      maxDoctors: number | null;
+      maxStaff: number | null;
+      maxPatients: number | null;
+      maxPrescriptionsPerMonth: number | null;
+    };
+    hasLimits: boolean;
+  } | null>(null);
+
+  const role = user.role.name;
+
+  useEffect(() => {
+    fetch("/api/subscription")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((res) => {
+        if (res?.success && res.data) {
+          const s = res.data;
+          setSubInfo({
+            isSuperAdmin: Boolean(s.isSuperAdmin || role === RoleName.SUPER_ADMIN),
+            organizationName: s.organizationName,
+            planName: s.plan?.name || (s.isTrial ? "Trial Package" : "Standard Plan"),
+            isTrial: Boolean(s.isTrial),
+            daysLeft: s.daysLeft,
+            usagePercent: {
+              overall: s.usagePercent?.overall ?? 0,
+              doctors: s.usagePercent?.doctors ?? null,
+              staff: s.usagePercent?.staff ?? null,
+              patients: s.usagePercent?.patients ?? null,
+              prescriptions: s.usagePercent?.prescriptions ?? null,
+            },
+            counts: s.counts,
+            limits: s.limits,
+            hasLimits: Boolean(
+              s.limits?.maxDoctors ||
+              s.limits?.maxStaff ||
+              s.limits?.maxPatients ||
+              s.limits?.maxPrescriptionsPerMonth
+            ),
+          });
+        }
+      })
+      .catch(() => {});
+  }, [role]);
+
   const onLogout = async () => {
     await logout();
   };
-
-  const role = user.role.name;
 
   // Build navigation items grouped by semantic section
   const navItems: NavItem[] = [
@@ -519,7 +589,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         <Link
           href="/"
           onClick={() => setMobileMenuOpen(false)}
-          className="flex items-center gap-3 px-3 py-2.5 mb-4 shrink-0 rounded-2xl hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition-all group cursor-pointer"
+          className="flex items-center gap-3 px-3 py-2.5 mb-3 shrink-0 rounded-2xl hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition-all group cursor-pointer"
           title="Return to Home Page"
         >
           <div className="relative w-10 h-10 overflow-hidden rounded-2xl shadow-md shadow-[var(--brand-primary)]/20 group-hover:scale-105 transition-transform">
@@ -534,6 +604,158 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             </p>
           </div>
         </Link>
+
+        {/* Organization / Subscription / System Status Area */}
+        {role === RoleName.SUPER_ADMIN ? (
+          <div className="mx-1 mb-4 p-3.5 rounded-2xl bg-gradient-to-br from-purple-500/10 via-slate-500/5 to-purple-500/5 dark:from-purple-950/40 dark:via-slate-900/40 dark:to-purple-950/20 border border-purple-200/80 dark:border-purple-800/60 shadow-2xs shrink-0 space-y-2.5">
+            {/* Header: Status & Role */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                </span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300">
+                  {t.roleSuperAdmin || "Super Admin"}
+                </span>
+              </div>
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-300 border border-purple-200/60 dark:border-purple-700/60 font-mono">
+                ∞ {t.unlimitedQuota}
+              </span>
+            </div>
+
+            {/* Platform Scope & Authority Info */}
+            <div className="space-y-0.5">
+              <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
+                {t.rootSystemOperator}
+              </p>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-normal">
+                {t.fullSystemAccessUnlimited}
+              </p>
+            </div>
+
+            {/* Informative System Capabilities Strip */}
+            <div className="grid grid-cols-2 gap-1.5 pt-1.5 border-t border-purple-100 dark:border-purple-900/40 text-[9px]">
+              <div className="px-2 py-1 rounded-lg bg-white/60 dark:bg-slate-900/60 border border-purple-100/80 dark:border-purple-900/30 flex items-center justify-between">
+                <span className="text-slate-500 dark:text-slate-400 font-medium truncate">{t.clinicsOrganizations}</span>
+                <span className="font-bold text-purple-700 dark:text-purple-300 ml-1">Full</span>
+              </div>
+              <div className="px-2 py-1 rounded-lg bg-white/60 dark:bg-slate-900/60 border border-purple-100/80 dark:border-purple-900/30 flex items-center justify-between">
+                <span className="text-slate-500 dark:text-slate-400 font-medium truncate">{t.security}</span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-400 ml-1">Root</span>
+              </div>
+            </div>
+          </div>
+        ) : subInfo ? (
+          <div className="mx-1 mb-4 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-3 shrink-0">
+            {/* Clinic & Plan Header */}
+            <div className="flex items-start justify-between gap-1.5">
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                    {subInfo.organizationName || user.organization?.name || t.clinicFacility}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="text-[11px] font-semibold text-[var(--brand-primary)] truncate">
+                    {subInfo.planName}
+                  </span>
+                  {subInfo.isTrial && (
+                    <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300">
+                      {subInfo.daysLeft !== undefined ? `${subInfo.daysLeft}d left` : "Trial"}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <span
+                className={`text-xs font-black font-mono shrink-0 px-2 py-0.5 rounded-lg ${
+                  subInfo.usagePercent.overall >= 90
+                    ? "bg-red-100 text-red-700 dark:bg-red-950/70 dark:text-red-300 border border-red-200/60"
+                    : subInfo.usagePercent.overall >= 75
+                    ? "bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border border-amber-200/60"
+                    : "bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)]"
+                }`}
+                title={t.overallQuotaUsage}
+              >
+                {subInfo.usagePercent.overall}%
+              </span>
+            </div>
+
+            {/* Quota Progress Bar */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-[10px] font-medium text-slate-500 dark:text-slate-400">
+                <span>{t.overallQuotaUsage}</span>
+                <span className="font-bold">{subInfo.usagePercent.overall}% {t.quotaCapUsed}</span>
+              </div>
+              <div className="w-full bg-slate-200/80 dark:bg-slate-800 rounded-full h-2 overflow-hidden p-0.5">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${
+                    subInfo.usagePercent.overall >= 90
+                      ? "bg-red-500"
+                      : subInfo.usagePercent.overall >= 75
+                      ? "bg-amber-500"
+                      : "bg-[var(--brand-primary)]"
+                  }`}
+                  style={{ width: `${Math.min(100, Math.max(0, subInfo.usagePercent.overall))}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Informative Quota Metrics Grid */}
+            {subInfo.counts && subInfo.limits && (
+              <div className="grid grid-cols-2 gap-1.5 pt-1 text-[10px]">
+                <div className="p-1.5 rounded-xl bg-white/80 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+                  <p className="text-[9px] text-slate-400 font-medium truncate">{t.registeredDoctors}</p>
+                  <p className="font-bold text-slate-800 dark:text-slate-200">
+                    {subInfo.counts.doctors}
+                    <span className="text-[9px] font-normal text-slate-400">
+                      /{subInfo.limits.maxDoctors ?? "∞"}
+                    </span>
+                  </p>
+                </div>
+                <div className="p-1.5 rounded-xl bg-white/80 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+                  <p className="text-[9px] text-slate-400 font-medium truncate">{t("uiStaffDesk", "Staff")}</p>
+                  <p className="font-bold text-slate-800 dark:text-slate-200">
+                    {subInfo.counts.staff}
+                    <span className="text-[9px] font-normal text-slate-400">
+                      /{subInfo.limits.maxStaff ?? "∞"}
+                    </span>
+                  </p>
+                </div>
+                <div className="p-1.5 rounded-xl bg-white/80 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+                  <p className="text-[9px] text-slate-400 font-medium truncate">{t.patientsEnrolled}</p>
+                  <p className="font-bold text-slate-800 dark:text-slate-200">
+                    {subInfo.counts.patients}
+                    <span className="text-[9px] font-normal text-slate-400">
+                      /{subInfo.limits.maxPatients ?? "∞"}
+                    </span>
+                  </p>
+                </div>
+                <div className="p-1.5 rounded-xl bg-white/80 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+                  <p className="text-[9px] text-slate-400 font-medium truncate">{t.prescriptionsThisMonth}</p>
+                  <p className="font-bold text-slate-800 dark:text-slate-200">
+                    {subInfo.counts.prescriptionsThisMonth}
+                    <span className="text-[9px] font-normal text-slate-400">
+                      /{subInfo.limits.maxPrescriptionsPerMonth ?? "∞"}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {role === RoleName.ADMIN && (
+              <Link
+                href="/dashboard/admin?tab=billing"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between text-[10px] font-bold text-[var(--brand-primary)] hover:underline pt-0.5"
+              >
+                <span>{t.viewClinicSubscription}</span>
+                <span>→</span>
+              </Link>
+            )}
+          </div>
+        ) : null}
 
         {/* Navigation Sections (Scrollable) */}
         <nav className="flex-1 overflow-y-auto pr-1 -mr-1 space-y-5">
@@ -585,37 +807,54 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         </div>
 
         {/* User Card */}
-        <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800">
-          <div className="flex items-center justify-between gap-2 mb-2">
-            <div className="truncate">
-              <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                {user.name}
-              </p>
-              <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
+        <div className="p-3.5 rounded-2xl bg-slate-50/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-3">
+          <div className="flex items-center gap-3">
+            {/* User Avatar with Initials & Online Status */}
+            <div className="relative shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--brand-primary)] to-slate-800 text-white font-bold text-sm flex items-center justify-center shadow-xs">
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
             </div>
-            <span
-              className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider shrink-0 ${getRoleBadge(
-                role,
-              )}`}
-            >
-              {getRoleTitle(role)}
-            </span>
+
+            {/* Name, Email, & Role Badge */}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-1.5 mb-0.5">
+                <p className="text-xs font-extrabold text-slate-900 dark:text-white truncate">
+                  {user.name}
+                </p>
+                <span
+                  className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider shrink-0 ${getRoleBadge(
+                    role,
+                  )}`}
+                >
+                  {getRoleTitle(role)}
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
+              {user.organization?.name && role !== RoleName.SUPER_ADMIN && (
+                <p className="text-[10px] font-medium text-[var(--brand-primary)] truncate mt-0.5">
+                  {user.organization.name}
+                </p>
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-slate-200/60 dark:border-slate-800/60">
+          {/* Action Row: Security / 2FA & Logout */}
+          <div className="flex items-center justify-between pt-2.5 border-t border-slate-200/70 dark:border-slate-800/70">
             <button
               type="button"
               onClick={() => setChangePasswordOpen(true)}
-              className="text-[10px] font-semibold text-slate-500 hover:text-[var(--brand-primary)] flex items-center gap-1 cursor-pointer"
+              className="text-[11px] font-semibold text-slate-500 hover:text-[var(--brand-primary)] dark:text-slate-400 dark:hover:text-white flex items-center gap-1.5 py-1 px-2 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800/60 transition cursor-pointer"
               title="Account Security, 2FA & Password"
             >
-              <KeyRound className="w-3 h-3" />
+              <KeyRound className="w-3.5 h-3.5" />
               <span>{t.security}</span>
             </button>
             <button
               type="button"
               onClick={onLogout}
-              className="text-[11px] font-semibold text-red-500 hover:text-red-600 dark:hover:text-red-400 flex items-center gap-1 cursor-pointer"
+              className="text-[11px] font-semibold text-red-500 hover:text-red-600 dark:hover:text-red-400 flex items-center gap-1.5 py-1 px-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition cursor-pointer"
               title={t.logout}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -701,6 +940,32 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 {t("emrCloudActive", "EMR Cloud Active")}
               </span>
+
+              {role === RoleName.SUPER_ADMIN ? (
+                <span className="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200/70 dark:border-purple-800/60">
+                  {t.roleSuperAdmin || "Super Admin"}
+                </span>
+              ) : subInfo ? (
+                <Link
+                  href={role === RoleName.ADMIN ? "/dashboard/admin?tab=billing" : "#"}
+                  className="hidden sm:inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-[var(--brand-border)] transition"
+                  title={`${subInfo.planName} • ${t.overallLimitUsed}: ${subInfo.usagePercent.overall}%`}
+                >
+                  <span className="truncate max-w-[120px] font-bold">{subInfo.planName}</span>
+                  <span className="text-slate-300 dark:text-slate-600">•</span>
+                  <span
+                    className={`font-mono text-[10px] font-extrabold ${
+                      subInfo.usagePercent.overall >= 90
+                        ? "text-red-500"
+                        : subInfo.usagePercent.overall >= 75
+                        ? "text-amber-500"
+                        : "text-[var(--brand-primary)]"
+                    }`}
+                  >
+                    {subInfo.usagePercent.overall}%
+                  </span>
+                </Link>
+              ) : null}
             </div>
           </div>
 

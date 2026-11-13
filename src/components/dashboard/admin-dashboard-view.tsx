@@ -110,8 +110,8 @@ export function AdminDashboardView({ stats, users, isDemoMode }: AdminDashboardV
 
   return (
     <div className="space-y-6">
-      {/* Live Free Trial Countdown Banner */}
-      <TrialCountdownBanner />
+      {/* Live Free Trial Countdown Banner (Tenant Clinics Only, never Super Admin) */}
+      {currentUser?.role !== "SUPER_ADMIN" && <TrialCountdownBanner />}
 
       {/* Overview View */}
       {activeTab === "overview" && (
