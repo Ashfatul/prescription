@@ -191,7 +191,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                 </div>
                                 <div className="flex flex-col">
                                     <div className="flex items-center gap-1.5">
-                                        <span className="font-extrabold tracking-tight text-slate-900 dark:text-white text-base sm:text-lg whitespace-nowrap">
+                                        <span className="font-extrabold tracking-tight text-slate-900 dark:text-white text-base sm:text-lg whitespace-nowrap hidden md:block">
                                             {settings.hospitalName}
                                         </span>
                                         {/*<span className="px-1.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] font-bold text-[9px] sm:text-[10px] tracking-wider uppercase border border-[var(--brand-border)]/60">
@@ -265,7 +265,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                             {isLoggedIn ? (
                                 <div className="flex items-center gap-1.5 shrink-0">
                                     <Link
-                                        className="flex items-center gap-1.5 rounded-xl bg-[var(--brand-primary)] px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-white shadow-xs hover:opacity-90 transition-all cursor-pointer whitespace-nowrap"
+                                        className="items-center gap-1.5 rounded-xl bg-[var(--brand-primary)] px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-white shadow-xs hover:opacity-90 transition-all cursor-pointer whitespace-nowrap"
                                         href="/dashboard"
                                     >
                                         <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />
@@ -297,7 +297,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                         </Link>
                                         <Link
                                             href="/doctors"
-                                            className="flex items-center gap-1.5 rounded-xl bg-[var(--brand-primary)] px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-white shadow-xs hover:opacity-90 transition-all cursor-pointer whitespace-nowrap"
+                                            className="items-center gap-1.5 rounded-xl bg-[var(--brand-primary)] px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-white shadow-xs hover:opacity-90 transition-all cursor-pointer whitespace-nowrap hidden md:flex"
                                         >
                                             <Calendar className="w-3.5 h-3.5 shrink-0" />
                                             <span className="hidden sm:inline">
