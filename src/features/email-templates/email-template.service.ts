@@ -490,7 +490,22 @@ export async function sendTemplatedEmail(params: {
     throw new AppError(`Email template with key '${params.key}' not found.`, 404);
   }
 
-  const appName = process.env.NEXT_PUBLIC_APP_NAME || "CareFlow";
+  let appName = typeof params.variables.appName === "string" && params.variables.appName.trim() ? params.variables.appName.trim() : "";
+  if (!appName) {
+    try {
+      const setting = await db.systemSetting.findFirst({
+        where: { key: { in: ["hospital_name", "hospitalName", "system_name"] } },
+      });
+      if (setting?.value?.trim()) {
+        appName = setting.value.trim();
+      }
+    } catch {
+      // fallback
+    }
+  }
+  if (!appName) {
+    appName = process.env.NEXT_PUBLIC_APP_NAME || "Clinical System";
+  }
   const supportEmail = process.env.MAIL_FROM_ADDRESS || "support@ppms.local";
 
   const allVars: Record<string, string | number | undefined | null> = {

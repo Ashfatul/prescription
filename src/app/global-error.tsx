@@ -10,13 +10,13 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("CareFlow Global Root Layout Error:", error);
+    console.error("Global Root Layout Error:", error);
   }, [error]);
 
   return (
     <html lang="en" className="h-full">
       <head>
-        <title>CareFlow System Interruption</title>
+        <title>System Interruption</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className="w-full h-screen max-h-screen overflow-hidden m-0 font-sans bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased flex flex-col items-center justify-center p-4 sm:p-6 text-center">
@@ -29,7 +29,7 @@ export default function GlobalError({
 
           {/* Medium Error Message */}
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight mt-5 sm:mt-6 mb-3">
-            CareFlow System Interruption
+            System Interruption
           </h1>
 
           {/* Normal Error Description */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -236,6 +236,18 @@ function ResetPasswordInner() {
 
 export default function ResetPasswordPage() {
   const { t, language } = useLanguage();
+  const [hospitalName, setHospitalName] = useState("");
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.data?.hospitalName) {
+          setHospitalName(data.data.hospitalName);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <main className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-12 bg-[var(--bg-app)] text-[var(--text-primary)]">
@@ -274,7 +286,7 @@ export default function ResetPasswordPage() {
             </div>
             <div>
               <h1 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
-                CareFlow
+                {hospitalName || "PPMS"}
               </h1>
               <p className="text-[10px] text-slate-500 dark:text-slate-400">
                 Healthcare Operating System

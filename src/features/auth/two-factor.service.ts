@@ -112,7 +112,7 @@ export function generateBackupCodes(count = 8): string[] {
  * Dispatches an email notification when 2FA is activated
  */
 async function sendTwoFactorEnabledEmail(to: string, userName: string) {
-    const appName = env.appName || "CareFlow";
+    const appName = env.appName || "Prescription System";
     const now = new Date().toUTCString();
 
     const html = `<!DOCTYPE html>
@@ -170,7 +170,7 @@ async function sendTwoFactorEnabledEmail(to: string, userName: string) {
  * Dispatches an urgent email alert when 2FA is deactivated
  */
 async function sendTwoFactorDisabledEmail(to: string, userName: string) {
-    const appName = env.appName || "CareFlow";
+    const appName = env.appName || "Prescription System";
     const now = new Date().toUTCString();
 
     const html = `<!DOCTYPE html>
@@ -229,7 +229,7 @@ export async function setupTwoFactor(user: {
     email: string;
     name: string;
 }) {
-    const appName = env.appName || "CareFlow";
+    const appName = env.appName || "Prescription System";
     // Generate 20 random cryptographically secure bytes (160 bits standard)
     const randomBuffer = crypto.randomBytes(20);
     const secret = base32Encode(randomBuffer);

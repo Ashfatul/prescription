@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "CareFlow system setup completed successfully.",
+      message: "System setup completed successfully.",
       data: result,
     });
   });

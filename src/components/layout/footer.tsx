@@ -95,7 +95,7 @@ export function Footer({
                             <div className="relative w-9 h-9 overflow-hidden rounded-2xl shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all">
                                 <Image
                                     src="/icons/icon.svg"
-                                    alt="CareFlow"
+                                    alt={settings.hospitalName || "Logo"}
                                     fill
                                     sizes="36px"
                                 />
@@ -103,7 +103,7 @@ export function Footer({
                             <div className="flex flex-col">
                                 <div className="flex items-center gap-1.5">
                                     <span className="font-extrabold tracking-tight text-slate-900 dark:text-white text-lg">
-                                        {settings.hospitalName}
+                                        {settings.hospitalName || "PPMS"}
                                     </span>
                                     <span className="px-1.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] font-bold text-[10px] tracking-wider uppercase border border-[var(--brand-border)]/60">
                                         Clinic Operations Platform

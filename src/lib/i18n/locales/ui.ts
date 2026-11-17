@@ -567,7 +567,7 @@ export const uiEn = {
     uiMembers: "members",
     uiMembers2: "members",
     uiMetric: "Metric",
-    uiMetropolitanSpecializedHospital: "CareFlow",
+    uiMetropolitanSpecializedHospital: "Central Hospital",
     uiMinChars: "min 8 chars",
     uiMinutesBeforeBreakfastDinner: "30 minutes before breakfast & dinner",
     uiMissingResetTokenPleaseOpen:
@@ -1279,11 +1279,11 @@ export const uiEn = {
 
     // Global Error
     uiGlobalErrorTitle: "Critical Application Exception",
-    uiGlobalErrorDesc: "CareFlow experienced a critical root layout interruption. Please reload or restart the application session.",
+    uiGlobalErrorDesc: "A critical root layout interruption occurred. Please reload or restart the application session.",
 
     // Onboarding Setup Wizard
     uiSetupWizardTitle: "System Setup & Onboarding",
-    uiSetupWizardSubtitle: "Welcome to CareFlow. Let's configure your hospital platform, database, and root administrator credentials.",
+    uiSetupWizardSubtitle: "Configure your hospital platform, database, and root administrator credentials.",
     uiStep1Database: "1. Database Health",
     uiStep2SystemIdentity: "2. Platform Identity",
     uiStep3SuperAdmin: "3. Root Administrator",
@@ -1296,7 +1296,7 @@ export const uiEn = {
     uiDatabaseErrorDesc: "Unable to establish a connection to PostgreSQL. Please check your DATABASE_URL environment variable.",
     uiRetryConnection: "Test Connection Again",
     uiSystemNameLabel: "System / Hospital Platform Name",
-    uiSystemNamePlaceholder: "e.g., CareFlow Health, Central General Hospital",
+    uiSystemNamePlaceholder: "e.g., Central General Hospital, Modern Polyclinic",
     uiSystemTaglineLabel: "Tagline / Subtitle",
     uiSystemTaglinePlaceholder: "e.g., Clinical Prescribing & OPD Chamber OS",
     uiSupportEmailLabel: "Primary Support Email",
@@ -1315,7 +1315,7 @@ export const uiEn = {
     uiInstallingSystem: "Bootstrapping System & Provisioning...",
     uiContinueToNext: "Continue to Next Step",
     uiCompleteInstallation: "Complete Setup & Initialize System",
-    uiSetupSuccessTitle: "CareFlow Successfully Initialized!",
+    uiSetupSuccessTitle: "System Successfully Initialized!",
     uiSetupSuccessDesc: "Your clinical system has been provisioned. A verification email has been dispatched to verify your identity.",
     uiVerificationRequiredNotice: "Email verification is required before full dashboard access. Click the link in your inbox or use the instant verification link below:",
     uiInstantVerifyButton: "Verify Email & Activate Account",
@@ -1329,7 +1329,7 @@ export const uiEn = {
     uiConfigureRxDesc: "Review the medicine formulary, customize A4 letterhead, and clinical advice presets.",
     uiEnterDashboard: "Enter Super Admin Dashboard",
     uiSystemAlreadyInstalled: "System Already Installed",
-    uiSystemAlreadyInstalledDesc: "This CareFlow instance has already completed initial onboarding and is locked for security.",
+    uiSystemAlreadyInstalledDesc: "This system instance has already completed initial onboarding and is locked for security.",
     uiGoToLogin: "Go to Login",
 } as const;
 
@@ -2612,11 +2612,11 @@ export const uiBn = {
 
     // Global Error
     uiGlobalErrorTitle: "গুরুতর সিস্টেম অ্যাপ্লিকেশন ব্যতিক্রম",
-    uiGlobalErrorDesc: "কেয়ারফ্লো রুট লেআউটে একটি গুরুতর ত্রুটি ঘটেছে। দয়া করে অ্যাপ্লিকেশনটি পুনরায় রিলোড করুন।",
+    uiGlobalErrorDesc: "রুট লেআউটে একটি গুরুতর ত্রুটি ঘটেছে। দয়া করে অ্যাপ্লিকেশনটি পুনরায় রিলোড করুন।",
 
     // Onboarding Setup Wizard
     uiSetupWizardTitle: "সিস্টেম সেটআপ ও অনবোর্ডিং",
-    uiSetupWizardSubtitle: "কেয়ারফ্লো-তে স্বাগতম। আপনার হাসপাতাল প্ল্যাটফর্ম, ডেটাবেজ এবং প্রধান প্রশাসক অ্যাকাউন্ট সেটআপ করুন।",
+    uiSetupWizardSubtitle: "আপনার হাসপাতাল প্ল্যাটফর্ম, ডেটাবেজ এবং প্রধান প্রশাসক অ্যাকাউন্ট সেটআপ করুন।",
     uiStep1Database: "১. ডেটাবেজ স্বাস্থ্য",
     uiStep2SystemIdentity: "২. প্ল্যাটফর্ম তথ্য",
     uiStep3SuperAdmin: "৩. প্রধান প্রশাসক",
@@ -2629,7 +2629,7 @@ export const uiBn = {
     uiDatabaseErrorDesc: "পোস্টগ্রেসকিউএল ডেটাবেজের সাথে সংযোগ স্থাপন করা সম্ভব হয়নি। অনুগ্রহ করে DATABASE_URL চেক করুন।",
     uiRetryConnection: "পুনরায় সংযোগ পরীক্ষা করুন",
     uiSystemNameLabel: "সিস্টেম বা হাসপাতাল প্ল্যাটফর্মের নাম",
-    uiSystemNamePlaceholder: "যেমন: কেয়ারফ্লো হেলথ, সেন্ট্রাল জেনারেল হাসপাতাল",
+    uiSystemNamePlaceholder: "যেমন: সেন্ট্রাল জেনারেল হাসপাতাল, স্কয়ার পলিক্লিনিক",
     uiSystemTaglineLabel: "ট্যাগলাইন বা উপশিরোনাম",
     uiSystemTaglinePlaceholder: "যেমন: আধুনিক প্রেসক্রিপশন ও চেম্বার ম্যানেজমেন্ট",
     uiSupportEmailLabel: "সাপোর্ট ইমেইল",
@@ -2648,7 +2648,7 @@ export const uiBn = {
     uiInstallingSystem: "সিস্টেম প্রস্তুত ও সেটআপ করা হচ্ছে...",
     uiContinueToNext: "পরবর্তী ধাপে যান",
     uiCompleteInstallation: "সেটআপ সম্পন্ন করুন ও সিস্টেম চালু করুন",
-    uiSetupSuccessTitle: "কেয়ারফ্লো সফলভাবে চালু হয়েছে!",
+    uiSetupSuccessTitle: "সিস্টেম সফলভাবে চালু হয়েছে!",
     uiSetupSuccessDesc: "আপনার ক্লিনিক্যাল সিস্টেম সফলভাবে সেটআপ হয়েছে। আপনার পরিচয় যাচাইয়ের জন্য একটি ভেরিফিকেশন ইমেইল পাঠানো হয়েছে।",
     uiVerificationRequiredNotice: "ড্যাশবোর্ডে প্রবেশের পূর্বে ইমেইল ভেরিফিকেশন সম্পন্ন করা আবশ্যক। আপনার ইনবক্সের লিঙ্কে ক্লিক করুন অথবা নিচের বোতামটি ব্যবহার করুন:",
     uiInstantVerifyButton: "ইমেইল ভেরিফাই ও অ্যাকাউন্ট সক্রিয় করুন",
@@ -2662,6 +2662,6 @@ export const uiBn = {
     uiConfigureRxDesc: "ওষুধের তালিকা পর্যালোচনা করুন, A4 লেটারহেড এবং পরামর্শ প্রিসেট কাস্টমাইজ করুন।",
     uiEnterDashboard: "সুপার অ্যাডমিন ড্যাশবোর্ডে প্রবেশ করুন",
     uiSystemAlreadyInstalled: "সিস্টেম ইতিমধ্যে ইনস্টল করা হয়েছে",
-    uiSystemAlreadyInstalledDesc: "এই কেয়ারফ্লো সিস্টেমটির প্রাথমিক সেটআপ ইতিমধ্যে সম্পন্ন হয়েছে এবং নিরাপত্তার স্বার্থে এটি লক করা আছে।",
+    uiSystemAlreadyInstalledDesc: "এই সিস্টেমটির প্রাথমিক সেটআপ ইতিমধ্যে সম্পন্ন হয়েছে এবং নিরাপত্তার স্বার্থে এটি লক করা আছে।",
     uiGoToLogin: "লগইনে যান",
 } as const;

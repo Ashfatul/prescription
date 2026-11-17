@@ -234,7 +234,6 @@ export async function verifyPatient(id: string, verifiedByUserName: string) {
         patientName: patient.user.name,
         clinicName: patient.organization?.name || "Clinical Health Services",
         loginUrl: `${host}/auth/login`,
-        appName: process.env.NEXT_PUBLIC_APP_NAME || "CareFlow",
         supportEmail: process.env.SUPPORT_EMAIL || "support@ppms.local",
         verifiedBy: verifiedByUserName,
       },

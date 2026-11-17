@@ -144,7 +144,6 @@ export async function sendPrescriptionAlert(params: {
                 doctorName: params.doctorName,
                 rxId: params.prescriptionId.slice(-6).toUpperCase(),
                 viewUrl,
-                appName: process.env.NEXT_PUBLIC_APP_NAME || "CareFlow",
             },
             organizationId: params.organizationId,
         });

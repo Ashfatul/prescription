@@ -53,7 +53,6 @@ export async function POST(req: NextRequest) {
                 userEmail: user.email,
                 resetUrl,
                 token: resetToken,
-                appName: process.env.NEXT_PUBLIC_APP_NAME || "CareFlow",
             },
             organizationId: user.organizationId,
         });

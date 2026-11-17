@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ShieldCheck, Pill, Building2, Clock, CheckCircle2 } from "lucide-react";
@@ -12,6 +13,7 @@ export interface FeaturePoint {
 }
 
 export interface AuthBrandingPanelProps {
+  systemName?: string;
   badge?: string;
   title?: string;
   highlightText?: string;
@@ -20,6 +22,7 @@ export interface AuthBrandingPanelProps {
 }
 
 export function AuthBrandingPanel({
+  systemName: initialSystemName,
   badge,
   title,
   highlightText,
@@ -27,6 +30,20 @@ export function AuthBrandingPanel({
   features,
 }: AuthBrandingPanelProps) {
   const { t, language } = useLanguage();
+  const [systemName, setSystemName] = useState(initialSystemName || "");
+
+  useEffect(() => {
+    if (!initialSystemName) {
+      fetch("/api/settings")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data?.data?.hospitalName) {
+            setSystemName(data.data.hospitalName);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [initialSystemName]);
 
   const defaultBadge = badge || (t("uiClinicalOperatingSystem2"));
   const defaultTitle = title || (t("uiUnifiedPlatformForHealthcarePractice"));
@@ -67,13 +84,13 @@ export function AuthBrandingPanel({
 
       {/* Top Header: Brand Identity */}
       <div className="relative z-10 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3" aria-label="CareFlow home">
+        <Link href="/" className="flex items-center gap-3" aria-label="Home">
           <div className="relative w-10 h-10 overflow-hidden rounded-2xl shadow-md shadow-teal-500/20">
-            <Image src="/icons/icon.svg" alt="CareFlow" fill sizes="40px" />
+            <Image src="/icons/icon.svg" alt="System Logo" fill sizes="40px" />
           </div>
           <div>
             <span className="text-base font-black tracking-tight text-white block leading-tight">
-              CareFlow
+              {systemName || "PPMS"}
             </span>
             <span className="text-[11px] text-teal-300/80 font-medium">
               Patient Prescription Management System

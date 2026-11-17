@@ -475,7 +475,7 @@ export function SettingsManager() {
                                 }
                                 required
                                 className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
-                                placeholder="e.g. CareFlow"
+                                placeholder="e.g. Central Hospital"
                             />
                         </div>
 

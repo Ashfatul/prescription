@@ -55,7 +55,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
 
     const [settings, setSettings] = useState<SimpleSettings>({
         supportEmail: "support@ppms.local",
-        hospitalName: "CareFlow",
+        hospitalName: "",
     });
 
     const isLoggedIn = loggedIn !== undefined ? loggedIn : !!user;
@@ -68,7 +68,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                     setSettings({
                         supportEmail:
                             data.data.supportEmail || "support@ppms.local",
-                        hospitalName: data.data.hospitalName || "CareFlow",
+                        hospitalName: data.data.hospitalName || "",
                     });
                 }
             })
@@ -183,7 +183,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                 <div className="relative w-9 h-9 sm:w-10 sm:h-10 overflow-hidden rounded-2xl shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all shrink-0">
                                     <Image
                                         src="/icons/icon.svg"
-                                        alt="CareFlow"
+                                        alt={settings.hospitalName || "Logo"}
                                         fill
                                         sizes="40px"
                                     />
@@ -192,7 +192,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                 <div className="flex flex-col">
                                     <div className="flex items-center gap-1.5">
                                         <span className="font-extrabold tracking-tight text-slate-900 dark:text-white text-base sm:text-lg whitespace-nowrap hidden md:block">
-                                            {settings.hospitalName}
+                                            {settings.hospitalName || "PPMS"}
                                         </span>
                                         {/*<span className="px-1.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] font-bold text-[9px] sm:text-[10px] tracking-wider uppercase border border-[var(--brand-border)]/60">
                       Clinic Operations Platform
@@ -354,14 +354,14 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                     <div className="relative w-10 h-10 overflow-hidden rounded-2xl shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all">
                                         <Image
                                             src="/icons/icon.svg"
-                                            alt="CareFlow"
+                                            alt={settings.hospitalName || "Logo"}
                                             fill
                                             sizes="40px"
                                         />
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="font-black tracking-tight text-slate-900 dark:text-white text-lg">
-                                            {settings.hospitalName}
+                                            {settings.hospitalName || "PPMS"}
                                         </span>
                                         <span className="text-[11px] text-slate-500 font-medium">
                                             Navigation Directory

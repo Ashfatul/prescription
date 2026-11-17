@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Patient Prescription Management System",
-    short_name: "CareFlow",
+    short_name: "PPMS",
     description: "Multi-Clinic Patient Prescription, Appointment & Chamber Management System",
     start_url: "/",
     display: "standalone",

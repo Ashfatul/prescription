@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
                             price_data: {
                                 currency: "usd",
                                 product_data: {
-                                    name: `${plan.name} - CareFlow`,
+                                    name: `${plan.name} - ${org.name}`,
                                     description:
                                         plan.description ||
                                         `SaaS subscription for ${org.name}`,

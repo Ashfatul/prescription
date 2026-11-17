@@ -4,7 +4,7 @@
 import { ForbiddenView } from "@/components/error/forbidden-view";
 
 export const metadata = {
-  title: "Access Restricted | CareFlow",
+  title: "Access Restricted",
   description: "Role policy restricted access.",
 };
 

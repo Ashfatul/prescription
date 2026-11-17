@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { RegisterForm } from "./register-form";
 import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
@@ -10,6 +11,18 @@ import { useLanguage } from "@/lib/i18n/language-context";
 
 export function RegisterView() {
     const { t, language } = useLanguage();
+    const [hospitalName, setHospitalName] = useState("");
+
+    useEffect(() => {
+        fetch("/api/settings")
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data) => {
+                if (data?.data?.hospitalName) {
+                    setHospitalName(data.data.hospitalName);
+                }
+            })
+            .catch(() => {});
+    }, []);
 
     return (
         <main className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-12 bg-[var(--bg-app)] text-[var(--text-primary)]">
@@ -52,7 +65,7 @@ export function RegisterView() {
                         </div>
                         <div>
                             <h1 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
-                                CareFlow
+                                {hospitalName || "PPMS"}
                             </h1>
                             <p className="text-[10px] text-slate-500 dark:text-slate-400">
                                 {t("uiHealthcarePracticePlatform")}

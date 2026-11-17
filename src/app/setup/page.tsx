@@ -53,11 +53,11 @@ export default function SetupPage() {
   const [dbError, setDbError] = useState<string | null>(null);
 
   // Form Fields - Step 2: Platform Identity
-  const [systemName, setSystemName] = useState("CareFlow Health");
-  const [systemTagline, setSystemTagline] = useState("Clinical Prescribing & Hospital Management System");
+  const [systemName, setSystemName] = useState("");
+  const [systemTagline, setSystemTagline] = useState("");
   const [supportEmail, setSupportEmail] = useState("");
-  const [contactPhone, setContactPhone] = useState("+880 1700-000000");
-  const [emergencyHotline, setEmergencyHotline] = useState("10655");
+  const [contactPhone, setContactPhone] = useState("");
+  const [emergencyHotline, setEmergencyHotline] = useState("");
   const [currency, setCurrency] = useState("BDT");
   const [timezone, setTimezone] = useState("Asia/Dhaka");
 
@@ -248,10 +248,10 @@ export default function SetupPage() {
             </div>
             <div>
               <span className="text-base sm:text-lg font-bold tracking-tight text-[var(--text-primary)]">
-                CareFlow
+                {systemName.trim() || t.appTitle}
               </span>
               <span className="text-[10px] font-semibold text-[var(--text-muted)] -mt-1 block tracking-wider uppercase">
-                Clinical OS Setup
+                {t("uiSystemSetupOnboarding", "Clinical System Setup")}
               </span>
             </div>
           </div>

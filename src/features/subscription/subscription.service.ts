@@ -60,7 +60,7 @@ export function getPlatformSuperAdminSubscription(): ClinicSubscriptionInfo {
   return {
     isSuperAdmin: true,
     organizationId: "",
-    organizationName: "CareFlow Platform HQ",
+    organizationName: "Platform Administration HQ",
     slug: "super-admin",
     status: OrganizationStatus.ACTIVE,
     plan: {

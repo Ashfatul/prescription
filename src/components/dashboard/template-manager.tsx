@@ -113,7 +113,8 @@ export function TemplateManager() {
   const [statusMsg, setStatusMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   // Content State
-  const [hospitalName, setHospitalName] = useState("CareFlow");
+  const [defaultSystemName, setDefaultSystemName] = useState("");
+  const [hospitalName, setHospitalName] = useState("");
   const [hospitalTagline, setHospitalTagline] = useState("Center of Medical Excellence & Compassionate Care");
   const [hospitalAddress, setHospitalAddress] = useState("Plot 12, Road 4, Sector 7, Uttara, Dhaka-1230");
   const [hospitalPhone, setHospitalPhone] = useState("+880 2-8901234 / Hotline: 10678");
@@ -199,6 +200,15 @@ export function TemplateManager() {
 
   useEffect(() => {
     loadTemplates();
+    fetch("/api/settings")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((res) => {
+        if (res?.data?.hospitalName) {
+          setDefaultSystemName(res.data.hospitalName);
+          setHospitalName((prev) => (prev ? prev : res.data.hospitalName));
+        }
+      })
+      .catch(() => {});
   }, [loadTemplates]);
 
   const handleUploadLogo = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -301,7 +311,7 @@ export function TemplateManager() {
     setEditingId(null);
     setName("Hospital Master Prescription Template");
     setIsDefault(false);
-    setHospitalName("CareFlow");
+    setHospitalName(defaultSystemName || "");
     setHospitalTagline("Center of Medical Excellence & Compassionate Care");
     setHospitalAddress("Plot 12, Road 4, Sector 7, Uttara, Dhaka-1230");
     setHospitalPhone("+880 2-8901234 / Hotline: 10678");
@@ -358,7 +368,7 @@ export function TemplateManager() {
     setName(tpl.name);
     setIsDefault(Boolean(tpl.isDefault));
     const c = (tpl.contentJson as TemplateContent) || {};
-    setHospitalName(c.hospitalName || "CareFlow");
+    setHospitalName(c.hospitalName || defaultSystemName || "");
     setHospitalTagline(c.hospitalTagline || "Center of Medical Excellence & Compassionate Care");
     setHospitalAddress(c.hospitalAddress || "Plot 12, Road 4, Sector 7, Uttara, Dhaka-1230");
     setHospitalPhone(c.hospitalPhone || "+880 2-8901234 / Hotline: 10678");

@@ -74,7 +74,6 @@ export async function POST(req: NextRequest) {
         userEmail: user.email,
         verifyUrl,
         token,
-        appName: process.env.NEXT_PUBLIC_APP_NAME || "CareFlow",
       },
       organizationId: user.organizationId,
     });

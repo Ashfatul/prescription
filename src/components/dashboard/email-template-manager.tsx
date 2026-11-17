@@ -646,7 +646,7 @@ export function EmailTemplateManager() {
                                                         )
                                                         .replace(
                                                             /\{\{clinicName\}\}/g,
-                                                            "CareFlow",
+                                                            "Sample Clinic",
                                                         ),
                                                 }}
                                             />

@@ -112,6 +112,19 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
     hasLimits: boolean;
   } | null>(null);
 
+  const [systemName, setSystemName] = useState("");
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((res) => {
+        if (res?.data?.hospitalName) {
+          setSystemName(res.data.hospitalName);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const role = user.role.name;
 
   useEffect(() => {
@@ -592,11 +605,11 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           title="Return to Home Page"
         >
           <div className="relative w-10 h-10 overflow-hidden rounded-2xl shadow-md shadow-[var(--brand-primary)]/20 group-hover:scale-105 transition-transform">
-            <Image src="/icons/icon.svg" alt="CareFlow" fill sizes="40px" />
+            <Image src="/icons/icon.svg" alt="Logo" fill sizes="40px" />
           </div>
           <div>
             <h1 className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight group-hover:text-[var(--brand-text)] transition-colors">
-              CareFlow
+              {systemName || user.organization?.name || "PPMS"}
             </h1>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
               Medical Suite v2.0

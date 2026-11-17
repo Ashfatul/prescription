@@ -14,7 +14,7 @@ export default function ErrorBoundary({
   const { t } = useLanguage();
 
   useEffect(() => {
-    console.error("CareFlow Global Error Boundary caught:", error);
+    console.error("Global Error Boundary caught:", error);
   }, [error]);
 
   return (

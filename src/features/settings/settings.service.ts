@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 
 export interface HospitalSettings {
     hospitalName: string;
+    hospitalTagline?: string;
     hospitalBranch: string;
     hospitalAddress: string;
     opdVisitingHours: string;
@@ -17,8 +18,9 @@ export interface HospitalSettings {
 }
 
 export const DEFAULT_HOSPITAL_SETTINGS: HospitalSettings = {
-    hospitalName: "CareFlow",
-    hospitalBranch: "SaaS Operations",
+    hospitalName: "",
+    hospitalTagline: "",
+    hospitalBranch: "Operations",
     hospitalAddress: "Platform operations and support",
     opdVisitingHours: "Clinic-managed",
     emergencyHotline: "",
@@ -26,7 +28,7 @@ export const DEFAULT_HOSPITAL_SETTINGS: HospitalSettings = {
     supportEmail: "support@ppms.local",
     emergencyStatus: "Platform operational",
     emergencyNotice:
-        "For product issues, account support, security reports, or feature requests, contact the CareFlow platform support team.",
+        "For product issues, account support, security reports, or feature requests, contact the platform support team.",
     chamberDays: "Clinic-managed",
     requireEmailVerification: true,
     requireOrgApproval: true,
@@ -140,13 +142,41 @@ export async function setPatientVerificationRequired(
 export async function getHospitalSettings(): Promise<HospitalSettings> {
     try {
         const records = await db.systemSetting.findMany({
-            where: { category: { in: ["hospital", "auth"] } },
+            where: { category: { in: ["hospital", "auth", "general", "system"] } },
         });
 
         const settingsMap: Record<string, string> = {};
         for (const record of records) {
             settingsMap[record.key] = record.value;
         }
+
+        const hospitalName =
+            settingsMap.hospital_name ||
+            settingsMap.hospitalName ||
+            settingsMap.system_name ||
+            settingsMap.systemName ||
+            DEFAULT_HOSPITAL_SETTINGS.hospitalName;
+
+        const hospitalTagline =
+            settingsMap.hospital_tagline ||
+            settingsMap.hospitalTagline ||
+            DEFAULT_HOSPITAL_SETTINGS.hospitalTagline ||
+            "";
+
+        const contactPhone =
+            settingsMap.contact_phone ||
+            settingsMap.contactPhone ||
+            DEFAULT_HOSPITAL_SETTINGS.contactPhone;
+
+        const emergencyHotline =
+            settingsMap.emergency_hotline ||
+            settingsMap.emergencyHotline ||
+            DEFAULT_HOSPITAL_SETTINGS.emergencyHotline;
+
+        const supportEmail =
+            settingsMap.support_email ||
+            settingsMap.supportEmail ||
+            DEFAULT_HOSPITAL_SETTINGS.supportEmail;
 
         const requireEmailVerification =
             settingsMap["auth_require_email_verification"] !== undefined
@@ -164,9 +194,8 @@ export async function getHospitalSettings(): Promise<HospitalSettings> {
                 : DEFAULT_HOSPITAL_SETTINGS.requirePatientVerification;
 
         return {
-            hospitalName:
-                settingsMap.hospitalName ||
-                DEFAULT_HOSPITAL_SETTINGS.hospitalName,
+            hospitalName,
+            hospitalTagline,
             hospitalBranch:
                 settingsMap.hospitalBranch ||
                 DEFAULT_HOSPITAL_SETTINGS.hospitalBranch,
@@ -176,15 +205,9 @@ export async function getHospitalSettings(): Promise<HospitalSettings> {
             opdVisitingHours:
                 settingsMap.opdVisitingHours ||
                 DEFAULT_HOSPITAL_SETTINGS.opdVisitingHours,
-            emergencyHotline:
-                settingsMap.emergencyHotline ||
-                DEFAULT_HOSPITAL_SETTINGS.emergencyHotline,
-            contactPhone:
-                settingsMap.contactPhone ||
-                DEFAULT_HOSPITAL_SETTINGS.contactPhone,
-            supportEmail:
-                settingsMap.supportEmail ||
-                DEFAULT_HOSPITAL_SETTINGS.supportEmail,
+            emergencyHotline,
+            contactPhone,
+            supportEmail,
             emergencyStatus:
                 settingsMap.emergencyStatus ||
                 DEFAULT_HOSPITAL_SETTINGS.emergencyStatus,

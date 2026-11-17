@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     description:
         "A full-stack multi-clinic prescription and appointment management system.",
     manifest: "/manifest.webmanifest",
-    applicationName: "CareFlow",
+    applicationName: env.appName,
     appleWebApp: {
         capable: true,
         statusBarStyle: "default",

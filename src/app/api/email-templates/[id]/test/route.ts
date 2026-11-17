@@ -7,6 +7,7 @@ import {
     getEmailTemplate,
     interpolateVariables,
 } from "@/features/email-templates/email-template.service";
+import { getHospitalSettings } from "@/features/settings/settings.service";
 import { sendMail, getSmtpConfig } from "@/lib/email/mailer";
 import { AppError } from "@/lib/errors";
 
@@ -32,7 +33,8 @@ export async function POST(
             throw new AppError("Template not found", 404);
         }
 
-        const appName = process.env.NEXT_PUBLIC_APP_NAME || "CareFlow";
+        const settings = await getHospitalSettings();
+        const appName = settings.hospitalName || process.env.NEXT_PUBLIC_APP_NAME || "Clinical System";
         const smtpConfig = getSmtpConfig();
 
         const mockVariables: Record<string, string> = {
@@ -42,7 +44,7 @@ export async function POST(
             supportEmail: smtpConfig.fromAddress,
             verifyUrl: `http://localhost:3000/auth/verify-email?token=SAMPLE_TEST_TOKEN`,
             resetUrl: `http://localhost:3000/auth/reset-password?token=SAMPLE_RESET_TOKEN`,
-            clinicName: "CareFlow",
+            clinicName: settings.hospitalName || "Sample Clinic",
             doctorName: "Dr. Jane Test",
             patientName: "John Doe",
             prescriptionUrl: `http://localhost:3000/prescriptions/sample-preview/print`,
