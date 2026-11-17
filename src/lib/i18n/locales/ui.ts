@@ -1220,6 +1220,66 @@ export const uiEn = {
     unlimitedPlatformQuota: "Unlimited Platform Quota",
     systemOnline: "System Online",
     capacityUsage: "Capacity Usage",
+
+    // Error Pages - Global & Common
+    uiPageNotFound: "Page Not Found",
+    uiPageNotFoundTitle: "Page or Clinical Resource Not Found",
+    uiPageNotFoundDesc: "The requested medical page, consultation record, or resource could not be found. It may have been moved, renamed, or is temporarily unavailable.",
+    uiErrorCode404: "Error 404 • Not Found",
+    uiErrorCode500: "System Alert 500 • Runtime Interruption",
+    uiErrorCode401: "Auth 401 • Verification Required",
+    uiErrorCode403: "Security 403 • Clinical Access Restricted",
+    uiSystemErrorTitle: "Unexpected Clinical System Interruption",
+    uiSystemErrorDesc: "A runtime exception occurred while processing this clinical view. Your session and patient charts remain secure. Automated telemetry has logged this incident.",
+    uiTryAgain: "Try Again",
+    uiReloadPage: "Reload Page",
+    uiBackToHome: "Return to Homepage",
+    uiGoBack: "Go Back",
+    uiFindDoctor: "Search Doctors",
+    uiBrowseClinics: "Browse Clinics",
+    uiLiveConsultationQueue: "Live Queue",
+    uiTechnicalDiagnostics: "Technical Diagnostic Details",
+    uiErrorDigest: "Incident Digest",
+    uiCopyDiagnostics: "Copy Incident Telemetry",
+    uiDiagnosticsCopied: "Copied to Clipboard!",
+    uiContactTechnicalSupport: "Contact Clinic Support",
+    uiSafeModeNotice: "Clinical Safe Mode Active",
+    uiHelpfulShortcuts: "Helpful Clinical Navigation",
+    uiHelpfulShortcutsDesc: "Looking for an appointment, clinic chamber, or prescription? Try these direct links:",
+    uiBackToSafety: "Back to Safety",
+    uiEmergencySupport: "Emergency Medical Assistance: Dial 999 or 10655",
+    uiSessionSecured: "End-to-End Clinical Encryption Active",
+
+    // 401 Unauthorized
+    uiUnauthorizedTitle: "Clinical Authentication Required",
+    uiUnauthorizedDesc: "Access to this prescription engine, patient record, or chamber management module requires an authenticated clinical account. Please sign in to verify your identity.",
+    uiSignInToAccount: "Sign In to Account",
+    uiRegisterPatientAccount: "Create Patient Account",
+    uiNeedAccountAssistance: "Need an authorized practitioner account? Contact your hospital chamber administrator.",
+
+    // 403 Forbidden
+    uiForbiddenTitle: "Access Restricted by Role Policy",
+    uiForbiddenDesc: "Your account credentials do not have the required clinical or administrative role permissions to access this medical workspace or patient directory.",
+    uiCurrentRoleNotice: "Your account is active, but lacks permission for this endpoint.",
+    uiSwitchAccount: "Switch Account",
+    uiRequestElevatedAccess: "Request Role Permission",
+
+    // Dashboard Contextual Errors
+    uiDashboardErrorTitle: "Dashboard Workspace Interruption",
+    uiDashboardErrorDesc: "This specific clinical panel encountered an unexpected issue while rendering data. Your active session, clinic context, and patient records remain safe.",
+    uiDashboardRetryView: "Retry Clinical View",
+    uiDashboardReload: "Refresh Dashboard",
+    uiDashboardOverview: "Dashboard Overview",
+    uiDashboardNotFoundTitle: "Clinical Record or Resource Not Found",
+    uiDashboardNotFoundDesc: "The requested patient chart, prescription draft, appointment slot, or clinic record could not be found in your active chamber database.",
+    uiDashboardReturnOverview: "Back to Dashboard Overview",
+    uiViewPatientList: "Patient Directory",
+    uiCreateNewPrescription: "Prescription Pad",
+    uiViewAppointments: "Appointment Schedule",
+
+    // Global Error
+    uiGlobalErrorTitle: "Critical Application Exception",
+    uiGlobalErrorDesc: "CareFlow experienced a critical root layout interruption. Please reload or restart the application session.",
 } as const;
 
 export const uiBn = {
@@ -2442,4 +2502,64 @@ export const uiBn = {
     unlimitedPlatformQuota: "সীমাহীন প্ল্যাটফর্ম কোটা",
     systemOnline: "সিস্টেম অনলাইন",
     capacityUsage: "কোটা ধারণক্ষমতা",
+
+    // Error Pages - Global & Common
+    uiPageNotFound: "পৃষ্ঠা পাওয়া যায়নি",
+    uiPageNotFoundTitle: "পৃষ্ঠা বা চিকিৎসীয় তথ্য পাওয়া যায়নি",
+    uiPageNotFoundDesc: "অনুরোধকৃত মেডিকেল পেজ, পরামর্শ রেকর্ড বা তথ্য খুঁজে পাওয়া যায়নি। এটি সরানো হয়েছে, নাম পরিবর্তন করা হয়েছে অথবা সাময়িকভাবে অনুপলব্ধ।",
+    uiErrorCode404: "ত্রুটি ৪০৪ • পাওয়া যায়নি",
+    uiErrorCode500: "সিস্টেম অ্যালার্ট ৫০০ • রানটাইম বিঘ্ন",
+    uiErrorCode401: "নিরাপত্তা ৪০১ • পরিচয় নিশ্চিতকরণ প্রয়োজন",
+    uiErrorCode403: "নিরাপত্তা ৪০৩ • চিকিৎসীয় প্রবেশাধিকার সংরক্ষিত",
+    uiSystemErrorTitle: "অপ্রত্যাশিত চিকিৎসীয় সিস্টেমে ত্রুটি",
+    uiSystemErrorDesc: "এই চিকিৎসীয় ভিউ লোড করার সময় একটি অপ্রত্যাশিত ব্যতিক্রম ঘটেছে। আপনার সেশন ও রোগীর তথ্য সম্পূর্ণ নিরাপদ রয়েছে। আমাদের ডায়াগনস্টিক সিস্টেমে এই ঘটনাটি সংরক্ষিত হয়েছে।",
+    uiTryAgain: "পুনরায় চেষ্টা করুন",
+    uiReloadPage: "পৃষ্ঠা রিফ্রেশ করুন",
+    uiBackToHome: "হোমপেজে ফিরে যান",
+    uiGoBack: "পূর্ববর্তী পৃষ্ঠায় যান",
+    uiFindDoctor: "চিকিৎসক খুঁজুন",
+    uiBrowseClinics: "ক্লিনিকসমূহ দেখুন",
+    uiLiveConsultationQueue: "লাইভ সিরিয়াল",
+    uiTechnicalDiagnostics: "কারিগরি ডায়াগনস্টিক বিবরণ",
+    uiErrorDigest: "ঘটনার ডাইজেস্ট কোড",
+    uiCopyDiagnostics: "ডায়াগনস্টিক তথ্য কপি করুন",
+    uiDiagnosticsCopied: "ক্লিপবোর্ডে কপি হয়েছে!",
+    uiContactTechnicalSupport: "ক্লিনিক সাপোর্টে যোগাযোগ করুন",
+    uiSafeModeNotice: "ক্লিনিকাল সেফ মোড সক্রিয়",
+    uiHelpfulShortcuts: "প্রয়োজনীয় সহায়ক লিঙ্কসমূহ",
+    uiHelpfulShortcutsDesc: "অ্যাপয়েন্টমেন্ট, চেম্বার বা প্রেসক্রিপশন খুঁজছেন? নিচের সরাসরি লিঙ্কগুলো ব্যবহার করুন:",
+    uiBackToSafety: "নিরাপদ স্থানে ফিরুন",
+    uiEmergencySupport: "জরুরি চিকিৎসীয় সহায়তা: ৯৯৯ অথবা ১০৬৫৫ নম্বরে কল করুন",
+    uiSessionSecured: "এন্ড-টু-এন্ড এনক্রিপশন সক্রিয়",
+
+    // 401 Unauthorized
+    uiUnauthorizedTitle: "চিকিৎসীয় পরিচয় নিশ্চিতকরণ প্রয়োজন",
+    uiUnauthorizedDesc: "এই প্রেসক্রিপশন ইঞ্জিন, রোগীর রেকর্ড বা চেম্বার মডিউলে প্রবেশের জন্য অনুমোদিত অ্যাকাউন্টে লগইন থাকা আবশ্যক। আপনার পরিচয় যাচাই করতে দয়া করে সাইন ইন করুন।",
+    uiSignInToAccount: "অ্যাকাউন্টে সাইন ইন করুন",
+    uiRegisterPatientAccount: "রোগী অ্যাকাউন্ট তৈরি করুন",
+    uiNeedAccountAssistance: "চিকিৎসক বা স্টাফ অ্যাকাউন্টের প্রয়োজন? আপনার হাসপাতাল চেম্বার প্রশাসকের সাথে যোগাযোগ করুন।",
+
+    // 403 Forbidden
+    uiForbiddenTitle: "ভূমিকা নীতি অনুযায়ী প্রবেশাধিকার সীমাবদ্ধ",
+    uiForbiddenDesc: "আপনার বর্তমান অ্যাকাউন্টের এই মেডিকেল ওয়ার্কস্পেস বা রোগীর তথ্য দেখার প্রয়োজনীয় চিকিৎসীয় বা প্রশাসনিক ভূমিকা ও অনুমতি নেই।",
+    uiCurrentRoleNotice: "আপনার অ্যাকাউন্ট সক্রিয়, তবে এই অংশের জন্য অনুমতি নেই।",
+    uiSwitchAccount: "অন্য অ্যাকাউন্টে লগইন করুন",
+    uiRequestElevatedAccess: "অনুমোদনের জন্য আবেদন করুন",
+
+    // Dashboard Contextual Errors
+    uiDashboardErrorTitle: "ড্যাশবোর্ড ওয়ার্কস্পেসে ত্রুটি",
+    uiDashboardErrorDesc: "তথ্য রেন্ডার করার সময় এই নির্দিষ্ট ক্লিনিকাল প্যানেলে একটি অপ্রত্যাশিত সমস্যা হয়েছে। আপনার সক্রিয় সেশন, ক্লিনিক প্রেক্ষাপট এবং রোগীর রেকর্ড সম্পূর্ণ সুরক্ষিত রয়েছে।",
+    uiDashboardRetryView: "ভিউ পুনরায় লোড করুন",
+    uiDashboardReload: "ড্যাশবোর্ড রিফ্রেশ করুন",
+    uiDashboardOverview: "ড্যাশবোর্ড ওভারভিউ",
+    uiDashboardNotFoundTitle: "চিকিৎসীয় রেকর্ড বা তথ্য পাওয়া যায়নি",
+    uiDashboardNotFoundDesc: "অনুরোধকৃত রোগীর চার্ট, প্রেসক্রিপশন ড্রাফট, অ্যাপয়েন্টমেন্ট বা ক্লিনিক রেকর্ড আপনার সক্রিয় চেম্বার ডেটাবেজে খুঁজে পাওয়া যায়নি।",
+    uiDashboardReturnOverview: "ড্যাশবোর্ড ওভারভিউতে ফিরুন",
+    uiViewPatientList: "রোগীদের তালিকা",
+    uiCreateNewPrescription: "প্রেসক্রিপশন প্যাড",
+    uiViewAppointments: "অ্যাপয়েন্টমেন্ট সূচি",
+
+    // Global Error
+    uiGlobalErrorTitle: "গুরুতর সিস্টেম অ্যাপ্লিকেশন ব্যতিক্রম",
+    uiGlobalErrorDesc: "কেয়ারফ্লো রুট লেআউটে একটি গুরুতর ত্রুটি ঘটেছে। দয়া করে অ্যাপ্লিকেশনটি পুনরায় রিলোড করুন।",
 } as const;
