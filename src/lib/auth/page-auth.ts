@@ -2,8 +2,14 @@ import { RoleName, OrganizationStatus } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { getCurrentUserFromCookie } from "@/lib/auth/session";
 import { isEmailVerificationRequired } from "@/features/settings/settings.service";
+import { isSystemInstalled } from "@/features/setup/setup.service";
 
 export async function requirePageUser(allowed?: RoleName[]) {
+  const installed = await isSystemInstalled();
+  if (!installed) {
+    redirect("/setup");
+  }
+
   const user = await getCurrentUserFromCookie();
   if (!user) {
     redirect("/auth/login");

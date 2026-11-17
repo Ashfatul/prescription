@@ -159,7 +159,7 @@ Doctors operate under intense time constraints. The prescription writing process
 - **Environment**:
   - `DATABASE_URL` (PostgreSQL)
   - `JWT_SECRET`
-  - `NEXT_PUBLIC_DEMO_MODE="true"` (enables instant quick logins on `/auth/login`)
+  - First-run system onboarding wizard at `/setup`
 
 ---
 

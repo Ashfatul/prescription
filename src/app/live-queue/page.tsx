@@ -1,9 +1,10 @@
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { HospitalQueueDisplay } from "@/components/queue/hospital-queue-display";
 import { getCurrentUserFromCookie } from "@/lib/auth/session";
-import { DemoCountdownTimer } from "@/components/common/demo-countdown-timer";
+import { isSystemInstalled } from "@/features/setup/setup.service";
 
 export const metadata: Metadata = {
   title: "Live OPD Chamber Calling Monitor | Patient Queue Display",
@@ -21,6 +22,11 @@ type Props = {
 };
 
 export default async function LiveQueuePage({ searchParams }: Props) {
+  const installed = await isSystemInstalled();
+  if (!installed) {
+    redirect("/setup");
+  }
+
   const [currentUser, sParams] = await Promise.all([
     getCurrentUserFromCookie(),
     searchParams ? await searchParams : Promise.resolve({} as SearchParams),
@@ -34,7 +40,6 @@ export default async function LiveQueuePage({ searchParams }: Props) {
         <HospitalQueueDisplay initialDoctorId={sParams?.doctorId} clinicSlug={sParams?.clinic} />
       </main>
 
-      <DemoCountdownTimer variant="floating" />
       <Footer />
     </div>
   );

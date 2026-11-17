@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { isDemoModeActive, DEMO_ACCOUNT_EMAILS, SUPER_ADMIN_EMAIL } from "@/features/demo/demo-reset.service";
 
 export interface TopStatItem {
   name: string;
@@ -7,47 +6,11 @@ export interface TopStatItem {
   percentage: number;
 }
 
-export async function getDashboardStats(organizationId?: string, includeDemo?: boolean) {
-  const isDemo = isDemoModeActive();
-  const shouldIncludeDemo = includeDemo !== undefined ? includeDemo : isDemo;
-
-  const demoOrgFilter = shouldIncludeDemo
-    ? {}
-    : {
-        organization: {
-          isDemo: false,
-          slug: { not: "ppms-clinic" },
-        },
-      };
-
-  const userWhere = {
-    ...(organizationId ? { organizationId } : {}),
-    ...(shouldIncludeDemo
-      ? {}
-      : {
-          isDemo: false,
-          NOT: [
-            { email: { in: DEMO_ACCOUNT_EMAILS.filter((e) => e !== SUPER_ADMIN_EMAIL) } },
-            { organization: { isDemo: true } },
-            { organization: { slug: "ppms-clinic" } },
-          ],
-        }),
-  };
-
-  const doctorWhere = {
-    ...(organizationId ? { OR: [{ organizationId }, { user: { organizationId } }] } : {}),
-    ...demoOrgFilter,
-  };
-
-  const patientWhere = {
-    ...(organizationId ? { OR: [{ organizationId }, { user: { organizationId } }] } : {}),
-    ...demoOrgFilter,
-  };
-
-  const orgScopedFilter = {
-    ...(organizationId ? { organizationId } : {}),
-    ...demoOrgFilter,
-  };
+export async function getDashboardStats(organizationId?: string) {
+  const userWhere = organizationId ? { organizationId } : {};
+  const doctorWhere = organizationId ? { OR: [{ organizationId }, { user: { organizationId } }] } : {};
+  const patientWhere = organizationId ? { OR: [{ organizationId }, { user: { organizationId } }] } : {};
+  const orgScopedFilter = organizationId ? { organizationId } : {};
 
   const [users, doctors, patients, appointments, prescriptions, recentPrescriptions] =
     await Promise.all([

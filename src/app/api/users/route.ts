@@ -11,8 +11,6 @@ export async function GET(req: NextRequest) {
     const user = await requireUser(req);
     const { searchParams } = new URL(req.url);
     const queryOrgId = searchParams.get("organizationId");
-    const includeDemoParam = searchParams.get("includeDemo");
-    const includeDemo = includeDemoParam !== null ? includeDemoParam === "true" : undefined;
 
     // Clinic admins and staff are scoped strictly to their own clinic
     // Root platform super-admin can inspect any clinic or all
@@ -21,7 +19,7 @@ export async function GET(req: NextRequest) {
       orgId = queryOrgId || undefined;
     }
 
-    return ok(await listUsers(orgId, includeDemo));
+    return ok(await listUsers(orgId));
   });
 }
 

@@ -1,12 +1,12 @@
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { ClinicsHero } from "@/components/clinics/clinics-hero";
 import { ClinicDirectory, ClinicItem } from "@/components/clinics/clinic-directory";
 import { getCurrentUserFromCookie } from "@/lib/auth/session";
 import { getHospitalSettings } from "@/features/settings/settings.service";
-import { isDemoModeActive } from "@/features/demo/demo-reset.service";
-import { DemoCountdownTimer } from "@/components/common/demo-countdown-timer";
+import { isSystemInstalled } from "@/features/setup/setup.service";
 import { db } from "@/lib/db";
 
 export const metadata: Metadata = {
@@ -17,7 +17,10 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function ClinicsPage() {
-  const isDemoMode = isDemoModeActive();
+  const installed = await isSystemInstalled();
+  if (!installed) {
+    redirect("/setup");
+  }
 
   const [user, settings, orgs] = await Promise.all([
     getCurrentUserFromCookie(),
@@ -25,7 +28,6 @@ export default async function ClinicsPage() {
     db.organization.findMany({
       where: {
         status: { not: "SUSPENDED" },
-        ...(isDemoMode ? {} : { isDemo: false, slug: { not: "ppms-clinic" } }),
       },
       include: {
         plan: true,
@@ -60,7 +62,7 @@ export default async function ClinicsPage() {
     name: org.name,
     slug: org.slug,
     status: org.status as ClinicItem["status"],
-    isDemo: Boolean((org as { isDemo?: boolean }).isDemo) || org.slug === "ppms-clinic",
+    isDemo: false,
     contactEmail: org.contactEmail,
     contactPhone: org.contactPhone,
     address: org.address,
@@ -110,7 +112,6 @@ export default async function ClinicsPage() {
         </section>
       </main>
 
-      <DemoCountdownTimer variant="floating" />
       <Footer initialSettings={settings} />
     </div>
   );

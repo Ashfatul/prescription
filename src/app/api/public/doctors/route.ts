@@ -4,7 +4,6 @@ import { AppointmentStatus, Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { withErrorHandling } from "@/lib/api-handler";
 import { ok } from "@/lib/http";
-import { isDemoModeActive } from "@/features/demo/demo-reset.service";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +12,6 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const clinicSlug = searchParams.get("clinic") || req.headers.get("x-clinic-slug") || null;
     const organizationId = searchParams.get("organizationId") || null;
-    const isDemoMode = isDemoModeActive();
 
     const where: Prisma.DoctorWhereInput = {};
 
@@ -27,14 +25,6 @@ export async function GET(req: NextRequest) {
       // Filter strictly by the requested clinic
       where.organization = {
         slug: clinicSlug,
-        status: { not: "SUSPENDED" },
-        ...(isDemoMode ? {} : { isDemo: false, slug: { not: "ppms-clinic" } }),
-      };
-    } else if (!isDemoMode) {
-      // Exclude demo clinic entirely when Demo Mode is off
-      where.organization = {
-        isDemo: false,
-        slug: { not: "ppms-clinic" },
         status: { not: "SUSPENDED" },
       };
     } else {
@@ -104,7 +94,7 @@ export async function GET(req: NextRequest) {
       designation: doctor.designation,
       hospital: doctor.hospital || doctor.organization?.name || null,
       clinicSlug: doctor.organization?.slug || null,
-      isDemo: Boolean((doctor.organization as { isDemo?: boolean } | null)?.isDemo) || doctor.organization?.slug === "ppms-clinic",
+      isDemo: false,
       bmdcRegNo: doctor.bmdcRegNo,
       chamberAddress: doctor.chamberAddress,
       contactNumber: doctor.contactNumber,

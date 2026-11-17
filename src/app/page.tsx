@@ -1,15 +1,18 @@
+import { redirect } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { HomeView } from "@/components/home/home-view";
 import { getCurrentUserFromCookie } from "@/lib/auth/session";
 import { getHospitalSettings } from "@/features/settings/settings.service";
 import { listPricingPlans } from "@/features/pricing/pricing.service";
-import { isDemoModeActive } from "@/features/demo/demo-reset.service";
-import { DemoCountdownTimer } from "@/components/common/demo-countdown-timer";
+import { isSystemInstalled } from "@/features/setup/setup.service";
 import { db } from "@/lib/db";
 
 export default async function Home() {
-  const isDemoMode = isDemoModeActive();
+  const installed = await isSystemInstalled();
+  if (!installed) {
+    redirect("/setup");
+  }
 
   const [
     user,
@@ -25,33 +28,21 @@ export default async function Home() {
     listPricingPlans(true),
     db.doctor
       .count({
-        where: {
-          available: true,
-          ...(isDemoMode
-            ? {}
-            : { organization: { isDemo: false, slug: { not: "ppms-clinic" } } }),
-        },
+        where: { available: true },
       })
       .catch((err) => {
         console.error("Failed to count doctors:", err);
         return 0;
       }),
     db.prescription
-      .count({
-        where: isDemoMode
-          ? {}
-          : { organization: { isDemo: false, slug: { not: "ppms-clinic" } } },
-      })
+      .count()
       .catch((err) => {
         console.error("Failed to count prescriptions:", err);
         return 0;
       }),
     db.organization
       .count({
-        where: {
-          status: "ACTIVE",
-          ...(isDemoMode ? {} : { isDemo: false, slug: { not: "ppms-clinic" } }),
-        },
+        where: { status: "ACTIVE" },
       })
       .catch((err) => {
         console.error("Failed to count clinics:", err);
@@ -102,7 +93,6 @@ export default async function Home() {
         totalMedicines={totalMedicines}
       />
 
-      <DemoCountdownTimer variant="floating" />
       {/* Modern Clinical Multi-Column Footer */}
       <Footer initialSettings={settings} />
     </div>

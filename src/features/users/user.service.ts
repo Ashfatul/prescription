@@ -7,25 +7,9 @@ import { createUserSchema, userPreferencesSchema, updateUserSchema } from "@/fea
 import { logActivity } from "@/features/activity-log/activity-log.service";
 import { isEmailVerificationRequired, isPatientVerificationRequired } from "@/features/settings/settings.service";
 import { sendTemplatedEmail } from "@/features/email-templates/email-template.service";
-import { isDemoModeActive, DEMO_ACCOUNT_EMAILS, SUPER_ADMIN_EMAIL } from "@/features/demo/demo-reset.service";
 
-export async function listUsers(organizationId?: string, includeDemo?: boolean) {
-  const isDemo = isDemoModeActive();
-  const shouldIncludeDemo = includeDemo !== undefined ? includeDemo : isDemo;
-
-  const whereClause: Prisma.UserWhereInput = {
-    ...(organizationId ? { organizationId } : {}),
-    ...(shouldIncludeDemo
-      ? {}
-      : {
-          isDemo: false,
-          NOT: [
-            { email: { in: DEMO_ACCOUNT_EMAILS.filter((e) => e !== SUPER_ADMIN_EMAIL) } },
-            { organization: { isDemo: true } },
-            { organization: { slug: "ppms-clinic" } },
-          ],
-        }),
-  };
+export async function listUsers(organizationId?: string) {
+  const whereClause: Prisma.UserWhereInput = organizationId ? { organizationId } : {};
 
   return db.user.findMany({
     where: whereClause,

@@ -4,7 +4,6 @@ import { AppointmentStatus, Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { withErrorHandling } from "@/lib/api-handler";
 import { ok } from "@/lib/http";
-import { isDemoModeActive } from "@/features/demo/demo-reset.service";
 
 function formatSafePatientName(fullName?: string | null, serialNumber?: number): string {
   if (!fullName || fullName.trim().length === 0) {
@@ -27,31 +26,17 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const clinicSlug = searchParams.get("clinic") || req.headers.get("x-clinic-slug") || null;
-    const isDemoMode = isDemoModeActive();
 
     if (!clinicSlug) {
       return ok({ doctors: [], requiresClinicSelection: true, timestamp: new Date().toISOString() });
     }
 
-    const where: Prisma.DoctorWhereInput = {};
-
-    if (clinicSlug) {
-      where.organization = {
+    const where: Prisma.DoctorWhereInput = {
+      organization: {
         slug: clinicSlug,
         status: { not: "SUSPENDED" },
-        ...(isDemoMode ? {} : { isDemo: false, slug: { not: "ppms-clinic" } }),
-      };
-    } else if (!isDemoMode) {
-      where.organization = {
-        isDemo: false,
-        slug: { not: "ppms-clinic" },
-        status: { not: "SUSPENDED" },
-      };
-    } else {
-      where.organization = {
-        status: { not: "SUSPENDED" },
-      };
-    }
+      },
+    };
 
     // 1. Fetch doctors matching scope
     const doctors = await db.doctor.findMany({

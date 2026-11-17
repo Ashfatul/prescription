@@ -87,16 +87,20 @@ npm run prisma:migrate
 npm run prisma:seed
 ```
 
-## Seed Credentials
+## First-Run Onboarding & System Setup
 
-- `ashfatul.islam@gmail.com` / `aniyasfather`
-- `doctor@ppms.local` / `Pass1234!`
-- `patient@ppms.local` / `Pass1234!`
-- `staff@ppms.local` / `Pass1234!`
+On a fresh deployment, navigating to the application automatically directs you to the setup wizard at:
 
-## Secure Demo Database Reset
+```
+http://localhost:3000/setup
+```
 
-When Demo Mode is enabled, the Super Admin dashboard exposes a re-authenticated reset action. It requires the Super Admin password, an acknowledgement, and the exact phrase `RESET DEMO DATA`. It removes non-demo users, clinics, and clinical activity while retaining the PPMS Clinic demo accounts plus roles, plans, catalogs, templates, email templates, settings, and translations. The reset also removes all prescriptions.
+The interactive 4-step onboarding wizard will:
+1. Verify database connectivity and schema readiness.
+2. Configure your organization/hospital identity (name, tagline, currency, timezone, support and emergency contacts).
+3. Provision the primary **Super Admin** account with a secure custom password.
+4. Dispatch email verification and bootstrap baseline roles, system settings, email templates, and pricing tiers.
+5. Provide a launchpad with quick links to create your first clinic, register consulting doctors, and access the command center.
 
 ## Run Development Server
 

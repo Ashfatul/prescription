@@ -6,8 +6,6 @@ import { getCurrentUserFromCookie } from "@/lib/auth/session";
 import { getHospitalSettings } from "@/features/settings/settings.service";
 import { db } from "@/lib/db";
 import { RoleName } from "@prisma/client";
-import { isDemoModeActive } from "@/features/demo/demo-reset.service";
-import { DemoCountdownTimer } from "@/components/common/demo-countdown-timer";
 import { ClinicDetailsView } from "@/components/clinics/clinic-details-view";
 
 interface ClinicPageProps {
@@ -77,9 +75,7 @@ export default async function ClinicDetailsPage({ params }: ClinicPageProps) {
     }),
   ]);
 
-  const isDemo = isDemoModeActive();
-  const isDemoClinic = clinic ? (Boolean((clinic as { isDemo?: boolean }).isDemo) || clinic.slug === "ppms-clinic") : false;
-  if (!clinic || clinic.status === "SUSPENDED" || (!isDemo && isDemoClinic)) {
+  if (!clinic || clinic.status === "SUSPENDED") {
     notFound();
   }
 
@@ -129,10 +125,8 @@ export default async function ClinicDetailsPage({ params }: ClinicPageProps) {
         }}
         staffMembers={staffMembers}
         clinicDoctors={clinicDoctors}
-        isDemoClinic={isDemoClinic}
       />
 
-      <DemoCountdownTimer variant="floating" />
       <Footer initialSettings={settings} />
     </div>
   );

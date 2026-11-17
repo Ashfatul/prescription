@@ -1,11 +1,12 @@
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { DoctorList } from "@/components/home/doctor-list";
 import { DoctorsHero } from "@/components/doctors/doctors-hero";
 import { getCurrentUserFromCookie } from "@/lib/auth/session";
 import { getHospitalSettings } from "@/features/settings/settings.service";
-import { DemoCountdownTimer } from "@/components/common/demo-countdown-timer";
+import { isSystemInstalled } from "@/features/setup/setup.service";
 import { db } from "@/lib/db";
 
 export const metadata: Metadata = {
@@ -23,6 +24,11 @@ interface DoctorsPageProps {
 }
 
 export default async function DoctorsPage({ searchParams }: DoctorsPageProps) {
+  const installed = await isSystemInstalled();
+  if (!installed) {
+    redirect("/setup");
+  }
+
   const [user, settings, sParams] = await Promise.all([
     getCurrentUserFromCookie(),
     getHospitalSettings(),
@@ -58,7 +64,6 @@ export default async function DoctorsPage({ searchParams }: DoctorsPageProps) {
         </section>
       </main>
 
-      <DemoCountdownTimer variant="floating" />
       <Footer initialSettings={settings} />
     </div>
   );

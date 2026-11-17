@@ -17,7 +17,6 @@ import { TrialCountdownBanner } from "@/components/dashboard/trial-countdown-ban
 import { ClinicSubscriptionView } from "@/components/dashboard/clinic-subscription-view";
 import { EmailTemplateManager } from "@/components/dashboard/email-template-manager";
 import { TranslationManager } from "@/components/dashboard/translation-manager";
-import { SecureDemoResetPanel } from "@/components/dashboard/secure-demo-reset-panel";
 import { useAuth } from "@/lib/auth/auth-context";
 import { useLanguage } from "@/lib/i18n/language-context";
 import {
@@ -51,7 +50,6 @@ interface AdminDashboardViewProps {
       name: string;
     };
   }>;
-  isDemoMode: boolean;
 }
 
 type TabKey =
@@ -71,7 +69,7 @@ type TabKey =
   | "chat"
   | "translations";
 
-export function AdminDashboardView({ stats, users, isDemoMode }: AdminDashboardViewProps) {
+export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
   const { user: currentUser } = useAuth();
   const { t } = useLanguage();
   const searchParams = useSearchParams();
@@ -118,9 +116,6 @@ export function AdminDashboardView({ stats, users, isDemoMode }: AdminDashboardV
         <div className="space-y-6">
           {/* Active Broadcast Announcements Banner */}
           <AnnouncementsBanner />
-
-          {/* Destructive demo-only cleanup is available exclusively to Super Admins. */}
-          <SecureDemoResetPanel isSuperAdmin={isDemoMode && currentUser?.role === "SUPER_ADMIN"} />
 
           {/* Top Banner */}
           <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-sm">

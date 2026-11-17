@@ -21,64 +21,10 @@ import {
 import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
 import { LanguageToggle } from "@/components/common/language-toggle";
-import { DemoCountdownTimer } from "@/components/common/demo-countdown-timer";
 import { useLanguage } from "@/lib/i18n/language-context";
 import { notifyToast } from "@/lib/toast";
 
-const DEMO_ACCOUNTS = [
-  {
-    role: "Super Admin",
-    name: "Super Admin",
-    facility: "Super Admin",
-    email: "ashfatul.islam@gmail.com",
-    password: "aniyasfather",
-    badge: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
-    icon: "👑",
-    fullWidth: true,
-  },
-  {
-    role: "Clinic Admin",
-    name: "PPMS Clinic Admin",
-    facility: "PPMS Clinic",
-    email: "clinic.admin@ppms.local",
-    password: "Pass1234!",
-    badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300",
-    icon: "🏢",
-    fullWidth: false,
-  },
-  {
-    role: "Doctor",
-    name: "Dr. Fahim Rahman",
-    facility: "PPMS Clinic",
-    email: "doctor@ppms.local",
-    password: "Pass1234!",
-    badge: "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
-    icon: "🩺",
-    fullWidth: false,
-  },
-  {
-    role: "Staff",
-    name: "PPMS Front Desk Staff",
-    facility: "PPMS Clinic",
-    email: "staff@ppms.local",
-    password: "Pass1234!",
-    badge: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
-    icon: "🏥",
-    fullWidth: false,
-  },
-  {
-    role: "Patient",
-    name: "Nusrat Jahan",
-    facility: "PPMS Clinic",
-    email: "patient@ppms.local",
-    password: "Pass1234!",
-    badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-    icon: "🧑",
-    fullWidth: false,
-  },
-];
-
-export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
+export function LoginForm() {
   const router = useRouter();
   const { user, login, verify2FALogin, loading: authLoading } = useAuth();
   const { t, language } = useLanguage();
@@ -318,9 +264,7 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
               {t.welcomeBack}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-              {isDemoMode
-                ? (t("uiSignInWithYourEmail"))
-                : (t("uiSignInWithYourVerified"))}
+              {t("uiSignInWithYourVerified")}
             </p>
           </div>
 
@@ -450,64 +394,6 @@ export function LoginForm({ isDemoMode = true }: { isDemoMode?: boolean }) {
               </Link>
             </div>
           </div>
-
-          {/* Quick Demo Login Profiles */}
-          {isDemoMode && (
-            <div className="pt-4 border-t border-[var(--border-subtle)] space-y-3.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                    {t.demoProfilesTitle}
-                  </span>
-                </div>
-                <span className="rounded-full bg-[var(--brand-surface)] px-2.5 py-0.5 text-[10px] font-bold text-[var(--brand-text)] border border-[var(--brand-border)]">
-                  {t("instantDemoAccess")}
-                </span>
-              </div>
-
-              {/* 6-Hour Countdown Live Banner */}
-              <DemoCountdownTimer variant="inline" />
-
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                {language === "bn"
-                  ? <>সরাসরি প্রবেশ করতে নিচের যে কোনো ডেমো প্রোফাইলে ক্লিক করুন (<strong className="text-[var(--text-primary)]">PPMS Clinic</strong> স্যান্ডবক্স):</>
-                  : <>Click any profile below to sign in immediately to the <strong className="text-[var(--text-primary)]">PPMS Clinic</strong> sandbox facility:</>}
-              </p>
-
-              <div className="grid grid-cols-2 gap-2.5 pt-1">
-                {DEMO_ACCOUNTS.map((account) => (
-                  <button
-                    key={account.role}
-                    type="button"
-                    onClick={() => performLogin(account.email, account.password)}
-                    disabled={loading}
-                    className={`flex flex-col items-start rounded-2xl border border-[var(--border-default)] bg-[var(--bg-subtle)] p-3 text-left transition hover:border-[var(--brand-primary)] hover:shadow-xs disabled:opacity-60 cursor-pointer ${
-                      account.fullWidth ? "col-span-2" : "col-span-1"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between w-full">
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${account.badge}`}
-                      >
-                        <span>{account.icon}</span>
-                        <span>{account.role}</span>
-                      </span>
-                      <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold truncate max-w-[150px]">
-                        🏥 {account.facility}
-                      </span>
-                    </div>
-                    <span className="mt-1.5 text-xs font-bold text-slate-900 dark:text-slate-100 truncate w-full">
-                      {account.name}
-                    </span>
-                    <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate w-full">
-                      {account.email}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
             </>
           )}
         </div>

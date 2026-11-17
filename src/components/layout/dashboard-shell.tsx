@@ -10,7 +10,6 @@ import { LanguageToggle } from "@/components/common/language-toggle";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { ChangePasswordCard } from "@/components/common/change-password-card";
 import { TwoFactorAuthCard } from "@/components/common/two-factor-auth-card";
-import { DemoCountdownTimer } from "@/components/common/demo-countdown-timer";
 import { useAuth } from "@/lib/auth/auth-context";
 import { useLanguage } from "@/lib/i18n/language-context";
 import {
@@ -984,9 +983,6 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             </div>
           </div>
         </header>
-
-        {/* Demo Environment Auto-Reset Banner */}
-        <DemoCountdownTimer variant="banner" />
 
         {/* Page Content Body */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
