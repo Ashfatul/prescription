@@ -175,7 +175,8 @@ export async function proxy(req: NextRequest) {
       pathname === "/api/organizations" ||
       pathname === "/api/organizations/check-slug" ||
       pathname.startsWith("/api/public/") ||
-      pathname.startsWith("/api/demo/");
+      pathname.startsWith("/api/demo/") ||
+      pathname.startsWith("/api/setup");
 
     if (!isPublicApi && !payload) {
       return applySecurityHeaders(

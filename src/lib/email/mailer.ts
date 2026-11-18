@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { db } from "@/lib/db";
 
 export interface SendEmailOptions {
     to: string;
@@ -13,6 +14,17 @@ export interface SendEmailResult {
     messageId?: string;
     simulated?: boolean;
     error?: string;
+}
+
+export interface SmtpConfig {
+    host: string;
+    port: number;
+    secure: boolean;
+    auth?: { user: string; pass: string };
+    fromAddress: string;
+    fromName: string;
+    encryption?: string;
+    enabled?: boolean;
 }
 
 /**
@@ -31,7 +43,7 @@ function cleanEnv(val: string | undefined): string | null {
     return trimmed;
 }
 
-export function getSmtpConfig() {
+export function getSmtpConfig(): SmtpConfig {
     const host =
         cleanEnv(process.env.MAIL_HOST) ||
         cleanEnv(process.env.SMTP_HOST) ||
@@ -68,21 +80,90 @@ export function getSmtpConfig() {
                 : undefined,
         fromAddress,
         fromName,
-        encryption,
+        encryption: encryption || undefined,
+        enabled: true,
     };
 }
 
-export function createTransporter() {
-    const config = getSmtpConfig();
+/**
+ * Resolves SMTP configuration dynamically from database system settings if available,
+ * falling back to process.env variables.
+ */
+export async function getEffectiveSmtpConfig(): Promise<SmtpConfig> {
+    try {
+        const settings = await db.systemSetting.findMany({
+            where: {
+                key: {
+                    in: [
+                        "smtp_enabled",
+                        "smtp_host",
+                        "smtp_port",
+                        "smtp_encryption",
+                        "smtp_user",
+                        "smtp_pass",
+                        "smtp_from_address",
+                        "smtp_from_name",
+                    ],
+                },
+            },
+        });
+
+        const map = new Map<string, string>();
+        for (const s of settings) {
+            if (s.value) map.set(s.key, s.value);
+        }
+
+        const isExplicitlyDisabled = map.get("smtp_enabled") === "false";
+        if (isExplicitlyDisabled) {
+            const fallback = getSmtpConfig();
+            return {
+                ...fallback,
+                enabled: false,
+            };
+        }
+
+        if (map.get("smtp_host")) {
+            const host = map.get("smtp_host")!;
+            const port = parseInt(map.get("smtp_port") || "587", 10) || 587;
+            const encryption = map.get("smtp_encryption") || "tls";
+            const username = map.get("smtp_user");
+            const password = map.get("smtp_pass");
+            const fromAddress = map.get("smtp_from_address") || "hello@example.com";
+            const fromName = map.get("smtp_from_name") || "Hospital System";
+            const secure = encryption === "ssl" || port === 465;
+
+            return {
+                host,
+                port,
+                secure,
+                auth:
+                    username && password
+                        ? { user: username, pass: password }
+                        : undefined,
+                fromAddress,
+                fromName,
+                encryption,
+                enabled: true,
+            };
+        }
+    } catch {
+        // DB not available or unmigrated; proceed to env fallback
+    }
+
+    return getSmtpConfig();
+}
+
+export function createTransporter(customConfig?: SmtpConfig) {
+    const config = customConfig || getSmtpConfig();
 
     return nodemailer.createTransport({
         host: config.host,
         port: config.port,
         secure: config.secure,
         auth: config.auth,
-        connectionTimeout: 4000,
-        greetingTimeout: 3000,
-        socketTimeout: 5000,
+        connectionTimeout: 6000,
+        greetingTimeout: 4000,
+        socketTimeout: 8000,
         tls: {
             rejectUnauthorized: false,
         },
@@ -96,12 +177,25 @@ export function createTransporter() {
  */
 export async function sendMail(
     options: SendEmailOptions,
+    customConfig?: SmtpConfig,
 ): Promise<SendEmailResult> {
-    const config = getSmtpConfig();
+    const config = customConfig || (await getEffectiveSmtpConfig());
+
+    if (config.enabled === false) {
+        console.log(
+            `[SMTP OFFLINE/DISABLED] Outgoing email to <${options.to}> safely simulated (offline mode).`,
+        );
+        return {
+            success: true,
+            simulated: true,
+            error: "SMTP delivery is offline or disabled.",
+        };
+    }
+
     const from = options.from || `"${config.fromName}" <${config.fromAddress}>`;
 
     try {
-        const transporter = createTransporter();
+        const transporter = createTransporter(config);
         const info = await transporter.sendMail({
             from,
             to: options.to,

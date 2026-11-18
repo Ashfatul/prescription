@@ -19,6 +19,17 @@ export interface SetupBootstrapInput {
   adminPassword: string;
   host?: string;
   protocol?: string;
+  wipeExistingDatabase?: boolean;
+
+  // Outgoing Mail (SMTP) Settings
+  smtpEnabled?: boolean;
+  smtpHost?: string;
+  smtpPort?: number | string;
+  smtpUser?: string;
+  smtpPass?: string;
+  smtpEncryption?: string;
+  smtpFromAddress?: string;
+  smtpFromName?: string;
 }
 
 export interface SetupStatus {
@@ -28,6 +39,8 @@ export interface SetupStatus {
   latencyMs?: number;
   error?: string;
   superAdminCount?: number;
+  existingUserCount?: number;
+  hasExistingData?: boolean;
 }
 
 // Memory cache for installation status (5s TTL to prevent hitting DB on every single layout/request)
@@ -122,6 +135,58 @@ export async function isSystemInstalled(): Promise<boolean> {
 }
 
 /**
+ * Cleanly resets/wipes operational tables in PostgreSQL for a conflict-free fresh onboarding.
+ */
+export async function wipeDatabaseForSetup(): Promise<void> {
+  try {
+    await db.$executeRawUnsafe(`
+      TRUNCATE TABLE 
+        "ChatMessage", 
+        "ChatConnection", 
+        "PrescriptionAttachment", 
+        "PrescriptionVersion", 
+        "TestReport", 
+        "MedicineReminder", 
+        "Appointment", 
+        "Prescription", 
+        "Doctor", 
+        "Patient", 
+        "File", 
+        "Template", 
+        "Notification", 
+        "Announcement", 
+        "ActivityLog", 
+        "User", 
+        "Organization", 
+        "SystemSetting" 
+      CASCADE;
+    `);
+  } catch (err) {
+    console.warn("TRUNCATE CASCADE failed, falling back to sequential deleteMany:", err);
+    await db.chatMessage.deleteMany({});
+    await db.chatConnection.deleteMany({});
+    await db.prescriptionAttachment.deleteMany({});
+    await db.prescriptionVersion.deleteMany({});
+    await db.testReport.deleteMany({});
+    await db.medicineReminder.deleteMany({});
+    await db.appointment.deleteMany({});
+    await db.prescription.deleteMany({});
+    await db.doctor.deleteMany({});
+    await db.patient.deleteMany({});
+    await db.file.deleteMany({});
+    await db.template.deleteMany({});
+    await db.notification.deleteMany({});
+    await db.announcement.deleteMany({});
+    await db.activityLog.deleteMany({});
+    await db.user.deleteMany({});
+    await db.organization.deleteMany({});
+    await db.systemSetting.deleteMany({});
+  }
+
+  invalidateInstallCache();
+}
+
+/**
  * Returns full diagnostic status for the setup wizard.
  */
 export async function getSystemSetupStatus(): Promise<SetupStatus> {
@@ -134,16 +199,20 @@ export async function getSystemSetupStatus(): Promise<SetupStatus> {
       latencyMs: dbHealth.latencyMs,
       error: dbHealth.error,
       superAdminCount: 0,
+      existingUserCount: 0,
+      hasExistingData: false,
     };
   }
 
   try {
-    const [installedSetting, superAdminCount] = await Promise.all([
+    const [installedSetting, superAdminCount, existingUserCount] = await Promise.all([
       db.systemSetting.findUnique({ where: { key: "system_installed" } }),
       db.user.count({ where: { role: { name: RoleName.SUPER_ADMIN } } }),
+      db.user.count(),
     ]);
 
     const isInstalled = installedSetting?.value === "true" && superAdminCount > 0;
+    const hasExistingData = existingUserCount > 0;
 
     return {
       isInstalled,
@@ -151,6 +220,8 @@ export async function getSystemSetupStatus(): Promise<SetupStatus> {
       tablesReady: true,
       latencyMs: dbHealth.latencyMs,
       superAdminCount,
+      existingUserCount,
+      hasExistingData,
     };
   } catch (err: unknown) {
     return {
@@ -159,6 +230,8 @@ export async function getSystemSetupStatus(): Promise<SetupStatus> {
       tablesReady: false,
       error: err instanceof Error ? err.message : "Error reading system configuration",
       superAdminCount: 0,
+      existingUserCount: 0,
+      hasExistingData: false,
     };
   }
 }
@@ -171,6 +244,11 @@ export async function executeSystemBootstrap(input: SetupBootstrapInput) {
   const installed = await isSystemInstalled();
   if (installed) {
     throw new AppError("The system is already configured and locked.", 403);
+  }
+
+  // 1b. If wipe requested before bootstrap
+  if (input.wipeExistingDatabase) {
+    await wipeDatabaseForSetup();
   }
 
   // 2. Validate inputs
@@ -199,7 +277,10 @@ export async function executeSystemBootstrap(input: SetupBootstrapInput) {
     where: { email: cleanAdminEmail },
   });
   if (existingUser) {
-    throw new AppError("A user with this email already exists in the database.", 400);
+    throw new AppError(
+      "A user with this email already exists in the database. Please enable 'Wipe existing database' to perform a clean setup without conflict.",
+      409
+    );
   }
 
   // 3. Ensure all standard roles exist
@@ -236,6 +317,14 @@ export async function executeSystemBootstrap(input: SetupBootstrapInput) {
     { key: "auth_require_email_verification", value: "true", category: "auth" },
     { key: "auth_require_org_approval", value: "true", category: "auth" },
     { key: "auth_require_patient_verification", value: "true", category: "auth" },
+    { key: "smtp_enabled", value: input.smtpEnabled ? "true" : "false", category: "mail" },
+    { key: "smtp_host", value: input.smtpHost?.trim() || "", category: "mail" },
+    { key: "smtp_port", value: String(input.smtpPort || 587), category: "mail" },
+    { key: "smtp_encryption", value: input.smtpEncryption || "tls", category: "mail" },
+    { key: "smtp_user", value: input.smtpUser?.trim() || "", category: "mail" },
+    { key: "smtp_pass", value: input.smtpPass?.trim() || "", category: "mail" },
+    { key: "smtp_from_address", value: input.smtpFromAddress?.trim() || input.supportEmail?.trim() || cleanAdminEmail, category: "mail" },
+    { key: "smtp_from_name", value: input.smtpFromName?.trim() || cleanName, category: "mail" },
   ];
 
   await Promise.all(
@@ -402,5 +491,6 @@ export async function executeSystemBootstrap(input: SetupBootstrapInput) {
     verifyUrl,
     emailSent,
     smtpError,
+    smtpConfigured: Boolean(input.smtpEnabled && input.smtpHost),
   };
 }

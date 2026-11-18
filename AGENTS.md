@@ -6,10 +6,21 @@ Welcome to the **Patient Prescription Management System (PPMS)** codebase. This 
 
 ## 1. Visual Architecture & Design Principles
 
-### 1.1 Non-Compact, Spacious & Comfortable UI
+### 1.1 Modern Engineering Aesthetic, Crisper Corners & Full-Width Canvas
 - **Never use cramped or wireframe-like interfaces.** Doctors and clinical staff spend hours entering patient details and reviewing charts; the UI must feel spacious, modern, easy on the eyes, and ergonomic.
-- Cards, panels, and modal dialogs should use generous padding (`p-5`, `p-6`, or `p-8`), rounded corners (`rounded-2xl` or `rounded-3xl`), and subtle elevation shadows (`var(--shadow-card)`).
-- Visual hierarchy should be crisp: prominent titles (`text-xl font-bold tracking-tight`), distinct badges, clear field labels (`text-xs font-semibold uppercase tracking-wider text-slate-500`), and generous touch/click targets (`min-h-[42px]` or `min-h-[48px]`).
+- **Crisper, Refined Border Radius (Less Border Radius)**:
+  - Transition away from overly bubbly, puffy `rounded-2xl` / `rounded-3xl` cards.
+  - Standardize on sleek, modern, engineering-grade `rounded-xl` for cards, modals, and container panels, `rounded-lg` for form controls, buttons, and subcards, and `rounded-md` for chips and badges. Small status dots or pill counters may remain `rounded-full`.
+  - Maintain a sharp, clean, high-precision visual geometry.
+- **Full Available Screen Width Utilization (Max Width up to 1920px)**:
+  - Do not trap expansive clinical dashboards or setup flows into narrow central boxes (`max-w-2xl` or `max-w-3xl`) that waste large monitors.
+  - Utilize the full available viewport width with maximum bounds up to `max-w-[1920px]` (e.g., `max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12`).
+  - Use balanced multi-column master-detail splits, live preview sidecars, telemetry panels, and widescreen data layouts.
+- **Generous Ergonomics & Spacing**:
+  - Cards, panels, and modal dialogs should use generous internal breathing room (`p-6`, `p-8`, or `p-10`), subtle structural dividers (`border border-[var(--border-subtle)]`), and refined elevation shadows (`var(--shadow-card)`).
+  - Visual hierarchy should be crisp: prominent titles (`text-xl font-bold tracking-tight`), distinct badges, clear field labels (`text-xs font-semibold uppercase tracking-wider text-slate-500`), and generous touch/click targets (`min-h-[42px]` or `min-h-[48px]`).
+- **System-Wide Rollout Consistency**:
+  - This modern wide-canvas and refined-radius standard is established first in the onboarding setup experience, and all future and updated pages must maintain strict consistency with these rules.
 
 ### 1.2 Strict Semantic Color System (No Hardcoded Theme Colors)
 - **Rule**: All background surfaces, borders, text, and brand colors MUST be derived from semantic CSS tokens defined in `src/app/globals.css`.

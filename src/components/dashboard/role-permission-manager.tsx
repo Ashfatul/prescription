@@ -19,6 +19,9 @@ import {
   ChevronUp,
   AlertCircle,
   X,
+  CheckCircle2,
+  XCircle,
+  Layers,
 } from "lucide-react";
 import {
   PermissionDefinition,
@@ -32,42 +35,6 @@ interface RolePermissionsData {
   availablePermissions: PermissionDefinition[];
   roles: Record<string, string[]>;
 }
-
-const ROLE_METADATA: Record<
-  RoleName,
-  { label: string; icon: typeof Shield; color: string; desc: string }
-> = {
-  SUPER_ADMIN: {
-    label: "Super Admin",
-    icon: Shield,
-    color: "text-amber-600 bg-amber-500/10 border-amber-500/30 dark:text-amber-400",
-    desc: "Full platform oversight & multi-clinic SaaS administration",
-  },
-  ADMIN: {
-    label: "Clinic Administrator",
-    icon: Shield,
-    color: "text-purple-600 bg-purple-500/10 border-purple-500/30 dark:text-purple-400",
-    desc: "Clinic administration, doctor management, formulary & staff",
-  },
-  DOCTOR: {
-    label: "Physician / Doctor",
-    icon: Stethoscope,
-    color: "text-teal-600 bg-teal-500/10 border-teal-500/30 dark:text-teal-400",
-    desc: "Clinical prescribing, diagnostics & patient charts",
-  },
-  STAFF: {
-    label: "Clinical Staff",
-    icon: UserCheck,
-    color: "text-blue-600 bg-blue-500/10 border-blue-500/30 dark:text-blue-400",
-    desc: "Front-desk queue, appointments & vitals triage",
-  },
-  PATIENT: {
-    label: "Patient",
-    icon: Heart,
-    color: "text-rose-600 bg-rose-500/10 border-rose-500/30 dark:text-rose-400",
-    desc: "Personal health records, Rx downloads & appointments",
-  },
-};
 
 const ALL_ROLES = [
   RoleName.SUPER_ADMIN,
@@ -86,16 +53,66 @@ export function RolePermissionManager() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  // Filters & Search
+  // Filters, Search & Role View
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
+  const [selectedRoleView, setSelectedRoleView] = useState<RoleName | "ALL">("ALL");
   const [showDevGuide, setShowDevGuide] = useState(false);
+
+  // Dynamic role metadata with dual-locale translations
+  const getRoleMeta = useCallback(
+    (role: RoleName) => {
+      switch (role) {
+        case RoleName.SUPER_ADMIN:
+          return {
+            label: t.roleSuperAdmin || "Super Admin",
+            shortLabel: "Super",
+            icon: Shield,
+            color: "text-amber-600 bg-amber-500/10 border-amber-500/30 dark:text-amber-400",
+            desc: t.uiSuperAdminDesc,
+          };
+        case RoleName.ADMIN:
+          return {
+            label: t.roleClinicAdmin || "Clinic Administrator",
+            shortLabel: "Admin",
+            icon: Shield,
+            color: "text-purple-600 bg-purple-500/10 border-purple-500/30 dark:text-purple-400",
+            desc: t.uiClinicAdminDesc,
+          };
+        case RoleName.DOCTOR:
+          return {
+            label: t.roleDoctor || "Physician / Doctor",
+            shortLabel: "Doctor",
+            icon: Stethoscope,
+            color: "text-teal-600 bg-teal-500/10 border-teal-500/30 dark:text-teal-400",
+            desc: t.uiDoctorDesc,
+          };
+        case RoleName.STAFF:
+          return {
+            label: t.roleStaff || "Clinical Staff",
+            shortLabel: "Staff",
+            icon: UserCheck,
+            color: "text-blue-600 bg-blue-500/10 border-blue-500/30 dark:text-blue-400",
+            desc: t.uiStaffDesc,
+          };
+        case RoleName.PATIENT:
+          return {
+            label: t.rolePatient || "Patient",
+            shortLabel: "Patient",
+            icon: Heart,
+            color: "text-rose-600 bg-rose-500/10 border-rose-500/30 dark:text-rose-400",
+            desc: t.uiPatientDesc,
+          };
+      }
+    },
+    [t],
+  );
 
   // Fetch permissions from API
   const fetchPermissions = useCallback(() => {
     fetch("/api/roles/permissions")
       .then((res) => {
-        if (!res.ok) throw new Error("Failed to load permissions");
+        if (!res.ok) throw new Error(t.uiErrorFetchingPermissions);
         return res.json();
       })
       .then((json) => {
@@ -105,14 +122,14 @@ export function RolePermissionManager() {
         setInitialRolePermissions(JSON.parse(JSON.stringify(payload.roles)));
       })
       .catch((err: unknown) => {
-        const errMsg = err instanceof Error ? err.message : "Error fetching permissions";
+        const errMsg = err instanceof Error ? err.message : t.uiErrorFetchingPermissions;
         setMessage({ type: "error", text: errMsg });
         notifyToast(errMsg, "error");
       })
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchPermissions();
@@ -149,10 +166,8 @@ export function RolePermissionManager() {
       const currentList = prev[role] || [];
       let nextList: string[];
       if (grant) {
-        // Union
         nextList = Array.from(new Set([...currentList, ...catPermIds]));
       } else {
-        // Difference
         nextList = currentList.filter((id) => !catPermIds.includes(id));
       }
       return {
@@ -162,9 +177,30 @@ export function RolePermissionManager() {
     });
   };
 
+  // Grant or Revoke all permissions in a category for all 5 roles
+  const handleToggleCategoryForAllRoles = (category: string, grant: boolean) => {
+    if (!data) return;
+    const catPermIds = data.availablePermissions
+      .filter((p) => p.category === category)
+      .map((p) => p.id);
+
+    setRolePermissions((prev) => {
+      const updated: Record<string, string[]> = { ...prev };
+      for (const r of ALL_ROLES) {
+        const currentList = updated[r] || [];
+        if (grant) {
+          updated[r] = Array.from(new Set([...currentList, ...catPermIds]));
+        } else {
+          updated[r] = currentList.filter((id) => !catPermIds.includes(id));
+        }
+      }
+      return updated;
+    });
+  };
+
   // Reset to factory defaults
   const handleResetToDefaults = () => {
-    if (confirm("Reset all roles to factory default permissions? You will still need to click 'Save Changes' to commit.")) {
+    if (confirm(t.uiResetPermissionsConfirm)) {
       setRolePermissions(JSON.parse(JSON.stringify(DEFAULT_ROLE_PERMISSIONS)));
     }
   };
@@ -184,15 +220,15 @@ export function RolePermissionManager() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ batch: rolePermissions }),
       });
-      if (!res.ok) throw new Error("Failed to save role permissions");
+      if (!res.ok) throw new Error(t.uiFailedToSavePermissions);
       const json = await res.json();
       setRolePermissions(json.data.roles);
       setInitialRolePermissions(JSON.parse(JSON.stringify(json.data.roles)));
-      setMessage({ type: "success", text: "Role permissions saved and committed successfully!" });
-      notifyToast("Role permissions saved and committed successfully!", "success");
+      setMessage({ type: "success", text: t.uiPermissionsSavedSuccess });
+      notifyToast(t.uiPermissionsSavedSuccess, "success");
       setTimeout(() => setMessage(null), 4000);
     } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : "Error saving permissions";
+      const errMsg = err instanceof Error ? err.message : t.uiFailedToSavePermissions;
       setMessage({ type: "error", text: errMsg });
       notifyToast(errMsg, "error");
     } finally {
@@ -229,10 +265,10 @@ export function RolePermissionManager() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[400px] flex-col items-center justify-center gap-3 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-12 text-center">
+      <div className="flex min-h-[400px] flex-col items-center justify-center gap-3 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-12 text-center shadow-xs">
         <div className="h-8 w-8 animate-spin rounded-full border-3 border-[var(--brand-primary)] border-t-transparent" />
         <p className="text-sm font-semibold text-[var(--text-secondary)]">
-          Loading system roles and permission registry...
+          {t.uiLoadingRolePermissions}
         </p>
       </div>
     );
@@ -244,14 +280,14 @@ export function RolePermissionManager() {
       <div className="flex flex-col justify-between gap-4 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-sm md:flex-row md:items-center">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-primary)]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-primary)] shrink-0">
               <Shield className="h-5 w-5" />
             </div>
             <div>
               <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
                 {t.roleMatrixTitle}
               </h2>
-              <p className="text-xs text-[var(--text-secondary)]">
+              <p className="text-xs text-[var(--text-secondary)] mt-0.5">
                 {t.roleMatrixSubtitle}
               </p>
             </div>
@@ -325,7 +361,7 @@ export function RolePermissionManager() {
           </div>
           <button
             onClick={() => setMessage(null)}
-            className="text-xs opacity-75 hover:opacity-100"
+            className="text-xs opacity-75 hover:opacity-100 cursor-pointer"
           >
             ✕
           </button>
@@ -355,7 +391,7 @@ export function RolePermissionManager() {
                     {t("uiStepOpenRegistry")}
                   </span>
                   <p className="mt-1 text-xs text-[var(--text-secondary)]">
-                    {t("uiNavigateTo")}
+                    {t("uiNavigateTo")}{" "}
                     <code className="rounded bg-teal-100 px-1 py-0.5 text-[11px] font-mono dark:bg-teal-950">src/lib/auth/permissions.ts</code>.
                   </p>
                 </div>
@@ -407,36 +443,42 @@ export function RolePermissionManager() {
         </div>
       )}
 
-      {/* Role Summary Metric Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Role Summary Metric Cards: Fully Responsive 5-Column Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
         {ALL_ROLES.map((role) => {
-          const meta = ROLE_METADATA[role];
+          const meta = getRoleMeta(role);
           const Icon = meta.icon;
           const assignedCount = (rolePermissions[role] || []).length;
           const totalCount = data?.availablePermissions.length || 0;
           const pct = totalCount > 0 ? Math.round((assignedCount / totalCount) * 100) : 0;
+          const isSelected = selectedRoleView === role;
 
           return (
             <div
               key={role}
-              className="flex flex-col justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-4 shadow-sm"
+              onClick={() => setSelectedRoleView(isSelected ? "ALL" : role)}
+              className={`flex flex-col justify-between rounded-3xl border bg-[var(--bg-surface)] p-4.5 shadow-xs transition-all cursor-pointer hover:border-[var(--brand-primary)] ${
+                isSelected
+                  ? "border-[var(--brand-primary)] ring-2 ring-[var(--brand-primary)]/25 bg-[var(--brand-surface)]/20 shadow-md"
+                  : "border-[var(--border-subtle)]"
+              }`}
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className={`flex h-8 w-8 items-center justify-center rounded-xl border ${meta.color}`}>
-                    <Icon className="h-4 w-4" />
+                <div className="flex items-center gap-2.5">
+                  <div className={`flex h-9 w-9 items-center justify-center rounded-xl border ${meta.color} shrink-0`}>
+                    <Icon className="h-4.5 w-4.5" />
                   </div>
-                  <div>
-                    <span className="text-xs font-bold text-[var(--text-primary)]">
+                  <div className="min-w-0">
+                    <span className="text-xs font-bold text-[var(--text-primary)] truncate block">
                       {meta.label}
                     </span>
-                    <span className="block text-[10px] text-[var(--text-muted)]">
+                    <span className="block text-[10px] text-[var(--text-muted)] font-mono">
                       {role}
                     </span>
                   </div>
                 </div>
 
-                <span className="rounded-full bg-[var(--bg-subtle)] px-2 py-0.5 text-[11px] font-bold text-[var(--text-secondary)]">
+                <span className="rounded-full bg-[var(--bg-subtle)] px-2 py-0.5 text-[11px] font-bold text-[var(--text-secondary)] shrink-0">
                   {pct}%
                 </span>
               </div>
@@ -448,7 +490,7 @@ export function RolePermissionManager() {
                     {assignedCount} / {totalCount}
                   </span>
                 </div>
-                <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-[var(--bg-subtle)]">
+                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--bg-subtle)]">
                   <div
                     className="h-full rounded-full bg-[var(--brand-primary)] transition-all duration-300"
                     style={{ width: `${pct}%` }}
@@ -497,12 +539,13 @@ export function RolePermissionManager() {
               </span>
             </div>
 
-            {(searchQuery || selectedCategory !== "ALL") && (
+            {(searchQuery || selectedCategory !== "ALL" || selectedRoleView !== "ALL") && (
               <button
                 type="button"
                 onClick={() => {
                   setSearchQuery("");
                   setSelectedCategory("ALL");
+                  setSelectedRoleView("ALL");
                 }}
                 className="rounded-xl border border-rose-200 bg-rose-50/60 px-3 py-2 text-xs font-bold text-rose-700 transition hover:bg-rose-100 cursor-pointer dark:border-rose-900/40 dark:bg-rose-950/20 dark:text-rose-400"
               >
@@ -555,131 +598,340 @@ export function RolePermissionManager() {
         </div>
       </div>
 
-      {/* Permission Matrix Table */}
-      <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-sm">
-        {/* Sticky Table Header */}
-        <div className="sticky top-16 z-20 grid grid-cols-12 items-center rounded-t-3xl border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/95 px-6 py-3.5 text-xs font-bold text-[var(--text-secondary)] shadow-xs backdrop-blur-md">
-          <div className="col-span-12 md:col-span-6">
-            <span className="uppercase tracking-wider">{t.permissionCapability}</span>
-          </div>
+      {/* Role View Filter Switcher Tabs */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-2 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <button
+            onClick={() => setSelectedRoleView("ALL")}
+            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              selectedRoleView === "ALL"
+                ? "bg-[var(--brand-primary)] text-white shadow-xs"
+                : "bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-subtle)]"
+            }`}
+          >
+            <Shield className="w-3.5 h-3.5" />
+            <span>{t.uiAllRolesMatrix}</span>
+          </button>
 
-          <div className="hidden grid-cols-4 md:col-span-6 md:grid text-center">
-            {ALL_ROLES.map((role) => (
-              <div key={role} className="flex flex-col items-center gap-0.5">
-                <span className="text-[11px] font-bold text-[var(--text-primary)]">
-                  {ROLE_METADATA[role].label.split(" ")[0]}
-                </span>
-                <span className="text-[9px] font-mono text-[var(--text-muted)]">
-                  {role}
-                </span>
-              </div>
-            ))}
-          </div>
+          {ALL_ROLES.map((role) => {
+            const meta = getRoleMeta(role);
+            const Icon = meta.icon;
+            const isSelected = selectedRoleView === role;
+            return (
+              <button
+                key={role}
+                onClick={() => setSelectedRoleView(role)}
+                className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  isSelected
+                    ? "bg-[var(--brand-primary)] text-white shadow-xs"
+                    : "bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-subtle)]"
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span>{meta.label}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Grouped Permissions Content */}
-        {Object.entries(groupedPermissions).length === 0 ? (
-          <div className="p-12 text-center text-xs text-[var(--text-muted)]">
-            {t("uiNoPermissionsMatchingYourSearch")}
-          </div>
-        ) : (
-          Object.entries(groupedPermissions).map(([category, perms]) => (
-            <div key={category} className="border-b border-[var(--border-subtle)] last:border-b-0 last:rounded-b-3xl">
-              {/* Category Group Header */}
-              <div className="flex flex-wrap items-center justify-between gap-2 bg-[var(--bg-subtle)]/40 px-6 py-2.5">
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-[var(--brand-primary)]" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
-                    {category}
-                  </span>
-                  <span className="rounded-md bg-[var(--bg-subtle)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">
-                    {perms.length} {t("uiCapabilities")}
-                  </span>
-                </div>
+        {selectedRoleView === "ALL" && (
+          <span className="text-[11px] text-[var(--text-muted)] hidden xl:inline-flex items-center gap-1.5 px-3">
+            <span>← {t.uiHorizontalScrollHint} →</span>
+          </span>
+        )}
+      </div>
 
-                {/* Category Quick Batch Actions */}
-                <div className="flex items-center gap-2 text-[11px]">
-                  <span className="text-[var(--text-muted)]">{t.grantAllIn} {category}:</span>
-                  {ALL_ROLES.map((r) => (
-                    <button
-                      key={r}
-                      onClick={() => handleToggleCategory(r, category, true)}
-                      className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-2 py-0.5 font-semibold text-[var(--text-secondary)] hover:text-[var(--brand-primary)] hover:border-[var(--brand-primary)] transition cursor-pointer"
-                      title={`Grant all ${category} to ${r}`}
-                    >
-                      +{r.slice(0, 3)}
-                    </button>
-                  ))}
+      {/* View Mode 1: All 5 Roles Matrix (Structured Responsive Table) */}
+      {selectedRoleView === "ALL" && (
+        <div className="overflow-x-auto rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-sm scrollbar-thin">
+          <div className="min-w-[960px] w-full">
+            {/* Sticky Table Header */}
+            <div className="sticky top-16 z-20 flex items-center border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/95 px-6 py-4 text-xs font-bold text-[var(--text-secondary)] shadow-xs backdrop-blur-md">
+              <div className="w-[380px] lg:w-[440px] shrink-0 sticky left-0 z-30 bg-[var(--bg-surface)] border-r border-[var(--border-subtle)] pr-4">
+                <div className="flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-[var(--brand-primary)]" />
+                  <span className="uppercase tracking-wider">{t.permissionCapability}</span>
                 </div>
               </div>
 
-              {/* Rows inside category */}
-              <div className="divide-y divide-[var(--border-subtle)]">
-                {perms.map((perm) => {
+              {/* Exactly 5 equal columns: Super Admin, Clinic Admin, Doctor, Staff, Patient */}
+              <div className="flex-1 grid grid-cols-5 text-center">
+                {ALL_ROLES.map((role) => {
+                  const meta = getRoleMeta(role);
+                  const Icon = meta.icon;
                   return (
-                    <div
-                      key={perm.id}
-                      className="grid grid-cols-12 items-center px-6 py-3.5 transition hover:bg-[var(--bg-subtle)]/30"
-                    >
-                      {/* Left: Permission Info */}
-                      <div className="col-span-12 md:col-span-6 pr-4 mb-2 md:mb-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-[var(--text-primary)]">
-                            {perm.label}
-                          </span>
-                          <code className="rounded bg-[var(--bg-subtle)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
-                            {perm.id}
-                          </code>
-                        </div>
-                        <p className="mt-0.5 text-[11px] text-[var(--text-secondary)] leading-relaxed">
-                          {perm.description}
-                        </p>
+                    <div key={role} className="flex flex-col items-center justify-center gap-1 px-2">
+                      <div className={`flex h-7 w-7 items-center justify-center rounded-xl border ${meta.color}`}>
+                        <Icon className="h-3.5 w-3.5" />
                       </div>
-
-                      {/* Right: Checkboxes for each role */}
-                      <div className="col-span-12 grid grid-cols-4 md:col-span-6">
-                        {ALL_ROLES.map((role) => {
-                          const isAssigned = (rolePermissions[role] || []).includes(perm.id);
-
-                          return (
-                            <div key={role} className="flex flex-col items-center justify-center">
-                              {/* Label on mobile */}
-                              <span className="text-[10px] font-semibold text-[var(--text-muted)] md:hidden mb-1">
-                                {role}
-                              </span>
-
-                              <label
-                                className={`group flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl border transition ${
-                                  isAssigned
-                                    ? "border-[var(--brand-primary)] bg-[var(--brand-surface)] text-[var(--brand-primary)] shadow-xs"
-                                    : "border-[var(--border-subtle)] bg-[var(--bg-surface)] text-transparent hover:border-[var(--border-strong)]"
-                                }`}
-                                title={`${isAssigned ? "Revoke" : "Grant"} ${perm.label} for ${role}`}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={isAssigned}
-                                  onChange={() => handleToggle(role, perm.id)}
-                                  className="sr-only"
-                                />
-                                {isAssigned ? (
-                                  <CheckSquare className="h-4 w-4" />
-                                ) : (
-                                  <Square className="h-4 w-4 text-[var(--border-subtle)] group-hover:text-[var(--text-muted)]" />
-                                )}
-                              </label>
-                            </div>
-                          );
-                        })}
-                      </div>
+                      <span className="text-xs font-bold text-[var(--text-primary)] truncate max-w-full">
+                        {meta.label}
+                      </span>
+                      <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-wider">
+                        {role}
+                      </span>
                     </div>
                   );
                 })}
               </div>
             </div>
-          ))
-        )}
-      </div>
+
+            {/* Grouped Permissions Content */}
+            {Object.entries(groupedPermissions).length === 0 ? (
+              <div className="p-12 text-center text-xs text-[var(--text-muted)]">
+                {t("uiNoPermissionsMatchingYourSearch")}
+              </div>
+            ) : (
+              Object.entries(groupedPermissions).map(([category, perms]) => (
+                <div key={category} className="border-b border-[var(--border-subtle)] last:border-b-0">
+                  {/* Category Group Header */}
+                  <div className="flex items-center justify-between gap-4 bg-[var(--bg-subtle)]/75 px-6 py-3 border-b border-[var(--border-subtle)]">
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="h-2.5 w-2.5 rounded-full bg-[var(--brand-primary)]" />
+                      <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                        {category}
+                      </span>
+                      <span className="rounded-md bg-[var(--bg-surface)] border border-[var(--border-subtle)] px-2 py-0.5 text-[10px] font-bold text-[var(--text-muted)]">
+                        {perms.length} {t("uiCapabilities")}
+                      </span>
+                    </div>
+
+                    {/* Category Quick Batch Actions for all 5 roles */}
+                    <div className="flex items-center gap-1.5 text-[11px] shrink-0">
+                      <span className="text-[var(--text-muted)] font-medium text-[10px] uppercase tracking-wider mr-1">
+                        {t.grantAllIn}:
+                      </span>
+                      {ALL_ROLES.map((r) => {
+                        const meta = getRoleMeta(r);
+                        return (
+                          <button
+                            key={r}
+                            onClick={() => handleToggleCategory(r, category, true)}
+                            className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-2.5 py-1 text-[10px] font-bold text-[var(--text-secondary)] hover:text-[var(--brand-primary)] hover:border-[var(--brand-primary)] transition cursor-pointer shadow-2xs"
+                            title={`Grant all ${category} capabilities to ${meta.label}`}
+                          >
+                            +{meta.shortLabel}
+                          </button>
+                        );
+                      })}
+                      <button
+                        onClick={() => handleToggleCategoryForAllRoles(category, true)}
+                        className="rounded-lg border border-[var(--brand-primary)]/40 bg-[var(--brand-surface)] px-2.5 py-1 text-[10px] font-bold text-[var(--brand-primary)] hover:brightness-110 transition cursor-pointer shadow-2xs"
+                        title={`Grant all ${category} capabilities to ALL 5 roles`}
+                      >
+                        +All
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Permission Rows */}
+                  <div className="divide-y divide-[var(--border-subtle)]">
+                    {perms.map((perm) => {
+                      return (
+                        <div
+                          key={perm.id}
+                          className="flex items-center px-6 py-3.5 transition hover:bg-[var(--bg-subtle)]/30"
+                        >
+                          {/* Left: Permission Info (sticky on horizontal scroll) */}
+                          <div className="w-[380px] lg:w-[440px] shrink-0 sticky left-0 z-10 bg-[var(--bg-surface)] border-r border-[var(--border-subtle)] pr-4 shadow-[4px_0_12px_rgba(0,0,0,0.02)]">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-[var(--text-primary)]">
+                                {perm.label}
+                              </span>
+                              <code className="rounded bg-[var(--bg-subtle)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)] border border-[var(--border-subtle)]/40">
+                                {perm.id}
+                              </code>
+                            </div>
+                            <p className="mt-1 text-[11px] text-[var(--text-secondary)] leading-relaxed">
+                              {perm.description}
+                            </p>
+                          </div>
+
+                          {/* Right: Checkboxes for each of the 5 roles */}
+                          <div className="flex-1 grid grid-cols-5 items-center text-center">
+                            {ALL_ROLES.map((role) => {
+                              const isAssigned = (rolePermissions[role] || []).includes(perm.id);
+                              const meta = getRoleMeta(role);
+
+                              return (
+                                <div key={role} className="flex items-center justify-center">
+                                  <label
+                                    className={`group flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border transition-all ${
+                                      isAssigned
+                                        ? "border-[var(--brand-primary)] bg-[var(--brand-surface)] text-[var(--brand-primary)] shadow-xs scale-105"
+                                        : "border-[var(--border-subtle)] bg-[var(--bg-app)] text-transparent hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface)]"
+                                    }`}
+                                    title={`${isAssigned ? "Revoke" : "Grant"} ${perm.label} for ${meta.label}`}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={isAssigned}
+                                      onChange={() => handleToggle(role, perm.id)}
+                                      className="sr-only"
+                                    />
+                                    {isAssigned ? (
+                                      <CheckSquare className="h-5 w-5" />
+                                    ) : (
+                                      <Square className="h-5 w-5 text-[var(--border-subtle)] group-hover:text-[var(--text-muted)]" />
+                                    )}
+                                  </label>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* View Mode 2: Single Role Focused View */}
+      {selectedRoleView !== "ALL" && (
+        <div className="space-y-4">
+          {/* Active Role Header Banner */}
+          {(() => {
+            const meta = getRoleMeta(selectedRoleView);
+            const Icon = meta.icon;
+            const assignedCount = (rolePermissions[selectedRoleView] || []).length;
+            const totalCount = data?.availablePermissions.length || 0;
+            const pct = totalCount > 0 ? Math.round((assignedCount / totalCount) * 100) : 0;
+
+            return (
+              <div className="p-6 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <div className={`w-12 h-12 rounded-2xl border ${meta.color} flex items-center justify-center shrink-0 shadow-xs`}>
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-bold text-[var(--text-primary)]">
+                        {meta.label}
+                      </h3>
+                      <span className="font-mono text-xs px-2 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-muted)]">
+                        {selectedRoleView}
+                      </span>
+                    </div>
+                    <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                      {meta.desc}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 shrink-0">
+                  <div className="text-right">
+                    <span className="text-xs font-bold text-[var(--text-primary)]">
+                      {assignedCount} / {totalCount} ({pct}%)
+                    </span>
+                    <p className="text-[10px] text-[var(--text-muted)]">
+                      {t.uiTotalAssignedCapabilities}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedRoleView("ALL")}
+                    className="px-3.5 py-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-app)] text-xs font-bold text-[var(--text-secondary)] transition-all cursor-pointer"
+                  >
+                    {t.uiViewMatrix}
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Capabilities Grouped by Category in Focused Mode */}
+          {Object.entries(groupedPermissions).length === 0 ? (
+            <div className="p-12 text-center text-xs text-[var(--text-muted)] rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+              {t("uiNoPermissionsMatchingYourSearch")}
+            </div>
+          ) : (
+            Object.entries(groupedPermissions).map(([category, perms]) => (
+              <div key={category} className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-sm overflow-hidden">
+                {/* Category Header */}
+                <div className="flex items-center justify-between gap-3 bg-[var(--bg-subtle)]/75 px-6 py-3.5 border-b border-[var(--border-subtle)]">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full bg-[var(--brand-primary)]" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                      {category}
+                    </span>
+                    <span className="rounded-md bg-[var(--bg-surface)] border border-[var(--border-subtle)] px-2 py-0.5 text-[10px] font-bold text-[var(--text-muted)]">
+                      {perms.length} {t("uiCapabilities")}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleToggleCategory(selectedRoleView, category, true)}
+                      className="px-3 py-1.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[11px] font-bold text-[var(--text-secondary)] hover:text-[var(--brand-primary)] hover:border-[var(--brand-primary)] transition-all cursor-pointer shadow-2xs"
+                    >
+                      {t.uiGrantAllInCategory}
+                    </button>
+                    <button
+                      onClick={() => handleToggleCategory(selectedRoleView, category, false)}
+                      className="px-3 py-1.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[11px] font-bold text-[var(--text-secondary)] hover:text-red-600 hover:border-red-400 transition-all cursor-pointer shadow-2xs"
+                    >
+                      {t.uiRevokeAllInCategory}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Capability Rows */}
+                <div className="divide-y divide-[var(--border-subtle)]">
+                  {perms.map((perm) => {
+                    const isAssigned = (rolePermissions[selectedRoleView] || []).includes(perm.id);
+                    return (
+                      <div
+                        key={perm.id}
+                        onClick={() => handleToggle(selectedRoleView, perm.id)}
+                        className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[var(--bg-subtle)]/30 transition-all cursor-pointer"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-[var(--text-primary)]">
+                              {perm.label}
+                            </span>
+                            <code className="rounded bg-[var(--bg-subtle)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)] border border-[var(--border-subtle)]/40">
+                              {perm.id}
+                            </code>
+                          </div>
+                          <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                            {perm.description}
+                          </p>
+                        </div>
+
+                        <div className="shrink-0 flex items-center gap-3">
+                          <span
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                              isAssigned
+                                ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 shadow-2xs"
+                                : "bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border-subtle)]"
+                            }`}
+                          >
+                            {isAssigned ? (
+                              <>
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                                <span>{t.uiPermissionGranted}</span>
+                              </>
+                            ) : (
+                              <>
+                                <XCircle className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+                                <span>{t.uiPermissionRestricted}</span>
+                              </>
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
 
       {/* Bottom Sticky Action Bar if changes pending */}
       {hasUnsavedChanges && (

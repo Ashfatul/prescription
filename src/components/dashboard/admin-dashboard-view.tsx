@@ -29,6 +29,7 @@ import {
   Activity,
   TrendingUp,
   Stethoscope,
+  Building2,
 } from "lucide-react";
 
 interface AdminDashboardViewProps {
@@ -288,7 +289,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
           </div>
 
           {/* Quick Management Hub Cards */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             <Link
               href="/dashboard/admin?tab=users"
               className="group rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-sm transition hover:border-[var(--brand-primary)] block"
@@ -350,6 +351,22 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
               </h3>
               <p className="mt-1 text-xs text-[var(--text-secondary)]">
                 {t("uiCheckboxBasedAccessControlFor")}
+              </p>
+            </Link>
+
+            <Link
+              href="/dashboard/admin?tab=settings"
+              className="group rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-sm transition hover:border-[var(--brand-primary)] block"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                <Building2 className="h-5 w-5" />
+              </div>
+              <h3 className="mt-3 text-sm font-bold text-[var(--text-primary)] group-hover:text-[var(--brand-primary)] flex items-center justify-between">
+                <span>{t.hospitalSettings}</span>
+                <ArrowRight className="h-4 w-4 transition transform group-hover:translate-x-1" />
+              </h3>
+              <p className="mt-1 text-xs text-[var(--text-secondary)]">
+                {t.uiHospitalChamberInfoAndSecurity}
               </p>
             </Link>
           </div>

@@ -8,6 +8,7 @@ import {
     Mail,
     MapPin,
     AlertCircle,
+    AlertTriangle,
     Save,
     CheckCircle2,
     RefreshCw,
@@ -20,6 +21,7 @@ import {
 } from "@/features/settings/settings.service";
 import { ChangePasswordCard } from "@/components/common/change-password-card";
 import { TwoFactorAuthCard } from "@/components/common/two-factor-auth-card";
+import { SystemFactoryResetCard } from "@/components/dashboard/system-factory-reset-card";
 import { useLanguage } from "@/lib/i18n/language-context";
 import { useAuth } from "@/lib/auth/auth-context";
 
@@ -179,33 +181,47 @@ export function SettingsManager() {
     return (
         <div className="space-y-6">
             {/* Header Banner */}
-            <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-sm">
-                <div className="flex items-center gap-2 mb-1.5">
-                    <span className="px-2.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-primary)] text-xs font-bold">
+            <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <div className="flex items-center gap-2 mb-1.5">
+                        <span className="px-2.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-primary)] text-xs font-bold">
+                            {t(
+                                "uiSaaSPlatformConfiguration",
+                                "SaaS Platform Configuration",
+                            )}
+                        </span>
+                        <span className="text-xs text-[var(--text-muted)] font-medium">
+                            {t(
+                                "uiPlatformGovernance",
+                                "Platform governance and support",
+                            )}
+                        </span>
+                    </div>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
                         {t(
-                            "uiSaaSPlatformConfiguration",
-                            "SaaS Platform Configuration",
+                            "uiPlatformAdministrationSettings",
+                            "Platform Administration Settings",
                         )}
-                    </span>
-                    <span className="text-xs text-[var(--text-muted)] font-medium">
+                    </h1>
+                    <p className="text-xs text-[var(--text-secondary)] mt-1">
                         {t(
-                            "uiPlatformGovernance",
-                            "Platform governance and support",
+                            "uiPlatformAdministrationSubtitle",
+                            "Manage platform-wide security, identity, support, and clinic tenancy. Clinic schedules and chamber details are managed inside each clinic workspace.",
                         )}
-                    </span>
+                    </p>
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
-                    {t(
-                        "uiPlatformAdministrationSettings",
-                        "Platform Administration Settings",
-                    )}
-                </h1>
-                <p className="text-xs text-[var(--text-secondary)] mt-1">
-                    {t(
-                        "uiPlatformAdministrationSubtitle",
-                        "Manage platform-wide security, identity, support, and clinic tenancy. Clinic schedules and chamber details are managed inside each clinic workspace.",
-                    )}
-                </p>
+
+                {user?.role === "SUPER_ADMIN" && (
+                    <div className="shrink-0">
+                        <a
+                            href="#danger-zone"
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 active:scale-[0.98] text-red-600 dark:text-red-400 text-xs font-bold transition-all cursor-pointer shadow-xs"
+                        >
+                            <AlertTriangle className="w-4 h-4 shrink-0" />
+                            <span>{t.uiJumpToDangerZone}</span>
+                        </a>
+                    </div>
+                )}
             </div>
 
             {canManageDomain && (
@@ -749,6 +765,7 @@ export function SettingsManager() {
             <div className="pt-4 border-t border-[var(--border-subtle)] space-y-6">
                 <TwoFactorAuthCard />
                 <ChangePasswordCard />
+                {user?.role === "SUPER_ADMIN" && <SystemFactoryResetCard />}
             </div>
         </div>
     );
