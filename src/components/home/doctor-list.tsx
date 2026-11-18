@@ -167,10 +167,35 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
 
   if (!doctors.length) {
     return (
-      <div className="p-12 text-center rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs">
-        <Sparkles className="w-8 h-8 text-slate-400 mx-auto mb-3" />
-        <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">{t.noConsultingDoctors}</h3>
-        <p className="text-xs text-slate-500 mt-1">{t.checkBackVisitingHours}</p>
+      <div className="p-6 sm:p-8 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-[var(--shadow-subtle)] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="flex items-start gap-4 max-w-[56ch]">
+          <div className="w-11 h-11 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] flex items-center justify-center shrink-0">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-base font-bold text-[var(--text-primary)]">
+              {t.noConsultingDoctors}
+            </h3>
+            <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
+              {t.checkBackVisitingHours}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          <Link
+            href="/clinics"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--brand-primary)] hover:text-[var(--brand-text)] transition-colors"
+          >
+            <span>{t.exploreClinicsAction}</span>
+          </Link>
+          <Link
+            href="/live-queue"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-semibold hover:opacity-95 transition-opacity"
+          >
+            <span>{t.openLiveQueueAction}</span>
+          </Link>
+        </div>
       </div>
     );
   }

@@ -16,11 +16,9 @@ import {
   ShieldCheck,
   Shield,
   KeyRound,
-  Sparkles,
 } from "lucide-react";
-import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
-import { ThemeCustomizer } from "@/components/common/theme-customizer";
-import { LanguageToggle } from "@/components/common/language-toggle";
+import { AuthShell } from "@/components/auth/auth-shell";
+import { LoginCompanion } from "@/components/auth/login-companion";
 import { useLanguage } from "@/lib/i18n/language-context";
 import { notifyToast } from "@/lib/toast";
 
@@ -41,19 +39,6 @@ export function LoginForm() {
   const [twoFactorCode, setTwoFactorCode] = useState("");
   const [useBackupCode, setUseBackupCode] = useState(false);
   const [twoFactorLoading, setTwoFactorLoading] = useState(false);
-
-  const [hospitalName, setHospitalName] = useState("");
-
-  useEffect(() => {
-    fetch("/api/settings")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.data?.hospitalName) {
-          setHospitalName(data.data.hospitalName);
-        }
-      })
-      .catch(() => {});
-  }, []);
 
   // If user is already authenticated on the client, redirect to dashboard immediately
   useEffect(() => {
@@ -129,297 +114,253 @@ export function LoginForm() {
     setError("");
   };
 
-  return (
-    <main className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-12 bg-[var(--bg-app)] text-[var(--text-primary)]">
-      {/* Desktop Informative Hero Panel (Left 5 Columns, Fixed / Sticky, Guaranteed No Scroll) */}
-      <div className="lg:col-span-5 xl:col-span-5 hidden lg:flex flex-col sticky top-0 h-screen max-h-screen overflow-hidden">
-        <AuthBrandingPanel
-          badge={t("uiClinicalOperatingSystem")}
-          title={t("uiIntelligentPrescriptionsForModernHealthcare")}
-          highlightText={t("uiZeroFriction")}
-          description={t("loginWorkspaceDescription")}
-        />
-      </div>
+  const handleSelectRole = (roleEmail: string) => {
+    setEmail(roleEmail);
+    setError("");
+  };
 
-      {/* Authentication Form Panel (Right 7 Columns, Full Restored Content) */}
-      <div className="lg:col-span-7 xl:col-span-7 flex flex-col justify-between p-6 sm:p-10 lg:p-12 xl:p-14 overflow-y-auto">
-        {/* Top Navbar: Brand logo (mobile) & Home / Theme toggle */}
-        <div className="flex items-center justify-between pb-6 border-b border-[var(--border-subtle)]">
-          <div className="flex items-center gap-2.5 lg:hidden">
-            <div className="w-9 h-9 rounded-lg bg-[var(--brand-primary)] text-white flex items-center justify-center font-black text-sm shadow-xs">
-              Rx
-            </div>
-            <div>
-              <h1 className="text-base font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
-                {hospitalName || "PPMS"}
-              </h1>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400">
-                Healthcare Operating System
+  return (
+    <AuthShell
+      activeBadge={t("uiVerifiedClinicalAccess")}
+      companion={<LoginCompanion onSelectRole={handleSelectRole} currentEmail={email} />}
+      deckMaxWidth="max-w-5xl"
+    >
+      <div className="w-full max-w-md mx-auto my-auto space-y-6">
+        {is2FAChallenge ? (
+          <div className="space-y-6 animate-in fade-in zoom-in-95 duration-200">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20 text-xs font-bold">
+                <Shield className="w-3.5 h-3.5" />
+                <span>{t.twoFactorAuthentication}</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+                {t("securityCheck", "Security Check")}
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                {useBackupCode
+                  ? t("uiEnterAnUnusedCharacterRecovery")
+                  : language === "bn"
+                  ? `আপনার অথেনটিকেটর অ্যাপ থেকে ৬-সংখ্যার কোডটি প্রবেশ করান (${maskedEmail || "আপনার অ্যাকাউন্ট"})।`
+                  : `Enter the 6-digit code from your authenticator app for ${maskedEmail || "your account"}.`}
               </p>
             </div>
-          </div>
 
-          <div className="hidden lg:flex items-center gap-2 text-xs text-slate-500 font-medium">
-            <Sparkles className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-            <span>{t("uiSecureEnterpriseSingleSignOn")}</span>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <LanguageToggle />
-            <ThemeCustomizer compact direction="down" align="right" />
-            <Link
-              href="/"
-              className="text-xs font-semibold text-slate-500 hover:text-[var(--brand-primary)] transition flex items-center gap-1"
-            >
-              ← {t.home}
-            </Link>
-          </div>
-        </div>
-
-        {/* Center Card Content */}
-        <div className="my-auto py-8 max-w-md w-full mx-auto space-y-6">
-          {is2FAChallenge ? (
-            <div className="space-y-6 animate-in fade-in zoom-in-95 duration-200">
-              <div className="space-y-2">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20 text-xs font-bold">
-                  <Shield className="w-3.5 h-3.5" />
-                  <span>{t.twoFactorAuthentication}</span>
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-                  {t("securityCheck", "Security Check")}
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                  {useBackupCode
-                    ? (t("uiEnterAnUnusedCharacterRecovery"))
-                    : (language === "bn" ? `আপনার অথেনটিকেটর অ্যাপ থেকে ৬-সংখ্যার কোডটি প্রবেশ করান (${maskedEmail || "আপনার অ্যাকাউন্ট"})।` : `Enter the 6-digit code from your authenticator app for ${maskedEmail || "your account"}.`)}
-                </p>
-              </div>
-
-              <form className="space-y-4" onSubmit={onVerify2FASubmit}>
-                <div>
-                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    {useBackupCode ? (t("uiRecoveryBackupCode")) : (t("uiDigitAuthenticatorCode"))}
-                  </label>
-                  <div className="relative">
-                    <input
-                      className={`w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[52px] h-[52px] ${
-                        useBackupCode
-                          ? "px-4 font-mono text-center tracking-[0.15em] text-lg font-bold"
-                          : "px-4 font-mono text-center tracking-[0.3em] text-2xl font-bold"
-                      }`}
-                      value={twoFactorCode}
-                      onChange={(e) => setTwoFactorCode(e.target.value)}
-                      placeholder={useBackupCode ? "XXXX-XXXX" : "000000"}
-                      maxLength={useBackupCode ? 9 : 6}
-                      autoFocus
-                      required
-                    />
-                    <KeyRound className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  </div>
-                </div>
-
-                {error && (
-                  <p className="rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-600 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/50 leading-relaxed">
-                    {error}
-                  </p>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={twoFactorLoading || !twoFactorCode.trim()}
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-[var(--brand-primary)] text-white text-sm font-bold shadow-xs hover:opacity-95 transition-all disabled:opacity-60 cursor-pointer"
-                >
-                  {twoFactorLoading ? (
-                    <>
-                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>{t.verifying}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>{t.verifyAndSignIn}</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-
-                <div className="flex items-center justify-between pt-2 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUseBackupCode(!useBackupCode);
-                      setTwoFactorCode("");
-                      setError("");
-                    }}
-                    className="text-[var(--brand-primary)] font-semibold hover:underline cursor-pointer"
-                  >
-                    {useBackupCode ? t.useTotpCode : t.useBackupCode}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={cancel2FA}
-                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer flex items-center gap-1"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5" />
-                    <span>{t("uiBackToLogin")}</span>
-                  </button>
-                </div>
-              </form>
-            </div>
-          ) : (
-            <>
-              <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-[11px] font-bold">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>{t("uiVerifiedClinicalAccess")}</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-              {t.welcomeBack}
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-              {t("uiSignInWithYourVerified")}
-            </p>
-          </div>
-
-          <form className="space-y-4" onSubmit={onSubmit}>
-            {/* Email Field with Icon */}
-            <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                {t.emailAddress}
-              </label>
-              <div className="relative">
-                <input
-                  className="w-full input-icon-left !pl-11 pr-4 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[42px] sm:min-h-[44px] h-[42px] sm:h-[44px]"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="doctor@hospital.org"
-                  type="email"
-                  required
-                />
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
-            </div>
-
-            {/* Password Field with Show/Hide Toggle & Icon */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  {t.password}
+            <form className="space-y-4" onSubmit={onVerify2FASubmit}>
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  {useBackupCode ? t("uiRecoveryBackupCode") : t("uiDigitAuthenticatorCode")}
                 </label>
-                <Link
-                  href="/auth/forgot-password"
-                  className="text-xs font-semibold text-[var(--brand-primary)] hover:underline cursor-pointer"
-                >
-                  {t.forgotPassword}
-                </Link>
+                <div className="relative">
+                  <input
+                    className={`w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[52px] h-[52px] ${
+                      useBackupCode
+                        ? "px-4 font-mono text-center tracking-[0.15em] text-lg font-bold"
+                        : "px-4 font-mono text-center tracking-[0.3em] text-2xl font-bold"
+                    }`}
+                    value={twoFactorCode}
+                    onChange={(e) => setTwoFactorCode(e.target.value)}
+                    placeholder={useBackupCode ? "XXXX-XXXX" : "000000"}
+                    maxLength={useBackupCode ? 9 : 6}
+                    autoFocus
+                    required
+                  />
+                  <KeyRound className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
               </div>
-              <div className="relative">
-                <input
-                  className="w-full input-icon-left !pl-11 pr-11 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[42px] sm:min-h-[44px] h-[42px] sm:h-[44px]"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  type={showPassword ? "text" : "password"}
-                  required
-                />
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+
+              {error && (
+                <p className="rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-600 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/50 leading-relaxed">
+                  {error}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                disabled={twoFactorLoading || !twoFactorCode.trim()}
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-[var(--brand-primary)] text-white text-sm font-bold shadow-xs hover:opacity-95 transition-all disabled:opacity-60 cursor-pointer"
+              >
+                {twoFactorLoading ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>{t.verifying}</span>
+                  </>
+                ) : (
+                  <>
+                    <span>{t.verifyAndSignIn}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+
+              <div className="flex items-center justify-between pt-2 text-xs">
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer p-1"
-                  title={showPassword ? "Hide password" : "Show password"}
+                  onClick={() => {
+                    setUseBackupCode(!useBackupCode);
+                    setTwoFactorCode("");
+                    setError("");
+                  }}
+                  className="text-[var(--brand-primary)] font-semibold hover:underline cursor-pointer"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {useBackupCode ? t.useTotpCode : t.useBackupCode}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={cancel2FA}
+                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer flex items-center gap-1"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>{t("uiBackToLogin")}</span>
                 </button>
               </div>
-            </div>
-
-            {error && (
-              <p className="rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-600 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/50 leading-relaxed">
-                {error}
-              </p>
-            )}
-
-            <button
-              className="w-full rounded-lg bg-[var(--brand-primary)] hover:opacity-95 min-h-[42px] sm:min-h-[44px] px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md transition-all disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>{t.pleaseWait}</span>
-                </>
-              ) : (
-                <>
-                  <span>{t.signIn}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Account Registration Callouts */}
-          <div className="pt-4 border-t border-[var(--border-subtle)] space-y-2.5">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
-              {t("uiNewToPPMSCreateAn")}
-            </span>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <Link
-                href="/auth/register?type=clinic"
-                className="flex items-center gap-3 p-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-subtle)] hover:border-[var(--brand-primary)] hover:bg-[var(--brand-surface)]/30 transition group cursor-pointer"
-              >
-                <div className="w-8 h-8 rounded-lg bg-teal-500/10 text-[var(--brand-primary)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <Building2 className="w-4 h-4" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[var(--brand-text)] transition truncate">
-                      {t("registerClinicBtn")}
-                    </span>
-                    <ArrowRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0 ml-1" />
-                  </div>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                    {t("uiDayFreeTrialNoCard")}
-                  </p>
-                </div>
-              </Link>
-
-              <Link
-                href="/auth/register?type=patient"
-                className="flex items-center gap-3 p-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-subtle)] hover:border-rose-500/50 hover:bg-rose-500/5 transition group cursor-pointer"
-              >
-                <div className="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <HeartPulse className="w-4 h-4" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-rose-500 transition truncate">
-                      {t("uiPatientPortal")}
-                    </span>
-                    <ArrowRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0 ml-1" />
-                  </div>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                    {t("patientPortalDesc")}
-                  </p>
-                </div>
-              </Link>
-            </div>
+            </form>
           </div>
-            </>
-          )}
-        </div>
+        ) : (
+          <>
+            {/* Login Header */}
+            <div className="space-y-1.5 text-center sm:text-left">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-[11px] font-bold">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>{t("uiVerifiedClinicalAccess")}</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+                {t.welcomeBack}
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                {t("uiSignInWithYourVerified")}
+              </p>
+            </div>
 
-        {/* Bottom Footer legal text */}
-        <div className="pt-6 border-t border-[var(--border-subtle)] text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-500">
-          <span>© {new Date().getFullYear()} {hospitalName || "PPMS"}. {t("allRightsReserved")}</span>
-          <span className="flex items-center gap-1">
-            <Lock className="w-3 h-3 text-emerald-500" />
-            {t("uiHipaaBMDCCompliant")}
-          </span>
-        </div>
+            <form className="space-y-4" onSubmit={onSubmit}>
+              {/* Email Field with Icon */}
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  {t.emailAddress}
+                </label>
+                <div className="relative">
+                  <input
+                    className="w-full input-icon-left !pl-11 pr-4 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[44px] h-[44px]"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="doctor@hospital.org"
+                    type="email"
+                    required
+                  />
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Password Field with Show/Hide Toggle & Icon */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    {t.password}
+                  </label>
+                  <Link
+                    href="/auth/forgot-password"
+                    className="text-xs font-semibold text-[var(--brand-primary)] hover:underline cursor-pointer"
+                  >
+                    {t.forgotPassword}
+                  </Link>
+                </div>
+                <div className="relative">
+                  <input
+                    className="w-full input-icon-left !pl-11 pr-11 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[44px] h-[44px]"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    type={showPassword ? "text" : "password"}
+                    required
+                  />
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer p-1"
+                    title={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {error && (
+                <p className="rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-600 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/50 leading-relaxed">
+                  {error}
+                </p>
+              )}
+
+              <button
+                className="w-full rounded-lg bg-[var(--brand-primary)] hover:opacity-95 min-h-[44px] px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md transition-all disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>{t.pleaseWait}</span>
+                  </>
+                ) : (
+                  <>
+                    <span>{t.signIn}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Account Registration Pathways */}
+            <div className="pt-4 border-t border-[var(--border-subtle)] space-y-2.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block text-center sm:text-left">
+                {t("uiNewToPPMSCreateAn")}
+              </span>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <Link
+                  href="/auth/register?type=clinic"
+                  className="flex items-center gap-3 p-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-subtle)] hover:border-[var(--brand-primary)] hover:bg-[var(--brand-surface)]/30 transition group cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-teal-500/10 text-[var(--brand-primary)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Building2 className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[var(--brand-text)] transition truncate">
+                        {t("registerClinicBtn")}
+                      </span>
+                      <ArrowRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0 ml-1" />
+                    </div>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                      {t("uiDayFreeTrialNoCard")}
+                    </p>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/auth/register?type=patient"
+                  className="flex items-center gap-3 p-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-subtle)] hover:border-rose-500/50 hover:bg-rose-500/5 transition group cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <HeartPulse className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-rose-500 transition truncate">
+                        {t("uiPatientPortal")}
+                      </span>
+                      <ArrowRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0 ml-1" />
+                    </div>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                      {t("patientPortalDesc")}
+                    </p>
+                  </div>
+                </Link>
+              </div>
+            </div>
+          </>
+        )}
       </div>
-    </main>
+    </AuthShell>
   );
 }

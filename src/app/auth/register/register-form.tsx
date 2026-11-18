@@ -55,7 +55,12 @@ const textareaClasses =
 const labelClasses =
   "text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1";
 
-export function RegisterForm() {
+export interface RegisterFormProps {
+  onModeChange?: (mode: "clinic" | "patient") => void;
+  onSlugChange?: (slug: string, status: "idle" | "checking" | "available" | "unavailable") => void;
+}
+
+export function RegisterForm({ onModeChange, onSlugChange }: RegisterFormProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t, language } = useLanguage();
@@ -63,6 +68,11 @@ export function RegisterForm() {
 
   const { login } = useAuth();
   const [mode, setMode] = useState<"clinic" | "patient">(initialMode);
+
+  // Notify parent of initial mode
+  useEffect(() => {
+    onModeChange?.(mode);
+  }, [mode, onModeChange]);
 
   // Common fields
   const [name, setName] = useState("");
@@ -160,7 +170,11 @@ export function RegisterForm() {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [clinicSlug, mode, language]);
+  }, [clinicSlug, mode, language, t]);
+
+  useEffect(() => {
+    onSlugChange?.(clinicSlug, slugStatus);
+  }, [clinicSlug, slugStatus, onSlugChange]);
 
   useEffect(() => {
     // Fetch organizations for patient dropdown
@@ -357,8 +371,8 @@ export function RegisterForm() {
         </button>
       </div>
 
-      {/* Main Registration Card */}
-      <div className="p-6 sm:p-8 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xl space-y-6">
+      {/* Main Registration Content */}
+      <div className="space-y-6">
         {mode === "clinic" ? (
           <div className="space-y-1.5 text-center sm:text-left">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/10 text-teal-700 dark:text-teal-300 text-xs font-bold uppercase tracking-wider border border-teal-500/20">

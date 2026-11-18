@@ -364,6 +364,37 @@ body {
   margin-right: auto;
 }
 
+/* Precision architectural grid texture for full-bleed clinical hero & showcase bands */
+.clinical-grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.1) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.dark .clinical-grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.hero-brand-glow {
+  background: radial-gradient(
+    ellipse 70% 55% at 72% 10%,
+    color-mix(in srgb, var(--brand-primary) 16%, transparent),
+    transparent 70%
+  );
+}
+
+.dark .hero-brand-glow {
+  background: radial-gradient(
+    ellipse 70% 55% at 72% 10%,
+    color-mix(in srgb, var(--brand-primary) 20%, transparent),
+    transparent 70%
+  );
+}
+
 /* Explicit helper classes for icon inputs to prevent any text clipping behind icons */
 .input-icon-left,
 input.input-icon-left {

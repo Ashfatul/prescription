@@ -13,13 +13,11 @@ import {
   Edit3,
   Lock,
   ArrowLeft,
-  Sparkles,
   Eye,
   EyeOff,
 } from "lucide-react";
-import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
-import { ThemeCustomizer } from "@/components/common/theme-customizer";
-import { LanguageToggle } from "@/components/common/language-toggle";
+import { AuthShell } from "@/components/auth/auth-shell";
+import { RecoveryCompanion } from "@/components/auth/recovery-companion";
 import { useLanguage } from "@/lib/i18n/language-context";
 import { notifyToast } from "@/lib/toast";
 
@@ -179,8 +177,7 @@ function VerifyEmailInner() {
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto">
-      <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] p-6 sm:p-8 shadow-sm space-y-6">
+    <div className="w-full max-w-lg mx-auto my-auto space-y-6">
         {/* State A: Verifying Token */}
         {verifying && (
           <div className="text-center py-8 space-y-4">
@@ -444,104 +441,28 @@ function VerifyEmailInner() {
           </div>
         )}
       </div>
-    </div>
   );
 }
 
 export default function VerifyEmailPage() {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
 
   return (
-    <main className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-12 bg-[var(--bg-app)] text-[var(--text-primary)]">
-      {/* Desktop Informative Hero Panel (Left 5 Columns, Fixed / Sticky, Guaranteed No Scroll) */}
-      <div className="lg:col-span-5 xl:col-span-5 hidden lg:flex flex-col sticky top-0 h-screen max-h-screen overflow-hidden">
-        <AuthBrandingPanel
-          badge={t("uiEmailAuthentication")}
-          title={t("uiVerifyingClinicalCredentialsContacts")}
-          highlightText={t("uiZeroCompromise2")}
-          description={t("uiWeVerifyEmailAddressesTo")}
-          features={[
-            {
-              icon: <ShieldCheck className="w-4 h-4 text-teal-400" />,
-              title: t("uiVerifiedElectronicDispenseRxAlerts"),
-            },
-            {
-              icon: <Lock className="w-4 h-4 text-emerald-400" />,
-              title: t("uiCryptographicSingleUseVerificationTokens"),
-            },
-            {
-              icon: <Sparkles className="w-4 h-4 text-sky-400" />,
-              title: t("uiOneClickActivationDirectRedirection"),
-            },
-          ]}
-        />
-      </div>
-
-      {/* Verification Interaction Panel (Right 7 Columns) */}
-      <div className="lg:col-span-7 xl:col-span-7 flex flex-col justify-between p-6 sm:p-8 lg:p-10 xl:p-12 overflow-y-auto">
-        {/* Top Navbar */}
-        <div className="flex items-center justify-between pb-4 border-b border-[var(--border-subtle)]">
-          {/* Mobile Brand */}
-          <div className="flex items-center gap-2.5 lg:hidden">
-            <div className="w-8 h-8 rounded-xl bg-[var(--brand-primary)] text-white flex items-center justify-center font-black text-sm shadow-xs">
-              Rx
-            </div>
-            <div>
-              <h1 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
-                {t.appTitle}
-              </h1>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400">
-                {t.appSubtitle}
-              </p>
-            </div>
+    <AuthShell
+      activeBadge={t("uiEmailAuthentication")}
+      companion={<RecoveryCompanion currentStep={2} />}
+      deckMaxWidth="max-w-5xl"
+    >
+      <Suspense
+        fallback={
+          <div className="p-8 max-w-md mx-auto text-xs text-slate-500 text-center space-y-2">
+            <RefreshCw className="w-5 h-5 animate-spin mx-auto text-[var(--brand-primary)]" />
+            <p>{t("uiLoadingVerificationPanel")}</p>
           </div>
-
-          <div className="hidden lg:flex items-center gap-2 text-xs text-slate-500 font-medium">
-            <Mail className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-            <span>{t("uiEmailIdentityAuthentication")}</span>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <LanguageToggle />
-            <ThemeCustomizer compact direction="down" align="right" />
-            <Link
-              href="/auth/login"
-              className="text-xs font-semibold text-slate-500 hover:text-[var(--brand-primary)] transition flex items-center gap-1"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>{t.login}</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Content Area */}
-        <div className="py-6 my-auto w-full">
-          <Suspense
-            fallback={
-              <div className="p-6 max-w-md mx-auto rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-xs text-slate-500 text-center">
-                <RefreshCw className="w-4 h-4 animate-spin mx-auto mb-2 text-[var(--brand-primary)]" />
-                {t("uiLoadingVerificationPanel")}
-              </div>
-            }
-          >
-            <VerifyEmailInner />
-          </Suspense>
-        </div>
-
-        {/* Bottom Footer */}
-        <div className="pt-4 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
-          <span>{t("uiProtectedByHIPAABMDCCompliant2")}</span>
-          <div className="flex items-center gap-3">
-            <Link href="/privacy" className="hover:text-[var(--brand-primary)] transition font-medium">
-              {t.privacyPolicy}
-            </Link>
-            <span>•</span>
-            <Link href="/terms" className="hover:text-[var(--brand-primary)] transition font-medium">
-              {t.termsOfService}
-            </Link>
-          </div>
-        </div>
-      </div>
-    </main>
+        }
+      >
+        <VerifyEmailInner />
+      </Suspense>
+    </AuthShell>
   );
 }

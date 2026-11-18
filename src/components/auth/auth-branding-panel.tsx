@@ -29,7 +29,7 @@ export function AuthBrandingPanel({
   description,
   features,
 }: AuthBrandingPanelProps) {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const [systemName, setSystemName] = useState(initialSystemName || "");
 
   useEffect(() => {
