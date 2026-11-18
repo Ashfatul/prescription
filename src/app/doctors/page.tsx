@@ -2,6 +2,9 @@ import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+
+
+
 import { DoctorList } from "@/components/home/doctor-list";
 import { DoctorsHero } from "@/components/doctors/doctors-hero";
 import { getCurrentUserFromCookie } from "@/lib/auth/session";
