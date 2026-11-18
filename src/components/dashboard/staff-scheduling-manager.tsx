@@ -172,10 +172,10 @@ export function StaffSchedulingManager() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
+            <div className="w-9 h-9 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
               <Calendar className="w-5 h-5" />
             </div>
             <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -205,7 +205,7 @@ export function StaffSchedulingManager() {
           <span>{t.loadingPhysicianRosters}</span>
         </div>
       ) : filteredDoctors.length === 0 ? (
-        <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs text-slate-400">
+        <div className="p-12 text-center rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs text-slate-400">
           {t.noDoctorsMatchSearch}
         </div>
       ) : (
@@ -216,13 +216,13 @@ export function StaffSchedulingManager() {
             return (
               <div
                 key={doc.id}
-                className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition shadow-xs flex flex-col justify-between space-y-5"
+                className="p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition shadow-xs flex flex-col justify-between space-y-5"
               >
                 <div className="space-y-4">
                   {/* Doctor Info Header */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-start gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] font-black text-sm flex items-center justify-center shrink-0 shadow-2xs">
+                      <div className="w-12 h-12 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] font-black text-sm flex items-center justify-center shrink-0 shadow-2xs">
                         {doc.user.name.split(" ")[1]?.charAt(0) || "D"}
                       </div>
                       <div className="space-y-0.5">
@@ -253,7 +253,7 @@ export function StaffSchedulingManager() {
                   </div>
 
                   {/* Chamber Details */}
-                  <div className="p-3 rounded-2xl bg-[var(--bg-subtle)] space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
+                  <div className="p-3 rounded-lg bg-[var(--bg-subtle)] space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
                     <div className="flex items-center gap-2">
                       <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                       <span>{t.visitingHoursLabel}: <strong>{doc.visitingHours || (t("uiNotSpecified"))}</strong></span>
@@ -402,7 +402,7 @@ export function StaffSchedulingManager() {
       {/* Edit Doctor Schedule Modal */}
       {editingDoctor && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+          <div className="w-full max-w-md rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <div>
                 <h3 className="font-bold text-slate-900 dark:text-white text-base">

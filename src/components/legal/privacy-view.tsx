@@ -25,10 +25,10 @@ export function PrivacyView({ settings }: { settings: HospitalSettings }) {
       />
 
       <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        <div className="rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-6 sm:p-10 shadow-xs space-y-10 leading-relaxed text-sm text-slate-700 dark:text-slate-300">
+        <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-6 sm:p-10 shadow-xs space-y-10 leading-relaxed text-sm text-slate-700 dark:text-slate-300">
 
           {/* Executive Summary Callout */}
-          <div className="p-5 rounded-2xl bg-[var(--brand-surface)] border border-[var(--brand-border)]/60 text-xs text-[var(--brand-text)] flex items-start gap-3.5">
+          <div className="p-5 rounded-lg bg-[var(--brand-surface)] border border-[var(--brand-border)]/60 text-xs text-[var(--brand-text)] flex items-start gap-3.5">
             <ShieldCheck className="w-5 h-5 text-[var(--brand-primary)] shrink-0 mt-0.5" />
             <div className="space-y-1">
               <strong className="block text-sm font-bold text-[var(--text-primary)]">
@@ -93,7 +93,7 @@ export function PrivacyView({ settings }: { settings: HospitalSettings }) {
               {t("uiAllClinicalDataIsCollected")}
             </p>
             <div className="grid gap-3 sm:grid-cols-2 text-xs">
-              <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
+              <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
                 <span className="font-bold text-slate-900 dark:text-white block">
                   {t("uiClinicalPrescriptionDelivery")}
                 </span>
@@ -101,7 +101,7 @@ export function PrivacyView({ settings }: { settings: HospitalSettings }) {
                   {t("uiGeneratingLegallyCompliantMultiPage")}
                 </p>
               </div>
-              <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
+              <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
                 <span className="font-bold text-slate-900 dark:text-white block">
                   {t("uiChamberQueueCoordination")}
                 </span>
@@ -109,7 +109,7 @@ export function PrivacyView({ settings }: { settings: HospitalSettings }) {
                   {t("uiAllocatingRealTimeSerialTokens")}
                 </p>
               </div>
-              <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
+              <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
                 <span className="font-bold text-slate-900 dark:text-white block">
                   {t("uiMedicalHistoryContinuity")}
                 </span>
@@ -117,7 +117,7 @@ export function PrivacyView({ settings }: { settings: HospitalSettings }) {
                   {t("uiProvidingPhysiciansWithPastPrescribed")}
                 </p>
               </div>
-              <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
+              <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
                 <span className="font-bold text-slate-900 dark:text-white block">
                   {t("uiHospitalEpidemiologicAnalytics")}
                 </span>
@@ -213,7 +213,7 @@ export function PrivacyView({ settings }: { settings: HospitalSettings }) {
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               {t("uiIfYouHaveAnyQuestions")}
             </p>
-            <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs space-y-1">
+            <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs space-y-1">
               <p><strong className="text-slate-900 dark:text-white">{t("uiHospitalDataProtectionOfficerDPO")}</strong></p>
               <p>{settings.hospitalName} ({settings.hospitalBranch})</p>
               <p>{settings.hospitalAddress}</p>

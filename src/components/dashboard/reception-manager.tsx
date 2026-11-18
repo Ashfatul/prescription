@@ -812,7 +812,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
       {/* Toast Alert Banner */}
       {toastMessage && (
         <div
-          className={`p-4 rounded-2xl border text-xs font-bold flex items-center justify-between shadow-lg animate-in slide-in-from-top-3 duration-200 ${
+          className={`p-4 rounded-lg border text-xs font-bold flex items-center justify-between shadow-lg animate-in slide-in-from-top-3 duration-200 ${
             toastMessage.type === "success"
               ? "bg-emerald-500/15 border-emerald-500 text-emerald-900 dark:text-emerald-100"
               : toastMessage.type === "error"
@@ -841,7 +841,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
       )}
 
       {/* Top Banner & Quick Counters */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+      <div className="p-6 sm:p-8 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-5">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-xs font-bold uppercase tracking-wider">
             <ShieldCheck className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
@@ -860,7 +860,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
           <button
             type="button"
             onClick={() => setActiveTab("verifications")}
-            className={`px-4 py-2.5 rounded-2xl border text-xs text-left transition cursor-pointer ${
+            className={`px-4 py-2.5 rounded-lg border text-xs text-left transition cursor-pointer ${
               pendingAppointments.length > 0
                 ? "bg-amber-500/10 border-amber-500/40 text-amber-900 dark:text-amber-200 hover:bg-amber-500/20"
                 : "bg-[var(--bg-app)] border-slate-200/80 dark:border-slate-800/80 text-slate-600 dark:text-slate-400"
@@ -884,7 +884,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
           <button
             type="button"
             onClick={() => setActiveTab("queue")}
-            className="px-4 py-2.5 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 text-xs text-left hover:border-[var(--brand-primary)] transition cursor-pointer"
+            className="px-4 py-2.5 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 text-xs text-left hover:border-[var(--brand-primary)] transition cursor-pointer"
           >
             <span className="text-[10px] text-slate-400 block uppercase font-semibold">
               {t("uiActiveQueueToday")}
@@ -894,7 +894,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
             </span>
           </button>
 
-          <div className="px-4 py-2.5 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 text-xs text-left">
+          <div className="px-4 py-2.5 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 text-xs text-left">
             <span className="text-[10px] text-slate-400 block uppercase font-semibold">
               {t("uiActivePhysicians")}
             </span>
@@ -908,7 +908,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
             onClick={() => void loadData()}
             disabled={loading}
             title={t("uiRefreshAllRecords")}
-            className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition cursor-pointer"
+            className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           </button>
@@ -916,7 +916,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
       </div>
 
       {/* Reception Nav Tabs */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-xs max-w-fit overflow-x-auto">
+      <div className="flex items-center gap-2 p-1.5 rounded-lg bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-xs max-w-fit overflow-x-auto">
         {[
           {
             id: "verifications",
@@ -968,7 +968,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
       {activeTab === "verifications" && (
         <div className="space-y-5">
           {/* Filter Bar */}
-          <div className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="p-4 rounded-lg bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
                 Filter Requests:
@@ -1003,8 +1003,8 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
 
           {/* Pending Verifications Queue */}
           {filteredPendingAppointments.length === 0 ? (
-            <div className="p-12 sm:p-16 rounded-3xl bg-[var(--bg-surface)] border border-dashed border-slate-300 dark:border-slate-800 text-center space-y-3">
-              <div className="w-14 h-14 mx-auto rounded-3xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+            <div className="p-12 sm:p-16 rounded-xl bg-[var(--bg-surface)] border border-dashed border-slate-300 dark:border-slate-800 text-center space-y-3">
+              <div className="w-14 h-14 mx-auto rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                 <CheckCircle2 className="w-7 h-7" />
               </div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white">
@@ -1017,14 +1017,14 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 <button
                   type="button"
                   onClick={() => setActiveTab("checkin")}
-                  className="px-5 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-95 transition cursor-pointer"
+                  className="px-5 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-95 transition cursor-pointer"
                 >
                   Issue Fast Walk-in Ticket
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab("queue")}
-                  className="px-5 py-2.5 rounded-2xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition cursor-pointer"
+                  className="px-5 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition cursor-pointer"
                 >
                   View Active Chamber Queue
                 </button>
@@ -1066,12 +1066,12 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 return (
                   <div
                     key={appt.id}
-                    className="p-6 sm:p-7 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5 transition-all hover:shadow-md"
+                    className="p-6 sm:p-7 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5 transition-all hover:shadow-md"
                   >
                     {/* Header: Patient Info + Token */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                       <div className="flex items-center gap-3.5">
-                        <div className="w-14 h-14 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-primary)] border border-[var(--brand-border)] flex flex-col items-center justify-center font-black">
+                        <div className="w-14 h-14 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-primary)] border border-[var(--brand-border)] flex flex-col items-center justify-center font-black">
                           <span className="text-[9px] uppercase tracking-wider opacity-70">
                             {t("uiSerial")}
                           </span>
@@ -1125,7 +1125,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3.5">
                       {/* Check 1: Payment Verification */}
                       <div
-                        className={`p-4 rounded-2xl border transition-all ${
+                        className={`p-4 rounded-lg border transition-all ${
                           isPaid
                             ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-950 dark:text-emerald-100"
                             : "bg-amber-500/10 border-amber-500/30 text-amber-950 dark:text-amber-100"
@@ -1194,7 +1194,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
 
                       {/* Check 2: Doctor Availability Check */}
                       <div
-                        className={`p-4 rounded-2xl border transition-all ${
+                        className={`p-4 rounded-lg border transition-all ${
                           isDoctorAvailable
                             ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-950 dark:text-emerald-100"
                             : "bg-rose-500/10 border-rose-500/30 text-rose-950 dark:text-rose-100"
@@ -1233,7 +1233,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
 
                       {/* Check 3: Timing & Visiting Hours Check */}
                       <div
-                        className={`p-4 rounded-2xl border transition-all ${
+                        className={`p-4 rounded-lg border transition-all ${
                           scheduleEval.isAvailableOnDate
                             ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-950 dark:text-emerald-100"
                             : "bg-amber-500/10 border-amber-500/30 text-amber-950 dark:text-amber-100"
@@ -1273,7 +1273,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                       </div>
 
                       {/* Check 4: Clinical Intake & Allergies */}
-                      <div className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200">
+                      <div className="p-4 rounded-lg bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200">
                         <div className="flex items-center justify-between mb-1.5">
                           <span className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 text-slate-400">
                             <HeartPulse className="w-3.5 h-3.5" />
@@ -1347,7 +1347,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                         <button
                           type="button"
                           onClick={() => handleOpenStaffCancel(appt)}
-                          className="px-4 py-2.5 rounded-2xl border border-rose-200 dark:border-rose-900/40 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
+                          className="px-4 py-2.5 rounded-lg border border-rose-200 dark:border-rose-900/40 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
                         >
                           <XCircle className="w-3.5 h-3.5" />
                           <span>{t("uiRejectCancel")}</span>
@@ -1359,7 +1359,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                             type="button"
                             disabled={markingPaymentId === appt.id || confirmingId === appt.id}
                             onClick={() => handleCollectPaymentAndConfirm(appt.id, "CASH")}
-                            className="px-4 py-2.5 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-sm transition cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                            className="px-4 py-2.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-sm transition cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
                           >
                             <DollarSign className="w-3.5 h-3.5" />
                             <span>Collect ${appt.fee} Cash & Confirm</span>
@@ -1371,7 +1371,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                           type="button"
                           disabled={confirmingId === appt.id || markingPaymentId === appt.id}
                           onClick={() => handleConfirmAppointment(appt.id)}
-                          className="px-6 py-2.5 rounded-2xl bg-[var(--brand-primary)] hover:opacity-95 text-white text-xs font-bold shadow-md transition cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                          className="px-6 py-2.5 rounded-lg bg-[var(--brand-primary)] hover:opacity-95 text-white text-xs font-bold shadow-md transition cursor-pointer flex items-center gap-2 disabled:opacity-50"
                         >
                           {confirmingId === appt.id ? (
                             <>
@@ -1399,7 +1399,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
       {activeTab === "checkin" && (
         <div className="grid gap-6 lg:grid-cols-12">
           {/* Left Form (8 Cols) */}
-          <div className="lg:col-span-8 p-6 sm:p-7 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5">
+          <div className="lg:col-span-8 p-6 sm:p-7 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5">
             <div className="flex items-start flex-col justify-between pb-3 border-b border-slate-100 dark:border-slate-800 gap-4">
               <div>
                 <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -1625,7 +1625,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
 
               {/* Reception Fee Breakdown & Method */}
               {staffEffectiveBreakdown && (
-                <div className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 space-y-3">
+                <div className="p-4 rounded-lg bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-900 dark:text-white">
                       Consultation Visit Type & Desk Collection
@@ -1727,7 +1727,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-3.5 rounded-2xl bg-[var(--brand-primary)] hover:opacity-95 text-white font-extrabold text-sm shadow-md transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full py-3.5 rounded-lg bg-[var(--brand-primary)] hover:opacity-95 text-white font-extrabold text-sm shadow-md transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {submitting ? (
                     <>
@@ -1747,7 +1747,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
 
           {/* Right Ticket Preview (4 Cols) */}
           <div className="lg:col-span-4 space-y-4">
-            <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+            <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
                 <h3 className="font-bold text-xs uppercase tracking-wider text-slate-500">
                   {t("uiLastIssuedSerialSlip")}
@@ -1765,7 +1765,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
               </div>
 
               {issuedTicket ? (
-                <div className="p-5 rounded-2xl bg-[var(--brand-surface)] border-2 border-[var(--brand-primary)]/40 text-center space-y-3 print:bg-white print:border-black">
+                <div className="p-5 rounded-lg bg-[var(--brand-surface)] border-2 border-[var(--brand-primary)]/40 text-center space-y-3 print:bg-white print:border-black">
                   <div className="w-10 h-10 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
                     <CheckCircle2 className="w-5 h-5" />
                   </div>
@@ -1822,7 +1822,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
 
       {/* 3. TODAY'S LIVE QUEUE BOARD */}
       {activeTab === "queue" && (
-        <div className="p-6 sm:p-7 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5">
+        <div className="p-6 sm:p-7 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
@@ -1967,7 +1967,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
 
       {/* 4. ALL CLINIC APPOINTMENTS & CANCELLATIONS */}
       {activeTab === "appointments" && (
-        <div className="p-6 sm:p-7 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5">
+        <div className="p-6 sm:p-7 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
@@ -2130,7 +2130,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
 
       {/* 5. PATIENTS DIRECTORY */}
       {activeTab === "patients" && (
-        <div className="p-6 sm:p-7 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5">
+        <div className="p-6 sm:p-7 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -2152,7 +2152,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
 
           {/* Success Banner */}
           {patientVerifySuccess && (
-            <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between gap-2 animate-in fade-in">
+            <div className="p-3.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between gap-2 animate-in fade-in">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>{patientVerifySuccess}</span>
@@ -2242,7 +2242,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 (p.user.phone && p.user.phone.toLowerCase().includes(q))
               );
             }).length === 0 ? (
-            <div className="p-10 text-center text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
+            <div className="p-10 text-center text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
               {t("uiNoPatientsFoundMatchingThe")}
             </div>
           ) : (
@@ -2265,7 +2265,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 .map((pat) => (
                   <div
                     key={pat.id}
-                    className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 space-y-3 flex flex-col justify-between"
+                    className="p-4 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 space-y-3 flex flex-col justify-between"
                   >
                     <div className="space-y-2">
                       <div className="flex items-start justify-between gap-2">
@@ -2349,11 +2349,11 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
       {/* Staff Administrative Cancellation & Refund Modal */}
       {staffCancelTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-lg bg-[var(--bg-surface)] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-5 animate-in fade-in zoom-in-95 duration-150">
+          <div className="relative w-full max-w-lg bg-[var(--bg-surface)] rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-5 animate-in fade-in zoom-in-95 duration-150">
             {/* Modal Header */}
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 flex items-center justify-center shrink-0">
+                <div className="w-12 h-12 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 flex items-center justify-center shrink-0">
                   <XCircle className="w-6 h-6" />
                 </div>
                 <div>
@@ -2376,7 +2376,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
             </div>
 
             {/* Target Overview */}
-            <div className="p-3.5 rounded-2xl bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 grid grid-cols-2 gap-2 text-xs">
+            <div className="p-3.5 rounded-lg bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 grid grid-cols-2 gap-2 text-xs">
               <div>
                 <span className="text-[10px] text-slate-400 block font-semibold uppercase">{t.doctor}</span>
                 <span className="font-bold text-slate-900 dark:text-white">
@@ -2409,7 +2409,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] p-3">
+            <div className="flex flex-wrap items-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-subtle)] p-3">
               <span className="mr-auto text-[11px] font-semibold text-slate-500">{t("uiInformPatientBeforeCancel", "Inform patient before cancelling")}</span>
               {staffCancelTarget.patient.user.phone && (
                 <a
@@ -2534,7 +2534,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 value={staffCancelReason}
                 onChange={(e) => setStaffCancelReason(e.target.value)}
                 placeholder={t("uiAdditionalNotesOnWhyThis")}
-                className="w-full mt-1.5 p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[var(--brand-primary)]"
+                className="w-full mt-1.5 p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
 
@@ -2544,7 +2544,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 type="button"
                 disabled={staffCancelSubmitting}
                 onClick={() => setStaffCancelTarget(null)}
-                className="px-5 py-2.5 rounded-2xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition cursor-pointer disabled:opacity-50"
+                className="px-5 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition cursor-pointer disabled:opacity-50"
               >
                 {t("uiKeepAppointment")}
               </button>
@@ -2552,7 +2552,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 type="button"
                 disabled={staffCancelSubmitting || !staffCancelReason.trim()}
                 onClick={handleStaffConfirmCancel}
-                className="px-6 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md transition cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                className="px-6 py-2.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md transition cursor-pointer flex items-center gap-2 disabled:opacity-50"
               >
                 {staffCancelSubmitting ? (
                   <>
@@ -2571,10 +2571,10 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
       {/* Staff Diagnostic Lab Report Upload Modal (Requirement 12 & 13) */}
       {uploadReportModalOpen && reportTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-lg bg-[var(--bg-surface)] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-5 animate-in fade-in zoom-in-95 duration-150">
+          <div className="relative w-full max-w-lg bg-[var(--bg-surface)] rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-5 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-primary)] border border-[var(--brand-border)] flex items-center justify-center shrink-0">
+                <div className="w-12 h-12 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-primary)] border border-[var(--brand-border)] flex items-center justify-center shrink-0">
                   <FileText className="w-6 h-6" />
                 </div>
                 <div>

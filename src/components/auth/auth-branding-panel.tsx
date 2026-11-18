@@ -85,7 +85,7 @@ export function AuthBrandingPanel({
       {/* Top Header: Brand Identity */}
       <div className="relative z-10 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3" aria-label="Home">
-          <div className="relative w-10 h-10 overflow-hidden rounded-2xl shadow-md shadow-teal-500/20">
+          <div className="relative w-10 h-10 overflow-hidden rounded-xl shadow-md shadow-teal-500/20">
             <Image src="/icons/icon.svg" alt="System Logo" fill sizes="40px" />
           </div>
           <div>
@@ -134,7 +134,7 @@ export function AuthBrandingPanel({
           {activeFeatures.slice(0, 3).map((feat, idx) => (
             <div
               key={idx}
-              className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center justify gap-3 backdrop-blur-xs"
+              className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify gap-3 backdrop-blur-xs"
             >
               <div className="w-8 h-8 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center shrink-0 mt-0.5">
                 {feat.icon}

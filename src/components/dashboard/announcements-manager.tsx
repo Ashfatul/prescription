@@ -246,10 +246,10 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+      <div className="p-6 sm:p-8 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
         <div className="space-y-1.5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold shadow-xs">
+            <div className="w-10 h-10 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold shadow-xs">
               <Megaphone className="w-5 h-5" />
             </div>
             <div>
@@ -277,7 +277,7 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
           <button
             type="button"
             onClick={() => setModalOpen(true)}
-            className="px-5 py-3 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-95 transition flex items-center gap-2 self-start sm:self-auto cursor-pointer"
+            className="px-5 py-3 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-95 transition flex items-center gap-2 self-start sm:self-auto cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>{t.newBroadcast}</span>
@@ -286,7 +286,7 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
       </div>
 
       {/* Comprehensive Filter & Search Bar */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col md:flex-row items-center gap-3">
+      <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col md:flex-row items-center gap-3">
         {/* Search Input */}
         <div className="relative flex-1 w-full min-w-[200px]">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -346,13 +346,13 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
 
       {/* Announcements Feed */}
       {loading ? (
-        <div className="p-16 text-center text-xs text-slate-400 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-3">
+        <div className="p-16 text-center text-xs text-slate-400 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-3">
           <Loader2 className="w-7 h-7 animate-spin mx-auto text-[var(--brand-primary)]" />
           <p className="font-medium">{t.loadingBulletins}</p>
         </div>
       ) : filteredAnnouncements.length === 0 ? (
-        <div className="p-16 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-3 shadow-2xs">
-          <div className="w-12 h-12 rounded-2xl bg-[var(--bg-subtle)] text-slate-400 flex items-center justify-center mx-auto">
+        <div className="p-16 text-center rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-3 shadow-2xs">
+          <div className="w-12 h-12 rounded-lg bg-[var(--bg-subtle)] text-slate-400 flex items-center justify-center mx-auto">
             <Megaphone className="w-6 h-6" />
           </div>
           <div>
@@ -371,7 +371,7 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
           {filteredAnnouncements.map((item) => (
             <div
               key={item.id}
-              className={`p-6 rounded-3xl bg-[var(--bg-surface)] border transition-all flex flex-col justify-between space-y-4 shadow-xs ${
+              className={`p-6 rounded-xl bg-[var(--bg-surface)] border transition-all flex flex-col justify-between space-y-4 shadow-xs ${
                 item.priority === "URGENT" && item.isActive
                   ? "border-rose-200 dark:border-rose-900/60 bg-gradient-to-br from-rose-500/5 via-[var(--bg-surface)] to-transparent"
                   : item.isActive
@@ -460,7 +460,7 @@ export function AnnouncementsManager({ canManage, userRole }: AnnouncementsManag
       {/* Creation Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+          <div className="w-full max-w-lg rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between p-5 sm:p-6 border-b border-[var(--border-subtle)] modal-header shrink-0">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">

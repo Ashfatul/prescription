@@ -529,10 +529,10 @@ export function SaasPricingManager() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
+            <div className="w-9 h-9 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
               <CreditCard className="w-5 h-5" />
             </div>
             <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -547,7 +547,7 @@ export function SaasPricingManager() {
         <button
           type="button"
           onClick={openCreateModal}
-          className="px-4 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+          className="px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>{t.addPricingTier}</span>
@@ -561,7 +561,7 @@ export function SaasPricingManager() {
           <span>{t("uiLoadingSaaSPlans")}</span>
         </div>
       ) : plans.length === 0 ? (
-        <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs text-slate-400">
+        <div className="p-12 text-center rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs text-slate-400">
           {t("uiNoPricingPlansConfigured")}
         </div>
       ) : (
@@ -569,7 +569,7 @@ export function SaasPricingManager() {
           {plans.map((plan) => (
             <div
               key={plan.id}
-              className={`p-7 rounded-3xl bg-[var(--bg-surface)] border transition flex flex-col justify-between space-y-6 shadow-xs relative ${
+              className={`p-7 rounded-xl bg-[var(--bg-surface)] border transition flex flex-col justify-between space-y-6 shadow-xs relative ${
                 plan.isPopular
                   ? "border-[var(--brand-primary)] ring-2 ring-[var(--brand-primary)]/20"
                   : "border-[var(--border-subtle)]"
@@ -701,7 +701,7 @@ export function SaasPricingManager() {
       {/* Advanced SaaS Pricing Modal with Live Preview & Reactive Auto-Generation */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-900/70 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-5xl rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-1.5rem)] flex flex-col overflow-hidden">
+          <div className="w-full max-w-5xl rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-1.5rem)] flex flex-col overflow-hidden">
             {/* Modal Header */}
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-[var(--bg-subtle)]">
               <div className="flex items-center gap-2.5">
@@ -760,7 +760,7 @@ export function SaasPricingManager() {
             <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
               <div className="modal-body flex-1 overflow-y-auto p-4 sm:p-6">
                 {error && (
-                  <div className="p-3.5 mb-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-600 text-xs font-semibold">
+                  <div className="p-3.5 mb-4 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-600 text-xs font-semibold">
                     {error}
                   </div>
                 )}
@@ -819,7 +819,7 @@ export function SaasPricingManager() {
                     </div>
 
                     {/* Clean 1-Line Plan Description with Auto-Fill helper */}
-                    <div className="space-y-1.5 p-3.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
+                    <div className="space-y-1.5 p-3.5 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
                       <div className="flex items-center justify-between">
                         <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
                           {t("uiShortDescription")}
@@ -844,7 +844,7 @@ export function SaasPricingManager() {
                     </div>
 
                     {/* SaaS Quota Limitations & Unlimited Controls */}
-                    <div className="space-y-2.5 p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
+                    <div className="space-y-2.5 p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
                       <div className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
                         <div>
                           <h4 className="font-black text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300">
@@ -1014,7 +1014,7 @@ export function SaasPricingManager() {
                     </div>
 
                     {/* Interactive Capabilities & Custom Bullets List */}
-                    <div className="space-y-3 p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
+                    <div className="space-y-3 p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
                       <div className="pb-2 border-b border-[var(--border-subtle)]">
                         <h4 className="font-black text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300">
                           {t("uiClinicalCapabilities")}
@@ -1111,7 +1111,7 @@ export function SaasPricingManager() {
                     </div>
 
                     {/* Popular & Active Toggles */}
-                    <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
+                    <div className="grid grid-cols-2 gap-3 p-3.5 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
                       <label className="flex items-center gap-2.5 cursor-pointer select-none">
                         <input
                           type="checkbox"
@@ -1156,7 +1156,7 @@ export function SaasPricingManager() {
 
                     {/* Preview Pricing Card (Exact UI as rendered in landing & billing) */}
                     <div
-                      className={`p-6 sm:p-7 rounded-3xl bg-[var(--bg-surface)] border transition flex flex-col justify-between space-y-5 shadow-lg relative ${
+                      className={`p-6 sm:p-7 rounded-xl bg-[var(--bg-surface)] border transition flex flex-col justify-between space-y-5 shadow-lg relative ${
                         isPopular
                           ? "border-[var(--brand-primary)] ring-2 ring-[var(--brand-primary)]/20"
                           : "border-[var(--border-default)]"
@@ -1261,7 +1261,7 @@ export function SaasPricingManager() {
 
                       {/* Mock Action Button */}
                       <div className="pt-2">
-                        <div className="w-full py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold text-center shadow-xs">
+                        <div className="w-full py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-bold text-center shadow-xs">
                           {language === "bn" ? "প্যাকেজটি নির্বাচন করুন" : "Select Subscription Plan"}
                         </div>
                       </div>

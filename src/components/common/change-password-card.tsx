@@ -62,9 +62,9 @@ export function ChangePasswordCard() {
   };
 
   return (
-    <div className="rounded-3xl border border-[var(--border-default)] bg-[var(--bg-surface)] p-6 sm:p-8 shadow-sm space-y-6">
+    <div className="rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] p-6 sm:p-8 shadow-sm space-y-6">
       <div className="flex items-center gap-3 pb-4 border-b border-[var(--border-subtle)]">
-        <div className="w-10 h-10 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center shrink-0 shadow-xs">
+        <div className="w-10 h-10 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center shrink-0 shadow-xs">
           <KeyRound className="w-5 h-5" />
         </div>
         <div>
@@ -78,14 +78,14 @@ export function ChangePasswordCard() {
       </div>
 
       {successMsg && (
-        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs flex items-center gap-3">
+        <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs flex items-center gap-3">
           <CheckCircle2 className="w-5 h-5 shrink-0" />
           <span className="font-semibold">{successMsg}</span>
         </div>
       )}
 
       {errorMsg && (
-        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-400 text-xs flex items-center gap-3">
+        <div className="p-4 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-400 text-xs flex items-center gap-3">
           <AlertCircle className="w-5 h-5 shrink-0" />
           <span className="font-semibold">{errorMsg}</span>
         </div>
@@ -104,7 +104,7 @@ export function ChangePasswordCard() {
               onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="••••••••"
               required
-              className="w-full input-icon-left !pl-11 pr-10 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 min-h-[44px] outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all"
+              className="w-full input-icon-left !pl-11 pr-10 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 min-h-[44px] outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all"
             />
             <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <button
@@ -131,7 +131,7 @@ export function ChangePasswordCard() {
                 placeholder="••••••••"
                 required
                 minLength={8}
-                className="w-full input-icon-left !pl-11 pr-10 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 min-h-[44px] outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all"
+                className="w-full input-icon-left !pl-11 pr-10 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 min-h-[44px] outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all"
               />
               <ShieldCheck className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <button
@@ -156,7 +156,7 @@ export function ChangePasswordCard() {
                 placeholder="••••••••"
                 required
                 minLength={8}
-                className="w-full input-icon-left !pl-11 pr-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 min-h-[44px] outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all"
+                className="w-full input-icon-left !pl-11 pr-4 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 min-h-[44px] outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all"
               />
               <ShieldCheck className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
@@ -167,7 +167,7 @@ export function ChangePasswordCard() {
           <button
             type="submit"
             disabled={loading || !currentPassword || newPassword.length < 8 || newPassword !== confirmPassword}
-            className="px-6 py-2.5 min-h-[44px] rounded-xl bg-[var(--brand-primary)] hover:opacity-95 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+            className="px-6 py-2.5 min-h-[44px] rounded-lg bg-[var(--brand-primary)] hover:opacity-95 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
           >
             {loading ? (
               <>

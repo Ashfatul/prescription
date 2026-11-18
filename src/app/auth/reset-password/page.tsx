@@ -89,11 +89,11 @@ function ResetPasswordInner() {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="rounded-3xl border border-[var(--border-default)] bg-[var(--bg-surface)] p-6 sm:p-8 shadow-sm space-y-5">
+      <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] p-6 sm:p-8 shadow-sm space-y-5">
         {!success ? (
           <>
             <div className="text-center space-y-1.5">
-              <div className="w-12 h-12 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center mx-auto shadow-xs">
+              <div className="w-12 h-12 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center mx-auto shadow-xs">
                 <KeyRound className="w-6 h-6" />
               </div>
               <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -204,7 +204,7 @@ function ResetPasswordInner() {
           </>
         ) : (
           <div className="text-center py-4 space-y-3.5">
-            <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
+            <div className="w-14 h-14 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
@@ -316,7 +316,7 @@ export default function ResetPasswordPage() {
         <div className="py-6 my-auto w-full">
           <Suspense
             fallback={
-              <div className="p-6 max-w-md mx-auto rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-xs text-slate-500 text-center">
+              <div className="p-6 max-w-md mx-auto rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-xs text-slate-500 text-center">
                 <RefreshCw className="w-4 h-4 animate-spin mx-auto mb-2 text-[var(--brand-primary)]" />
                 {t("uiLoadingResetInterface")}
               </div>

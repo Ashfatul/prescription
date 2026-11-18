@@ -53,10 +53,10 @@ export default function NotificationsPage() {
   };
 
   return (
-    <main className="mx-auto w-full max-w-4xl space-y-6 p-4 sm:p-6 lg:p-8">
+    <main className="mx-auto w-full max-w-[1920px] space-y-6 p-4 sm:p-6 lg:p-8">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border-subtle)] pb-5">
         <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-primary)]">
+          <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--brand-surface)] text-[var(--brand-primary)]">
             <Bell className="h-5 w-5" />
           </span>
           <div>
@@ -74,9 +74,9 @@ export default function NotificationsPage() {
       {loading ? (
         <p className="py-12 text-center text-sm text-slate-500">Loading notifications...</p>
       ) : items.length === 0 ? (
-        <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-12 text-center text-sm text-slate-500">You are all caught up.</div>
+        <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-12 text-center text-sm text-slate-500">You are all caught up.</div>
       ) : (
-        <div className="divide-y divide-[var(--border-subtle)] rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+        <div className="divide-y divide-[var(--border-subtle)] rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
           {items.map((item) => (
             <article key={item.id} className={`flex items-start gap-4 p-4 ${item.read ? "" : "bg-[var(--brand-surface)]/40"}`}>
               <Bell className="mt-1 h-4 w-4 shrink-0 text-[var(--brand-primary)]" />

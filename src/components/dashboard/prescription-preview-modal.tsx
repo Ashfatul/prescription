@@ -114,7 +114,7 @@ function PrescriptionPageSheet({
 }) {
   const { t, language } = useLanguage();
   return (
-    <div className="bg-white text-slate-900 rounded-2xl shadow-2xl border border-slate-300 p-6 sm:p-8 min-h-[920px] flex flex-col justify-between print:border-none print:shadow-none print:p-0 print:min-h-0 print:rounded-none">
+    <div className="bg-white text-slate-900 rounded-lg shadow-2xl border border-slate-300 p-6 sm:p-8 min-h-[920px] flex flex-col justify-between print:border-none print:shadow-none print:p-0 print:min-h-0 print:rounded-none">
       <div>
         {/* 1. Unified Prescription Header: Doctor Credentials (Left) & Hospital Affiliation (Right) */}
         <header

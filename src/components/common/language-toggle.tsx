@@ -27,7 +27,7 @@ export function LanguageToggle() {
         />
       </button>
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 min-w-36 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-1.5 shadow-lg">
+        <div className="absolute right-0 top-full z-50 mt-2 min-w-36 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-1.5 shadow-lg">
           {languages.map((item) => (
             <button
               key={item.code}

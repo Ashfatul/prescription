@@ -265,7 +265,7 @@ export function RolePermissionManager() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[400px] flex-col items-center justify-center gap-3 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-12 text-center shadow-xs">
+      <div className="flex min-h-[400px] flex-col items-center justify-center gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-12 text-center shadow-xs">
         <div className="h-8 w-8 animate-spin rounded-full border-3 border-[var(--brand-primary)] border-t-transparent" />
         <p className="text-sm font-semibold text-[var(--text-secondary)]">
           {t.uiLoadingRolePermissions}
@@ -277,10 +277,10 @@ export function RolePermissionManager() {
   return (
     <div className="space-y-6">
       {/* Top Banner & Header */}
-      <div className="flex flex-col justify-between gap-4 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-sm md:flex-row md:items-center">
+      <div className="flex flex-col justify-between gap-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-sm md:flex-row md:items-center">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-primary)] shrink-0">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--brand-surface)] text-[var(--brand-primary)] shrink-0">
               <Shield className="h-5 w-5" />
             </div>
             <div>
@@ -345,7 +345,7 @@ export function RolePermissionManager() {
       {/* Notification Toast */}
       {message && (
         <div
-          className={`flex items-center justify-between rounded-2xl border p-4 text-xs font-semibold ${
+          className={`flex items-center justify-between rounded-lg border p-4 text-xs font-semibold ${
             message.type === "success"
               ? "border-teal-200 bg-teal-50 text-teal-800 dark:border-teal-900/50 dark:bg-teal-950/30 dark:text-teal-300"
               : "border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300"
@@ -370,7 +370,7 @@ export function RolePermissionManager() {
 
       {/* Developer Instructions Card (Collapsible) */}
       {showDevGuide && (
-        <div className="rounded-3xl border border-teal-500/20 bg-teal-50/40 p-6 shadow-sm dark:bg-teal-950/10">
+        <div className="rounded-xl border border-teal-500/20 bg-teal-50/40 p-6 shadow-sm dark:bg-teal-950/10">
           <div className="flex items-start gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-teal-600/10 text-teal-700 dark:text-teal-400">
               <Sparkles className="h-4 w-4" />
@@ -386,7 +386,7 @@ export function RolePermissionManager() {
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-2xl border border-teal-500/20 bg-white/70 p-3.5 dark:bg-slate-900/60">
+                <div className="rounded-lg border border-teal-500/20 bg-white/70 p-3.5 dark:bg-slate-900/60">
                   <span className="font-mono text-xs font-bold text-teal-700 dark:text-teal-400">
                     {t("uiStepOpenRegistry")}
                   </span>
@@ -396,7 +396,7 @@ export function RolePermissionManager() {
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-teal-500/20 bg-white/70 p-3.5 dark:bg-slate-900/60">
+                <div className="rounded-lg border border-teal-500/20 bg-white/70 p-3.5 dark:bg-slate-900/60">
                   <span className="font-mono text-xs font-bold text-teal-700 dark:text-teal-400">
                     {t("uiStepAddDefinition")}
                   </span>
@@ -414,7 +414,7 @@ export function RolePermissionManager() {
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-teal-500/20 bg-white/70 p-3.5 dark:bg-slate-900/60">
+                <div className="rounded-lg border border-teal-500/20 bg-white/70 p-3.5 dark:bg-slate-900/60">
                   <span className="font-mono text-xs font-bold text-teal-700 dark:text-teal-400">
                     {t("uiStepAutoDiscovery")}
                   </span>
@@ -432,7 +432,7 @@ export function RolePermissionManager() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-teal-500/15 bg-slate-900 p-4 font-mono text-[11px] text-teal-300">
+              <div className="rounded-lg border border-teal-500/15 bg-slate-900 p-4 font-mono text-[11px] text-teal-300">
                 <p className="text-slate-400">{"// Example in src/lib/auth/permissions.ts:"}</p>
                 <p className="mt-1 text-emerald-400">
                   &#123; id: &quot;telehealth:start_call&quot;, label: &quot;Start Video Consultation&quot;, category: &quot;Clinical Prescriptions&quot;, description: &quot;Enables doctors to initiate live telehealth consultations.&quot; &#125;,
@@ -457,7 +457,7 @@ export function RolePermissionManager() {
             <div
               key={role}
               onClick={() => setSelectedRoleView(isSelected ? "ALL" : role)}
-              className={`flex flex-col justify-between rounded-3xl border bg-[var(--bg-surface)] p-4.5 shadow-xs transition-all cursor-pointer hover:border-[var(--brand-primary)] ${
+              className={`flex flex-col justify-between rounded-xl border bg-[var(--bg-surface)] p-4.5 shadow-xs transition-all cursor-pointer hover:border-[var(--brand-primary)] ${
                 isSelected
                   ? "border-[var(--brand-primary)] ring-2 ring-[var(--brand-primary)]/25 bg-[var(--brand-surface)]/20 shadow-md"
                   : "border-[var(--border-subtle)]"
@@ -503,7 +503,7 @@ export function RolePermissionManager() {
       </div>
 
       {/* Search & Category Filter Suite */}
-      <div className="space-y-4 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-sm">
+      <div className="space-y-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-sm">
         {/* Full-Width Spacious Search Bar */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="relative flex-1">
@@ -513,7 +513,7 @@ export function RolePermissionManager() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t("uiSearchPermissionsByCapabilityName")}
-              className="w-full min-h-[44px] rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-app)] py-2.5 input-icon-left !pl-11 pr-10 text-xs font-medium text-[var(--text-primary)] placeholder-[var(--text-muted)] transition focus:border-[var(--brand-primary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20"
+              className="w-full min-h-[44px] rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-app)] py-2.5 input-icon-left !pl-11 pr-10 text-xs font-medium text-[var(--text-primary)] placeholder-[var(--text-muted)] transition focus:border-[var(--brand-primary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20"
             />
             {searchQuery && (
               <button
@@ -599,7 +599,7 @@ export function RolePermissionManager() {
       </div>
 
       {/* Role View Filter Switcher Tabs */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-2 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-2 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs">
         <div className="flex flex-wrap items-center gap-1.5">
           <button
             onClick={() => setSelectedRoleView("ALL")}
@@ -643,7 +643,7 @@ export function RolePermissionManager() {
 
       {/* View Mode 1: All 5 Roles Matrix (Structured Responsive Table) */}
       {selectedRoleView === "ALL" && (
-        <div className="overflow-x-auto rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-sm scrollbar-thin">
+        <div className="overflow-x-auto rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-sm scrollbar-thin">
           <div className="min-w-[960px] w-full">
             {/* Sticky Table Header */}
             <div className="sticky top-16 z-20 flex items-center border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/95 px-6 py-4 text-xs font-bold text-[var(--text-secondary)] shadow-xs backdrop-blur-md">
@@ -802,9 +802,9 @@ export function RolePermissionManager() {
             const pct = totalCount > 0 ? Math.round((assignedCount / totalCount) * 100) : 0;
 
             return (
-              <div className="p-6 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="p-6 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div className="flex items-center gap-3.5">
-                  <div className={`w-12 h-12 rounded-2xl border ${meta.color} flex items-center justify-center shrink-0 shadow-xs`}>
+                  <div className={`w-12 h-12 rounded-lg border ${meta.color} flex items-center justify-center shrink-0 shadow-xs`}>
                     <Icon className="w-6 h-6" />
                   </div>
                   <div>
@@ -844,12 +844,12 @@ export function RolePermissionManager() {
 
           {/* Capabilities Grouped by Category in Focused Mode */}
           {Object.entries(groupedPermissions).length === 0 ? (
-            <div className="p-12 text-center text-xs text-[var(--text-muted)] rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+            <div className="p-12 text-center text-xs text-[var(--text-muted)] rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
               {t("uiNoPermissionsMatchingYourSearch")}
             </div>
           ) : (
             Object.entries(groupedPermissions).map(([category, perms]) => (
-              <div key={category} className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-sm overflow-hidden">
+              <div key={category} className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-sm overflow-hidden">
                 {/* Category Header */}
                 <div className="flex items-center justify-between gap-3 bg-[var(--bg-subtle)]/75 px-6 py-3.5 border-b border-[var(--border-subtle)]">
                   <div className="flex items-center gap-2">
@@ -935,7 +935,7 @@ export function RolePermissionManager() {
 
       {/* Bottom Sticky Action Bar if changes pending */}
       {hasUnsavedChanges && (
-        <div className="sticky bottom-4 z-40 flex items-center justify-between rounded-2xl border border-[var(--brand-primary)]/40 bg-[var(--bg-elevated)] p-4 shadow-xl backdrop-blur-md">
+        <div className="sticky bottom-4 z-40 flex items-center justify-between rounded-lg border border-[var(--brand-primary)]/40 bg-[var(--bg-elevated)] p-4 shadow-xl backdrop-blur-md">
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 animate-ping rounded-full bg-[var(--brand-primary)]" />
             <span className="text-xs font-bold text-[var(--text-primary)]">

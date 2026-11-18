@@ -78,7 +78,7 @@ export function ClinicDetailsView({
     <main className="flex-1 w-full">
       {/* Top Hero Banner */}
       <section className="w-full border-b border-[var(--border-subtle)] bg-[radial-gradient(ellipse_80%_60%_at_50%_-15%,rgba(15,118,110,0.14),transparent)] dark:bg-[radial-gradient(ellipse_80%_60%_at_50%_-15%,rgba(20,184,166,0.16),transparent)]">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6">
+        <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-xs text-slate-500">
             <Link href="/" className="hover:text-[var(--brand-text)] flex items-center gap-1 transition">
@@ -98,7 +98,7 @@ export function ClinicDetailsView({
           {/* Clinic Hero Identity Header */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="flex items-start gap-4">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-br from-[var(--brand-surface)] to-[var(--bg-subtle)] text-[var(--brand-primary)] border border-[var(--brand-border)] flex items-center justify-center font-black text-2xl shrink-0 shadow-sm ring-2 ring-[var(--brand-border)]/50">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-gradient-to-br from-[var(--brand-surface)] to-[var(--bg-subtle)] text-[var(--brand-primary)] border border-[var(--brand-border)] flex items-center justify-center font-black text-2xl shrink-0 shadow-sm ring-2 ring-[var(--brand-border)]/50">
                 <Building2 className="w-8 h-8 sm:w-10 sm:h-10" />
               </div>
               <div className="space-y-1.5 min-w-0">
@@ -152,7 +152,7 @@ export function ClinicDetailsView({
               {clinic.contactPhone && (
                 <a
                   href={`tel:${clinic.contactPhone}`}
-                  className="px-4 py-2.5 rounded-2xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-xs font-bold text-slate-800 dark:text-slate-200 transition flex items-center gap-2"
+                  className="px-4 py-2.5 rounded-lg border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-xs font-bold text-slate-800 dark:text-slate-200 transition flex items-center gap-2"
                 >
                   <Phone className="w-3.5 h-3.5 text-slate-400" />
                   <span>{t("uiCallHotline")} {clinic.contactPhone}</span>
@@ -161,7 +161,7 @@ export function ClinicDetailsView({
 
               <Link
                 href={`/live-queue?clinic=${encodeURIComponent(clinic.slug)}`}
-                className="px-4 py-2.5 rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] text-[var(--brand-text)] hover:opacity-95 text-xs font-bold transition flex items-center gap-2 shadow-2xs"
+                className="px-4 py-2.5 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] text-[var(--brand-text)] hover:opacity-95 text-xs font-bold transition flex items-center gap-2 shadow-2xs"
               >
                 <Tv className="w-3.5 h-3.5" />
                 <span>{t("uiLiveChamberTV")}</span>
@@ -169,7 +169,7 @@ export function ClinicDetailsView({
 
               <Link
                 href={`/doctors?clinic=${encodeURIComponent(clinic.slug)}`}
-                className="px-5 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white hover:opacity-95 text-xs font-bold transition flex items-center gap-2 shadow-xs"
+                className="px-5 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white hover:opacity-95 text-xs font-bold transition flex items-center gap-2 shadow-xs"
               >
                 <Calendar className="w-3.5 h-3.5" />
                 <span>{t("uiBookAppointmentToken")}</span>
@@ -180,7 +180,7 @@ export function ClinicDetailsView({
 
           {/* Quick Metrics Bar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-4 border-t border-[var(--border-subtle)]">
-            <div className="p-3.5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-0.5">
+            <div className="p-3.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-0.5">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
                 {t("uiHealthcareTeam")}
               </span>
@@ -189,7 +189,7 @@ export function ClinicDetailsView({
               </p>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-0.5">
+            <div className="p-3.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-0.5">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
                 {t.consultingPhysicians}
               </span>
@@ -198,7 +198,7 @@ export function ClinicDetailsView({
               </p>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-0.5">
+            <div className="p-3.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-0.5">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
                 {t.enrolledPatients}
               </span>
@@ -207,7 +207,7 @@ export function ClinicDetailsView({
               </p>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-0.5">
+            <div className="p-3.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-0.5">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
                 {t.prescriptions}
               </span>
@@ -220,9 +220,9 @@ export function ClinicDetailsView({
       </section>
 
       {/* Clinic Main Content Body */}
-      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-12">
+      <section className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-12">
         {/* Section 1: Facility Location & Contact Profile */}
-        <div className="rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-6 sm:p-8 space-y-6 shadow-xs">
+        <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-6 sm:p-8 space-y-6 shadow-xs">
           <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
             <MapPin className="w-5 h-5 text-[var(--brand-primary)]" />
             <h2 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
@@ -231,7 +231,7 @@ export function ClinicDetailsView({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-            <div className="space-y-1.5 p-4 rounded-2xl bg-[var(--bg-subtle)]/70 border border-[var(--border-subtle)]">
+            <div className="space-y-1.5 p-4 rounded-lg bg-[var(--bg-subtle)]/70 border border-[var(--border-subtle)]">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
                 {t("uiChamberPhysicalLocation")}
@@ -241,7 +241,7 @@ export function ClinicDetailsView({
               </p>
             </div>
 
-            <div className="space-y-1.5 p-4 rounded-2xl bg-[var(--bg-subtle)]/70 border border-[var(--border-subtle)]">
+            <div className="space-y-1.5 p-4 rounded-lg bg-[var(--bg-subtle)]/70 border border-[var(--border-subtle)]">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                 <Phone className="w-3.5 h-3.5 text-slate-400" />
                 {t("uiDirectHotlineEmergency")}
@@ -257,7 +257,7 @@ export function ClinicDetailsView({
               </p>
             </div>
 
-            <div className="space-y-1.5 p-4 rounded-2xl bg-[var(--bg-subtle)]/70 border border-[var(--border-subtle)]">
+            <div className="space-y-1.5 p-4 rounded-lg bg-[var(--bg-subtle)]/70 border border-[var(--border-subtle)]">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                 <Mail className="w-3.5 h-3.5 text-slate-400" />
                 {t("uiAdministrativeContact")}
@@ -326,7 +326,7 @@ export function ClinicDetailsView({
                 return (
                   <div
                     key={member.id}
-                    className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-primary)]/40 transition-all space-y-4 shadow-xs"
+                    className="p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-primary)]/40 transition-all space-y-4 shadow-xs"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
@@ -336,10 +336,10 @@ export function ClinicDetailsView({
                             alt={member.name}
                             width={44}
                             height={44}
-                            className="w-11 h-11 rounded-2xl object-cover shrink-0 border border-[var(--border-subtle)]"
+                            className="w-11 h-11 rounded-lg object-cover shrink-0 border border-[var(--border-subtle)]"
                           />
                         ) : (
-                          <div className="w-11 h-11 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-black text-base shrink-0 border border-[var(--brand-border)]">
+                          <div className="w-11 h-11 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-black text-base shrink-0 border border-[var(--brand-border)]">
                             {member.name.charAt(0)}
                           </div>
                         )}
@@ -401,7 +401,7 @@ export function ClinicDetailsView({
               })}
             </div>
           ) : (
-            <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-dashed border-[var(--border-default)] text-center space-y-2">
+            <div className="p-8 rounded-xl bg-[var(--bg-surface)] border border-dashed border-[var(--border-default)] text-center space-y-2">
               <Users className="w-8 h-8 text-slate-400 mx-auto" />
               <h3 className="font-bold text-slate-900 dark:text-white">
                 {t("uiNoStaffMembersAssignedTo")}
@@ -444,7 +444,7 @@ export function ClinicDetailsView({
               {clinicDoctors.map((doc) => (
                 <div
                   key={doc.id}
-                  className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-primary)]/40 transition-all space-y-5 shadow-xs"
+                  className="p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-primary)]/40 transition-all space-y-5 shadow-xs"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3.5">
@@ -454,10 +454,10 @@ export function ClinicDetailsView({
                           alt={doc.user.name}
                           width={56}
                           height={56}
-                          className="w-14 h-14 rounded-2xl object-cover shrink-0 border border-[var(--border-subtle)] ring-2 ring-[var(--brand-border)]/50"
+                          className="w-14 h-14 rounded-lg object-cover shrink-0 border border-[var(--border-subtle)] ring-2 ring-[var(--brand-border)]/50"
                         />
                       ) : (
-                        <div className="w-14 h-14 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-black text-lg shrink-0">
+                        <div className="w-14 h-14 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-black text-lg shrink-0">
                           {doc.user.name.charAt(0)}
                         </div>
                       )}
@@ -487,7 +487,7 @@ export function ClinicDetailsView({
                   </div>
 
                   {/* Visiting Chamber Details */}
-                  <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] text-xs text-slate-600 dark:text-slate-300 space-y-2">
+                  <div className="p-3.5 rounded-lg bg-[var(--bg-subtle)] text-xs text-slate-600 dark:text-slate-300 space-y-2">
                     <div className="flex items-center gap-2">
                       <Building2 className="w-3.5 h-3.5 text-[var(--brand-primary)] shrink-0" />
                       <span>{t("uiChamber")} <strong>{doc.chamberAddress || (t("uiDiagnosticConsultationBlock"))}</strong></span>
@@ -520,7 +520,7 @@ export function ClinicDetailsView({
               ))}
             </div>
           ) : (
-            <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-dashed border-[var(--border-default)] text-center space-y-2">
+            <div className="p-8 rounded-xl bg-[var(--bg-surface)] border border-dashed border-[var(--border-default)] text-center space-y-2">
               <Stethoscope className="w-8 h-8 text-slate-400 mx-auto" />
               <h3 className="font-bold text-slate-900 dark:text-white">
                 {t("uiNoPhysiciansAssignedToThis")}

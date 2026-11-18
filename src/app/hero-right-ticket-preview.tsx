@@ -15,19 +15,19 @@ export default function HeroRightTicketPreview() {
         <div className="absolute -top-8 -right-8 w-64 h-64 bg-[var(--brand-primary)]/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* Floating Accolade Badge Top-Right */}
-        <div className="absolute -top-4 -right-2 sm:-right-4 z-20 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-strong)]/40 shadow-md text-xs font-bold text-slate-800 dark:text-slate-200">
+        <div className="absolute -top-4 -right-2 sm:-right-4 z-20 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-strong)]/40 shadow-md text-xs font-bold text-slate-800 dark:text-slate-200">
           <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
           <span>{t("uiSFastPrescribing")}</span>
         </div>
 
         {/* Floating Accolade Badge Bottom-Left */}
-        <div className="absolute -bottom-4 -left-2 sm:-left-4 z-20 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-strong)]/40 shadow-md text-xs font-bold text-slate-800 dark:text-slate-200">
+        <div className="absolute -bottom-4 -left-2 sm:-left-4 z-20 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-strong)]/40 shadow-md text-xs font-bold text-slate-800 dark:text-slate-200">
           <Printer className="w-4 h-4 text-[var(--brand-primary)]" />
           <span>{t("uiBmdcLegalA4Format")}</span>
         </div>
 
         {/* Main Hero Card Simulation: Clean Electronic Prescription */}
-        <div className="relative z-10 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xl overflow-hidden p-5 sm:p-6 space-y-4">
+        <div className="relative z-10 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xl overflow-hidden p-5 sm:p-6 space-y-4">
           {/* Card Header: Hospital & Chamber Identity */}
           <div className="flex items-start justify-between pb-3.5 border-b border-[var(--border-subtle)]">
             <div className="space-y-1">
@@ -54,7 +54,7 @@ export default function HeroRightTicketPreview() {
           </div>
 
           {/* Patient Demographic & Vitals Intake Bar */}
-          <div className="p-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs space-y-2">
+          <div className="p-3 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
                 <HeartPulse className="w-4 h-4 text-[var(--brand-primary)]" />

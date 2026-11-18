@@ -125,11 +125,11 @@ export default function ForgotPasswordPage() {
 
         {/* Content Card Area */}
         <div className="py-6 my-auto w-full max-w-md mx-auto">
-          <div className="rounded-3xl border border-[var(--border-default)] bg-[var(--bg-surface)] p-6 sm:p-8 shadow-sm space-y-5">
+          <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] p-6 sm:p-8 shadow-sm space-y-5">
             {!submitted ? (
               <>
                 <div className="text-center space-y-1.5">
-                  <div className="w-12 h-12 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center mx-auto shadow-xs">
+                  <div className="w-12 h-12 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center mx-auto shadow-xs">
                     <KeyRound className="w-6 h-6" />
                   </div>
                   <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -196,7 +196,7 @@ export default function ForgotPasswordPage() {
               </>
             ) : (
               <div className="text-center py-2 space-y-3.5">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
+                <div className="w-14 h-14 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
 
@@ -211,7 +211,7 @@ export default function ForgotPasswordPage() {
                   </p>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[11px] text-slate-500 dark:text-slate-400 text-left space-y-1 leading-relaxed">
+                <div className="p-3.5 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[11px] text-slate-500 dark:text-slate-400 text-left space-y-1 leading-relaxed">
                   <p className="font-semibold text-slate-700 dark:text-slate-300">{t("uiNextSteps")}</p>
                   <p>{t("uiOpenYourInboxAndClick")}</p>
                   <p>{t("uiIfYouDonTReceive")}</p>

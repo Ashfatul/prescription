@@ -220,8 +220,8 @@ body {
   background: var(--border-strong);
 }
 
-/* Consistent & Ergonomic Clinical Form Controls (min-h-[46px] on mobile, min-h-[48px] on desktop)
- * Wrapped in @layer base so utility classes (pl-10, !pl-11, etc.) naturally override padding cleanly.
+/* Consistent & Harmonized Clinical Form Controls (42px mobile, 44px desktop)
+ * Perfectly aligned with buttons to eliminate any "big input small button" discrepancies.
  */
 @layer base {
   :where(
@@ -229,13 +229,13 @@ body {
     select,
     .form-input-consistent
   ) {
-    min-height: 46px;
-    height: 46px;
+    min-height: 42px;
+    height: 42px;
     font-size: 0.875rem;
     line-height: 1.25rem;
-    border-radius: 0.75rem; /* rounded-xl (12px) */
-    padding-left: 1rem;
-    padding-right: 1rem;
+    border-radius: 0.5rem; /* rounded-lg (8px) - Modern crisp engineering standard */
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
     border-width: 1px;
     border-color: var(--border-default);
     background-color: var(--bg-surface);
@@ -250,8 +250,8 @@ body {
       select,
       .form-input-consistent
     ) {
-      min-height: 48px;
-      height: 48px;
+      min-height: 44px;
+      height: 44px;
     }
   }
 
@@ -263,6 +263,105 @@ body {
     border-color: var(--brand-primary);
     box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.2);
   }
+}
+
+/* Harmonized Button System: Matches Form Input Heights & Radii */
+.btn-primary {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--brand-primary);
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.5rem 1.25rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  user-select: none;
+}
+.btn-primary:hover {
+  filter: brightness(1.08);
+}
+.btn-primary:active {
+  transform: scale(0.98);
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  border-width: 1px;
+  border-color: var(--border-default);
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  user-select: none;
+}
+.btn-secondary:hover {
+  background-color: var(--bg-subtle);
+  border-color: var(--border-strong);
+}
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-sm {
+  min-height: 38px;
+  height: 38px;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.75rem;
+  border-radius: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .btn-primary,
+  .btn-secondary {
+    min-height: 44px;
+  }
+}
+
+/* Modern Card & Container Presets */
+.card-modern {
+  border-radius: 0.75rem; /* rounded-xl (12px) */
+  border-width: 1px;
+  border-color: var(--border-subtle);
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.card-subtle {
+  border-radius: 0.5rem; /* rounded-lg (8px) */
+  border-width: 1px;
+  border-color: var(--border-subtle);
+  background-color: var(--bg-subtle);
+}
+
+.canvas-widescreen {
+  max-width: 1920px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Explicit helper classes for icon inputs to prevent any text clipping behind icons */

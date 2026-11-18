@@ -324,7 +324,7 @@ export function DoctorDashboardView({
       <AnnouncementsBanner />
 
       {/* Top Clinical Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 dark:border-slate-800/90 bg-[var(--bg-surface)] p-6 shadow-sm">
+      <div className="relative overflow-hidden rounded-xl border border-slate-200/90 dark:border-slate-800/90 bg-[var(--bg-surface)] p-6 shadow-sm">
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -365,14 +365,14 @@ export function DoctorDashboardView({
 
           {/* Quick Queue Status Block */}
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] px-4 py-2.5">
+            <div className="flex items-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-subtle)] px-4 py-2.5">
               <span className="text-xs text-[var(--text-secondary)]">{t.chamberQueue}:</span>
               <span className="rounded-full bg-[var(--brand-primary)] px-2.5 py-0.5 text-xs font-bold text-white">
                 {waitingAppointments.length}
               </span>
             </div>
 
-            <div className="flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-[var(--bg-surface)] px-4 py-2.5 text-xs">
+            <div className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-[var(--bg-surface)] px-4 py-2.5 text-xs">
               <span className="text-slate-500">{t("uiCompletedToday")}</span>
               <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">
                 {completedAppointments.length}
@@ -383,7 +383,7 @@ export function DoctorDashboardView({
               <button
                 type="button"
                 onClick={() => startConsultationForAppt(nextWaitingAppt.id)}
-                className="flex items-center gap-1.5 rounded-2xl bg-[var(--brand-primary)] px-4 py-2.5 text-xs font-extrabold text-white shadow-sm hover:brightness-110 transition cursor-pointer"
+                className="flex items-center gap-1.5 rounded-lg bg-[var(--brand-primary)] px-4 py-2.5 text-xs font-extrabold text-white shadow-sm hover:brightness-110 transition cursor-pointer"
               >
                 <span>📞 {language === "bn" ? `সিরিয়াল #${nextWaitingAppt.serialNumber}-কে ডাকুন` : `Call Serial #${nextWaitingAppt.serialNumber}`}</span>
               </button>
@@ -422,7 +422,7 @@ export function DoctorDashboardView({
             />
           ) : (
             /* Chamber Waiting Queue Console when No Patient is Selected (Requirement 2 & 8) */
-            <div className="p-6 sm:p-7 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-6 animate-in fade-in">
+            <div className="p-6 sm:p-7 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-6 animate-in fade-in">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
@@ -446,7 +446,7 @@ export function DoctorDashboardView({
                     <button
                       type="button"
                       onClick={() => startConsultationForAppt(nextWaitingAppt.id)}
-                      className="px-5 py-3 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-extrabold shadow-md hover:opacity-95 transition cursor-pointer flex items-center gap-2"
+                      className="min-h-[42px] sm:min-h-[44px] px-5 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-extrabold shadow-md hover:opacity-95 transition cursor-pointer flex items-center gap-2"
                     >
                       <UserCheck className="w-4 h-4" />
                       <span>{language === "bn" ? `পরবর্তী রোগীকে ডাকুন (সিরিয়াল #${nextWaitingAppt.serialNumber})` : `Call Next Patient (Serial #${nextWaitingAppt.serialNumber})`}</span>
@@ -464,7 +464,7 @@ export function DoctorDashboardView({
                     placeholder={t.searchQueuePlaceholder}
                     value={queueSearch}
                     onChange={(e) => setQueueSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
                   />
                 </div>
 
@@ -477,7 +477,7 @@ export function DoctorDashboardView({
 
               {/* Waiting Patients List */}
               {filteredWaiting.length === 0 ? (
-                <div className="p-12 text-center rounded-3xl bg-[var(--bg-app)] border border-dashed border-slate-200 dark:border-slate-800 space-y-3">
+                <div className="p-12 text-center rounded-xl bg-[var(--bg-app)] border border-dashed border-slate-200 dark:border-slate-800 space-y-3">
                   <Clock className="w-8 h-8 text-slate-400 mx-auto" />
                   <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">
                     {t("uiNoPatientsCurrentlyWaitingIn")}
@@ -498,11 +498,11 @@ export function DoctorDashboardView({
                     return (
                       <div
                         key={appt.id}
-                        className="p-5 rounded-2xl bg-[var(--bg-app)] border border-slate-200/90 dark:border-slate-800/90 hover:border-[var(--brand-border)] transition-all shadow-xs space-y-3"
+                        className="p-5 rounded-lg bg-[var(--bg-app)] border border-slate-200/90 dark:border-slate-800/90 hover:border-[var(--brand-border)] transition-all shadow-xs space-y-3"
                       >
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                           <div className="flex items-center gap-3">
-                            <span className="w-10 h-10 rounded-2xl bg-[var(--brand-primary)] text-white font-mono font-black text-sm flex items-center justify-center shadow-xs shrink-0">
+                            <span className="w-10 h-10 rounded-lg bg-[var(--brand-primary)] text-white font-mono font-black text-sm flex items-center justify-center shadow-xs shrink-0">
                               #{appt.serialNumber}
                             </span>
                             <div>
@@ -604,7 +604,7 @@ export function DoctorDashboardView({
         <div className="grid gap-6 lg:grid-cols-2">
           <DoctorQueue doctorId={doctor.id} />
 
-          <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+          <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div>
                 <h2 className="text-base font-bold text-slate-900 dark:text-white">
@@ -626,7 +626,7 @@ export function DoctorDashboardView({
                 appointmentsState.map((item) => (
                   <div
                     key={item.id}
-                    className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200/70 dark:border-slate-800/70 text-sm transition hover:border-[var(--brand-border)] space-y-3"
+                    className="p-4 rounded-lg bg-[var(--bg-app)] border border-slate-200/70 dark:border-slate-800/70 text-sm transition hover:border-[var(--brand-border)] space-y-3"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="flex items-center gap-2">
@@ -673,7 +673,7 @@ export function DoctorDashboardView({
 
       {/* TAB 3: PATIENT LAB REPORTS (Requirement 12) */}
       {activeTab === "reports" && (
-        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5">
+        <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -780,7 +780,7 @@ export function DoctorDashboardView({
 
       {/* TAB 10: PRESCRIPTION ARCHIVE */}
       {activeTab === "history" && (
-        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+        <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
@@ -940,7 +940,7 @@ export function DoctorDashboardView({
       {/* Version History Modal */}
       {historyModalPrescription && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-2xl bg-[var(--bg-surface)] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+          <div className="w-full max-w-2xl bg-[var(--bg-surface)] rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-start justify-between gap-4 p-6 pb-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
@@ -980,7 +980,7 @@ export function DoctorDashboardView({
                 return (
                   <div
                     key={ver.id || idx}
-                    className={`p-4 rounded-2xl border transition-all ${
+                    className={`p-4 rounded-lg border transition-all ${
                       isLatest
                         ? "bg-[var(--brand-surface)]/40 border-[var(--brand-border)] shadow-xs"
                         : "bg-[var(--bg-app)] border-slate-200 dark:border-slate-800"

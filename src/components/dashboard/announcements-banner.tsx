@@ -83,7 +83,7 @@ export function AnnouncementsBanner() {
 
   return (
     <div
-      className={`p-4 rounded-2xl border transition-all flex items-start sm:items-center justify-between gap-3 text-xs mb-6 shadow-2xs ${getPriorityStyle(
+      className={`p-4 rounded-lg border transition-all flex items-start sm:items-center justify-between gap-3 text-xs mb-6 shadow-2xs ${getPriorityStyle(
         current.priority
       )}`}
     >

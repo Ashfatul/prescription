@@ -198,7 +198,7 @@ export function ThemeCustomizer({
 
         {isOpen && (
           <div
-            className={`absolute z-50 w-64 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl space-y-3 ${
+            className={`absolute z-50 w-64 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl space-y-3 ${
               activeDir === "up" ? "bottom-full mb-2" : "top-full mt-2"
             } ${
               activeAlign === "left" ? "left-0" : "right-0"
@@ -258,7 +258,7 @@ export function ThemeCustomizer({
   }
 
   return (
-    <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm space-y-4 shadow-sm">
+    <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm space-y-4 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
           <h4 className="text-sm font-semibold text-slate-900 dark:text-white">

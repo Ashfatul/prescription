@@ -162,7 +162,7 @@ export function NotificationBell() {
 
       {/* Notifications Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-3xl bg-[var(--bg-elevated)] border border-[var(--border-default)] shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-default)] shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
           {/* Header */}
           <div className="p-4 border-b border-[var(--border-subtle)] flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -276,7 +276,7 @@ export function NotificationBell() {
       {/* Notification Alert Settings Modal */}
       {settingsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+          <div className="w-full max-w-md rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <div className="flex items-center gap-2">
                 <Settings className="w-5 h-5 text-[var(--brand-primary)]" />
@@ -299,7 +299,7 @@ export function NotificationBell() {
               </p>
 
               {/* Prescription Alerts */}
-              <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] space-y-2.5">
+              <div className="p-3.5 rounded-lg bg-[var(--bg-subtle)] space-y-2.5">
                 <span className="font-bold text-slate-800 dark:text-slate-200 block">
                   {t.prescriptionAlerts}
                 </span>
@@ -326,7 +326,7 @@ export function NotificationBell() {
               </div>
 
               {/* Appointment Alerts */}
-              <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] space-y-2.5">
+              <div className="p-3.5 rounded-lg bg-[var(--bg-subtle)] space-y-2.5">
                 <span className="font-bold text-slate-800 dark:text-slate-200 block">
                   {t.appointmentQueueAlerts}
                 </span>
@@ -353,7 +353,7 @@ export function NotificationBell() {
               </div>
 
               {/* Medicine & Broadcasts */}
-              <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] space-y-2.5">
+              <div className="p-3.5 rounded-lg bg-[var(--bg-subtle)] space-y-2.5">
                 <span className="font-bold text-slate-800 dark:text-slate-200 block">
                   {t("uiMedicineRemindersAnnouncements")}
                 </span>
@@ -384,7 +384,7 @@ export function NotificationBell() {
               <button
                 type="button"
                 onClick={() => setSettingsOpen(false)}
-                className="w-full py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white font-bold text-xs shadow-xs hover:opacity-95 transition cursor-pointer"
+                className="w-full min-h-[42px] sm:min-h-[44px] rounded-lg bg-[var(--brand-primary)] text-white font-bold text-xs shadow-xs hover:opacity-95 transition cursor-pointer"
               >
                 {savingPrefs ? t.saving : t.done}
               </button>

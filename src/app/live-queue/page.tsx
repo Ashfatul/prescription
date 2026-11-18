@@ -36,7 +36,7 @@ export default async function LiveQueuePage({ searchParams }: Props) {
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] flex flex-col">
       <Header loggedIn={!!currentUser} />
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <main className="flex-1 w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <HospitalQueueDisplay initialDoctorId={sParams?.doctorId} clinicSlug={sParams?.clinic} />
       </main>
 

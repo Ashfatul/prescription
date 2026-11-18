@@ -180,11 +180,11 @@ function VerifyEmailInner() {
 
   return (
     <div className="w-full max-w-lg mx-auto">
-      <div className="rounded-3xl border border-[var(--border-default)] bg-[var(--bg-surface)] p-6 sm:p-8 shadow-sm space-y-6">
+      <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] p-6 sm:p-8 shadow-sm space-y-6">
         {/* State A: Verifying Token */}
         {verifying && (
           <div className="text-center py-8 space-y-4">
-            <div className="w-14 h-14 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center mx-auto animate-spin">
+            <div className="w-14 h-14 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center mx-auto animate-spin">
               <RefreshCw className="w-7 h-7" />
             </div>
             <div>
@@ -202,7 +202,7 @@ function VerifyEmailInner() {
         {!verifying && verified && (
           <div className="text-center py-6 space-y-4">
             <div
-              className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto shadow-inner ${
+              className={`w-16 h-16 rounded-lg flex items-center justify-center mx-auto shadow-inner ${
                 pendingApproval
                   ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
                   : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
@@ -254,7 +254,7 @@ function VerifyEmailInner() {
           <div className="space-y-5">
             {/* Icon & Title */}
             <div className="text-center space-y-2">
-              <div className="relative w-16 h-16 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center mx-auto shadow-xs">
+              <div className="relative w-16 h-16 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center mx-auto shadow-xs">
                 <Mail className="w-8 h-8" />
                 <span className="absolute -top-1 -right-1 flex h-4 w-4">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--brand-primary)] opacity-75" />
@@ -271,7 +271,7 @@ function VerifyEmailInner() {
 
             {/* Email Address Display Badge */}
             {email ? (
-              <div className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
+              <div className="flex items-center justify-center gap-2 p-3 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
                 <ShieldCheck className="w-4 h-4 text-[var(--brand-primary)] shrink-0" />
                 <span className="text-xs font-mono font-semibold text-slate-800 dark:text-slate-200 truncate">
                   {email}
@@ -335,7 +335,7 @@ function VerifyEmailInner() {
               </button>
 
               {/* Instructions list */}
-              <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[11px] text-slate-500 dark:text-slate-400 space-y-1.5 leading-relaxed">
+              <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[11px] text-slate-500 dark:text-slate-400 space-y-1.5 leading-relaxed">
                 <p className="font-semibold text-slate-700 dark:text-slate-300">
                   {t.didNotReceiveEmail}
                 </p>
@@ -518,7 +518,7 @@ export default function VerifyEmailPage() {
         <div className="py-6 my-auto w-full">
           <Suspense
             fallback={
-              <div className="p-6 max-w-md mx-auto rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-xs text-slate-500 text-center">
+              <div className="p-6 max-w-md mx-auto rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-xs text-slate-500 text-center">
                 <RefreshCw className="w-4 h-4 animate-spin mx-auto mb-2 text-[var(--brand-primary)]" />
                 {t("uiLoadingVerificationPanel")}
               </div>

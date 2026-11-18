@@ -131,11 +131,11 @@ export function ActivityLogViewer() {
   return (
     <div className="space-y-6">
       {/* Header and Filter Controls */}
-      <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs space-y-5">
+      <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
+              <div className="w-9 h-9 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
                 <Shield className="w-5 h-5" />
               </div>
               <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -211,7 +211,7 @@ export function ActivityLogViewer() {
       </div>
 
       {/* Logs Table / Cards */}
-      <div className="rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs overflow-hidden">
+      <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-xs text-slate-400">
             <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--brand-primary)] mb-2" />
@@ -296,7 +296,7 @@ export function ActivityLogViewer() {
       {/* Details JSON Modal */}
       {selectedLog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+          <div className="w-full max-w-lg rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <div>
                 <h3 className="font-bold text-slate-900 dark:text-white text-base">
@@ -316,7 +316,7 @@ export function ActivityLogViewer() {
             </div>
 
             <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4">
-              <pre className="p-4 rounded-2xl bg-slate-950 text-emerald-400 font-mono text-xs overflow-x-auto max-h-80 border border-slate-800">
+              <pre className="p-4 rounded-lg bg-slate-950 text-emerald-400 font-mono text-xs overflow-x-auto max-h-80 border border-slate-800">
                 {JSON.stringify(selectedLog.detailsJson, null, 2)}
               </pre>
             </div>

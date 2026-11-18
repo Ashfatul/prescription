@@ -119,7 +119,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
           <AnnouncementsBanner />
 
           {/* Top Banner */}
-          <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-sm">
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-1.5">
               <span className="px-2.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-primary)] text-xs font-bold">
                 {currentUser?.role === "SUPER_ADMIN"
@@ -153,7 +153,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="p-5 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs flex flex-col justify-between"
+                className="p-5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs flex flex-col justify-between"
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xl">{stat.icon}</span>
@@ -176,7 +176,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
           {/* Clinical Intelligence: Top Prescribed Drugs & Prevalent Diagnoses */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Top Prescribed Medications */}
-            <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm space-y-4">
+            <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center">
@@ -232,7 +232,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
             </div>
 
             {/* Prevalent Clinical Diagnoses */}
-            <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm space-y-4">
+            <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
@@ -292,9 +292,9 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             <Link
               href="/dashboard/admin?tab=users"
-              className="group rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-sm transition hover:border-[var(--brand-primary)] block"
+              className="group rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-sm transition hover:border-[var(--brand-primary)] block"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
                 <Users className="h-5 w-5" />
               </div>
               <h3 className="mt-3 text-sm font-bold text-[var(--text-primary)] group-hover:text-[var(--brand-primary)] flex items-center justify-between">
@@ -308,9 +308,9 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
 
             <Link
               href="/dashboard/admin?tab=catalog"
-              className="group rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-sm transition hover:border-[var(--brand-primary)] block"
+              className="group rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-sm transition hover:border-[var(--brand-primary)] block"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-teal-500/10 text-teal-600 dark:text-teal-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400">
                 <Pill className="h-5 w-5" />
               </div>
               <h3 className="mt-3 text-sm font-bold text-[var(--text-primary)] group-hover:text-[var(--brand-primary)] flex items-center justify-between">
@@ -324,9 +324,9 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
 
             <Link
               href="/dashboard/admin?tab=templates"
-              className="group rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-sm transition hover:border-[var(--brand-primary)] block"
+              className="group rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-sm transition hover:border-[var(--brand-primary)] block"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400">
                 <FileCode2 className="h-5 w-5" />
               </div>
               <h3 className="mt-3 text-sm font-bold text-[var(--text-primary)] group-hover:text-[var(--brand-primary)] flex items-center justify-between">
@@ -340,9 +340,9 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
 
             <Link
               href="/dashboard/admin?tab=roles"
-              className="group rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-sm transition hover:border-[var(--brand-primary)] block"
+              className="group rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-sm transition hover:border-[var(--brand-primary)] block"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
                 <Shield className="h-5 w-5" />
               </div>
               <h3 className="mt-3 text-sm font-bold text-[var(--text-primary)] group-hover:text-[var(--brand-primary)] flex items-center justify-between">
@@ -356,9 +356,9 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
 
             <Link
               href="/dashboard/admin?tab=settings"
-              className="group rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-sm transition hover:border-[var(--brand-primary)] block"
+              className="group rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-sm transition hover:border-[var(--brand-primary)] block"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400">
                 <Building2 className="h-5 w-5" />
               </div>
               <h3 className="mt-3 text-sm font-bold text-[var(--text-primary)] group-hover:text-[var(--brand-primary)] flex items-center justify-between">
@@ -372,7 +372,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
           </div>
 
           {/* User Directory Preview */}
-          <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm space-y-4">
+          <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-sm space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
               <div>
                 <h2 className="text-base font-bold text-[var(--text-primary)]">
@@ -385,7 +385,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
 
               <Link
                 href="/dashboard/admin?tab=users"
-                className="flex items-center gap-1.5 rounded-xl bg-[var(--brand-primary)] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:brightness-110"
+                className="flex items-center gap-1.5 min-h-[38px] rounded-lg bg-[var(--brand-primary)] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:brightness-110"
               >
                 <UserPlus className="h-3.5 w-3.5" />
                 {t("uiManageAllAccounts")}
@@ -396,7 +396,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
               {users.slice(0, 9).map((u) => (
                 <div
                   key={u.id}
-                  className="p-4 rounded-2xl bg-[var(--bg-app)] border border-[var(--border-subtle)] flex items-center justify-between gap-3 hover:border-[var(--brand-primary)] transition-all"
+                  className="p-4 rounded-lg bg-[var(--bg-app)] border border-[var(--border-subtle)] flex items-center justify-between gap-3 hover:border-[var(--brand-primary)] transition-all"
                 >
                   <div className="truncate">
                     <p className="text-xs font-bold text-[var(--text-primary)] truncate">
@@ -451,7 +451,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
         currentUser?.role === "SUPER_ADMIN" ? (
           <OrganizationManager />
         ) : (
-          <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-2">
+          <div className="p-8 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-2">
             <p className="text-base font-bold text-[var(--text-primary)]">
               {t("uiRestrictedAccess")}
             </p>
@@ -467,7 +467,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
         currentUser?.role === "SUPER_ADMIN" ? (
           <SaasPricingManager />
         ) : (
-          <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-2">
+          <div className="p-8 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-2">
             <p className="text-base font-bold text-[var(--text-primary)]">
               {t("uiRestrictedAccess")}
             </p>
@@ -494,7 +494,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
         currentUser?.role === "SUPER_ADMIN" ? (
           <EmailTemplateManager />
         ) : (
-          <div className="p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-2">
+          <div className="p-8 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-center space-y-2">
             <p className="text-base font-bold text-[var(--text-primary)]">
               {t("uiRestrictedAccess")}
             </p>

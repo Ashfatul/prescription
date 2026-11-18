@@ -115,7 +115,7 @@ export function ClinicalIntakeForm({
   return (
     <div className="space-y-5 text-left">
       {/* 1. PREVIOUS DISEASES / CHRONIC CONDITIONS */}
-      <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)]/50 p-4 space-y-2.5">
+      <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-subtle)]/50 p-4 space-y-2.5">
         <div className="flex items-center justify-between">
           <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
             <Activity className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
@@ -175,7 +175,7 @@ export function ClinicalIntakeForm({
       </div>
 
       {/* 2. DRUG & ENVIRONMENTAL ALLERGIES */}
-      <div className="rounded-2xl border border-rose-200 dark:border-rose-900/40 bg-rose-50/40 dark:bg-rose-950/20 p-4 space-y-2.5">
+      <div className="rounded-lg border border-rose-200 dark:border-rose-900/40 bg-rose-50/40 dark:bg-rose-950/20 p-4 space-y-2.5">
         <div className="flex items-center justify-between">
           <label className="text-xs font-bold uppercase tracking-wider text-rose-800 dark:text-rose-300 flex items-center gap-1.5">
             <ShieldAlert className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
@@ -235,7 +235,7 @@ export function ClinicalIntakeForm({
       </div>
 
       {/* 3. CRITICAL CLINICAL FLAGS (WHAT DOCTOR SHOULD KNOW) */}
-      <div className="rounded-2xl border border-amber-200 dark:border-amber-900/40 bg-amber-50/40 dark:bg-amber-950/20 p-4 space-y-2.5">
+      <div className="rounded-lg border border-amber-200 dark:border-amber-900/40 bg-amber-50/40 dark:bg-amber-950/20 p-4 space-y-2.5">
         <div className="flex items-center justify-between">
           <label className="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
             <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
@@ -274,7 +274,7 @@ export function ClinicalIntakeForm({
       </div>
 
       {/* 4. DIET CONTROL & DIETARY GUIDANCE */}
-      <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-4 space-y-3">
+      <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-4 space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Utensils className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />

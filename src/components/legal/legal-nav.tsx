@@ -66,7 +66,7 @@ export function LegalNav({ title, lastUpdated }: { title?: string; lastUpdated?:
               <Link
                 key={link.href}
                 href={link.href}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap ${
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
                   active
                     ? "bg-[var(--brand-primary)] text-white shadow-xs"
                     : "bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800"

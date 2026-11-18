@@ -169,7 +169,7 @@ export function SettingsManager() {
 
     if (loading) {
         return (
-            <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-3">
+            <div className="p-12 text-center rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-3">
                 <RefreshCw className="w-6 h-6 animate-spin text-[var(--brand-primary)] mx-auto" />
                 <p className="text-xs text-slate-500 font-medium">
                     {t("uiLoadingHospitalSettings")}
@@ -181,7 +181,7 @@ export function SettingsManager() {
     return (
         <div className="space-y-6">
             {/* Header Banner */}
-            <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <div className="flex items-center gap-2 mb-1.5">
                         <span className="px-2.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-primary)] text-xs font-bold">
@@ -215,7 +215,7 @@ export function SettingsManager() {
                     <div className="shrink-0">
                         <a
                             href="#danger-zone"
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 active:scale-[0.98] text-red-600 dark:text-red-400 text-xs font-bold transition-all cursor-pointer shadow-xs"
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 active:scale-[0.98] text-red-600 dark:text-red-400 text-xs font-bold transition-all cursor-pointer shadow-xs"
                         >
                             <AlertTriangle className="w-4 h-4 shrink-0" />
                             <span>{t.uiJumpToDangerZone}</span>
@@ -225,7 +225,7 @@ export function SettingsManager() {
             </div>
 
             {canManageDomain && (
-                <section className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
+                <section className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
                     <div className="flex items-center gap-2">
                         <Building2 className="h-5 w-5 text-[var(--brand-primary)]" />
                         <div>
@@ -250,20 +250,20 @@ export function SettingsManager() {
                                     setCustomDomain(event.target.value)
                                 }
                                 placeholder="clinic.example.com"
-                                className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100"
+                                className="w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100"
                             />
                         </label>
                         <button
                             type="button"
                             onClick={() => void saveCustomDomain()}
                             disabled={domainSaving}
-                            className="rounded-xl bg-[var(--brand-primary)] px-5 py-2.5 text-xs font-bold text-white disabled:opacity-60"
+                            className="rounded-lg bg-[var(--brand-primary)] px-5 py-2.5 text-xs font-bold text-white disabled:opacity-60"
                         >
                             {domainSaving ? "Saving..." : "Save domain"}
                         </button>
                     </div>
                     {domainStatus !== "NONE" && (
-                        <div className="space-y-3 rounded-2xl bg-[var(--bg-subtle)] p-4 text-xs text-slate-600 dark:text-slate-300">
+                        <div className="space-y-3 rounded-lg bg-[var(--bg-subtle)] p-4 text-xs text-slate-600 dark:text-slate-300">
                             <p className="font-bold">Status: {domainStatus}</p>
                             <p>
                                 Add these DNS records, then contact platform
@@ -271,11 +271,11 @@ export function SettingsManager() {
                             </p>
                             {domainDns && (
                                 <div className="grid gap-2 sm:grid-cols-2">
-                                    <code className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-3">
+                                    <code className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-3">
                                         CNAME {domainDns.cnameName} →{" "}
                                         {domainDns.cnameTarget}
                                     </code>
-                                    <code className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-3">
+                                    <code className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-3">
                                         TXT {domainDns.txtName} →{" "}
                                         {domainDns.txtValue}
                                     </code>
@@ -286,7 +286,7 @@ export function SettingsManager() {
                                     type="button"
                                     onClick={() => void verifyCustomDomain()}
                                     disabled={domainVerifying}
-                                    className="rounded-xl border border-[var(--brand-border)] px-4 py-2 text-xs font-bold text-[var(--brand-text)] disabled:opacity-60"
+                                    className="rounded-lg border border-[var(--brand-border)] px-4 py-2 text-xs font-bold text-[var(--brand-text)] disabled:opacity-60"
                                 >
                                     {domainVerifying
                                         ? "Checking DNS..."
@@ -301,7 +301,7 @@ export function SettingsManager() {
             <form onSubmit={handleSave} className="space-y-6">
                 {/* Success / Error Alerts */}
                 {saveSuccess && (
-                    <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2">
+                    <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
                         <span>
                             {t("uiHospitalSettingsSavedSuccessfullyAll")}
@@ -310,14 +310,14 @@ export function SettingsManager() {
                 )}
 
                 {errorMsg && (
-                    <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-semibold flex items-center gap-2">
+                    <div className="p-4 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-semibold flex items-center gap-2">
                         <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />
                         <span>{errorMsg}</span>
                     </div>
                 )}
 
                 {/* Section 0: Authentication & Security */}
-                <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
+                <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
                     <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
                         <ShieldCheck className="w-5 h-5 text-[var(--brand-primary)]" />
                         <div>
@@ -331,7 +331,7 @@ export function SettingsManager() {
                     </div>
 
                     {/* Toggle 1: Email Verification */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
                         <div className="space-y-1">
                             <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                 <span>{t.requireEmailVerificationLabel}</span>
@@ -377,7 +377,7 @@ export function SettingsManager() {
                     </div>
 
                     {/* Toggle 2: Super Admin Clinic Approval */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
                         <div className="space-y-1">
                             <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                 <span>{t.requireOrgApprovalLabel}</span>
@@ -423,7 +423,7 @@ export function SettingsManager() {
                     </div>
 
                     {/* Toggle 3: Patient Manual Verification */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
                         <div className="space-y-1">
                             <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                 <span>{t.requirePatientVerificationLabel}</span>
@@ -470,7 +470,7 @@ export function SettingsManager() {
                 </div>
 
                 {/* Section 1: Platform Identity */}
-                <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
+                <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
                     <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
                         <Building2 className="w-5 h-5 text-[var(--brand-primary)]" />
                         <h2 className="text-base font-bold text-[var(--text-primary)]">
@@ -490,7 +490,7 @@ export function SettingsManager() {
                                     handleChange("hospitalName", e.target.value)
                                 }
                                 required
-                                className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                                className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                                 placeholder="e.g. Central Hospital"
                             />
                         </div>
@@ -511,7 +511,7 @@ export function SettingsManager() {
                                         e.target.value,
                                     )
                                 }
-                                className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                                className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                                 placeholder="e.g. SaaS Operations"
                             />
                         </div>
@@ -534,7 +534,7 @@ export function SettingsManager() {
                                             e.target.value,
                                         )
                                     }
-                                    className="w-full input-icon-left !pl-11 pr-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                                    className="w-full input-icon-left !pl-11 pr-3.5 py-2.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                                     placeholder="e.g. Platform operations and support"
                                 />
                             </div>
@@ -543,7 +543,7 @@ export function SettingsManager() {
                 </div>
 
                 {/* Section 2: Clinic schedules are configured inside each clinic workspace. */}
-                <div className="hidden rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
+                <div className="hidden rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
                     <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
                         <Clock className="w-5 h-5 text-[var(--brand-primary)]" />
                         <h2 className="text-base font-bold text-[var(--text-primary)]">
@@ -566,7 +566,7 @@ export function SettingsManager() {
                                     )
                                 }
                                 required
-                                className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                                className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                                 placeholder="e.g. 08:00 AM - 10:00 PM (Daily)"
                             />
                         </div>
@@ -581,7 +581,7 @@ export function SettingsManager() {
                                 onChange={(e) =>
                                     handleChange("chamberDays", e.target.value)
                                 }
-                                className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                                className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                                 placeholder="e.g. Saturday - Thursday"
                             />
                         </div>
@@ -599,7 +599,7 @@ export function SettingsManager() {
                                         e.target.value,
                                     )
                                 }
-                                className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                                className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                                 placeholder="e.g. OPD & Chamber 24/7 Active"
                             />
                         </div>
@@ -607,7 +607,7 @@ export function SettingsManager() {
                 </div>
 
                 {/* Section 2: Platform Support & Inquiries */}
-                <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
+                <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
                     <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
                         <PhoneCall className="w-5 h-5 text-[var(--brand-primary)]" />
                         <h2 className="text-base font-bold text-[var(--text-primary)]">
@@ -634,7 +634,7 @@ export function SettingsManager() {
                                             e.target.value,
                                         )
                                     }
-                                    className="w-full input-icon-left !pl-11 pr-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs font-bold text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                                    className="w-full input-icon-left !pl-11 pr-3.5 py-2.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-input)] text-xs font-bold text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                                     placeholder="Optional platform support number"
                                 />
                             </div>
@@ -655,7 +655,7 @@ export function SettingsManager() {
                                             e.target.value,
                                         )
                                     }
-                                    className="w-full input-icon-left !pl-11 pr-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                                    className="w-full input-icon-left !pl-11 pr-3.5 py-2.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                                     placeholder="support@example.com"
                                 />
                             </div>
@@ -676,7 +676,7 @@ export function SettingsManager() {
                                             e.target.value,
                                         )
                                     }
-                                    className="w-full input-icon-left !pl-11 pr-3.5 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                                    className="w-full input-icon-left !pl-11 pr-3.5 py-2.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                                     placeholder="Product issue, security report, suggestion, or feature request"
                                 />
                             </div>
@@ -685,7 +685,7 @@ export function SettingsManager() {
                 </div>
 
                 {/* Section 3: Platform Support Notice */}
-                <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
+                <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs space-y-4">
                     <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
                         <AlertCircle className="w-5 h-5 text-amber-500" />
                         <h2 className="text-base font-bold text-[var(--text-primary)]">
@@ -706,19 +706,19 @@ export function SettingsManager() {
                             onChange={(e) =>
                                 handleChange("emergencyNotice", e.target.value)
                             }
-                            className="w-full p-3.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] leading-relaxed focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
+                            className="w-full p-3.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] leading-relaxed focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                             placeholder="Explain how users can report product issues, security concerns, suggestions, or feature requests."
                         />
                     </div>
                 </div>
 
                 {/* Live Preview Box */}
-                <div className="p-5 rounded-3xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
+                <div className="p-5 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
                     <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-300">
                         <Sparkles className="w-4 h-4 text-[var(--brand-primary)]" />
                         <span>{t.liveHeaderFooterPreview}</span>
                     </div>
-                    <div className="p-3.5 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs flex flex-wrap items-center justify-between gap-3">
+                    <div className="p-3.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs flex flex-wrap items-center justify-between gap-3">
                         <div>
                             <strong className="block text-slate-900 dark:text-white">
                                 {settings.hospitalName}
@@ -744,7 +744,7 @@ export function SettingsManager() {
                     <button
                         type="submit"
                         disabled={saving}
-                        className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-95 active:scale-98 transition-all disabled:opacity-50 cursor-pointer"
+                        className="flex items-center gap-2 min-h-[42px] sm:min-h-[44px] px-6 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-95 active:scale-98 transition-all disabled:opacity-50 cursor-pointer"
                     >
                         {saving ? (
                             <>

@@ -310,10 +310,10 @@ export function EmailTemplateManager() {
     return (
         <div className="space-y-6">
             {/* Header Banner */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+            <div className="p-6 sm:p-8 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
                 <div className="space-y-1.5">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold shadow-xs">
+                        <div className="w-10 h-10 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold shadow-xs">
                             <Mail className="w-5 h-5 text-[var(--brand-primary)]" />
                         </div>
                         <div>
@@ -338,7 +338,7 @@ export function EmailTemplateManager() {
                 <button
                     type="button"
                     onClick={handleOpenCreate}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 active:scale-98 transition-all cursor-pointer self-start sm:self-auto shrink-0"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 active:scale-98 transition-all cursor-pointer self-start sm:self-auto shrink-0"
                 >
                     <Plus className="w-4 h-4" />
                     <span>{t.newEmailTemplate}</span>
@@ -346,7 +346,7 @@ export function EmailTemplateManager() {
             </div>
 
             {/* Templates List */}
-            <div className="rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-sm overflow-hidden">
+            <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-sm overflow-hidden">
                 {loading ? (
                     <div className="p-12 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
                         <RefreshCw className="w-4 h-4 animate-spin text-[var(--brand-primary)]" />
@@ -456,7 +456,7 @@ export function EmailTemplateManager() {
             {/* Create / Edit Template Modal */}
             {modalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-                    <div className="w-full max-w-3xl rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+                    <div className="w-full max-w-3xl rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
                         <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 sm:px-8 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
                             <div className="flex items-center gap-2.5">
                                 <div className="w-9 h-9 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
@@ -705,7 +705,7 @@ export function EmailTemplateManager() {
             {/* Test SMTP Email Modal */}
             {testModalOpen && testTargetTemplate && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-                    <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+                    <div className="w-full max-w-md rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
                         <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
                             <div className="flex items-center gap-2">
                                 <div className="w-8 h-8 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">

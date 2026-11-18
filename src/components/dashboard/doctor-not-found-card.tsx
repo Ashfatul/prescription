@@ -9,7 +9,7 @@ export function DoctorNotFoundCard() {
 
   return (
     <Card className="max-w-xl mx-auto my-12 p-8 text-center space-y-4">
-      <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-600 mx-auto flex items-center justify-center">
+      <div className="w-14 h-14 rounded-lg bg-amber-500/10 text-amber-600 mx-auto flex items-center justify-center">
         <AlertCircle className="w-7 h-7" />
       </div>
       <div>

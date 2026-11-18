@@ -318,7 +318,7 @@ export function PatientDashboardView({
 
       {activeBanner && (
         <div
-          className={`p-4 rounded-2xl border text-xs font-semibold flex items-center justify-between gap-3 animate-in fade-in ${
+          className={`p-4 rounded-lg border text-xs font-semibold flex items-center justify-between gap-3 animate-in fade-in ${
             activeBanner.type === "success"
               ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-800 dark:text-emerald-200"
               : activeBanner.type === "verifying"
@@ -349,7 +349,7 @@ export function PatientDashboardView({
       )}
 
       {actionError && (
-        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-800 dark:text-rose-200 text-xs font-semibold flex items-center justify-between gap-2">
+        <div className="p-4 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-800 dark:text-rose-200 text-xs font-semibold flex items-center justify-between gap-2">
           <span>⚠️ {actionError}</span>
           <button
             type="button"
@@ -362,7 +362,7 @@ export function PatientDashboardView({
       )}
 
       {reminderMessage && (
-        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold animate-in fade-in">
+        <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold animate-in fade-in">
           ✓ {reminderMessage}
         </div>
       )}
@@ -385,7 +385,7 @@ export function PatientDashboardView({
               key={tabItem.id}
               type="button"
               onClick={() => router.replace(`/dashboard/patient?tab=${tabItem.id}`)}
-              className={`shrink-0 rounded-2xl px-4 py-2.5 text-xs font-bold transition cursor-pointer ${
+              className={`shrink-0 rounded-lg px-4 py-2.5 text-xs font-bold transition cursor-pointer ${
                 isActive
                   ? "bg-[var(--brand-primary)] text-white shadow-sm"
                   : "bg-[var(--bg-surface)] text-[var(--text-secondary)] border border-[var(--border-subtle)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)]"
@@ -416,7 +416,7 @@ export function PatientDashboardView({
       {(activeTab === "overview" || activeTab === "main") && (
         <>
           {/* Patient Welcome Banner */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+      <div className="p-6 sm:p-8 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-5">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 text-xs font-bold">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -433,7 +433,7 @@ export function PatientDashboardView({
         <button
           type="button"
           onClick={() => openBooking()}
-          className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-90 transition-all shadow-md self-start sm:self-auto cursor-pointer"
+          className="flex items-center gap-2 min-h-[42px] sm:min-h-[44px] px-6 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs sm:text-sm font-bold hover:opacity-90 transition-all shadow-md self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>{t.bookAppointment}</span>
@@ -442,7 +442,7 @@ export function PatientDashboardView({
 
       {/* Patient Health Overview Live Stats (Direct from System) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-        <div className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
+        <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
             {t.myPrescriptions}
           </span>
@@ -452,7 +452,7 @@ export function PatientDashboardView({
           <p className="text-[11px] text-slate-500 mt-1">{t("uiOfficialDigitalRecords")}</p>
         </div>
 
-        <div className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
+        <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
             {t.activeBookings}
           </span>
@@ -466,7 +466,7 @@ export function PatientDashboardView({
           <p className="text-[11px] text-slate-500 mt-1">{t.scheduledChamberVisits}</p>
         </div>
 
-        <div className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
+        <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
             {t.completedVisits}
           </span>
@@ -476,7 +476,7 @@ export function PatientDashboardView({
           <p className="text-[11px] text-slate-500 mt-1">{t.pastConsultations}</p>
         </div>
 
-        <div className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
+        <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
             {t.totalAppointments}
           </span>
@@ -488,7 +488,7 @@ export function PatientDashboardView({
       </div>
 
       {actionError && (
-        <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 text-xs flex items-center gap-2">
+        <div className="p-4 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{actionError}</span>
         </div>
@@ -496,7 +496,7 @@ export function PatientDashboardView({
 
       {/* Available Consulting Physicians & Consultation Rates */}
       {doctors && doctors.length > 0 && (
-        <div className="p-6 sm:p-7 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+        <div className="p-6 sm:p-7 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 gap-2">
             <div className="flex items-center gap-2.5">
               <span className="w-8 h-8 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center">
@@ -524,11 +524,11 @@ export function PatientDashboardView({
             {doctors.map((doc) => (
               <div
                 key={doc.id}
-                className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 flex flex-col justify-between gap-3 hover:border-[var(--brand-border)] transition-all shadow-2xs"
+                className="p-4 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 flex flex-col justify-between gap-3 hover:border-[var(--brand-border)] transition-all shadow-2xs"
               >
                 <div>
                   <div className="flex items-start gap-3">
-                    <div className="relative w-11 h-11 rounded-2xl bg-slate-200 dark:bg-slate-800 shrink-0 overflow-hidden border border-slate-300/60 dark:border-slate-700/60">
+                    <div className="relative w-11 h-11 rounded-lg bg-slate-200 dark:bg-slate-800 shrink-0 overflow-hidden border border-slate-300/60 dark:border-slate-700/60">
                       {doc.imageUrl ? (
                         <Image src={doc.imageUrl} alt={doc.name} fill className="object-cover" />
                       ) : (
@@ -610,7 +610,7 @@ export function PatientDashboardView({
       {/* Main Split Grid */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Appointments Section */}
-        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4 flex flex-col justify-between">
+        <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2.5">
@@ -633,7 +633,7 @@ export function PatientDashboardView({
             <div className="space-y-3 mt-4">
               {initialAppointments.length === 0 ? (
                 <div className="py-12 text-center space-y-3">
-                  <div className="w-12 h-12 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center">
+                  <div className="w-12 h-12 mx-auto rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center">
                     <Calendar className="w-6 h-6" />
                   </div>
                   <div>
@@ -660,7 +660,7 @@ export function PatientDashboardView({
                   return (
                     <div
                       key={item.id}
-                      className={`p-4 rounded-2xl border transition-all ${
+                      className={`p-4 rounded-lg border transition-all ${
                         isCancelled
                           ? "bg-slate-50/50 dark:bg-slate-900/40 border-slate-200/50 dark:border-slate-800/50 opacity-60"
                           : "bg-[var(--bg-app)] border-slate-200/80 dark:border-slate-800/80 hover:border-[var(--brand-border)] shadow-2xs"
@@ -896,7 +896,7 @@ export function PatientDashboardView({
         </div>
 
         {/* Prescriptions Section */}
-        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+        <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-2.5">
               <span className="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 flex items-center justify-center">
@@ -918,7 +918,7 @@ export function PatientDashboardView({
           <div className="space-y-3 mt-4">
             {prescriptions.length === 0 ? (
               <div className="py-12 text-center space-y-2">
-                <div className="w-12 h-12 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center">
+                <div className="w-12 h-12 mx-auto rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center">
                   <FileText className="w-6 h-6" />
                 </div>
                 <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
@@ -937,7 +937,7 @@ export function PatientDashboardView({
                 return (
                   <div
                     key={item.id}
-                    className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-[var(--brand-border)] transition-all shadow-2xs"
+                    className="p-4 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-[var(--brand-border)] transition-all shadow-2xs"
                   >
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
@@ -1037,7 +1037,7 @@ export function PatientDashboardView({
       {/* Appointment Slip Modal */}
       {selectedSlip && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-[var(--bg-surface)] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+          <div className="w-full max-w-md bg-[var(--bg-surface)] rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
                 {t.patientAppointmentSlip}
@@ -1052,7 +1052,7 @@ export function PatientDashboardView({
             </div>
 
             <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4">
-              <div className="p-5 rounded-2xl bg-[var(--brand-surface)] border border-[var(--brand-border)] text-center space-y-2">
+              <div className="p-5 rounded-lg bg-[var(--brand-surface)] border border-[var(--brand-border)] text-center space-y-2">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
                   {t.confirmedQueueTicket}
                 </span>
@@ -1128,7 +1128,7 @@ export function PatientDashboardView({
       {/* Patient Prescription Version History Modal */}
       {selectedHistoryPrescription && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-xl bg-[var(--bg-surface)] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+          <div className="w-full max-w-xl bg-[var(--bg-surface)] rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-start justify-between gap-4 p-6 pb-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-text)]">
@@ -1165,7 +1165,7 @@ export function PatientDashboardView({
                 return (
                   <div
                     key={ver.id}
-                    className={`p-4 rounded-2xl border transition-all ${
+                    className={`p-4 rounded-lg border transition-all ${
                       isLatest
                         ? "bg-[var(--brand-surface)]/50 border-[var(--brand-border)]"
                         : "bg-[var(--bg-app)] border-slate-200 dark:border-slate-800"
@@ -1243,12 +1243,12 @@ export function PatientDashboardView({
 
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
-            <div className="relative w-full max-w-lg bg-[var(--bg-surface)] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-5 animate-in fade-in zoom-in-95 duration-150">
+            <div className="relative w-full max-w-lg bg-[var(--bg-surface)] rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-5 animate-in fade-in zoom-in-95 duration-150">
               {/* Modal Header */}
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
+                    className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 ${
                       isAllowed
                         ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20"
                         : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
@@ -1282,7 +1282,7 @@ export function PatientDashboardView({
               {/* Policy Body */}
               {!isAllowed ? (
                 <div className="space-y-4">
-                  <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200 space-y-2">
+                  <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200 space-y-2">
                     <p className="font-bold flex items-center gap-1.5">
                       <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
                       {t("uiClinicCancellationPolicyNotice")}
@@ -1309,7 +1309,7 @@ export function PatientDashboardView({
                     <button
                       type="button"
                       onClick={() => setCancellationTarget(null)}
-                      className="px-6 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 transition cursor-pointer"
+                      className="px-6 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 transition cursor-pointer"
                     >
                       {t("uiUnderstood")}
                     </button>
@@ -1318,7 +1318,7 @@ export function PatientDashboardView({
               ) : (
                 <div className="space-y-4">
                   {/* Eligible Notice */}
-                  <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-900 dark:text-emerald-200 space-y-1">
+                  <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-900 dark:text-emerald-200 space-y-1">
                     <div className="flex items-center gap-2 font-bold">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                       <span>{t.eligibleForFullRefund}</span>
@@ -1332,7 +1332,7 @@ export function PatientDashboardView({
 
                   {/* Refund Details */}
                   {wasPaid && (
-                    <div className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 space-y-2">
+                    <div className="p-4 rounded-lg bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 space-y-2">
                       <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                         {t("uiRefundCalculation")}
                       </span>
@@ -1388,7 +1388,7 @@ export function PatientDashboardView({
                       value={cancellationReason}
                       onChange={(e) => setCancellationReason(e.target.value)}
                       placeholder={t("uiAddAnyAdditionalDetailsFor")}
-                      className="w-full mt-1.5 p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[var(--brand-primary)]"
+                      className="w-full mt-1.5 p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[var(--brand-primary)]"
                     />
                   </div>
 
@@ -1405,7 +1405,7 @@ export function PatientDashboardView({
                       type="button"
                       disabled={cancellationSubmitting}
                       onClick={() => setCancellationTarget(null)}
-                      className="px-5 py-2.5 rounded-2xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition cursor-pointer disabled:opacity-50"
+                      className="px-5 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition cursor-pointer disabled:opacity-50"
                     >
                       {t.keepAppointment}
                     </button>
@@ -1413,7 +1413,7 @@ export function PatientDashboardView({
                       type="button"
                       disabled={cancellationSubmitting}
                       onClick={handleConfirmCancellation}
-                      className="px-6 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md transition cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                      className="px-6 py-2.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md transition cursor-pointer flex items-center gap-2 disabled:opacity-50"
                     >
                       {cancellationSubmitting ? (
                         <>

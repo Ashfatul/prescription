@@ -30,7 +30,7 @@ export function PrintFloatingActionBar({
     <>
       {/* Historical Version Notice (Hidden in Print) */}
       {isHistorical && (
-        <div className="mx-auto mb-4 flex max-w-4xl flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 p-4 text-xs text-amber-900 dark:text-amber-200 shadow-sm print:hidden">
+        <div className="mx-auto mb-4 flex max-w-4xl flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 p-4 text-xs text-amber-900 dark:text-amber-200 shadow-sm print:hidden">
           <div className="flex items-center gap-2.5">
             <span className="text-xl">⚠️</span>
             <div>
@@ -57,7 +57,7 @@ export function PrintFloatingActionBar({
       )}
 
       {/* Floating Action Bar - Hidden in Print */}
-      <div className="mx-auto mb-6 flex max-w-4xl flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-white px-5 py-3 shadow-md print:hidden dark:bg-zinc-900">
+      <div className="mx-auto mb-6 flex max-w-4xl flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl bg-white px-5 py-3 shadow-md print:hidden dark:bg-zinc-900">
         <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/dashboard/doctor"

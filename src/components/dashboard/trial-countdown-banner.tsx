@@ -117,9 +117,9 @@ export function TrialCountdownBanner() {
   return (
     <>
       {timeRemaining.isExpired ? (
-        <div className="p-5 rounded-3xl border border-rose-500/30 bg-gradient-to-r from-rose-500/10 via-rose-500/5 to-transparent flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm animate-fadeIn">
+        <div className="p-5 rounded-xl border border-rose-500/30 bg-gradient-to-r from-rose-500/10 via-rose-500/5 to-transparent flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm animate-fadeIn">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-rose-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <div className="w-10 h-10 rounded-lg bg-rose-500 text-white flex items-center justify-center shrink-0 shadow-xs">
               <AlertCircle className="w-5 h-5" />
             </div>
             <div>
@@ -150,7 +150,7 @@ export function TrialCountdownBanner() {
           </button>
         </div>
       ) : (
-        <div className="p-5 rounded-3xl border border-teal-500/20 bg-gradient-to-r from-teal-500/10 via-emerald-500/5 to-transparent relative overflow-hidden shadow-xs">
+        <div className="p-5 rounded-xl border border-teal-500/20 bg-gradient-to-r from-teal-500/10 via-emerald-500/5 to-transparent relative overflow-hidden shadow-xs">
           {/* Subtle top progress bar */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-teal-500/10">
             <div
@@ -162,7 +162,7 @@ export function TrialCountdownBanner() {
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
             {/* Left Info */}
             <div className="flex items-start sm:items-center gap-3.5">
-              <div className="w-11 h-11 rounded-2xl bg-[var(--brand-primary)] text-white flex items-center justify-center shrink-0 shadow-xs">
+              <div className="w-11 h-11 rounded-lg bg-[var(--brand-primary)] text-white flex items-center justify-center shrink-0 shadow-xs">
                 <Clock className="w-5 h-5" />
               </div>
               <div className="space-y-0.5">
@@ -193,7 +193,7 @@ export function TrialCountdownBanner() {
             {/* Right: Live Countdown Clock & Upgrade CTA */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 w-full lg:w-auto justify-between lg:justify-end">
               {/* Ticking Digital Time Modules */}
-              <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+              <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 shadow-xs">
                 <div className="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-center min-w-[42px]">
                   <span className="text-sm font-black text-slate-900 dark:text-white font-mono">
                     {timeRemaining.days}

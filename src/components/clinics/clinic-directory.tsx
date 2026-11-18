@@ -134,7 +134,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
   return (
     <div className="space-y-8">
       {/* Search & Filter Toolbar */}
-      <div className="p-4 sm:p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs space-y-4">
+      <div className="p-4 sm:p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs space-y-4">
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
           {/* Live Search Input */}
           <div className="relative flex-1">
@@ -144,7 +144,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.searchClinicsExpanded}
-              className="w-full pl-11 pr-10 py-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 text-sm text-[var(--text-primary)] placeholder:text-slate-400 transition-all outline-none"
+              className="w-full pl-11 pr-10 py-3 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 text-sm text-[var(--text-primary)] placeholder:text-slate-400 transition-all outline-none"
             />
             {searchQuery && (
               <button
@@ -160,7 +160,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
 
           {/* Filter Chips & Sort Dropdown */}
           <div className="flex flex-wrap items-center gap-2.5">
-            <div className="flex items-center gap-1 p-1 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs font-semibold">
+            <div className="flex items-center gap-1 p-1 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs font-semibold">
               <button
                 type="button"
                 onClick={() => setStatusFilter("ALL")}
@@ -254,7 +254,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
             return (
               <div
                 key={clinic.id}
-                className="rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all duration-200 p-5 sm:p-6 lg:p-7 flex flex-col justify-between shadow-xs hover:shadow-lg group relative overflow-hidden"
+                className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all duration-200 p-5 sm:p-6 lg:p-7 flex flex-col justify-between shadow-xs hover:shadow-lg group relative overflow-hidden"
               >
                 {/* Ambient top brand gradient strip */}
                 <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[var(--brand-primary)] via-teal-400 to-sky-400 opacity-90 transition-opacity" />
@@ -262,7 +262,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                 <div className="space-y-5">
                   {/* Card Header: Icon, Name, Subdomain & Status Badges */}
                   <div className="flex items-start gap-3.5">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-[var(--brand-surface)] to-[var(--bg-subtle)] text-[var(--brand-primary)] border border-[var(--brand-border)] flex items-center justify-center font-black text-xl shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-gradient-to-br from-[var(--brand-surface)] to-[var(--bg-subtle)] text-[var(--brand-primary)] border border-[var(--brand-border)] flex items-center justify-center font-black text-xl shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
                       <Building2 className="w-6 h-6 sm:w-7 sm:h-7" />
                     </div>
 
@@ -323,7 +323,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                   </div>
 
                   {/* Micro-Metrics Highlights Bar */}
-                  <div className="grid grid-cols-3 gap-2 p-2.5 rounded-2xl bg-[var(--bg-subtle)]/50 border border-[var(--border-subtle)] text-center">
+                  <div className="grid grid-cols-3 gap-2 p-2.5 rounded-lg bg-[var(--bg-subtle)]/50 border border-[var(--border-subtle)] text-center">
                     <div className="space-y-0.5">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
                         {t.doctors}
@@ -356,7 +356,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                   </div>
 
                   {/* Chamber Address & Contact Details */}
-                  <div className="p-3.5 sm:p-4 rounded-2xl bg-[var(--bg-subtle)]/70 border border-[var(--border-subtle)] space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                  <div className="p-3.5 sm:p-4 rounded-lg bg-[var(--bg-subtle)]/70 border border-[var(--border-subtle)] space-y-2 text-xs text-slate-600 dark:text-slate-300">
                     <div className="flex items-start gap-2.5">
                       <MapPin className="w-4 h-4 text-[var(--brand-primary)] shrink-0 mt-0.5" />
                       <span className="leading-relaxed line-clamp-2">
@@ -409,7 +409,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                         {displayedDoctors.map((doc) => (
                           <div
                             key={doc.id}
-                            className="p-2.5 sm:p-3 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition flex items-center justify-between gap-3 text-xs shadow-2xs"
+                            className="p-2.5 sm:p-3 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition flex items-center justify-between gap-3 text-xs shadow-2xs"
                           >
                             <div className="flex items-center gap-2.5 min-w-0">
                               {doc.user.imageUrl ? (
@@ -454,7 +454,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                         )}
                       </div>
                     ) : (
-                      <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)]/40 border border-dashed border-[var(--border-default)] text-xs text-slate-500 flex items-center justify-between gap-2">
+                      <div className="p-3.5 rounded-lg bg-[var(--bg-subtle)]/40 border border-dashed border-[var(--border-default)] text-xs text-slate-500 flex items-center justify-between gap-2">
                         <span>{t.newChamberFacility}</span>
                         <Link
                           href="/auth/register"
@@ -521,8 +521,8 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
         </div>
       ) : (
         /* Empty / No Match State */
-        <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4 mx-auto w-full">
-          <div className="w-16 h-16 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center mx-auto">
+        <div className="p-12 text-center rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4 mx-auto w-full">
+          <div className="w-16 h-16 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center mx-auto">
             <Building2 className="w-8 h-8" />
           </div>
           <div className="space-y-1">
@@ -549,7 +549,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
       )}
 
       {/* Onboarding Bottom Callout Banner */}
-      <div className="mt-12 rounded-3xl p-6 sm:p-10 bg-gradient-to-br from-[var(--brand-surface)] via-[var(--bg-surface)] to-[var(--bg-subtle)] border border-[var(--brand-border)]/60 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="mt-12 rounded-xl p-6 sm:p-10 bg-gradient-to-br from-[var(--brand-surface)] via-[var(--bg-surface)] to-[var(--bg-subtle)] border border-[var(--brand-border)]/60 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="space-y-2 max-w-2xl text-center md:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--brand-primary)]/10 text-[var(--brand-text)] text-xs font-extrabold uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5" />
@@ -566,7 +566,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
         <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full sm:w-auto">
           <Link
             href="/auth/register"
-            className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-[var(--brand-primary)] hover:opacity-95 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 whitespace-nowrap min-h-[44px]"
+            className="w-full sm:w-auto px-5 py-3 rounded-lg bg-[var(--brand-primary)] hover:opacity-95 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 whitespace-nowrap min-h-[44px]"
           >
             <Building2 className="w-4 h-4" />
             <span>{t.registerClinicFreeTrial}</span>
@@ -574,7 +574,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
           </Link>
           <Link
             href="/auth/login"
-            className="w-full sm:w-auto px-4 py-3 rounded-2xl border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-200 font-bold text-xs transition text-center min-h-[44px] flex items-center justify-center"
+            className="w-full sm:w-auto px-4 py-3 rounded-lg border border-[var(--border-default)] hover:bg-[var(--bg-subtle)] text-slate-700 dark:text-slate-200 font-bold text-xs transition text-center min-h-[44px] flex items-center justify-center"
           >
             {t.signInToEmr}
           </Link>

@@ -601,10 +601,10 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         <Link
           href="/"
           onClick={() => setMobileMenuOpen(false)}
-          className="flex items-center gap-3 px-3 py-2.5 mb-3 shrink-0 rounded-2xl hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition-all group cursor-pointer"
+          className="flex items-center gap-3 px-3 py-2.5 mb-3 shrink-0 rounded-xl hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition-all group cursor-pointer"
           title="Return to Home Page"
         >
-          <div className="relative w-10 h-10 overflow-hidden rounded-2xl shadow-md shadow-[var(--brand-primary)]/20 group-hover:scale-105 transition-transform">
+          <div className="relative w-10 h-10 overflow-hidden rounded-xl shadow-md shadow-[var(--brand-primary)]/20 group-hover:scale-105 transition-transform">
             <Image src="/icons/icon.svg" alt="Logo" fill sizes="40px" />
           </div>
           <div>
@@ -619,7 +619,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
 
         {/* Organization / Subscription / System Status Area */}
         {role === RoleName.SUPER_ADMIN ? (
-          <div className="mx-1 mb-4 p-3.5 rounded-2xl bg-gradient-to-br from-purple-500/10 via-slate-500/5 to-purple-500/5 dark:from-purple-950/40 dark:via-slate-900/40 dark:to-purple-950/20 border border-purple-200/80 dark:border-purple-800/60 shadow-2xs shrink-0 space-y-2.5">
+          <div className="mx-1 mb-4 p-3.5 rounded-xl bg-gradient-to-br from-purple-500/10 via-slate-500/5 to-purple-500/5 dark:from-purple-950/40 dark:via-slate-900/40 dark:to-purple-950/20 border border-purple-200/80 dark:border-purple-800/60 shadow-2xs shrink-0 space-y-2.5">
             {/* Header: Status & Role */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
@@ -659,7 +659,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             </div>
           </div>
         ) : subInfo ? (
-          <div className="mx-1 mb-4 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-3 shrink-0">
+          <div className="mx-1 mb-4 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-3 shrink-0">
             {/* Clinic & Plan Header */}
             <div className="flex items-start justify-between gap-1.5">
               <div className="min-w-0">
@@ -819,11 +819,11 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         </div>
 
         {/* User Card */}
-        <div className="p-3.5 rounded-2xl bg-slate-50/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-3">
+        <div className="p-3.5 rounded-xl bg-slate-50/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-3">
           <div className="flex items-center gap-3">
             {/* User Avatar with Initials & Online Status */}
             <div className="relative shrink-0">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--brand-primary)] to-slate-800 text-white font-bold text-sm flex items-center justify-center shadow-xs">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[var(--brand-primary)] to-slate-800 text-white font-bold text-sm flex items-center justify-center shadow-xs">
                 {user.name.charAt(0).toUpperCase()}
               </div>
               <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
@@ -998,7 +998,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         </header>
 
         {/* Page Content Body */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 xl:p-10 max-w-[1920px] w-full mx-auto">
           {children}
         </main>
       </div>
@@ -1006,7 +1006,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
       {/* Account Security & 2FA Modal */}
       {changePasswordOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in">
-          <div className="w-full max-w-2xl relative animate-in zoom-in-95 modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl">
+          <div className="w-full max-w-2xl relative animate-in zoom-in-95 modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl">
             <button
               type="button"
               onClick={() => setChangePasswordOpen(false)}

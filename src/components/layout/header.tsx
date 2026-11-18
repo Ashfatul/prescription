@@ -172,7 +172,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
     return (
         <>
             <header className="sticky top-0 z-40 w-full border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/95 backdrop-blur-md transition-all shadow-2xs">
-                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16 sm:h-18 gap-3 flex-nowrap min-w-0">
                         {/* Left: Brand Identity */}
                         <div className="flex items-center gap-3 sm:gap-4 shrink-0">
@@ -180,7 +180,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                 href="/"
                                 className="flex items-center gap-2.5 group shrink-0"
                             >
-                                <div className="relative w-9 h-9 sm:w-10 sm:h-10 overflow-hidden rounded-2xl shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all shrink-0">
+                                <div className="relative w-9 h-9 sm:w-10 sm:h-10 overflow-hidden rounded-xl shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all shrink-0">
                                     <Image
                                         src="/icons/icon.svg"
                                         alt={settings.hospitalName || "Logo"}
@@ -194,9 +194,6 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                         <span className="font-extrabold tracking-tight text-slate-900 dark:text-white text-base sm:text-lg whitespace-nowrap hidden md:block">
                                             {settings.hospitalName || "PPMS"}
                                         </span>
-                                        {/*<span className="px-1.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] font-bold text-[9px] sm:text-[10px] tracking-wider uppercase border border-[var(--brand-border)]/60">
-                      Clinic Operations Platform
-                    </span>*/}
                                     </div>
                                     <span className="hidden sm:inline-block text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate max-w-[160px]">
                                         Prescription Suite
@@ -209,7 +206,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                 <button
                                     type="button"
                                     onClick={toggleMenu}
-                                    className={`flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl text-xs font-bold transition-all border shadow-2xs cursor-pointer group ${
+                                    className={`flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-lg text-xs font-bold transition-all border shadow-2xs cursor-pointer group ${
                                         menuOpen && !isClosing
                                             ? "bg-[var(--brand-primary)] text-white border-[var(--brand-primary)] shadow-sm"
                                             : "bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] text-slate-800 dark:text-slate-200 hover:text-[var(--brand-text)] border-[var(--border-subtle)] hover:border-[var(--brand-border)]"
@@ -344,14 +341,14 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
 
                         {/* Full-Screen Menu Topbar */}
                         <div className="w-full border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/90 backdrop-blur-md sticky top-0 z-10 shrink-0">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between gap-4">
+                            <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between gap-4">
                                 {/* Brand Logo */}
                                 <Link
                                     href="/"
                                     onClick={(e) => handleNavClick(e, "/")}
                                     className="flex items-center gap-2.5 group cursor-pointer"
                                 >
-                                    <div className="relative w-10 h-10 overflow-hidden rounded-2xl shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all">
+                                    <div className="relative w-10 h-10 overflow-hidden rounded-xl shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all">
                                         <Image
                                             src="/icons/icon.svg"
                                             alt={settings.hospitalName || "Logo"}
@@ -378,7 +375,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                     <button
                                         type="button"
                                         onClick={() => closeMenu()}
-                                        className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] text-slate-700 dark:text-slate-200 hover:text-[var(--brand-text)] border border-[var(--border-subtle)] hover:border-[var(--brand-border)] font-bold text-xs transition cursor-pointer shadow-xs"
+                                        className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] text-slate-700 dark:text-slate-200 hover:text-[var(--brand-text)] border border-[var(--border-subtle)] hover:border-[var(--brand-border)] font-bold text-xs transition cursor-pointer shadow-xs"
                                         aria-label="Close menu"
                                     >
                                         <X className="w-4 h-4" />
@@ -391,7 +388,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                         </div>
 
                         {/* Full-Screen Menu Body: Modern 3-Column Structured Layout */}
-                        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-1 relative z-1">
+                        <div className="max-w-[1920px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-1 relative z-1">
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                                 {/* Column 1: Clinical Directory & Care (4 Clean Items) */}
                                 <div className="space-y-4">
@@ -415,7 +412,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                             onClick={(e) =>
                                                 handleNavClick(e, "/clinics")
                                             }
-                                            className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                                            className="p-4 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
                                         >
                                             <div className="w-9 h-9 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
                                                 <Building2 className="w-4 h-4" />
@@ -441,7 +438,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                             onClick={(e) =>
                                                 handleNavClick(e, "/doctors")
                                             }
-                                            className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                                            className="p-4 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
                                         >
                                             <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
                                                 <Stethoscope className="w-4 h-4" />
@@ -464,7 +461,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                             onClick={(e) =>
                                                 handleNavClick(e, "/staff")
                                             }
-                                            className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                                            className="p-4 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
                                         >
                                             <div className="w-9 h-9 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
                                                 <Users className="w-4 h-4" />
@@ -490,7 +487,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                             onClick={(e) =>
                                                 handleNavClick(e, "/live-queue")
                                             }
-                                            className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                                            className="p-4 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
                                         >
                                             <div className="w-9 h-9 rounded-xl bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
                                                 <Tv className="w-4 h-4" />
@@ -535,7 +532,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                             onClick={(e) =>
                                                 handleNavClick(e, "/#features")
                                             }
-                                            className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block cursor-pointer"
+                                            className="p-4 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block cursor-pointer"
                                         >
                                             <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
                                                 <Sparkles className="w-4 h-4" />
@@ -562,7 +559,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                             onClick={(e) =>
                                                 handleNavClick(e, "/#pricing")
                                             }
-                                            className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block cursor-pointer"
+                                            className="p-4 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block cursor-pointer"
                                         >
                                             <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
                                                 <CreditCard className="w-4 h-4" />
@@ -590,7 +587,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                                     "/#how-it-works",
                                                 )
                                             }
-                                            className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block cursor-pointer"
+                                            className="p-4 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block cursor-pointer"
                                         >
                                             <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
                                                 <HelpCircle className="w-4 h-4" />
@@ -620,7 +617,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                                     "/dashboard/templates",
                                                 )
                                             }
-                                            className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block cursor-pointer"
+                                            className="p-4 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block cursor-pointer"
                                         >
                                             <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
                                                 <Layers className="w-4 h-4" />
@@ -666,7 +663,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                             onClick={(e) =>
                                                 handleNavClick(e, "/auth/login")
                                             }
-                                            className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                                            className="p-4 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
                                         >
                                             <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
                                                 <LogIn className="w-4 h-4" />
@@ -692,7 +689,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                                     "/dashboard/staff",
                                                 )
                                             }
-                                            className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                                            className="p-4 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
                                         >
                                             <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
                                                 <ClipboardList className="w-4 h-4" />
@@ -720,7 +717,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                                     "/auth/register",
                                                 )
                                             }
-                                            className="p-4 rounded-2xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                                            className="p-4 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
                                         >
                                             <div className="w-9 h-9 rounded-xl bg-[var(--bg-subtle)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
                                                 <UserPlus className="w-4 h-4" />
@@ -743,7 +740,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                         {/* Platform support contact */}
                                         <a
                                             href={`mailto:${settings.supportEmail}`}
-                                            className="p-4 rounded-2xl bg-[var(--brand-surface)]/60 hover:bg-[var(--brand-surface)] border border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
+                                            className="p-4 rounded-xl bg-[var(--brand-surface)]/60 hover:bg-[var(--brand-surface)] border border-[var(--brand-border)] transition-all group flex items-start gap-3.5 shadow-2xs block"
                                         >
                                             <div className="w-9 h-9 rounded-xl bg-[var(--bg-surface)] text-[var(--brand-primary)] flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform">
                                                 <Mail className="w-4 h-4" />
@@ -775,7 +772,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
 
                         {/* Full-Screen Menu Bottom Bar */}
                         <div className="w-full border-t border-[var(--border-subtle)] bg-[var(--bg-surface)]/90 backdrop-blur-md shrink-0 relative z-10">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
                                 <div className="flex items-center gap-3">
                                     <span className="text-xs font-bold text-slate-500">
                                         {t.systemPreferences}

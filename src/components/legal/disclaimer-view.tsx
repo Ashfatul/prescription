@@ -25,10 +25,10 @@ export function DisclaimerView({ settings }: { settings: HospitalSettings }) {
       />
 
       <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        <div className="rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-6 sm:p-10 shadow-xs space-y-10 leading-relaxed text-sm text-slate-700 dark:text-slate-300">
+        <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-6 sm:p-10 shadow-xs space-y-10 leading-relaxed text-sm text-slate-700 dark:text-slate-300">
 
           {/* High Priority Emergency Alert Banner */}
-          <div className="p-6 rounded-3xl bg-rose-500/10 border-2 border-rose-500/30 text-rose-900 dark:text-rose-200 space-y-3">
+          <div className="p-6 rounded-xl bg-rose-500/10 border-2 border-rose-500/30 text-rose-900 dark:text-rose-200 space-y-3">
             <div className="flex items-center gap-2.5">
               <PhoneCall className="w-6 h-6 text-rose-600 dark:text-rose-400 shrink-0 animate-bounce" />
               <h2 className="text-base sm:text-lg font-black tracking-tight text-rose-950 dark:text-white">
@@ -80,7 +80,7 @@ export function DisclaimerView({ settings }: { settings: HospitalSettings }) {
             <p>
               {t("uiTheSystemFormularyProvidesStandard")}
             </p>
-            <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs space-y-2">
+            <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs space-y-2">
               <p>
                 • <strong>{t("uiPhysicianObligation")}</strong>{" "}
                 {t("uiThePrescribingPhysicianMustReview")}

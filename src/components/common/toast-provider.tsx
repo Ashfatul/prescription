@@ -66,7 +66,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             <div
               key={toast.id}
               role={toast.type === "error" ? "alert" : "status"}
-              className="pointer-events-auto flex w-full items-start gap-3 rounded-2xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 text-sm text-[var(--text-primary)] shadow-[var(--shadow-elevated)] motion-safe:animate-in motion-safe:slide-in-from-top-2"
+              className="pointer-events-auto flex w-full items-start gap-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 text-sm text-[var(--text-primary)] shadow-[var(--shadow-elevated)] motion-safe:animate-in motion-safe:slide-in-from-top-2"
             >
               <Icon className="mt-0.5 h-5 w-5 shrink-0" style={{ color: style.color }} aria-hidden="true" />
               <p className="min-w-0 flex-1 break-words leading-5">{toast.message}</p>

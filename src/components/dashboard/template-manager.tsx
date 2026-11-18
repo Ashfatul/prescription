@@ -533,7 +533,7 @@ export function TemplateManager() {
   return (
     <div className="space-y-6">
       {/* Top Banner */}
-      <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-md bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 text-xs font-bold">
@@ -552,7 +552,7 @@ export function TemplateManager() {
         <button
           type="button"
           onClick={openCreateModal}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 transition-all cursor-pointer self-start md:self-auto shrink-0"
+          className="flex items-center gap-2 min-h-[42px] sm:min-h-[44px] px-5 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs sm:text-sm font-bold shadow-md hover:opacity-90 transition-all cursor-pointer self-start md:self-auto shrink-0"
         >
           <span>✨</span>
           <span>{t("uiCreateMasterTemplate")}</span>
@@ -561,7 +561,7 @@ export function TemplateManager() {
 
       {statusMsg && (
         <div
-          className={`p-4 rounded-2xl text-xs font-semibold border ${
+          className={`p-4 rounded-lg text-xs font-semibold border ${
             statusMsg.type === "success"
               ? "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300"
               : "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-300"
@@ -588,7 +588,7 @@ export function TemplateManager() {
             return (
               <div
                 key={tpl.id}
-                className="p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm flex flex-col justify-between hover:shadow-md transition-all group"
+                className="p-5 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm flex flex-col justify-between hover:shadow-md transition-all group"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-3">
@@ -903,7 +903,7 @@ export function TemplateManager() {
                       )}
 
                       {logoUrl ? (
-                        <div className="p-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex items-center gap-3">
+                        <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex items-center gap-3">
                           <div className="w-16 h-16 rounded-xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 flex items-center justify-center p-1.5 shrink-0 overflow-hidden shadow-xs">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
@@ -933,7 +933,7 @@ export function TemplateManager() {
                           </div>
                         </div>
                       ) : (
-                        <label className="relative flex flex-col items-center justify-center p-5 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-[var(--brand-primary)] dark:hover:border-[var(--brand-primary)] bg-slate-50/50 dark:bg-slate-900/50 hover:bg-[var(--brand-surface)] transition cursor-pointer text-center group">
+                        <label className="relative flex flex-col items-center justify-center p-5 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-[var(--brand-primary)] dark:hover:border-[var(--brand-primary)] bg-slate-50/50 dark:bg-slate-900/50 hover:bg-[var(--brand-surface)] transition cursor-pointer text-center group">
                           <input
                             type="file"
                             accept="image/*"
@@ -975,7 +975,7 @@ export function TemplateManager() {
                 {/* 2. Behind Logo / Watermark Controls */}
                 {activeDesignerTab === "watermark" && (
                   <div className="space-y-4">
-                    <div className="p-3.5 rounded-2xl bg-[var(--brand-surface)] border border-[var(--brand-border)]">
+                    <div className="p-3.5 rounded-lg bg-[var(--brand-surface)] border border-[var(--brand-border)]">
                       <div className="flex items-center justify-between">
                         <label htmlFor="showWatermark" className="font-bold text-[var(--brand-text)] cursor-pointer text-xs">
                           Enable Background Watermark (Behind Logo)
@@ -1421,14 +1421,14 @@ export function TemplateManager() {
                     </div>
 
                     {customTextBlocks.length === 0 ? (
-                      <div className="p-6 text-center text-slate-400 bg-slate-50 dark:bg-slate-900 rounded-2xl">
+                      <div className="p-6 text-center text-slate-400 bg-slate-50 dark:bg-slate-900 rounded-lg">
                         No custom text blocks yet. Click &quot;Add Text Block&quot; to place custom text anywhere!
                       </div>
                     ) : (
                       customTextBlocks.map((block, idx) => (
                         <div
                           key={block.id}
-                          className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2.5"
+                          className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2.5"
                         >
                           <div className="flex items-center justify-between">
                             <span className="font-bold text-[11px] text-slate-700 dark:text-slate-300">
@@ -1611,7 +1611,7 @@ export function TemplateManager() {
                   }}
                 >
                   <div
-                    className="relative w-[680px] max-w-[680px] shadow-2xl rounded-2xl border transition-all duration-150 overflow-hidden"
+                    className="relative w-[680px] max-w-[680px] shadow-2xl rounded-lg border transition-all duration-150 overflow-hidden"
                     style={{
                       backgroundColor: backgroundColor,
                       color: textColor,

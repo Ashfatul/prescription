@@ -224,7 +224,7 @@ export function CustomDatePicker({
         role="button"
         tabIndex={disabled ? -1 : 0}
         onClick={() => !disabled && setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl border transition-all text-sm outline-none cursor-pointer select-none min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px] ${
+        className={`w-full flex items-center justify-between gap-3 px-3.5 py-2 rounded-lg border transition-all text-sm outline-none cursor-pointer select-none min-h-[42px] sm:min-h-[44px] h-[42px] sm:h-[44px] ${
           disabled
             ? "opacity-60 cursor-not-allowed bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800"
             : isOpen
@@ -266,14 +266,14 @@ export function CustomDatePicker({
 
       {/* Interactive Calendar Popover */}
       {isOpen && (
-        <div className="absolute left-0 z-50 mt-2 p-4 w-[320px] sm:w-[350px] rounded-3xl border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-150 flex flex-col space-y-3">
+        <div className="absolute left-0 z-50 mt-2 p-4 w-[320px] sm:w-[350px] rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-150 flex flex-col space-y-3">
           
           {/* Calendar Header: Month, Year Jumpers, and Steppers */}
           <div className="flex items-center justify-between gap-1 pb-2 border-b border-[var(--border-subtle)]">
             <button
               type="button"
               onClick={handlePrevMonth}
-              className="p-1.5 rounded-xl hover:bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 transition cursor-pointer"
+              className="p-1.5 rounded-lg hover:bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 transition cursor-pointer"
               aria-label={t("uiPreviousMonth")}
             >
               <ChevronLeft className="w-4 h-4" />
@@ -305,7 +305,7 @@ export function CustomDatePicker({
             <button
               type="button"
               onClick={handleNextMonth}
-              className="p-1.5 rounded-xl hover:bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 transition cursor-pointer"
+              className="p-1.5 rounded-lg hover:bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 transition cursor-pointer"
               aria-label={t("uiNextMonth")}
             >
               <ChevronRight className="w-4 h-4" />
@@ -369,7 +369,7 @@ export function CustomDatePicker({
                   type="button"
                   disabled={isDisabled}
                   onClick={() => handleSelectDay(date)}
-                  className={`h-9 w-9 sm:h-10 sm:w-10 rounded-xl text-xs font-semibold flex items-center justify-center transition cursor-pointer relative ${
+                  className={`h-9 w-9 sm:h-10 sm:w-10 rounded-lg text-xs font-semibold flex items-center justify-center transition cursor-pointer relative ${
                     isDisabled
                       ? "opacity-25 cursor-not-allowed"
                       : isSelected

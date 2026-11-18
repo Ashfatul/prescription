@@ -249,11 +249,11 @@ export function StripeUpgradeModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+      <div className="relative w-full max-w-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="modal-header shrink-0 p-6 border-b border-[var(--border-subtle)] flex items-center justify-between bg-gradient-to-r from-[var(--brand-surface)]/60 to-transparent">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[var(--brand-primary)] text-white flex items-center justify-center shadow-xs">
+            <div className="w-10 h-10 rounded-lg bg-[var(--brand-primary)] text-white flex items-center justify-center shadow-xs">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
@@ -303,7 +303,7 @@ export function StripeUpgradeModal({
                   {t.availableClinicSaaS}
                 </label>
                 {loadingPlans ? (
-                  <div className="h-28 rounded-2xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+                  <div className="h-28 rounded-lg bg-slate-100 dark:bg-slate-800 animate-pulse" />
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {plans.map((plan) => {
@@ -312,7 +312,7 @@ export function StripeUpgradeModal({
                         <div
                           key={plan.id}
                           onClick={() => setSelectedPlanId(plan.id)}
-                          className={`relative p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+                          className={`relative p-4 rounded-lg border transition-all cursor-pointer flex flex-col justify-between ${
                             isSelected
                               ? "border-[var(--brand-primary)] bg-[var(--brand-surface)]/40 shadow-xs ring-2 ring-[var(--brand-primary)]"
                               : "border-[var(--border-default)] hover:border-slate-300 dark:hover:border-slate-700 bg-[var(--bg-surface)]"
@@ -350,7 +350,7 @@ export function StripeUpgradeModal({
               </div>
 
               {/* Official Stripe Hosted Checkout */}
-              <div className="p-5 rounded-2xl border-2 border-indigo-500/20 bg-indigo-50/40 dark:bg-indigo-950/20 space-y-3">
+              <div className="p-5 rounded-lg border-2 border-indigo-500/20 bg-indigo-50/40 dark:bg-indigo-950/20 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-xl bg-[#635BFF] text-white flex items-center justify-center font-black text-xs shadow-xs">
@@ -400,7 +400,7 @@ export function StripeUpgradeModal({
               </div>
 
               {/* Step 2: Stripe Sandbox Payment Information */}
-              <div className="p-4 rounded-2xl border border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50 space-y-4">
+              <div className="p-4 rounded-lg border border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-[var(--brand-primary)]" />

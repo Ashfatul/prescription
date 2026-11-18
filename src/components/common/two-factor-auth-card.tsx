@@ -245,12 +245,12 @@ export function TwoFactorAuthCard() {
   };
 
   return (
-    <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 sm:p-8 shadow-xs space-y-6">
+    <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 sm:p-8 shadow-xs space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[var(--border-subtle)]">
         <div className="flex items-center gap-3">
           <div
-            className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-2xs ${
+            className={`w-11 h-11 rounded-lg flex items-center justify-center shrink-0 shadow-2xs ${
               status?.twoFactorEnabled
                 ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
                 : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
@@ -320,7 +320,7 @@ export function TwoFactorAuthCard() {
       {/* Main Body Status Card */}
       {status?.twoFactorEnabled ? (
         <div className="space-y-4">
-          <div className="p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/40 text-xs text-emerald-900 dark:text-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="p-4 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/40 text-xs text-emerald-900 dark:text-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="space-y-1">
               <div className="flex items-center gap-2 font-bold text-sm">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
@@ -333,7 +333,7 @@ export function TwoFactorAuthCard() {
           </div>
 
           {/* Backup Codes Information Banner */}
-          <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
             <div className="space-y-0.5">
               <div className="flex items-center gap-2 font-bold text-[var(--text-primary)]">
                 <KeyRound className="w-4 h-4 text-[var(--brand-primary)]" />
@@ -361,7 +361,7 @@ export function TwoFactorAuthCard() {
           </div>
         </div>
       ) : (
-        <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs space-y-2 text-slate-600 dark:text-slate-300">
+        <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs space-y-2 text-slate-600 dark:text-slate-300">
           <p className="font-semibold text-[var(--text-primary)]">{t.whyEnable2fa}</p>
           <ul className="list-disc list-inside space-y-1 text-slate-500 dark:text-slate-400">
             <li>{t.reason2fa1}</li>
@@ -374,7 +374,7 @@ export function TwoFactorAuthCard() {
       {/* SETUP MODAL */}
       {setupModalOpen && setupData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-lg rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
             {/* Modal Title */}
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
               <div className="flex items-center gap-2.5">
@@ -415,8 +415,8 @@ export function TwoFactorAuthCard() {
                     {t.openAuthenticatorAppDesc}
                   </p>
 
-                  <div className="flex flex-col sm:flex-row items-center gap-5 p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
-                    <div className="p-2 bg-white rounded-2xl border border-slate-200 shrink-0 shadow-xs">
+                  <div className="flex flex-col sm:flex-row items-center gap-5 p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)]">
+                    <div className="p-2 bg-white rounded-lg border border-slate-200 shrink-0 shadow-xs">
                       <Image
                         src={setupData.qrCodeDataUrl}
                         alt="2FA QR Code"
@@ -460,7 +460,7 @@ export function TwoFactorAuthCard() {
                     {t.backupCodesEmergencyDesc}
                   </p>
 
-                  <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
+                  <div className="p-3.5 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       {setupData.backupCodes.map((code) => (
                         <div
@@ -553,7 +553,7 @@ export function TwoFactorAuthCard() {
       {/* DISABLE 2FA CONFIRMATION MODAL */}
       {disableModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] p-6 sm:p-8 shadow-2xl space-y-6">
+          <div className="w-full max-w-md rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] p-6 sm:p-8 shadow-2xl space-y-6">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
               <div className="flex items-center gap-2.5 text-red-600 dark:text-red-400">
                 <ShieldAlert className="w-5 h-5" />
@@ -622,7 +622,7 @@ export function TwoFactorAuthCard() {
       {/* REGENERATE BACKUP CODES MODAL */}
       {regenModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] p-6 sm:p-8 shadow-2xl space-y-6">
+          <div className="w-full max-w-lg rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] p-6 sm:p-8 shadow-2xl space-y-6">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
               <div className="flex items-center gap-2.5">
                 <KeyRound className="w-5 h-5 text-[var(--brand-primary)]" />
@@ -645,7 +645,7 @@ export function TwoFactorAuthCard() {
                   {t.codesInvalidatedDesc}
                 </p>
 
-                <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
+                <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {newBackupCodes.map((code) => (
                       <div

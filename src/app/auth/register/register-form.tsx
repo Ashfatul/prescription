@@ -44,7 +44,7 @@ type PricingPlanOption = {
 };
 
 const baseInputClasses =
-  "w-full rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]";
+  "w-full rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[42px] sm:min-h-[44px] h-[42px] sm:h-[44px]";
 
 const iconInputClasses = `${baseInputClasses} input-icon-left !pl-11 pr-4`;
 const passwordInputClasses = `${baseInputClasses} input-icon-left !pl-11 pr-11`;
@@ -323,7 +323,7 @@ export function RegisterForm() {
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6">
       {/* Mode Switcher Tabs */}
-      <div className="grid grid-cols-2 p-1.5 rounded-2xl bg-slate-200/80 dark:bg-slate-800/80 border border-[var(--border-subtle)] shadow-inner">
+      <div className="grid grid-cols-2 p-1.5 rounded-lg bg-slate-200/80 dark:bg-slate-800/80 border border-[var(--border-subtle)] shadow-inner">
         <button
           type="button"
           onClick={() => {
@@ -358,7 +358,7 @@ export function RegisterForm() {
       </div>
 
       {/* Main Registration Card */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xl space-y-6">
+      <div className="p-6 sm:p-8 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xl space-y-6">
         {mode === "clinic" ? (
           <div className="space-y-1.5 text-center sm:text-left">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/10 text-teal-700 dark:text-teal-300 text-xs font-bold uppercase tracking-wider border border-teal-500/20">
@@ -388,13 +388,13 @@ export function RegisterForm() {
         )}
 
         {error && (
-          <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs">
+          <div className="p-4 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-2">
+          <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
             <span>
               {mode === "clinic"
@@ -496,7 +496,7 @@ export function RegisterForm() {
               </div>
 
               {/* SaaS Dedicated Subdomain Access Preview */}
-              <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1 shadow-2xs">
+              <div className="p-3.5 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1 shadow-2xs">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                     <Globe className="w-3 h-3 text-[var(--brand-primary)]" />
@@ -642,7 +642,7 @@ export function RegisterForm() {
                       <div
                         key={plan.id}
                         onClick={() => setSelectedPlanId(plan.id)}
-                        className={`p-3 rounded-2xl border transition-all cursor-pointer relative ${
+                        className={`p-3 rounded-lg border transition-all cursor-pointer relative ${
                           isSelected
                             ? "border-[var(--brand-primary)] bg-[var(--brand-surface)]/40 shadow-xs ring-2 ring-[var(--brand-primary)]"
                             : "border-[var(--border-default)] hover:border-slate-300 dark:hover:border-slate-700 bg-[var(--bg-surface)]"
@@ -824,7 +824,7 @@ export function RegisterForm() {
               loading ||
               (mode === "clinic" && (slugStatus !== "available" || !clinicSlug.trim()))
             }
-            className="w-full py-3.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs sm:text-sm font-bold shadow-md hover:opacity-95 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full min-h-[42px] sm:min-h-[44px] py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs sm:text-sm font-bold shadow-md hover:opacity-95 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <>

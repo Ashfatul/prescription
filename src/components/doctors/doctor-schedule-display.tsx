@@ -75,7 +75,7 @@ export function DoctorScheduleDisplay({
   }
 
   return (
-    <div className="p-3.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-2.5 text-xs">
+    <div className="p-3.5 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-2.5 text-xs">
       {/* Top Header Strip: Status & Hours */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">

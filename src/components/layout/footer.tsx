@@ -49,7 +49,7 @@ export function Footer({
         <footer className="w-full border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] text-slate-600 dark:text-slate-400">
             {/* Top Clinical Accreditation & Emergency Bar */}
             <div className="border-b border-[var(--border-subtle)] bg-[var(--bg-subtle)]/60 py-3.5">
-                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
                         <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
                             <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -84,7 +84,7 @@ export function Footer({
             </div>
 
             {/* Main Multi-Column Content Area */}
-            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+            <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
                 <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
                     {/* Column 1: Hospital Brand & System Overview (Spans 2 cols on lg) */}
                     <div className="lg:col-span-2 space-y-4">
@@ -92,7 +92,7 @@ export function Footer({
                             href="/"
                             className="inline-flex items-center gap-2.5 group"
                         >
-                            <div className="relative w-9 h-9 overflow-hidden rounded-2xl shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all">
+                            <div className="relative w-9 h-9 overflow-hidden rounded-xl shadow-sm ring-2 ring-[var(--brand-border)]/50 group-hover:scale-105 transition-all">
                                 <Image
                                     src="/icons/icon.svg"
                                     alt={settings.hospitalName || "Logo"}
@@ -285,7 +285,7 @@ export function Footer({
                 </div>
 
                 {/* Dynamic Emergency Notice Callout Strip */}
-                <div className="mt-10 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs flex flex-col sm:flex-row items-center justify-between gap-3 text-amber-800 dark:text-amber-300">
+                <div className="mt-10 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs flex flex-col sm:flex-row items-center justify-between gap-3 text-amber-800 dark:text-amber-300">
                     <div className="flex items-center gap-2">
                         <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
                         <span>

@@ -144,11 +144,11 @@ export function ClinicSubscriptionView() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-48 rounded-3xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+        <div className="h-48 rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="h-64 rounded-3xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
-          <div className="h-64 rounded-3xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
-          <div className="h-64 rounded-3xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+          <div className="h-64 rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+          <div className="h-64 rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+          <div className="h-64 rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
         </div>
       </div>
     );
@@ -156,7 +156,7 @@ export function ClinicSubscriptionView() {
 
   if (!sub) {
     return (
-      <div className="p-8 text-center bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-3xl">
+      <div className="p-8 text-center bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl">
         <AlertTriangle className="w-8 h-8 text-amber-500 mx-auto mb-2" />
         <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">
           {t.noClinicSubscriptionFound}
@@ -172,21 +172,21 @@ export function ClinicSubscriptionView() {
     <div className="space-y-8">
       {/* Stripe Session Return Banners */}
       {verifyingSession && (
-        <div className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-xs font-semibold flex items-center gap-2.5 animate-pulse">
+        <div className="p-4 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-xs font-semibold flex items-center gap-2.5 animate-pulse">
           <Loader2 className="w-4 h-4 animate-spin shrink-0" />
           <span>{t.verifyingStripePayment}</span>
         </div>
       )}
 
       {stripeNotice && (
-        <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2.5">
+        <div className="p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2.5">
           <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
           <span>{stripeNotice}</span>
         </div>
       )}
 
       {isCanceled && !stripeNotice && (
-        <div className="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-[var(--border-subtle)] text-slate-700 dark:text-slate-300 text-xs font-medium flex items-center gap-2.5">
+        <div className="p-4 rounded-lg bg-slate-100 dark:bg-slate-800/60 border border-[var(--border-subtle)] text-slate-700 dark:text-slate-300 text-xs font-medium flex items-center gap-2.5">
           <AlertTriangle className="w-4 h-4 text-slate-400 shrink-0" />
           <span>{t.stripeCheckoutCanceled}</span>
         </div>
@@ -194,7 +194,7 @@ export function ClinicSubscriptionView() {
 
       {/* Top Banner: Current Subscription Card */}
       {sub.isSuperAdmin ? (
-        <div className="p-4 sm:p-5 rounded-2xl border border-purple-500/20 bg-purple-500/5 dark:bg-purple-950/20 shadow-xs relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="p-4 sm:p-5 rounded-lg border border-purple-500/20 bg-purple-500/5 dark:bg-purple-950/20 shadow-xs relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20">
@@ -208,7 +208,7 @@ export function ClinicSubscriptionView() {
           </div>
         </div>
       ) : (
-        <div className="p-6 sm:p-8 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-xs relative overflow-hidden">
+        <div className="p-6 sm:p-8 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-xs relative overflow-hidden">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-3">
               <div className="flex flex-wrap items-center gap-2.5">
@@ -245,7 +245,7 @@ export function ClinicSubscriptionView() {
               </div>
 
               {sub.isTrial && sub.trialEndsAt && (
-                <div className="inline-flex items-center gap-2 p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-800 dark:text-amber-300">
+                <div className="inline-flex items-center gap-2 p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-800 dark:text-amber-300">
                   <Clock className="w-4 h-4 text-amber-600 shrink-0" />
                   <span>
                     {t("uiTrialEnds")}{" "}
@@ -264,7 +264,7 @@ export function ClinicSubscriptionView() {
               <button
                 type="button"
                 onClick={() => handleOpenUpgrade()}
-                className="px-6 py-3 rounded-2xl bg-[var(--brand-primary)] hover:opacity-95 text-white text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                className="px-6 py-3 rounded-lg bg-[var(--brand-primary)] hover:opacity-95 text-white text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Sparkles className="w-4 h-4" />
                 <span>{sub.isTrial ? t.upgradeWithStripeSandbox : t.changePackage}</span>
@@ -311,7 +311,7 @@ export function ClinicSubscriptionView() {
             {/* 4 Quota Metric Tiles */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
               {/* Doctors */}
-              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)] space-y-2">
+              <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)] space-y-2">
                 <div className="flex items-center justify-between text-slate-400">
                   <span className="text-[11px] font-semibold uppercase">{t.doctors}</span>
                   <span className="text-[10px] font-bold text-slate-500">
@@ -335,7 +335,7 @@ export function ClinicSubscriptionView() {
               </div>
 
               {/* Staff */}
-              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)] space-y-2">
+              <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)] space-y-2">
                 <div className="flex items-center justify-between text-slate-400">
                   <span className="text-[11px] font-semibold uppercase">{t("uiStaffDesk")}</span>
                   <span className="text-[10px] font-bold text-slate-500">
@@ -359,7 +359,7 @@ export function ClinicSubscriptionView() {
               </div>
 
               {/* Patients */}
-              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)] space-y-2">
+              <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)] space-y-2">
                 <div className="flex items-center justify-between text-slate-400">
                   <span className="text-[11px] font-semibold uppercase">{t("patientsEnrolled", "Patients")}</span>
                   <span className="text-[10px] font-bold text-slate-500">
@@ -383,7 +383,7 @@ export function ClinicSubscriptionView() {
               </div>
 
               {/* Prescriptions */}
-              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)] space-y-2">
+              <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-900/50 border border-[var(--border-subtle)] space-y-2">
                 <div className="flex items-center justify-between text-slate-400">
                   <span className="text-[11px] font-semibold uppercase">{t("prescriptionsThisMonth", "Rx (Month)")}</span>
                   <span className="text-[10px] font-bold text-slate-500">
@@ -427,7 +427,7 @@ export function ClinicSubscriptionView() {
             return (
               <div
                 key={plan.id}
-                className={`p-6 rounded-3xl border transition-all flex flex-col justify-between relative ${
+                className={`p-6 rounded-xl border transition-all flex flex-col justify-between relative ${
                   isCurrent
                     ? "border-[var(--brand-primary)] bg-[var(--brand-surface)]/20 shadow-md ring-2 ring-[var(--brand-primary)]"
                     : "border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:border-slate-300 dark:hover:border-slate-700 shadow-xs"

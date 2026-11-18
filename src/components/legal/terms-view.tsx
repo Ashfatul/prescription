@@ -24,10 +24,10 @@ export function TermsView() {
       />
 
       <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        <div className="rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-6 sm:p-10 shadow-xs space-y-10 leading-relaxed text-sm text-slate-700 dark:text-slate-300">
+        <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-6 sm:p-10 shadow-xs space-y-10 leading-relaxed text-sm text-slate-700 dark:text-slate-300">
 
           {/* Executive Summary Callout */}
-          <div className="p-5 rounded-2xl bg-[var(--brand-surface)] border border-[var(--brand-border)]/60 text-xs text-[var(--brand-text)] flex items-start gap-3.5">
+          <div className="p-5 rounded-lg bg-[var(--brand-surface)] border border-[var(--brand-border)]/60 text-xs text-[var(--brand-text)] flex items-start gap-3.5">
             <Scale className="w-5 h-5 text-[var(--brand-primary)] shrink-0 mt-0.5" />
             <div className="space-y-1">
               <strong className="block text-sm font-bold text-[var(--text-primary)]">
@@ -67,7 +67,7 @@ export function TermsView() {
               <AlertTriangle className="w-5 h-5 text-amber-500" />
               <span>{t("uiIndependentMedicalJudgmentDecisionSupport")}</span>
             </h2>
-            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200">
+            <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200">
               <strong>{t("uiCriticalLEGALNOTICE")}</strong>{" "}
               {t("uiPpmsIsAClinicalManagement")}
             </div>
@@ -89,7 +89,7 @@ export function TermsView() {
               {t("uiPatientsAndHospitalReceptionistsUtilizing")}
             </p>
             <div className="grid gap-3 sm:grid-cols-2 text-xs">
-              <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
+              <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
                 <span className="font-bold text-slate-900 dark:text-white block">
                   {t("uiSerialAllocation")}
                 </span>
@@ -97,7 +97,7 @@ export function TermsView() {
                   {t("uiQueueTokensAreAssignedSequentially")}
                 </p>
               </div>
-              <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
+              <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
                 <span className="font-bold text-slate-900 dark:text-white block">
                   {t("uiEmergencyTriageOverride")}
                 </span>
@@ -105,7 +105,7 @@ export function TermsView() {
                   {t("uiChamberPhysiciansAndTriageNurses")}
                 </p>
               </div>
-              <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
+              <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
                 <span className="font-bold text-slate-900 dark:text-white block">
                   {t("uiTimelyArrival")}
                 </span>
@@ -113,7 +113,7 @@ export function TermsView() {
                   {t("uiPatientsAreAdvisedToCheck")}
                 </p>
               </div>
-              <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
+              <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-1">
                 <span className="font-bold text-slate-900 dark:text-white block">
                   {t("uiCancellationRescheduling")}
                 </span>

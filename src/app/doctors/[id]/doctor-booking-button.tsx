@@ -20,7 +20,7 @@ export function DoctorBookingButton({
 
   if (isStaffOrDoctor) {
     return (
-      <div className="w-full py-2.5 px-4 rounded-2xl bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border-subtle)] text-xs font-semibold text-center">
+      <div className="w-full py-2.5 px-4 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border-subtle)] text-xs font-semibold text-center">
         <span>{language === "bn" ? `${user?.role} হিসেবে লগইন আছেন (${t.bookingDisabledRole})` : `Logged in as ${user?.role} (${t.bookingDisabledRole})`}</span>
       </div>
     );
@@ -33,7 +33,7 @@ export function DoctorBookingButton({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="w-full py-3 px-5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-90 transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+        className="w-full min-h-[42px] sm:min-h-[44px] py-2.5 px-5 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-90 transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
       >
         <Calendar className="w-4 h-4" />
         <span>{t.bookConsultationWith} {shortDoctorName}</span>

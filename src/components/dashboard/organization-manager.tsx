@@ -229,7 +229,7 @@ export function OrganizationManager() {
       {/* SaaS Global Metrics KPI Cards */}
       {metrics && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-5 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
+          <div className="p-5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
             <div className="flex items-center justify-between text-slate-400">
               <span className="text-xs font-bold uppercase tracking-wider">{t.clinicsAndHospitals}</span>
               <Building2 className="w-4 h-4 text-[var(--brand-primary)]" />
@@ -242,7 +242,7 @@ export function OrganizationManager() {
             </p>
           </div>
 
-          <div className="p-5 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
+          <div className="p-5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
             <div className="flex items-center justify-between text-slate-400">
               <span className="text-xs font-bold uppercase tracking-wider">{t.physiciansAndStaff}</span>
               <Stethoscope className="w-4 h-4 text-sky-500" />
@@ -257,7 +257,7 @@ export function OrganizationManager() {
             </p>
           </div>
 
-          <div className="p-5 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
+          <div className="p-5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
             <div className="flex items-center justify-between text-slate-400">
               <span className="text-xs font-bold uppercase tracking-wider">{t.totalPrescriptionsCount}</span>
               <Layers className="w-4 h-4 text-emerald-500" />
@@ -270,7 +270,7 @@ export function OrganizationManager() {
             </p>
           </div>
 
-          <div className="p-5 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
+          <div className="p-5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
             <div className="flex items-center justify-between text-slate-400">
               <span className="text-xs font-bold uppercase tracking-wider">{t.saasActiveMrr}</span>
               <DollarSign className="w-4 h-4 text-teal-600" />
@@ -287,10 +287,10 @@ export function OrganizationManager() {
       )}
 
       {/* Header Bar */}
-      <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
+            <div className="w-9 h-9 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
               <Building2 className="w-5 h-5" />
             </div>
             <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -305,7 +305,7 @@ export function OrganizationManager() {
         <button
           type="button"
           onClick={openCreateModal}
-          className="px-4 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+          className="px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>{t.provisionNewClinic}</span>
@@ -314,7 +314,7 @@ export function OrganizationManager() {
 
       {/* Success Notification */}
       {approvalSuccess && (
-        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between gap-2 animate-in fade-in">
+        <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between gap-2 animate-in fade-in">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{approvalSuccess}</span>
@@ -399,7 +399,7 @@ export function OrganizationManager() {
       </div>
 
       {/* Organizations Table */}
-      <div className="rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs overflow-hidden">
+      <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-xs text-slate-400">
             <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--brand-primary)] mb-2" />
@@ -520,7 +520,7 @@ export function OrganizationManager() {
       {/* Provision / Edit Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+          <div className="w-full max-w-lg rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="font-bold text-slate-900 dark:text-white text-base">
                 {editingOrg ? `${t("uiManageClinic")}: ${editingOrg.name}` : (t("uiProvisionNewClinicOrganization"))}

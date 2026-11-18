@@ -196,7 +196,7 @@ export function PrintablePrescriptionView({
 
       {/* Main Prescription Paper (A4 Standard) */}
       <main
-        className="relative mx-auto min-h-[1050px] max-w-4xl overflow-hidden rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl print:m-0 print:min-h-0 print:w-full print:max-w-none print:rounded-none print:p-5 print:pt-4 print:pb-4 print:shadow-none"
+        className="relative mx-auto min-h-[1050px] max-w-4xl overflow-hidden rounded-xl p-6 sm:p-8 md:p-10 shadow-xl print:m-0 print:min-h-0 print:w-full print:max-w-none print:rounded-none print:p-5 print:pt-4 print:pb-4 print:shadow-none"
         style={{
           borderColor: themeColor,
           backgroundColor: backgroundColor,

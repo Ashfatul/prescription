@@ -146,7 +146,7 @@ export function LoginForm() {
         {/* Top Navbar: Brand logo (mobile) & Home / Theme toggle */}
         <div className="flex items-center justify-between pb-6 border-b border-[var(--border-subtle)]">
           <div className="flex items-center gap-2.5 lg:hidden">
-            <div className="w-9 h-9 rounded-xl bg-[var(--brand-primary)] text-white flex items-center justify-center font-black text-sm shadow-xs">
+            <div className="w-9 h-9 rounded-lg bg-[var(--brand-primary)] text-white flex items-center justify-center font-black text-sm shadow-xs">
               Rx
             </div>
             <div>
@@ -202,7 +202,7 @@ export function LoginForm() {
                   </label>
                   <div className="relative">
                     <input
-                      className={`w-full rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[52px] h-[52px] ${
+                      className={`w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[52px] h-[52px] ${
                         useBackupCode
                           ? "px-4 font-mono text-center tracking-[0.15em] text-lg font-bold"
                           : "px-4 font-mono text-center tracking-[0.3em] text-2xl font-bold"
@@ -219,7 +219,7 @@ export function LoginForm() {
                 </div>
 
                 {error && (
-                  <p className="rounded-xl bg-red-50 p-3 text-xs font-semibold text-red-600 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/50 leading-relaxed">
+                  <p className="rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-600 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/50 leading-relaxed">
                     {error}
                   </p>
                 )}
@@ -227,7 +227,7 @@ export function LoginForm() {
                 <button
                   type="submit"
                   disabled={twoFactorLoading || !twoFactorCode.trim()}
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[var(--brand-primary)] text-white text-sm font-bold shadow-xs hover:opacity-95 transition-all disabled:opacity-60 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-[var(--brand-primary)] text-white text-sm font-bold shadow-xs hover:opacity-95 transition-all disabled:opacity-60 cursor-pointer"
                 >
                   {twoFactorLoading ? (
                     <>
@@ -289,7 +289,7 @@ export function LoginForm() {
               </label>
               <div className="relative">
                 <input
-                  className="w-full input-icon-left !pl-11 pr-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
+                  className="w-full input-icon-left !pl-11 pr-4 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[42px] sm:min-h-[44px] h-[42px] sm:h-[44px]"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="doctor@hospital.org"
@@ -315,7 +315,7 @@ export function LoginForm() {
               </div>
               <div className="relative">
                 <input
-                  className="w-full input-icon-left !pl-11 pr-11 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
+                  className="w-full input-icon-left !pl-11 pr-11 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[42px] sm:min-h-[44px] h-[42px] sm:h-[44px]"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
@@ -335,13 +335,13 @@ export function LoginForm() {
             </div>
 
             {error && (
-              <p className="rounded-xl bg-red-50 p-3 text-xs font-semibold text-red-600 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/50 leading-relaxed">
+              <p className="rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-600 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/50 leading-relaxed">
                 {error}
               </p>
             )}
 
             <button
-              className="w-full rounded-xl bg-[var(--brand-primary)] hover:opacity-95 px-4 py-3 text-xs sm:text-sm font-bold text-white shadow-md transition-all disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
+              className="w-full rounded-lg bg-[var(--brand-primary)] hover:opacity-95 min-h-[42px] sm:min-h-[44px] px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md transition-all disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
               type="submit"
               disabled={loading}
             >
@@ -368,9 +368,9 @@ export function LoginForm() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <Link
                 href="/auth/register?type=clinic"
-                className="flex items-center gap-3 p-3 rounded-2xl border border-[var(--border-default)] bg-[var(--bg-subtle)] hover:border-[var(--brand-primary)] hover:bg-[var(--brand-surface)]/30 transition group cursor-pointer"
+                className="flex items-center gap-3 p-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-subtle)] hover:border-[var(--brand-primary)] hover:bg-[var(--brand-surface)]/30 transition group cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-xl bg-teal-500/10 text-[var(--brand-primary)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <div className="w-8 h-8 rounded-lg bg-teal-500/10 text-[var(--brand-primary)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <Building2 className="w-4 h-4" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -388,9 +388,9 @@ export function LoginForm() {
 
               <Link
                 href="/auth/register?type=patient"
-                className="flex items-center gap-3 p-3 rounded-2xl border border-[var(--border-default)] bg-[var(--bg-subtle)] hover:border-rose-500/50 hover:bg-rose-500/5 transition group cursor-pointer"
+                className="flex items-center gap-3 p-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-subtle)] hover:border-rose-500/50 hover:bg-rose-500/5 transition group cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <div className="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <HeartPulse className="w-4 h-4" />
                 </div>
                 <div className="min-w-0 flex-1">

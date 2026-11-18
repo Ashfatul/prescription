@@ -65,7 +65,7 @@ export function ErrorView({
           <Link
             href="/"
             onClick={onReset}
-            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-[var(--brand-primary)] hover:bg-[var(--brand-hover)] text-white font-semibold text-sm shadow-md shadow-[var(--brand-primary)]/20 transition-all hover:shadow-lg active:scale-[0.98] min-h-[46px]"
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-[var(--brand-primary)] hover:bg-[var(--brand-hover)] text-white font-semibold text-sm shadow-md shadow-[var(--brand-primary)]/20 transition-all hover:shadow-lg active:scale-[0.98] min-h-[44px]"
           >
             <Home className="w-4 h-4" />
             <span>{t.uiBackToHome}</span>
@@ -75,7 +75,7 @@ export function ErrorView({
           {user && (
             <Link
               href="/dashboard"
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] text-[var(--text-primary)] font-semibold text-sm transition-all hover:border-[var(--brand-border)] active:scale-[0.98] min-h-[46px]"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] text-[var(--text-primary)] font-semibold text-sm transition-all hover:border-[var(--brand-border)] active:scale-[0.98] min-h-[44px]"
             >
               <LayoutDashboard className="w-4 h-4 text-[var(--brand-primary)]" />
               <span>{t.uiGoToDashboard}</span>
@@ -86,7 +86,7 @@ export function ErrorView({
           <button
             type="button"
             onClick={() => router.back()}
-            className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-surface)] text-[var(--text-secondary)] font-medium text-sm transition-all active:scale-[0.98] cursor-pointer min-h-[46px]"
+            className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-surface)] text-[var(--text-secondary)] font-medium text-sm transition-all active:scale-[0.98] cursor-pointer min-h-[44px]"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>{t.uiGoBack}</span>

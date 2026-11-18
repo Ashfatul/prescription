@@ -137,7 +137,7 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
   return (
     <div className="space-y-8">
       {/* Search & Filter Toolbar */}
-      <div className="p-4 sm:p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs space-y-4">
+      <div className="p-4 sm:p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs space-y-4">
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
           {/* Live Search Input */}
           <div className="relative flex-1">
@@ -147,7 +147,7 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.searchStaffPlaceholder}
-              className="w-full pl-11 pr-10 py-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 text-sm text-[var(--text-primary)] placeholder:text-slate-400 transition-all outline-none"
+              className="w-full pl-11 pr-10 py-3 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 text-sm text-[var(--text-primary)] placeholder:text-slate-400 transition-all outline-none"
             />
             {searchQuery && (
               <button
@@ -242,7 +242,7 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
             return (
               <div
                 key={member.id}
-                className="rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-primary)]/40 transition-all p-6 flex flex-col justify-between shadow-xs hover:shadow-md group relative overflow-hidden"
+                className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--brand-primary)]/40 transition-all p-6 flex flex-col justify-between shadow-xs hover:shadow-md group relative overflow-hidden"
               >
                 {/* Top Subtle Ambient Indicator */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[var(--brand-primary)] via-teal-400 to-sky-400 opacity-80" />
@@ -257,10 +257,10 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
                           alt={member.name}
                           width={48}
                           height={48}
-                          className="w-12 h-12 rounded-2xl object-cover shrink-0 border border-[var(--border-subtle)] ring-2 ring-[var(--brand-border)]/40"
+                          className="w-12 h-12 rounded-lg object-cover shrink-0 border border-[var(--border-subtle)] ring-2 ring-[var(--brand-border)]/40"
                         />
                       ) : (
-                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[var(--brand-surface)] to-[var(--bg-subtle)] text-[var(--brand-primary)] border border-[var(--brand-border)] flex items-center justify-center font-black text-base shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[var(--brand-surface)] to-[var(--bg-subtle)] text-[var(--brand-primary)] border border-[var(--brand-border)] flex items-center justify-center font-black text-base shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
                           {member.name.charAt(0)}
                         </div>
                       )}
@@ -299,7 +299,7 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
                   {member.organization ? (
                     <Link
                       href={`/clinics/${member.organization.slug}`}
-                      className="p-3 rounded-2xl bg-[var(--bg-subtle)]/70 hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition flex items-center justify-between gap-3 text-xs group/clinic block"
+                      className="p-3 rounded-lg bg-[var(--bg-subtle)]/70 hover:bg-[var(--brand-surface)]/60 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition flex items-center justify-between gap-3 text-xs group/clinic block"
                     >
                       <div className="flex items-center gap-2 min-w-0">
                         <Building2 className="w-4 h-4 text-[var(--brand-primary)] shrink-0" />
@@ -310,7 +310,7 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
                       <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover/clinic:translate-x-0.5 group-hover/clinic:text-[var(--brand-text)] transition-transform shrink-0" />
                     </Link>
                   ) : (
-                    <div className="p-3 rounded-2xl bg-[var(--bg-subtle)]/50 border border-[var(--border-subtle)] text-xs text-slate-400 flex items-center gap-2">
+                    <div className="p-3 rounded-lg bg-[var(--bg-subtle)]/50 border border-[var(--border-subtle)] text-xs text-slate-400 flex items-center gap-2">
                       <Building2 className="w-4 h-4 shrink-0" />
                       <span>{t.platformStaffSupport}</span>
                     </div>
@@ -372,8 +372,8 @@ export function StaffDirectory({ initialStaff, clinics }: StaffDirectoryProps) {
         </div>
       ) : (
         /* Empty / No Match State */
-        <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4 mx-auto w-full">
-          <div className="w-16 h-16 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center mx-auto">
+        <div className="p-12 text-center rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4 mx-auto w-full">
+          <div className="w-16 h-16 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center mx-auto">
             <Users className="w-8 h-8" />
           </div>
           <div className="space-y-1">

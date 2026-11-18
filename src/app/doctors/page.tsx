@@ -62,7 +62,7 @@ export default async function DoctorsPage({ searchParams }: DoctorsPageProps) {
         />
 
         {/* Directory Content Area */}
-        <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        <section className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
           <DoctorList initialLimit={9} clinicSlug={clinicSlug} />
         </section>
       </main>

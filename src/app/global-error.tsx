@@ -44,7 +44,7 @@ export default function GlobalError({
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/"
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm shadow-md transition-all active:scale-[0.98] min-h-[46px] no-underline"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm shadow-md transition-all active:scale-[0.98] min-h-[44px] no-underline"
             >
               <svg
                 className="w-4 h-4"
@@ -67,7 +67,7 @@ export default function GlobalError({
               onClick={() => {
                 if (typeof window !== "undefined") window.history.back();
               }}
-              className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl border border-slate-300 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium text-sm transition-all active:scale-[0.98] cursor-pointer min-h-[46px]"
+              className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium text-sm transition-all active:scale-[0.98] cursor-pointer min-h-[44px]"
             >
               <svg
                 className="w-4 h-4"

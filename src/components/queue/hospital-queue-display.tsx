@@ -220,7 +220,7 @@ export function HospitalQueueDisplay({
   if (loading) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-4 text-center">
-        <div className="w-12 h-12 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center animate-pulse shadow-md">
+        <div className="w-12 h-12 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center animate-pulse shadow-md">
           <Activity className="w-6 h-6 animate-spin" />
         </div>
         <p className="text-sm font-bold text-slate-600 dark:text-slate-400">
@@ -260,9 +260,9 @@ export function HospitalQueueDisplay({
       }`}
     >
       {/* 1. TOP HEADER: High-Contrast TV Display Status Bar */}
-      <header className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-4 sm:p-5 shadow-xs flex flex-wrap items-center justify-between gap-4 mb-6">
+      <header className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-4 sm:p-5 shadow-xs flex flex-wrap items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-teal-500 to-emerald-400 text-slate-950 flex items-center justify-center font-black text-sm shadow-md">
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-teal-500 to-emerald-400 text-slate-950 flex items-center justify-center font-black text-sm shadow-md">
             OPD
           </div>
           <div>
@@ -297,7 +297,7 @@ export function HospitalQueueDisplay({
       </header>
 
       {/* 2. AUTO-CYCLE PROGRESS & CONTROLS STRIP */}
-      <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-3 mb-6 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-3 mb-6 flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             <button
@@ -360,7 +360,7 @@ export function HospitalQueueDisplay({
       <div className="grid lg:grid-cols-12 gap-6 items-start flex-1">
         
         {/* Left Column: All Working Doctors List (4 Cols on desktop) */}
-        <div className="lg:col-span-4 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-4 sm:p-5 shadow-xs space-y-3">
+        <div className="lg:col-span-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-4 sm:p-5 shadow-xs space-y-3">
           <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
               <Users className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
@@ -379,7 +379,7 @@ export function HospitalQueueDisplay({
                   key={doc.id}
                   type="button"
                   onClick={() => handleSelectDoctor(idx)}
-                  className={`relative w-full p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                  className={`relative w-full p-3.5 rounded-lg border text-left transition-all cursor-pointer flex items-center justify-between gap-3 ${
                     isSelected
                       ? "bg-[var(--brand-surface)] border-[var(--brand-primary)] shadow-xs ring-1 ring-[var(--brand-primary)]/40"
                       : "bg-[var(--bg-app)] border-[var(--border-subtle)] hover:border-[var(--brand-border)] hover:bg-[var(--bg-subtle)]"
@@ -439,7 +439,7 @@ export function HospitalQueueDisplay({
           </div>
 
           {/* Patient Instruction Card */}
-          <div className="p-3.5 rounded-2xl bg-[var(--bg-app)] border border-[var(--border-subtle)] text-[11px] text-slate-500 space-y-1">
+          <div className="p-3.5 rounded-lg bg-[var(--bg-app)] border border-[var(--border-subtle)] text-[11px] text-slate-500 space-y-1">
             <span className="font-bold text-slate-700 dark:text-slate-300 block">
               {t("uiPatientGuidance")}
             </span>
@@ -453,9 +453,9 @@ export function HospitalQueueDisplay({
         {selectedDoctor && (
           <div className="lg:col-span-8 space-y-6">
             {/* Doctor Chamber Card Header */}
-            <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-[var(--bg-subtle)] border-2 border-[var(--brand-border)] shadow-md shrink-0">
+                <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-[var(--bg-subtle)] border-2 border-[var(--brand-border)] shadow-md shrink-0">
                   {selectedDoctor.imageUrl ? (
                     <Image
                       src={selectedDoctor.imageUrl}
@@ -504,7 +504,7 @@ export function HospitalQueueDisplay({
             </div>
 
             {/* Central Giant Calling Display Box */}
-            <div className="rounded-3xl border-2 border-[var(--brand-primary)] bg-[var(--bg-surface)] p-6 sm:p-10 shadow-lg text-center space-y-3 relative overflow-hidden">
+            <div className="rounded-xl border-2 border-[var(--brand-primary)] bg-[var(--bg-surface)] p-6 sm:p-10 shadow-lg text-center space-y-3 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-48 h-48 bg-[var(--brand-primary)]/10 rounded-full blur-3xl pointer-events-none" />
 
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-black uppercase tracking-widest border border-[var(--brand-border)] shadow-xs">
@@ -545,7 +545,7 @@ export function HospitalQueueDisplay({
             <div className="grid sm:grid-cols-12 gap-4">
               
               {/* Previous Patient (4 cols) */}
-              <div className="sm:col-span-4 p-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-1.5 shadow-2xs">
+              <div className="sm:col-span-4 p-4 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-1.5 shadow-2xs">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                   <span>{t.previousPatient}</span>
@@ -566,7 +566,7 @@ export function HospitalQueueDisplay({
               </div>
 
               {/* Next in Lobby (4 cols) */}
-              <div className="sm:col-span-4 p-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-1.5 shadow-2xs">
+              <div className="sm:col-span-4 p-4 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-1.5 shadow-2xs">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5 text-amber-500" />
                   <span>{t.nextInLobby}</span>
@@ -587,7 +587,7 @@ export function HospitalQueueDisplay({
               </div>
 
               {/* Missed / Skipped Serials (4 cols) */}
-              <div className="sm:col-span-4 p-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-1.5 shadow-2xs">
+              <div className="sm:col-span-4 p-4 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-1.5 shadow-2xs">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-rose-500 flex items-center gap-1">
                   <XCircle className="w-3.5 h-3.5 text-rose-500" />
                   <span>{t.missedSkippedCalls}</span>
@@ -616,7 +616,7 @@ export function HospitalQueueDisplay({
             </div>
 
             {/* Upcoming Queue Serial Ribbon */}
-            <div className="p-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-2">
+            <div className="p-4 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-bold text-slate-800 dark:text-slate-200">
                   {t.upcomingQueueInLine}
@@ -651,7 +651,7 @@ export function HospitalQueueDisplay({
             </div>
 
             {/* Discretion & Instruction Footer Banner */}
-            <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+            <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
                 <span>

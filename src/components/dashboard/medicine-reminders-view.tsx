@@ -144,10 +144,10 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
+            <div className="w-9 h-9 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
               <Pill className="w-5 h-5" />
             </div>
             <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -162,7 +162,7 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          className="px-4 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+          className="px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>{t.addNewReminder}</span>
@@ -176,7 +176,7 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
           <span>{t.loadingMedicationReminders}</span>
         </div>
       ) : reminders.length === 0 ? (
-        <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
+        <div className="p-12 text-center rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
           <Clock className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-700" />
           <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">
             {t.noActiveReminders}
@@ -201,7 +201,7 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
             return (
               <div
                 key={reminder.id}
-                className={`p-5 rounded-3xl bg-[var(--bg-surface)] border transition flex flex-col justify-between space-y-4 shadow-xs ${
+                className={`p-5 rounded-xl bg-[var(--bg-surface)] border transition flex flex-col justify-between space-y-4 shadow-xs ${
                   reminder.isActive
                     ? "border-[var(--border-subtle)] hover:border-[var(--brand-border)]"
                     : "border-dashed opacity-60"
@@ -209,7 +209,7 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-2">
-                    <div className="p-2.5 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] shrink-0">
+                    <div className="p-2.5 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] shrink-0">
                       <Pill className="w-5 h-5" />
                     </div>
                     <span className="px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] text-[10px] font-bold font-mono">
@@ -273,7 +273,7 @@ export function MedicineRemindersView({ patientId }: { patientId?: string }) {
       {/* Add Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+          <div className="w-full max-w-md rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="font-bold text-slate-900 dark:text-white text-base">
                 {t.newMedicineReminder}

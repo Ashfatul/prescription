@@ -79,9 +79,9 @@ export function SystemFactoryResetCard() {
   return (
     <>
       {/* Danger Zone Main Card */}
-      <div id="danger-zone" className="p-6 sm:p-8 rounded-3xl border border-red-500/25 bg-red-500/5 dark:bg-red-950/15 space-y-5 transition-colors scroll-mt-6">
+      <div id="danger-zone" className="p-6 sm:p-8 rounded-lg border border-red-500/25 bg-red-500/5 dark:bg-red-950/15 space-y-5 transition-colors scroll-mt-6">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0 shadow-xs">
+          <div className="w-12 h-12 rounded-lg bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0 shadow-xs">
             <AlertTriangle className="w-6 h-6" />
           </div>
           <div className="space-y-1 min-w-0">
@@ -100,7 +100,7 @@ export function SystemFactoryResetCard() {
         </div>
 
         {/* Warning Items List */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-surface)] border border-red-500/20 space-y-2 text-xs">
+        <div className="p-4 sm:p-5 rounded-lg bg-[var(--bg-surface)] border border-red-500/20 space-y-2 text-xs">
           <div className="flex items-start gap-2.5 text-red-700 dark:text-red-300">
             <span className="font-bold shrink-0">✕</span>
             <span>{t.uiDangerWarning1}</span>
@@ -120,7 +120,7 @@ export function SystemFactoryResetCard() {
           <button
             type="button"
             onClick={handleOpenModal}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white text-xs sm:text-sm font-bold shadow-md shadow-red-600/20 hover:shadow-lg transition-all cursor-pointer min-h-[44px]"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white text-xs sm:text-sm font-bold shadow-md shadow-red-600/20 hover:shadow-lg transition-all cursor-pointer min-h-[44px]"
           >
             <Trash2 className="w-4 h-4" />
             <span>{t.uiStartFactoryReset}</span>
@@ -131,11 +131,11 @@ export function SystemFactoryResetCard() {
       {/* Multi-Step Confirmation Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-lg rounded-3xl border border-red-500/30 bg-[var(--bg-surface)] p-6 sm:p-8 shadow-2xl text-[var(--text-primary)] space-y-6">
+          <div className="w-full max-w-lg rounded-lg border border-red-500/30 bg-[var(--bg-surface)] p-6 sm:p-8 shadow-2xl text-[var(--text-primary)] space-y-6">
             {/* Modal Header */}
             <div className="flex items-start justify-between gap-4 pb-4 border-b border-[var(--border-subtle)]">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
+                <div className="w-10 h-10 rounded-lg bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
                   <ShieldAlert className="w-5 h-5" />
                 </div>
                 <div>
@@ -151,7 +151,7 @@ export function SystemFactoryResetCard() {
                 type="button"
                 disabled={submitting}
                 onClick={handleCloseModal}
-                className="p-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors cursor-pointer disabled:opacity-50"
+                className="p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors cursor-pointer disabled:opacity-50"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -159,14 +159,14 @@ export function SystemFactoryResetCard() {
 
             {/* Error or Success Alert */}
             {errorMsg && (
-              <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/25 text-xs text-red-600 dark:text-red-400 flex items-start gap-2.5">
+              <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/25 text-xs text-red-600 dark:text-red-400 flex items-start gap-2.5">
                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                 <span className="leading-relaxed">{errorMsg}</span>
               </div>
             )}
 
             {successMsg && (
-              <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 text-xs text-emerald-700 dark:text-emerald-300 font-bold flex items-center gap-2">
+              <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-xs text-emerald-700 dark:text-emerald-300 font-bold flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>{successMsg}</span>
               </div>
@@ -174,7 +174,7 @@ export function SystemFactoryResetCard() {
 
             <form onSubmit={handleExecuteReset} className="space-y-5">
               {/* Step 1: Admin Password */}
-              <div className="space-y-2 p-4 rounded-2xl bg-[var(--bg-subtle)]/60 border border-[var(--border-subtle)]">
+              <div className="space-y-2 p-4 rounded-lg bg-[var(--bg-subtle)]/60 border border-[var(--border-subtle)]">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
                     {t.uiStep1PasswordVerification}
@@ -192,7 +192,7 @@ export function SystemFactoryResetCard() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder={t.uiEnterMasterPasswordPlaceholder}
-                    className="w-full pl-10 pr-11 py-3 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all min-h-[44px]"
+                    className="w-full pl-10 pr-11 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all min-h-[44px]"
                   />
                   <Lock className="w-4 h-4 text-[var(--text-muted)] absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <button
@@ -207,7 +207,7 @@ export function SystemFactoryResetCard() {
               </div>
 
               {/* Step 2: Phrase Confirmation */}
-              <div className="space-y-2 p-4 rounded-2xl bg-[var(--bg-subtle)]/60 border border-[var(--border-subtle)]">
+              <div className="space-y-2 p-4 rounded-lg bg-[var(--bg-subtle)]/60 border border-[var(--border-subtle)]">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
                     {t.uiStep2TypeConfirmation}
@@ -227,7 +227,7 @@ export function SystemFactoryResetCard() {
                   value={confirmationText}
                   onChange={(e) => setConfirmationText(e.target.value)}
                   placeholder={REQUIRED_PHRASE}
-                  className={`w-full px-4 py-3 rounded-xl border bg-[var(--bg-surface)] text-sm font-mono tracking-wider transition-all min-h-[44px] focus:outline-none ${
+                  className={`w-full px-4 py-3 rounded-lg border bg-[var(--bg-surface)] text-sm font-mono tracking-wider transition-all min-h-[44px] focus:outline-none ${
                     phraseMatches
                       ? "border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold"
                       : "border-[var(--border-default)] focus:border-red-500 focus:ring-2 focus:ring-red-500/20 text-[var(--text-primary)]"
@@ -241,7 +241,7 @@ export function SystemFactoryResetCard() {
                   type="button"
                   disabled={submitting}
                   onClick={handleCloseModal}
-                  className="px-4 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-surface)] text-xs font-semibold text-[var(--text-secondary)] transition-all cursor-pointer min-h-[42px] disabled:opacity-50"
+                  className="px-4 py-2.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-surface)] text-xs font-semibold text-[var(--text-secondary)] transition-all cursor-pointer min-h-[42px] disabled:opacity-50"
                 >
                   {t.uiCancel}
                 </button>
@@ -249,7 +249,7 @@ export function SystemFactoryResetCard() {
                 <button
                   type="submit"
                   disabled={!canSubmit}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white text-xs font-bold shadow-md transition-all cursor-pointer min-h-[42px] disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white text-xs font-bold shadow-md transition-all cursor-pointer min-h-[42px] disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   {submitting ? (
                     <>

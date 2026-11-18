@@ -160,10 +160,10 @@ export function SearchableSelect({
         tabIndex={disabled ? -1 : 0}
         onClick={() => !disabled && (isOpen ? setIsOpen(false) : openDropdown())}
         onKeyDown={handleKeyDown}
-        className={`w-full flex items-center justify-between gap-2.5 rounded-xl border transition-all outline-none cursor-pointer select-none ${
+        className={`w-full flex items-center justify-between gap-2.5 rounded-lg border transition-all outline-none cursor-pointer select-none ${
           size === "sm"
             ? "px-3 py-1.5 text-xs min-h-[38px] h-[38px]"
-            : "px-4 py-2.5 text-sm min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
+            : "px-3.5 py-2 text-sm min-h-[42px] sm:min-h-[44px] h-[42px] sm:h-[44px]"
         } ${
           disabled
             ? "opacity-60 cursor-not-allowed bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800"
@@ -228,7 +228,7 @@ export function SearchableSelect({
 
       {/* Dropdown Popover */}
       {isOpen && (
-        <div className="absolute left-0 z-50 mt-2 max-h-72 w-full min-w-[200px] rounded-2xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-2.5 shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 flex flex-col">
+        <div className="absolute left-0 z-50 mt-2 max-h-72 w-full min-w-[200px] rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-2.5 shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 flex flex-col">
           {/* Search bar */}
           {shouldShowSearch && (
             <div className="relative mb-2 shrink-0">

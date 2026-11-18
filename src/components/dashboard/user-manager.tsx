@@ -249,7 +249,7 @@ export function UserManager() {
   return (
     <div className="space-y-6">
       {/* Header & Quick Stats */}
-      <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-md bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 text-xs font-bold">
@@ -270,7 +270,7 @@ export function UserManager() {
         <button
           type="button"
           onClick={handleOpenCreate}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-90 transition-all cursor-pointer self-start md:self-auto shrink-0"
+          className="flex items-center gap-2 min-h-[42px] sm:min-h-[44px] px-5 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs sm:text-sm font-bold shadow-md hover:opacity-90 transition-all cursor-pointer self-start md:self-auto shrink-0"
         >
           <span>➕</span>
           <span>{t.registerNewAccount}</span>
@@ -288,7 +288,7 @@ export function UserManager() {
         ].map((item) => (
           <div
             key={item.label}
-            className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs flex items-center justify-between"
+            className="p-4 rounded-lg bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs flex items-center justify-between"
           >
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
@@ -304,7 +304,7 @@ export function UserManager() {
       </div>
 
       {/* Search and Filters Bar */}
-      <div className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="p-4 rounded-lg bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
@@ -335,7 +335,7 @@ export function UserManager() {
       </div>
 
       {/* User Table / Cards */}
-      <div className="rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm overflow-hidden">
+      <div className="rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-xs text-slate-400">
             {t("uiLoadingUserAccounts")}
@@ -416,7 +416,7 @@ export function UserManager() {
       {/* Create User Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+          <div className="w-full max-w-lg rounded-xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 {t.registerNewUserAccount}
@@ -517,7 +517,7 @@ export function UserManager() {
                 </div>
 
                 {createRole === "DOCTOR" && (
-                  <div className="p-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
+                  <div className="p-3 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] space-y-3">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--brand-text)] block">
                       {t.physicianCredentialsChamber}
                     </span>
@@ -619,7 +619,7 @@ export function UserManager() {
       {/* Edit User Modal */}
       {editingUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+          <div className="w-full max-w-lg rounded-xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 {t.editUserAccount}

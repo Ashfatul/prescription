@@ -50,14 +50,14 @@ export function DoctorQueue({ doctorId }: { doctorId: string }) {
 
   if (!data) {
     return (
-      <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 text-xs text-slate-400">
+      <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 text-xs text-slate-400">
         {t.loading}
       </div>
     );
   }
 
   return (
-    <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+    <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
       <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
         <div>
           <h3 className="text-base font-bold text-slate-900 dark:text-white">
@@ -86,7 +86,7 @@ export function DoctorQueue({ doctorId }: { doctorId: string }) {
           data.queue.map((item) => (
             <div
               key={item.id}
-              className={`flex items-center justify-between p-3 rounded-2xl border text-xs transition ${
+              className={`flex items-center justify-between p-3 rounded-lg border text-xs transition ${
                 item.serialNumber === data.currentSerial
                   ? "bg-[var(--brand-surface)] border-[var(--brand-border)] font-bold text-[var(--brand-text)] shadow-xs"
                   : "bg-[var(--bg-app)] border-slate-200/60 dark:border-slate-800/60 text-slate-700 dark:text-slate-300"

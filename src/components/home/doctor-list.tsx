@@ -148,10 +148,10 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] animate-pulse space-y-4"
+            className="p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] animate-pulse space-y-4"
           >
             <div className="flex gap-4 items-center">
-              <div className="w-16 h-16 rounded-2xl bg-slate-200 dark:bg-slate-800" />
+              <div className="w-16 h-16 rounded-lg bg-slate-200 dark:bg-slate-800" />
               <div className="space-y-2 flex-1">
                 <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-md w-3/4" />
                 <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded-md w-1/2" />
@@ -167,7 +167,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
 
   if (!doctors.length) {
     return (
-      <div className="p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs">
+      <div className="p-12 text-center rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs">
         <Sparkles className="w-8 h-8 text-slate-400 mx-auto mb-3" />
         <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">{t.noConsultingDoctors}</h3>
         <p className="text-xs text-slate-500 mt-1">{t.checkBackVisitingHours}</p>
@@ -178,7 +178,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
   return (
     <div className="space-y-6">
       {/* Search & Specialization Filters Bar */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs space-y-4">
+      <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
           {/* Search Input */}
           <div className="relative flex-1 max-w-lg">
@@ -191,7 +191,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
                 setIsExpanded(true); // Auto-expand when searching
               }}
               placeholder={t("searchDoctorsPlaceholder")}
-              className="w-full input-icon-left !pl-11 pr-4 py-2.5 rounded-2xl border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)] transition"
+              className="w-full input-icon-left !pl-11 pr-4 py-2.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)] transition"
             />
           </div>
 
@@ -238,7 +238,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
 
       {/* Doctor Cards Grid */}
       {displayedDoctors.length === 0 ? (
-        <div className="p-10 text-center rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
+        <div className="p-10 text-center rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
           <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">
             {language === "bn"
               ? `"${searchQuery}" এর জন্য ${selectedSpecialty} বিভাগে কোনো ডাক্তার পাওয়া যায়নি।`
@@ -267,14 +267,14 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.25, delay: index * 0.04 }}
-                  className="flex flex-col justify-between p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group"
+                  className="flex flex-col justify-between p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group"
                 >
                   <div>
                     {/* Doctor Top Avatar & Info */}
                     <div className="flex items-start gap-4 mb-4">
                       <Link
                         href={`/doctors/${doctor.id}`}
-                        className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] shadow-2xs hover:border-[var(--brand-border)] transition"
+                        className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] shadow-2xs hover:border-[var(--brand-border)] transition"
                       >
                         {doctor.imageUrl ? (
                           <Image
@@ -351,7 +351,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
 
                   <div>
                     {/* Dynamic Doctor Consultation Fee Strip */}
-                    <div className="grid grid-cols-3 gap-1.5 p-2 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-subtle)] mb-3 text-center">
+                    <div className="grid grid-cols-3 gap-1.5 p-2 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] mb-3 text-center">
                       <div className="p-1">
                         <span className="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">
                           {t.firstVisit}
@@ -441,7 +441,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-strong)]/40 hover:border-[var(--brand-primary)] text-xs font-bold text-[var(--text-primary)] hover:text-[var(--brand-text)] shadow-xs transition-all cursor-pointer group"
+            className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-strong)]/40 hover:border-[var(--brand-primary)] text-xs font-bold text-[var(--text-primary)] hover:text-[var(--brand-text)] shadow-xs transition-all cursor-pointer group"
           >
             {isExpanded ? (
               <>

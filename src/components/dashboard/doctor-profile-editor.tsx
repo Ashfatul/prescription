@@ -260,7 +260,7 @@ export function DoctorProfileEditor({
   };
 
   return (
-    <div className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-8">
+    <div className="p-6 sm:p-8 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-8">
       {/* Top Profile Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-100 dark:border-slate-800 gap-4">
         <div>
@@ -290,7 +290,7 @@ export function DoctorProfileEditor({
 
       {message && (
         <div
-          className={`rounded-2xl p-4 text-xs font-medium flex items-center justify-between gap-3 ${
+          className={`rounded-lg p-4 text-xs font-medium flex items-center justify-between gap-3 ${
             message.type === "success"
               ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200"
               : "bg-red-50 text-red-800 dark:bg-red-950/40 dark:text-red-300 border border-red-200"
@@ -322,7 +322,7 @@ export function DoctorProfileEditor({
               <input
                 disabled
                 value={doctor.user.name}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-100/70 px-3.5 py-2.5 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-400 cursor-not-allowed"
+                className="w-full rounded-lg border border-slate-200 bg-slate-100/70 px-3.5 py-2.5 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-400 cursor-not-allowed"
               />
             </div>
 
@@ -335,7 +335,7 @@ export function DoctorProfileEditor({
                 value={specialization}
                 onChange={(e) => setSpecialization(e.target.value)}
                 placeholder={t.specializationPlaceholder}
-                className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
           </div>
@@ -350,7 +350,7 @@ export function DoctorProfileEditor({
                 value={hospital}
                 onChange={(e) => setHospital(e.target.value)}
                 placeholder={t.hospitalPlaceholder}
-                className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
 
@@ -362,7 +362,7 @@ export function DoctorProfileEditor({
                 value={designation}
                 onChange={(e) => setDesignation(e.target.value)}
                 placeholder={t.designationPlaceholder}
-                className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
           </div>
@@ -376,7 +376,7 @@ export function DoctorProfileEditor({
                 value={degrees}
                 onChange={(e) => setDegrees(e.target.value)}
                 placeholder={t.degreesPlaceholder}
-                className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
 
@@ -388,7 +388,7 @@ export function DoctorProfileEditor({
                 value={bmdcRegNo}
                 onChange={(e) => setBmdcRegNo(e.target.value)}
                 placeholder={t.bmdcRegPlaceholder}
-                className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)] font-mono"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)] font-mono"
               />
             </div>
 
@@ -400,7 +400,7 @@ export function DoctorProfileEditor({
                 value={experienceYears}
                 onChange={(e) => setExperienceYears(e.target.value)}
                 placeholder={t.experienceYearsPlaceholder}
-                className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
           </div>
@@ -421,7 +421,7 @@ export function DoctorProfileEditor({
                 value={chamberAddress}
                 onChange={(e) => setChamberAddress(e.target.value)}
                 placeholder={t.chamberAddressPlaceholder}
-                className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
 
@@ -433,7 +433,7 @@ export function DoctorProfileEditor({
                 value={visitingHours}
                 onChange={(e) => setVisitingHours(e.target.value)}
                 placeholder={t.visitingHoursPlaceholder}
-                className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
 
@@ -445,7 +445,7 @@ export function DoctorProfileEditor({
                 value={consultationFee}
                 onChange={(e) => setConsultationFee(e.target.value)}
                 placeholder={t.consultationFeePlaceholder}
-                className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
               />
             </div>
           </div>
@@ -459,7 +459,7 @@ export function DoctorProfileEditor({
                 value={contactNumber}
                 onChange={(e) => setContactNumber(e.target.value)}
                 placeholder={t.hotlinePlaceholder}
-                className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)] font-mono"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)] font-mono"
               />
             </div>
 
@@ -489,7 +489,7 @@ export function DoctorProfileEditor({
               value={consultationFee}
               onChange={(e) => setConsultationFee(e.target.value)}
               placeholder="e.g. $50 First Visit / $30 Follow-up (Free report review in 2 days)"
-              className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] px-3.5 py-2.5 text-xs outline-none focus:border-[var(--brand-primary)]"
             />
           </div>
 
@@ -502,13 +502,13 @@ export function DoctorProfileEditor({
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder={t.doctorBioPlaceholder}
-              className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] p-3.5 text-xs outline-none focus:border-[var(--brand-primary)] leading-relaxed resize-y"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] p-3.5 text-xs outline-none focus:border-[var(--brand-primary)] leading-relaxed resize-y"
             />
           </div>
         </div>
 
         {/* Section 3: Consultation Fees & Visiting Policy */}
-        <div className="space-y-4 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)]/50 p-5">
+        <div className="space-y-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)]/50 p-5">
           <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2.5">
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
@@ -536,7 +536,7 @@ export function DoctorProfileEditor({
                 value={newPatientFee}
                 onChange={(e) => setNewPatientFee(Number(e.target.value))}
                 placeholder="50"
-                className="w-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-3.5 py-2.5 text-xs font-mono font-bold outline-none focus:border-[var(--brand-primary)]"
+                className="w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-3.5 py-2.5 text-xs font-mono font-bold outline-none focus:border-[var(--brand-primary)]"
               />
               <span className="mt-1 block text-[10px] text-slate-400">{t.firstTimeConsultationCharge}</span>
             </div>
@@ -553,7 +553,7 @@ export function DoctorProfileEditor({
                 value={followupFee}
                 onChange={(e) => setFollowupFee(Number(e.target.value))}
                 placeholder="30"
-                className="w-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-3.5 py-2.5 text-xs font-mono font-bold outline-none focus:border-[var(--brand-primary)]"
+                className="w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-3.5 py-2.5 text-xs font-mono font-bold outline-none focus:border-[var(--brand-primary)]"
               />
               <span className="mt-1 block text-[10px] text-slate-400">{t.returningPatientRate}</span>
             </div>
@@ -599,7 +599,7 @@ export function DoctorProfileEditor({
           </div>
 
           {/* Visual Policy Explanation Strip */}
-          <div className="rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)] p-3 text-xs text-[var(--brand-text)] flex flex-wrap items-center justify-between gap-3">
+          <div className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-3 text-xs text-[var(--brand-text)] flex flex-wrap items-center justify-between gap-3">
             <div className="space-y-0.5">
               <span className="font-bold block">{t.summaryOfChamberPolicy}</span>
               <p className="text-[11px] leading-relaxed opacity-90">
@@ -624,7 +624,7 @@ export function DoctorProfileEditor({
 
           <div className="grid gap-6 md:grid-cols-2">
             {/* Left: Signature Preview Box */}
-            <div className="p-5 rounded-2xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800/80 space-y-3">
+            <div className="p-5 rounded-lg bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800/80 space-y-3">
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
                 {t.signatureDisplay}
               </span>
@@ -687,7 +687,7 @@ export function DoctorProfileEditor({
                   type="button"
                   disabled={uploadingSignature}
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-2xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] hover:bg-slate-100 dark:hover:bg-slate-800 p-3.5 text-xs font-bold text-slate-800 dark:text-slate-200 transition shadow-xs cursor-pointer disabled:opacity-60"
+                  className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-[var(--bg-app)] hover:bg-slate-100 dark:hover:bg-slate-800 p-3.5 text-xs font-bold text-slate-800 dark:text-slate-200 transition shadow-xs cursor-pointer disabled:opacity-60"
                 >
                   <span>📁</span>
                   <span>{uploadingSignature ? t.uploading : t.uploadImageFile}</span>
@@ -697,7 +697,7 @@ export function DoctorProfileEditor({
                 <button
                   type="button"
                   onClick={() => setIsDrawingOpen(true)}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] hover:bg-[var(--brand-primary)] hover:text-white p-3.5 text-xs font-bold transition shadow-xs cursor-pointer"
+                  className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] hover:bg-[var(--brand-primary)] hover:text-white p-3.5 text-xs font-bold transition shadow-xs cursor-pointer"
                 >
                   <span>🖊️</span>
                   <span>{t.drawOnScreen}</span>
@@ -712,7 +712,7 @@ export function DoctorProfileEditor({
 
           {/* Interactive Draw Signature Canvas Modal / Drawer */}
           {isDrawingOpen && (
-            <div className="p-4 rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-surface)]/20 space-y-3 animate-in fade-in">
+            <div className="p-4 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)]/20 space-y-3 animate-in fade-in">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                   {t.drawSignatureWithTouch}
@@ -772,7 +772,7 @@ export function DoctorProfileEditor({
           <button
             type="submit"
             disabled={saving || uploadingSignature}
-            className="rounded-2xl bg-[var(--brand-primary)] px-8 py-3 text-xs font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-70 cursor-pointer"
+            className="min-h-[42px] sm:min-h-[44px] rounded-lg bg-[var(--brand-primary)] px-8 py-2.5 text-xs sm:text-sm text-xs font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-70 cursor-pointer"
           >
             {saving ? t.savingCredentials : t.saveDoctorProfileBtn}
           </button>

@@ -55,12 +55,12 @@ export function HomeView({
             <section className="relative w-full overflow-hidden border-b border-[var(--border-subtle)] bg-[radial-gradient(ellipse_80%_60%_at_50%_-15%,rgba(15,118,110,0.12),transparent)] dark:bg-[radial-gradient(ellipse_80%_60%_at_50%_-15%,rgba(20,184,166,0.15),transparent)]">
                 <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none" />
 
-                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 sm:pt-14 sm:pb-24">
+                <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 sm:pt-14 sm:pb-24">
                     <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
                         {/* Left Column: Clinical Value Proposition */}
                         <div className="lg:col-span-12 space-y-6 text-center">
                             {/* Micro-badge */}
-                            <div className="inline-flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-2xl sm:rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-[10px] sm:text-xs font-bold tracking-normal sm:tracking-wide uppercase shadow-2xs max-w-full text-center">
+                            <div className="inline-flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-lg sm:rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-[10px] sm:text-xs font-bold tracking-normal sm:tracking-wide uppercase shadow-2xs max-w-full text-center">
                                 <span className="w-2 h-2 rounded-full bg-[var(--brand-primary)] animate-pulse shrink-0" />
                                 <span>{t.heroBadge}</span>
                                 <span className="text-slate-400 dark:text-slate-500 font-normal select-none">
@@ -88,7 +88,7 @@ export function HomeView({
                                 {isLoggedIn && user ? (
                                     <Link
                                         href="/dashboard"
-                                        className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs sm:text-sm font-bold shadow-md hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer"
+                                        className="flex items-center gap-2 px-6 py-3.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs sm:text-sm font-bold shadow-md hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer"
                                     >
                                         <span>🚀 {t.enterClinicalSuite}</span>
                                         <ArrowRight className="w-4 h-4" />
@@ -96,7 +96,7 @@ export function HomeView({
                                 ) : (
                                     <Link
                                         href="/auth/login"
-                                        className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs sm:text-sm font-bold shadow-md hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer"
+                                        className="flex items-center gap-2 px-6 py-3.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs sm:text-sm font-bold shadow-md hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer"
                                     >
                                         <span>
                                             🚀 {t.accessClinicalDashboard}
@@ -107,7 +107,7 @@ export function HomeView({
 
                                 <a
                                     href="#doctors"
-                                    className="flex items-center gap-2 px-5 py-3.5 rounded-2xl border border-[var(--border-strong)]/40 bg-[var(--bg-surface)] text-xs sm:text-sm font-bold text-[var(--text-primary)] hover:border-[var(--brand-primary)] hover:text-[var(--brand-text)] transition-all shadow-2xs"
+                                    className="flex items-center gap-2 px-5 py-3.5 rounded-lg border border-[var(--border-strong)]/40 bg-[var(--bg-surface)] text-xs sm:text-sm font-bold text-[var(--text-primary)] hover:border-[var(--brand-primary)] hover:text-[var(--brand-text)] transition-all shadow-2xs"
                                 >
                                     <Calendar className="w-4 h-4 text-[var(--brand-primary)]" />
                                     <span>{t.bookSpecialist}</span>
@@ -115,7 +115,7 @@ export function HomeView({
 
                                 <Link
                                     href="/live-queue"
-                                    className="flex items-center gap-1.5 px-4 py-3.5 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] text-xs sm:text-sm font-bold text-[var(--brand-text)] hover:border-[var(--brand-primary)] transition"
+                                    className="flex items-center gap-1.5 px-4 py-3.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-subtle)] text-xs sm:text-sm font-bold text-[var(--brand-text)] hover:border-[var(--brand-primary)] transition"
                                 >
                                     <Tv className="w-4 h-4 text-[var(--brand-primary)]" />
                                     <span>{t.liveChamberMonitor}</span>
@@ -159,7 +159,7 @@ export function HomeView({
             {/* STATS & PERFORMANCE TICKER (LIVE SYSTEM METRICS)          */}
             {/* ========================================================= */}
             <section className="w-full border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] py-8">
-                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                         <div className="space-y-1">
                             <div className="text-3xl sm:text-4xl font-black text-[var(--brand-text)] tracking-tight font-mono">
@@ -219,7 +219,7 @@ export function HomeView({
                 id="features"
                 className="w-full py-16 sm:py-24 bg-[var(--bg-app)] scroll-mt-20"
             >
-                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
                     {/* Section Header */}
                     <div className="text-center max-w-3xl mx-auto space-y-3">
                         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-bold uppercase tracking-wider border border-[var(--brand-border)]">
@@ -237,8 +237,8 @@ export function HomeView({
                     {/* 6 Core Feature Cards Grid */}
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                         {/* Feature 1 */}
-                        <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
-                            <div className="w-12 h-12 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
+                        <div className="p-7 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
+                            <div className="w-12 h-12 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
                                 <Pill className="w-6 h-6" />
                             </div>
                             <div className="space-y-1.5 flex-grow-1">
@@ -263,8 +263,8 @@ export function HomeView({
                         </div>
 
                         {/* Feature 2 */}
-                        <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
-                            <div className="w-12 h-12 rounded-2xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
+                        <div className="p-7 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
+                            <div className="w-12 h-12 rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
                                 <Printer className="w-6 h-6" />
                             </div>
                             <div className="space-y-1.5 flex-grow-1">
@@ -289,8 +289,8 @@ export function HomeView({
                         </div>
 
                         {/* Feature 3 */}
-                        <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
-                            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
+                        <div className="p-7 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
+                            <div className="w-12 h-12 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
                                 <Clock className="w-6 h-6" />
                             </div>
                             <div className="space-y-1.5 flex-grow-1">
@@ -315,8 +315,8 @@ export function HomeView({
                         </div>
 
                         {/* Feature 4 */}
-                        <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
-                            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
+                        <div className="p-7 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
+                            <div className="w-12 h-12 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
                                 <Users className="w-6 h-6" />
                             </div>
                             <div className="space-y-1.5 flex-grow-1">
@@ -341,8 +341,8 @@ export function HomeView({
                         </div>
 
                         {/* Feature 5 */}
-                        <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
-                            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
+                        <div className="p-7 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
+                            <div className="w-12 h-12 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
                                 <Clock className="w-6 h-6" />
                             </div>
                             <div className="space-y-1.5 flex-grow-1">
@@ -371,8 +371,8 @@ export function HomeView({
                         </div>
 
                         {/* Feature 6 */}
-                        <div className="p-7 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
-                            <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
+                        <div className="p-7 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md transition-all group space-y-4 flex flex-col">
+                            <div className="w-12 h-12 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold shadow-2xs group-hover:scale-110 transition-transform">
                                 <FileSpreadsheet className="w-6 h-6" />
                             </div>
                             <div className="space-y-1.5 flex-grow-1">
@@ -406,7 +406,7 @@ export function HomeView({
                 id="how-it-works"
                 className="w-full py-16 sm:py-24 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] scroll-mt-20"
             >
-                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
                     {/* Section Header */}
                     <div className="text-center max-w-3xl mx-auto space-y-3">
                         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-bold uppercase tracking-wider border border-[var(--brand-border)]">
@@ -424,9 +424,9 @@ export function HomeView({
                     {/* 4 Step Workflow Sequence */}
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 relative">
                         {/* Step 1 */}
-                        <div className="p-6 rounded-3xl bg-[var(--bg-app)] border border-[var(--border-subtle)] space-y-3 relative group hover:border-[var(--brand-border)] transition-all">
+                        <div className="p-6 rounded-xl bg-[var(--bg-app)] border border-[var(--border-subtle)] space-y-3 relative group hover:border-[var(--brand-border)] transition-all">
                             <div className="flex items-center justify-between">
-                                <span className="w-10 h-10 rounded-2xl bg-[var(--brand-primary)] text-white font-black text-sm flex items-center justify-center shadow-xs">
+                                <span className="w-10 h-10 rounded-lg bg-[var(--brand-primary)] text-white font-black text-sm flex items-center justify-center shadow-xs">
                                     01
                                 </span>
                                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
@@ -442,9 +442,9 @@ export function HomeView({
                         </div>
 
                         {/* Step 2 */}
-                        <div className="p-6 rounded-3xl bg-[var(--bg-app)] border border-[var(--border-subtle)] space-y-3 relative group hover:border-[var(--brand-border)] transition-all">
+                        <div className="p-6 rounded-xl bg-[var(--bg-app)] border border-[var(--border-subtle)] space-y-3 relative group hover:border-[var(--brand-border)] transition-all">
                             <div className="flex items-center justify-between">
-                                <span className="w-10 h-10 rounded-2xl bg-[var(--brand-primary)] text-white font-black text-sm flex items-center justify-center shadow-xs">
+                                <span className="w-10 h-10 rounded-lg bg-[var(--brand-primary)] text-white font-black text-sm flex items-center justify-center shadow-xs">
                                     02
                                 </span>
                                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
@@ -460,9 +460,9 @@ export function HomeView({
                         </div>
 
                         {/* Step 3 */}
-                        <div className="p-6 rounded-3xl bg-[var(--bg-app)] border border-[var(--border-subtle)] space-y-3 relative group hover:border-[var(--brand-border)] transition-all">
+                        <div className="p-6 rounded-xl bg-[var(--bg-app)] border border-[var(--border-subtle)] space-y-3 relative group hover:border-[var(--brand-border)] transition-all">
                             <div className="flex items-center justify-between">
-                                <span className="w-10 h-10 rounded-2xl bg-[var(--brand-primary)] text-white font-black text-sm flex items-center justify-center shadow-xs">
+                                <span className="w-10 h-10 rounded-lg bg-[var(--brand-primary)] text-white font-black text-sm flex items-center justify-center shadow-xs">
                                     03
                                 </span>
                                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
@@ -478,9 +478,9 @@ export function HomeView({
                         </div>
 
                         {/* Step 4 */}
-                        <div className="p-6 rounded-3xl bg-[var(--bg-app)] border border-[var(--border-subtle)] space-y-3 relative group hover:border-[var(--brand-border)] transition-all">
+                        <div className="p-6 rounded-xl bg-[var(--bg-app)] border border-[var(--border-subtle)] space-y-3 relative group hover:border-[var(--brand-border)] transition-all">
                             <div className="flex items-center justify-between">
-                                <span className="w-10 h-10 rounded-2xl bg-[var(--brand-primary)] text-white font-black text-sm flex items-center justify-center shadow-xs">
+                                <span className="w-10 h-10 rounded-lg bg-[var(--brand-primary)] text-white font-black text-sm flex items-center justify-center shadow-xs">
                                     04
                                 </span>
                                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
@@ -505,7 +505,7 @@ export function HomeView({
                 id="doctors"
                 className="w-full py-16 sm:py-24 bg-[var(--bg-app)] scroll-mt-20"
             >
-                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+                <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
                     {/* Section Header */}
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                         <div className="space-y-2">
@@ -526,7 +526,7 @@ export function HomeView({
                         <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
                             <Link
                                 href="/doctors"
-                                className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] hover:bg-[var(--brand-primary)] hover:text-white transition font-bold text-xs border border-[var(--brand-border)]/60"
+                                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] hover:bg-[var(--brand-primary)] hover:text-white transition font-bold text-xs border border-[var(--brand-border)]/60"
                             >
                                 <span>{t("uiFullDirectoryPage")}</span>
                                 <ArrowRight className="w-3.5 h-3.5" />
@@ -552,7 +552,7 @@ export function HomeView({
             {/* EMERGENCY & HOSPITAL HOTLINE BANNER                       */}
             {/* ========================================================= */}
             <section className="w-full border-y border-[var(--border-subtle)] bg-gradient-to-r from-teal-900 via-slate-900 to-teal-950 text-white py-12 sm:py-16">
-                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
                         <div className="space-y-3 text-center lg:text-left">
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 text-xs font-bold uppercase tracking-wider border border-teal-500/30">
@@ -570,7 +570,7 @@ export function HomeView({
                         <div className="flex flex-wrap items-center justify-center gap-4">
                             <a
                                 href={`tel:${settings.emergencyHotline}`}
-                                className="flex items-center gap-3 px-7 py-4 rounded-2xl bg-white text-slate-950 hover:bg-slate-100 font-extrabold text-sm sm:text-base shadow-lg transition-transform hover:scale-105 active:scale-95"
+                                className="flex items-center gap-3 px-7 py-4 rounded-lg bg-white text-slate-950 hover:bg-slate-100 font-extrabold text-sm sm:text-base shadow-lg transition-transform hover:scale-105 active:scale-95"
                             >
                                 <PhoneCall className="w-5 h-5 text-teal-600" />
                                 <span>
@@ -580,7 +580,7 @@ export function HomeView({
                             </a>
                             <Link
                                 href="/doctors"
-                                className="px-6 py-4 rounded-2xl border border-teal-400/30 hover:border-teal-400 text-teal-100 hover:text-white font-bold text-xs sm:text-sm transition"
+                                className="px-6 py-4 rounded-lg border border-teal-400/30 hover:border-teal-400 text-teal-100 hover:text-white font-bold text-xs sm:text-sm transition"
                             >
                                 {t("uiViewOPDChamberHours")}
                             </Link>

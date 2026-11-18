@@ -78,8 +78,8 @@ export function PublicPrescriptionView({
   if (!prescription) {
     return (
       <div className="min-h-screen bg-[var(--bg-app)] flex flex-col items-center justify-center p-6 text-center">
-        <div className="max-w-md w-full p-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xl space-y-5">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
+        <div className="max-w-md w-full p-8 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xl space-y-5">
+          <div className="w-16 h-16 mx-auto rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center">
             <Lock className="w-8 h-8" />
           </div>
           <div className="space-y-2">
@@ -93,7 +93,7 @@ export function PublicPrescriptionView({
           <div className="pt-2">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-95 transition"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-bold shadow-md hover:opacity-95 transition"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>{t.returnToPpmsPortal}</span>
@@ -134,7 +134,7 @@ export function PublicPrescriptionView({
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-slate-900 dark:text-slate-100 flex flex-col py-8 px-4 sm:px-6 print:p-0 print:bg-white print:text-black">
       {/* Top Floating Control Bar - Hidden on print */}
-      <div className="max-w-4xl mx-auto w-full mb-6 print:hidden flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-md">
+      <div className="max-w-4xl mx-auto w-full mb-6 print:hidden flex flex-wrap items-center justify-between gap-4 p-4 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-md">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold">
             <ShieldCheck className="w-6 h-6" />
@@ -168,7 +168,7 @@ export function PublicPrescriptionView({
       </div>
 
       {/* A4 Prescription Sheet */}
-      <div className="max-w-4xl mx-auto w-full bg-white text-slate-900 border border-slate-200 rounded-3xl shadow-xl overflow-hidden print:border-none print:shadow-none print:rounded-none p-8 sm:p-12 space-y-8">
+      <div className="max-w-4xl mx-auto w-full bg-white text-slate-900 border border-slate-200 rounded-xl shadow-xl overflow-hidden print:border-none print:shadow-none print:rounded-none p-8 sm:p-12 space-y-8">
         {/* Hospital Header */}
         <div className="border-b-2 border-teal-600 pb-6 flex flex-col sm:flex-row items-start justify-between gap-6">
           <div className="space-y-1">
@@ -197,7 +197,7 @@ export function PublicPrescriptionView({
         </div>
 
         {/* Patient Vitals Bar */}
-        <div className="p-4 rounded-2xl bg-teal-50 border border-teal-100 flex flex-wrap items-center justify-between gap-4 text-xs">
+        <div className="p-4 rounded-lg bg-teal-50 border border-teal-100 flex flex-wrap items-center justify-between gap-4 text-xs">
           <div>
             <span className="text-[10px] uppercase font-bold text-teal-700 block">{t.patientName}</span>
             <span className="text-sm font-bold text-slate-900">{patient.user.name}</span>
@@ -324,7 +324,7 @@ export function PublicPrescriptionView({
                   {medicines.map((m, idx) => (
                     <div
                       key={idx}
-                      className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1 text-xs"
+                      className="p-3 rounded-lg bg-slate-50 border border-slate-200/80 space-y-1 text-xs"
                     >
                       <div className="flex items-center justify-between">
                         <div className="font-bold text-slate-900 text-sm flex items-center gap-1.5">

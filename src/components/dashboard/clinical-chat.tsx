@@ -233,10 +233,10 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
+            <div className="w-9 h-9 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] flex items-center justify-center font-bold">
               <MessageSquare className="w-5 h-5" />
             </div>
             <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -251,7 +251,7 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
         <button
           type="button"
           onClick={openNewRequestModal}
-          className="px-4 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+          className="px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>{t.newChatRequest}</span>
@@ -261,10 +261,10 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
       {/* Main Two-Panel Chat Interface */}
       <div className="grid lg:grid-cols-12 gap-6 min-h-[580px]">
         {/* Left Column: Connections & Pending Requests */}
-        <div className="lg:col-span-4 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs p-4 flex flex-col space-y-4">
+        <div className="lg:col-span-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs p-4 flex flex-col space-y-4">
           {/* Pending Approval Section */}
           {pendingIncoming.length > 0 && (
-            <div className="space-y-2 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs">
+            <div className="space-y-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs">
               <span className="font-bold text-amber-800 dark:text-amber-300 block text-[11px] uppercase tracking-wider">
                 {t.pendingRequests} ({pendingIncoming.length})
               </span>
@@ -311,7 +311,7 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
 
           {/* Outgoing Pending Requests */}
           {pendingOutgoing.length > 0 && (
-            <div className="p-3 rounded-2xl bg-[var(--bg-subtle)] space-y-1.5 text-xs">
+            <div className="p-3 rounded-lg bg-[var(--bg-subtle)] space-y-1.5 text-xs">
               <span className="font-bold text-slate-500 block text-[10px] uppercase tracking-wider">
                 {t.awaitingApproval}
               </span>
@@ -356,13 +356,13 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
                     key={conn.id}
                     type="button"
                     onClick={() => setActiveConnectionId(conn.id)}
-                    className={`w-full p-3 rounded-2xl text-left transition flex items-center gap-3 cursor-pointer ${
+                    className={`w-full p-3 rounded-lg text-left transition flex items-center gap-3 cursor-pointer ${
                       isActive
                         ? "bg-[var(--brand-surface)] border border-[var(--brand-border)] text-[var(--brand-text)] shadow-2xs"
                         : "hover:bg-[var(--bg-subtle)] border border-transparent text-slate-700 dark:text-slate-300"
                     }`}
                   >
-                    <div className="w-10 h-10 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] font-bold text-xs flex items-center justify-center shrink-0">
+                    <div className="w-10 h-10 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] font-bold text-xs flex items-center justify-center shrink-0">
                       {conn.partner.name.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0 space-y-0.5">
@@ -386,13 +386,13 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
         </div>
 
         {/* Right Column: Chat Conversation Stream */}
-        <div className="lg:col-span-8 rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col justify-between overflow-hidden">
+        <div className="lg:col-span-8 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-xs flex flex-col justify-between overflow-hidden">
           {activeConn ? (
             <>
               {/* Thread Header */}
               <div className="p-4 border-b border-[var(--border-subtle)] flex items-center justify-between bg-[var(--bg-subtle)]/40">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-2xl bg-[var(--brand-surface)] text-[var(--brand-text)] font-bold text-xs flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] font-bold text-xs flex items-center justify-center">
                     {activeConn.partner.name.charAt(0)}
                   </div>
                   <div>
@@ -429,7 +429,7 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
                         className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}
                       >
                         <div
-                          className={`max-w-[75%] p-3.5 rounded-2xl text-xs leading-relaxed shadow-2xs ${
+                          className={`max-w-[75%] p-3.5 rounded-lg text-xs leading-relaxed shadow-2xs ${
                             isMe
                               ? "bg-[var(--brand-primary)] text-white rounded-tr-none"
                               : "bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-slate-900 dark:text-white rounded-tl-none"
@@ -465,7 +465,7 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
                 <button
                   type="submit"
                   disabled={sending || !newMessage.trim()}
-                  className="px-5 py-3 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  className="px-5 py-3 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-bold shadow-xs hover:opacity-95 transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
                   {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                   <span className="hidden sm:inline">{t.send}</span>
@@ -489,7 +489,7 @@ export function ClinicalChat({ currentUserId }: { currentUserId: string }) {
       {/* New Chat Request Modal */}
       {requestModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-md rounded-3xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+          <div className="w-full max-w-md rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="font-bold text-slate-900 dark:text-white text-base">
                 {t.requestChatConsultation}

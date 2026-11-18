@@ -845,7 +845,7 @@ export function PrescriptionEditor({
   return (
     <div className="space-y-6">
       {/* Top Consultation Control Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm">
         <div className="flex items-center gap-3">
           {onBackToQueue && (
             <button
@@ -907,7 +907,7 @@ export function PrescriptionEditor({
 
       {/* Success Notification Banner with Queue Advancement */}
       {createdPrescriptionId && (
-        <div className="p-6 rounded-3xl border-2 border-emerald-500 bg-emerald-50/80 dark:bg-emerald-950/40 dark:border-emerald-600 shadow-sm animate-in fade-in space-y-4">
+        <div className="p-6 rounded-xl border-2 border-emerald-500 bg-emerald-50/80 dark:bg-emerald-950/40 dark:border-emerald-600 shadow-sm animate-in fade-in space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 text-xs font-bold">
@@ -933,7 +933,7 @@ export function PrescriptionEditor({
                   savedVersionNumber ? `?version=${savedVersionNumber}` : ""
                 }`}
                 target="_blank"
-                className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-bold shadow-sm hover:opacity-95 transition"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-bold shadow-sm hover:opacity-95 transition"
               >
                 <span>🖨️ {t.viewAndPrintA4} (v{savedVersionNumber || 1})</span>
               </Link>
@@ -942,7 +942,7 @@ export function PrescriptionEditor({
                 <button
                   type="button"
                   onClick={handleResetForAnother}
-                  className="px-4 py-2.5 rounded-2xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold hover:opacity-90 transition cursor-pointer"
+                  className="px-4 py-2.5 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold hover:opacity-90 transition cursor-pointer"
                 >
                   📞 {t.callNextPatient}
                 </button>
@@ -952,7 +952,7 @@ export function PrescriptionEditor({
                 <button
                   type="button"
                   onClick={onBackToQueue}
-                  className="px-4 py-2.5 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition cursor-pointer"
+                  className="px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition cursor-pointer"
                 >
                   👥 {t.chamberQueue}
                 </button>
@@ -963,14 +963,14 @@ export function PrescriptionEditor({
       )}
 
       {errorMessage && (
-        <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-xs font-semibold text-rose-600 border border-rose-200 dark:border-rose-900/50 flex items-center gap-2">
+        <div className="p-4 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-xs font-semibold text-rose-600 border border-rose-200 dark:border-rose-900/50 flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
 
       {/* SECTION 1: Patient Clinical & Triage Context Banner (Staff Managed - Read Only) */}
-      <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5">
+      <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-5">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -1056,7 +1056,7 @@ export function PrescriptionEditor({
           </span>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
+            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
               <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.bpUnit}</label>
               <input
                 type="text"
@@ -1067,7 +1067,7 @@ export function PrescriptionEditor({
               />
             </div>
 
-            <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
+            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
               <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.pulseUnit}</label>
               <input
                 type="text"
@@ -1078,7 +1078,7 @@ export function PrescriptionEditor({
               />
             </div>
 
-            <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
+            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
               <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.tempUnit}</label>
               <input
                 type="text"
@@ -1089,7 +1089,7 @@ export function PrescriptionEditor({
               />
             </div>
 
-            <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
+            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
               <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.weightUnit}</label>
               <input
                 type="text"
@@ -1100,7 +1100,7 @@ export function PrescriptionEditor({
               />
             </div>
 
-            <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
+            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
               <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.bloodSugarUnit}</label>
               <input
                 type="text"
@@ -1111,7 +1111,7 @@ export function PrescriptionEditor({
               />
             </div>
 
-            <div className="p-3 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
+            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
               <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.spo2Unit}</label>
               <input
                 type="text"
@@ -1127,7 +1127,7 @@ export function PrescriptionEditor({
         {/* Safety Critical Alerts (History & Allergies from Staff Intake) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-2">
           {/* Drug Allergies Alert */}
-          <div className="p-4 rounded-2xl bg-rose-50/60 dark:bg-rose-950/30 border border-rose-200/70 dark:border-rose-900/60 space-y-2">
+          <div className="p-4 rounded-lg bg-rose-50/60 dark:bg-rose-950/30 border border-rose-200/70 dark:border-rose-900/60 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-rose-700 dark:text-rose-300 flex items-center gap-1.5">
                 <ShieldAlert className="w-3.5 h-3.5" />
@@ -1160,7 +1160,7 @@ export function PrescriptionEditor({
           </div>
 
           {/* Medical History */}
-          <div className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 space-y-2">
+          <div className="p-4 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
                 {t.medicalHistoryStaff}
@@ -1199,7 +1199,7 @@ export function PrescriptionEditor({
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* SECTION 2: Doctor Chamber Header (Compact by default) */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-surface)] border border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div className="p-4 sm:p-5 rounded-lg bg-[var(--bg-surface)] border border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-teal-500" />
             <span className="font-bold text-slate-800 dark:text-slate-200">
@@ -1217,7 +1217,7 @@ export function PrescriptionEditor({
         </div>
 
         {customizeDoctorHeader && (
-          <div className="p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 animate-in fade-in">
+          <div className="p-5 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 animate-in fade-in">
             <div>
               <label className="text-[11px] font-bold text-slate-500 block mb-1">{t.doctorName}</label>
               <input
@@ -1296,7 +1296,7 @@ export function PrescriptionEditor({
         )}
 
         {/* SECTION 3: Clinical Findings & Diagnosis */}
-        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+        <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)] flex items-center gap-1.5">
               <Stethoscope className="w-3.5 h-3.5" />
@@ -1316,7 +1316,7 @@ export function PrescriptionEditor({
                 value={complaints}
                 onChange={(e) => setComplaints(e.target.value)}
                 placeholder="- High fever for 3 days&#10;- Sore throat & headache"
-                className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium"
+                className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium"
               />
 
               {/* Categorized Pill Presets (Requirement 5 & 6) */}
@@ -1356,7 +1356,7 @@ export function PrescriptionEditor({
                 value={diagnosis}
                 onChange={(e) => setDiagnosis(e.target.value)}
                 placeholder="- Upper Respiratory Tract Infection (URTI)&#10;- Mild Acute Gastritis"
-                className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium"
+                className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium"
               />
 
               {/* Categorized Diagnosis Presets */}
@@ -1389,7 +1389,7 @@ export function PrescriptionEditor({
         </div>
 
         {/* SECTION 4: Prescribed Medications (℞ Rx Section - Requirement 11) */}
-        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border-2 border-[var(--brand-primary)]/40 shadow-sm space-y-5">
+        <div className="p-6 rounded-xl bg-[var(--bg-surface)] border-2 border-[var(--brand-primary)]/40 shadow-sm space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-2.5">
               <span className="text-3xl font-serif font-black text-[var(--brand-primary)]">℞</span>
@@ -1418,7 +1418,7 @@ export function PrescriptionEditor({
             {medicines.map((med, index) => (
               <div
                 key={index}
-                className="p-5 rounded-2xl bg-[var(--bg-app)] border border-slate-200/90 dark:border-slate-800/90 space-y-4 hover:border-[var(--brand-border)] transition-all shadow-xs"
+                className="p-5 rounded-lg bg-[var(--bg-app)] border border-slate-200/90 dark:border-slate-800/90 space-y-4 hover:border-[var(--brand-border)] transition-all shadow-xs"
               >
                 {/* Card Header */}
                 <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-200/60 dark:border-slate-800/60">
@@ -1602,7 +1602,7 @@ export function PrescriptionEditor({
             <button
               type="button"
               onClick={() => addMedicine()}
-              className="px-6 py-2.5 rounded-2xl border-2 border-dashed border-[var(--brand-primary)]/40 hover:border-[var(--brand-primary)] bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-bold transition cursor-pointer flex items-center gap-2"
+              className="px-6 py-2.5 rounded-lg border-2 border-dashed border-[var(--brand-primary)]/40 hover:border-[var(--brand-primary)] bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-bold transition cursor-pointer flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
               <span>+ {t.addPrescribedMedicine}</span>
@@ -1611,7 +1611,7 @@ export function PrescriptionEditor({
         </div>
 
         {/* SECTION 5: Diagnostic Lab Investigations Advised */}
-        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+        <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
@@ -1648,7 +1648,7 @@ export function PrescriptionEditor({
             {tests.map((test, index) => (
               <div
                 key={index}
-                className="grid grid-cols-1 sm:grid-cols-12 gap-3 p-3.5 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 items-center"
+                className="grid grid-cols-1 sm:grid-cols-12 gap-3 p-3.5 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 items-center"
               >
                 <div className="sm:col-span-1 text-center font-black text-xs text-[var(--brand-primary)]">
                   #{index + 1}
@@ -1686,7 +1686,7 @@ export function PrescriptionEditor({
         </div>
 
         {/* SECTION 6: Advice & Follow-Up */}
-        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+        <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
           <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
             4. {t.adviceAndLifestyle}
           </span>
@@ -1702,7 +1702,7 @@ export function PrescriptionEditor({
                 value={advice}
                 onChange={(e) => setAdvice(e.target.value)}
                 placeholder="- Drink plenty of boiled warm water.&#10;- Avoid oily and spicy foods."
-                className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium"
+                className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium"
               />
 
               <div className="space-y-1.5 pt-1">
@@ -1770,7 +1770,7 @@ export function PrescriptionEditor({
         </div>
 
         {/* SECTION 7: File Attachments */}
-        <div className="p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+        <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)] flex items-center gap-1.5">
               <Paperclip className="w-3.5 h-3.5" />
@@ -1790,11 +1790,11 @@ export function PrescriptionEditor({
           </div>
 
           {attachmentError && (
-            <div className="p-3 rounded-2xl bg-rose-50 text-rose-600 text-xs">{attachmentError}</div>
+            <div className="p-3 rounded-lg bg-rose-50 text-rose-600 text-xs">{attachmentError}</div>
           )}
 
           {attachments.length === 0 ? (
-            <p className="text-xs text-slate-400 py-3 text-center bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+            <p className="text-xs text-slate-400 py-3 text-center bg-slate-50/50 dark:bg-slate-900/50 rounded-lg border border-dashed border-slate-200 dark:border-slate-800">
               {t.noFilesAttached}
             </p>
           ) : (
@@ -1802,7 +1802,7 @@ export function PrescriptionEditor({
               {attachments.map((att, idx) => (
                 <div
                   key={att.id}
-                  className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs"
+                  className="p-3 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs"
                 >
                   <div className="flex items-center gap-2 truncate">
                     <FileText className="w-4 h-4 text-[var(--brand-primary)] shrink-0" />
@@ -1826,14 +1826,14 @@ export function PrescriptionEditor({
           <button
             type="button"
             onClick={() => setShowPreviewModal(true)}
-            className="px-5 py-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition shadow-xs cursor-pointer"
+            className="min-h-[42px] sm:min-h-[44px] px-5 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition shadow-xs cursor-pointer flex items-center gap-2"
           >
             👁️ {t.livePreview}
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="px-8 py-3.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-black shadow-md hover:opacity-95 transition disabled:opacity-60 flex items-center gap-2 cursor-pointer"
+            className="min-h-[42px] sm:min-h-[44px] px-6 sm:px-8 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs sm:text-sm font-black shadow-md hover:opacity-95 transition disabled:opacity-60 flex items-center gap-2 cursor-pointer"
           >
             {submitting ? (
               <span>{t.saving}</span>
@@ -1849,7 +1849,7 @@ export function PrescriptionEditor({
       {/* Patient Lab Reports Drawer / Modal */}
       {showReportsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="w-full max-w-2xl rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
+          <div className="w-full max-w-2xl rounded-xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div>
                 <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
@@ -1878,7 +1878,7 @@ export function PrescriptionEditor({
                 patientReports.map((r) => (
                   <div
                     key={r.id}
-                    className="p-4 rounded-2xl bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between gap-3 text-xs"
+                    className="p-4 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between gap-3 text-xs"
                   >
                     <div className="space-y-0.5 min-w-0">
                       <span className="font-bold text-slate-900 dark:text-white block truncate">

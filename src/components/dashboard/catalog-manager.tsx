@@ -275,7 +275,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
   return (
     <div className="space-y-6">
       {/* Top Banner & Stats */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 shadow-sm">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="p-1.5 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)]">
@@ -293,7 +293,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-3 px-4 py-2 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
             <div className="text-center">
               <span className="text-lg font-bold text-slate-900 dark:text-white">{medicines.length}</span>
               <p className="text-[10px] uppercase font-semibold text-slate-400">{t.medications}</p>
@@ -308,7 +308,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
           <button
             type="button"
             onClick={activeTab === "medicines" ? handleOpenAddMed : handleOpenAddTest}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[var(--brand-primary)] text-white text-xs font-semibold hover:opacity-90 shadow-sm transition-all cursor-pointer"
+            className="flex items-center gap-2 min-h-[42px] sm:min-h-[44px] px-4 py-2 rounded-lg bg-[var(--brand-primary)] text-white text-xs sm:text-sm font-semibold hover:opacity-90 shadow-sm transition-all cursor-pointer"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
@@ -321,7 +321,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
       {/* Tabs & Search Filter Header */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         {/* Navigation Tabs */}
-        <div className="flex items-center p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl border border-slate-200/80 dark:border-slate-800 self-start">
+        <div className="flex items-center p-1 bg-slate-100 dark:bg-slate-800/80 rounded-lg border border-slate-200/80 dark:border-slate-800 self-start">
           <button
             type="button"
             onClick={() => setActiveTab("medicines")}
@@ -388,14 +388,14 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
       ) : activeTab === "medicines" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredMedicines.length === 0 ? (
-            <div className="col-span-full p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800">
+            <div className="col-span-full p-12 text-center rounded-xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800">
               <p className="text-sm text-slate-500">{t("uiNoMedicinesFoundMatchingYour")}</p>
             </div>
           ) : (
             filteredMedicines.map((med) => (
               <div
                 key={med.id}
-                className="p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 hover:border-[var(--brand-border)] transition-all shadow-xs flex flex-col justify-between group"
+                className="p-5 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 hover:border-[var(--brand-border)] transition-all shadow-xs flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
@@ -439,14 +439,14 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredTests.length === 0 ? (
-            <div className="col-span-full p-12 text-center rounded-3xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800">
+            <div className="col-span-full p-12 text-center rounded-xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800">
               <p className="text-sm text-slate-500">{t("uiNoDiagnosticTestsFoundMatching")}</p>
             </div>
           ) : (
             filteredTests.map((test) => (
               <div
                 key={test.id}
-                className="p-5 rounded-3xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 hover:border-[var(--brand-border)] transition-all shadow-xs flex flex-col justify-between"
+                className="p-5 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 hover:border-[var(--brand-border)] transition-all shadow-xs flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center gap-2 mb-2">
@@ -489,7 +489,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
       {/* Add / Edit Medicine Modal */}
       {showMedModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-elevated)] border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+          <div className="w-full max-w-lg rounded-xl bg-[var(--bg-elevated)] border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 {editingMedId
@@ -601,7 +601,7 @@ export function CatalogManager({ initialTab = "medicines" }: CatalogManagerProps
       {/* Add / Edit Test Modal */}
       {showTestModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-lg rounded-3xl bg-[var(--bg-elevated)] border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+          <div className="w-full max-w-lg rounded-xl bg-[var(--bg-elevated)] border border-slate-200 dark:border-slate-800 shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 {editingTestId

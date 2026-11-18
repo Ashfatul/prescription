@@ -21,7 +21,7 @@ export function PricingSection({ initialPlans }: { initialPlans: PricingPlanProp
 
   return (
     <section id="pricing" className="w-full py-16 sm:py-24 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] scroll-mt-20">
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-bold uppercase tracking-wider border border-[var(--brand-border)]">
@@ -89,7 +89,7 @@ export function PricingSection({ initialPlans }: { initialPlans: PricingPlanProp
             return (
               <div
                 key={plan.id}
-                className={`rounded-3xl p-8 flex flex-col justify-between space-y-8 transition-all relative ${
+                className={`rounded-xl p-8 flex flex-col justify-between space-y-8 transition-all relative ${
                   plan.isPopular
                     ? "bg-[var(--bg-surface)] border-2 border-[var(--brand-primary)] shadow-xl ring-4 ring-[var(--brand-primary)]/10 scale-100 md:-translate-y-2"
                     : "bg-[var(--bg-app)] border border-[var(--border-subtle)] shadow-xs hover:border-[var(--brand-border)] hover:shadow-md"
@@ -148,7 +148,7 @@ export function PricingSection({ initialPlans }: { initialPlans: PricingPlanProp
                 <div className="pt-4 border-t border-[var(--border-subtle)] space-y-2">
                   <Link
                     href={`/auth/register?type=clinic&plan=${plan.id}`}
-                    className={`w-full py-3.5 px-4 rounded-2xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer ${
+                    className={`w-full py-3.5 px-4 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer ${
                       plan.isPopular
                         ? "bg-[var(--brand-primary)] text-white hover:opacity-95 shadow-md"
                         : "bg-[var(--bg-surface)] border border-[var(--border-default)] text-slate-800 dark:text-slate-200 hover:border-[var(--brand-primary)] hover:text-[var(--brand-text)]"
@@ -168,9 +168,9 @@ export function PricingSection({ initialPlans }: { initialPlans: PricingPlanProp
         </div>
 
         {/* Enterprise Callout Strip */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-app)] border border-[var(--border-subtle)] flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="p-6 sm:p-8 rounded-xl bg-[var(--bg-app)] border border-[var(--border-subtle)] flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4 text-center md:text-left">
-            <div className="w-12 h-12 rounded-2xl bg-teal-500/10 text-teal-600 flex items-center justify-center font-bold shrink-0 shadow-2xs">
+            <div className="w-12 h-12 rounded-lg bg-teal-500/10 text-teal-600 flex items-center justify-center font-bold shrink-0 shadow-2xs">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div className="space-y-1">
@@ -185,7 +185,7 @@ export function PricingSection({ initialPlans }: { initialPlans: PricingPlanProp
 
           <Link
             href="/#doctors"
-            className="px-6 py-3 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-default)] hover:border-[var(--brand-primary)] text-xs font-bold text-slate-800 dark:text-slate-200 transition shrink-0"
+            className="px-6 py-3 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-default)] hover:border-[var(--brand-primary)] text-xs font-bold text-slate-800 dark:text-slate-200 transition shrink-0"
           >
             {t("uiContactHospitalSales")}
           </Link>

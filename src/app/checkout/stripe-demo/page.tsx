@@ -89,7 +89,7 @@ function StripeDemoContent() {
         </div>
       </div>
 
-      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-12 gap-6 bg-[var(--bg-surface)] rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-xl overflow-hidden">
+      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-12 gap-6 bg-[var(--bg-surface)] rounded-xl border border-slate-200/80 dark:border-slate-800/80 shadow-xl overflow-hidden">
         {/* Left Column: Order Summary & Doctor Details */}
         <div className="md:col-span-5 p-6 sm:p-8 bg-slate-50/70 dark:bg-slate-900/40 border-b md:border-b-0 md:border-r border-slate-200/80 dark:border-slate-800/80 flex flex-col justify-between space-y-6">
           <div className="space-y-5">
@@ -106,7 +106,7 @@ function StripeDemoContent() {
             </div>
 
             {/* Doctor Card */}
-            <div className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-slate-200/80 dark:border-slate-800/80 space-y-2">
+            <div className="p-4 rounded-lg bg-[var(--bg-surface)] border border-slate-200/80 dark:border-slate-800/80 space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-900 dark:text-white">
                   {doctorName}
@@ -173,7 +173,7 @@ function StripeDemoContent() {
             </div>
 
             {/* Sandbox Notice Banner */}
-            <div className="p-3.5 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60 text-xs text-amber-900 dark:text-amber-200 space-y-1">
+            <div className="p-3.5 rounded-lg bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60 text-xs text-amber-900 dark:text-amber-200 space-y-1">
               <div className="flex items-center gap-1.5 font-bold">
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                 <span>{t.simulatedSandboxPayment}</span>
@@ -267,7 +267,7 @@ function StripeDemoContent() {
                   <button
                     type="submit"
                     disabled={processing}
-                    className="w-full py-3 px-4 rounded-2xl bg-[var(--brand-primary)] hover:opacity-95 text-white font-black text-xs shadow-md transition disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+                    className="w-full py-3 px-4 rounded-lg bg-[var(--brand-primary)] hover:opacity-95 text-white font-black text-xs shadow-md transition disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
                   >
                     {processing ? (
                       <>
