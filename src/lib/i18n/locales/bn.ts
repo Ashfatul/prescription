@@ -1506,6 +1506,16 @@ export const bn = {
    ,"authEmailPlaceholder": "name@clinic.com"
    ,"authHipaaBmdcValidated": "HIPAA ও BMDC যাচাইকৃত"
    ,"authPlatformSubtitle": "পেশেন্ট প্রেসক্রিপশন ম্যানেজমেন্ট সিস্টেম"
+   ,"profile": "প্রোফাইল"
+   ,"expandSidebar": "মেনু প্রসারিত করুন"
+   ,"collapseSidebar": "মিনি মেনু"
+   ,"openNavigationMenu": "নেভিগেশন মেনু খুলুন"
+   ,"sectionOperations": "অপারেশনস"
+   ,"sectionClinicalTools": "ফর্মুলারি ও টেমপ্লেট"
+   ,"sectionCommunication": "যোগাযোগ"
+   ,"returnToPublicSite": "পাবলিক সাইটে ফিরে যান"
+   ,"uiSystemSetupOnboarding": "সিস্টেম সেটআপ ও অনবোর্ডিং"
+   ,"uiPPMSPlatform": "ক্লিনিকাল অপারেশনস প্ল্যাটফর্ম ·"
 } as const;
 
 export default bn;

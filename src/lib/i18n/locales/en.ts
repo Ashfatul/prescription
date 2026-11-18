@@ -1506,6 +1506,16 @@ export const en = {
    ,"authEmailPlaceholder": "name@clinic.com"
    ,"authHipaaBmdcValidated": "HIPAA & BMDC Validated"
    ,"authPlatformSubtitle": "Patient Prescription Management System"
+   ,"profile": "Profile"
+   ,"expandSidebar": "Expand menu"
+   ,"collapseSidebar": "Mini menu"
+   ,"openNavigationMenu": "Open navigation menu"
+   ,"sectionOperations": "Operations"
+   ,"sectionClinicalTools": "Formulary & Templates"
+   ,"sectionCommunication": "Communication"
+   ,"returnToPublicSite": "Return to public site"
+   ,"uiSystemSetupOnboarding": "System Setup & Onboarding"
+   ,"uiPPMSPlatform": "Clinical Operations Platform ·"
 } as const;
 
 export default en;
