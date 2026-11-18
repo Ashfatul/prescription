@@ -30,18 +30,27 @@ import { LanguageToggle } from "@/components/common/language-toggle";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
 import { useLanguage } from "@/lib/i18n/language-context";
 import { useAuth } from "@/lib/auth/auth-context";
+import { useSiteSettings } from "@/components/layout/providers";
 
 interface SimpleSettings {
     supportEmail?: string;
     hospitalName?: string;
+    hospitalTagline?: string;
 }
 
 const emptySubscribe = () => () => {};
 
-export function Header({ loggedIn }: { loggedIn?: boolean }) {
+export function Header({
+    loggedIn,
+    initialSettings,
+}: {
+    loggedIn?: boolean;
+    initialSettings?: SimpleSettings;
+}) {
     const pathname = usePathname();
     const { t } = useLanguage();
     const { user, logout, loading } = useAuth();
+    const siteSettings = useSiteSettings();
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [exploreOpen, setExploreOpen] = useState(false);
@@ -54,8 +63,16 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
     );
 
     const [settings, setSettings] = useState<SimpleSettings>({
-        supportEmail: "support@ppms.local",
-        hospitalName: "",
+        supportEmail:
+            initialSettings?.supportEmail ||
+            siteSettings.supportEmail ||
+            "support@ppms.local",
+        hospitalName:
+            initialSettings?.hospitalName || siteSettings.hospitalName || "",
+        hospitalTagline:
+            initialSettings?.hospitalTagline ||
+            siteSettings.hospitalTagline ||
+            "",
     });
 
     const isLoggedIn = loggedIn !== undefined ? loggedIn : !!user;
@@ -65,15 +82,22 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
             .then((res) => (res.ok ? res.json() : null))
             .then((data) => {
                 if (data?.success && data?.data) {
-                    setSettings({
+                    setSettings((prev) => ({
                         supportEmail:
-                            data.data.supportEmail || "support@ppms.local",
-                        hospitalName: data.data.hospitalName || "",
-                    });
+                            data.data.supportEmail ||
+                            prev.supportEmail ||
+                            "support@ppms.local",
+                        hospitalName:
+                            data.data.hospitalName || prev.hospitalName || "",
+                        hospitalTagline:
+                            data.data.hospitalTagline ||
+                            prev.hospitalTagline ||
+                            "",
+                    }));
                 }
             })
             .catch(() => {
-                // Fallback to default
+                // Keep SSR/context settings
             });
     }, []);
 
@@ -212,7 +236,7 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
     return (
         <>
             <header className="sticky top-0 z-40 w-full border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/85 backdrop-blur-xl transition-colors">
-                <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16 gap-4">
                         {/* Left: Brand Identity */}
                         <Link
@@ -231,8 +255,9 @@ export function Header({ loggedIn }: { loggedIn?: boolean }) {
                                 <span className="font-extrabold tracking-tight text-[var(--text-primary)] text-sm sm:text-base whitespace-nowrap">
                                     {settings.hospitalName || "PPMS"}
                                 </span>
-                                <span className="hidden sm:inline-block text-[11px] font-medium text-[var(--text-muted)] mt-0.5 truncate max-w-[160px]">
-                                    {t.prescriptionSuiteTag}
+                                <span className="hidden sm:inline-block text-[11px] font-medium text-[var(--text-muted)] mt-0.5 truncate max-w-[200px] xl:max-w-[260px]">
+                                    {settings.hospitalTagline ||
+                                        t.prescriptionSuiteTag}
                                 </span>
                             </div>
                         </Link>

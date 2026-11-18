@@ -23,12 +23,12 @@ export async function generateMetadata({ params }: ClinicPageProps): Promise<Met
 
   if (!clinic) {
     return {
-      title: "Clinic Not Found | PPMS",
+      title: "Clinic Not Found",
     };
   }
 
   return {
-    title: `${clinic.name} - Info, Consulting Doctors & Staff | PPMS`,
+    title: `${clinic.name} - Info, Consulting Doctors & Staff`,
     description: `View complete hospital details, chamber address, consulting physicians, visiting hours, and front desk staff for ${clinic.name}.`,
   };
 }
@@ -106,7 +106,7 @@ export default async function ClinicDetailsPage({ params }: ClinicPageProps) {
 
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] flex flex-col">
-      <Header loggedIn={!!user} />
+      <Header loggedIn={!!user} initialSettings={settings} />
 
       <ClinicDetailsView
         clinic={{

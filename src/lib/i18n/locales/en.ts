@@ -1497,6 +1497,15 @@ export const en = {
    ,"activeTenantStatus": "Active"
    ,"interactivePreviewHint": "Interactive preview — click chips or switch views"
    ,"directDispatchLabel": "24/7 Emergency Desk"
+   ,"authWorkspacesBadge": "Unified Clinical Portals"
+   ,"authWorkspacesDesc": "Sign in with your clinic or patient account. Your workspace opens automatically based on your assigned role."
+   ,"authBadgeClinicalLead": "Clinical Lead"
+   ,"authBadgeHospitalOps": "Hospital Ops"
+   ,"authBadgeFrontDesk": "Front Desk"
+   ,"authBadgeHealthPass": "Health Pass"
+   ,"authEmailPlaceholder": "name@clinic.com"
+   ,"authHipaaBmdcValidated": "HIPAA & BMDC Validated"
+   ,"authPlatformSubtitle": "Patient Prescription Management System"
 } as const;
 
 export default en;

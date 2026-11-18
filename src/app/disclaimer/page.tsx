@@ -6,7 +6,7 @@ import { getCurrentUserFromCookie } from "@/lib/auth/session";
 import { getHospitalSettings } from "@/features/settings/settings.service";
 
 export const metadata: Metadata = {
-  title: "Medical Disclaimer & Clinical Prescribing Standards | PPMS",
+  title: "Medical Disclaimer & Clinical Prescribing Standards",
   description: "Official medical disclaimer and clinical prescribing standards for the Patient Prescription Management System.",
 };
 
@@ -18,7 +18,7 @@ export default async function DisclaimerPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] flex flex-col">
-      <Header loggedIn={!!user} />
+      <Header loggedIn={!!user} initialSettings={settings} />
       <DisclaimerView settings={settings} />
       <Footer initialSettings={settings} />
     </div>

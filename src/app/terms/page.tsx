@@ -6,7 +6,7 @@ import { getCurrentUserFromCookie } from "@/lib/auth/session";
 import { getHospitalSettings } from "@/features/settings/settings.service";
 
 export const metadata: Metadata = {
-  title: "Terms of Service Agreement | PPMS",
+  title: "Terms of Service Agreement",
   description: "Terms of Service and Clinical Platform Usage Agreement for Patient Prescription Management System.",
 };
 
@@ -18,7 +18,7 @@ export default async function TermsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] flex flex-col">
-      <Header loggedIn={!!user} />
+      <Header loggedIn={!!user} initialSettings={settings} />
       <TermsView />
       <Footer initialSettings={settings} />
     </div>

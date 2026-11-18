@@ -14,12 +14,12 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   try {
     const rx = await getPrescriptionByShareToken(token);
     return {
-      title: `Digital Prescription - ${rx.patient.user.name} | PPMS`,
+      title: `Digital Prescription - ${rx.patient.user.name}`,
       description: `Verified clinical digital prescription authored by ${rx.doctor.user.name}`,
     };
   } catch {
     return {
-      title: "Prescription Access | PPMS",
+      title: "Prescription Access",
     };
   }
 }

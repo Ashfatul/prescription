@@ -42,7 +42,7 @@ export function Footer({
                         setSettings(data.data);
                     }
                 })
-                .catch(() => {});
+                .catch(() => { });
         }
     }, [initialSettings]);
 
@@ -50,7 +50,7 @@ export function Footer({
         <footer className="w-full border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-secondary)]">
             {/* Top Clinical Accreditation & Status Bar */}
             <div className="border-b border-[var(--border-subtle)] bg-[var(--bg-subtle)]/50 py-3">
-                <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
                         <div className="flex items-center gap-2 text-[var(--text-primary)]">
                             <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
@@ -87,7 +87,7 @@ export function Footer({
             </div>
 
             {/* Main Multi-Column Architectural Footer */}
-            <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-14">
+            <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-14">
                 <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-12">
                     {/* Brand Overview & Chamber Contact (5 cols) */}
                     <div className="lg:col-span-5 space-y-5">
@@ -113,8 +113,8 @@ export function Footer({
                                     </span>
                                 </div>
                                 <span className="text-[11px] font-medium text-[var(--text-muted)] mt-1">
-                                    {settings.hospitalName} ·{" "}
-                                    {t.prescriptionsSuffix}
+                                    {settings.hospitalTagline ||
+                                        `${settings.hospitalName} · ${t.prescriptionsSuffix}`}
                                 </span>
                             </div>
                         </Link>

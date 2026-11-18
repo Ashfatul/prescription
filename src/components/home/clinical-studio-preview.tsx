@@ -195,13 +195,15 @@ export function ClinicalStudioPreview() {
           </div>
         </div>
 
+        {/* Fixed-height desktop tab viewport to eliminate any vertical layout shift */}
+        <div className="md:h-[436px] flex flex-col overflow-hidden">
         {/* ========================================================= */}
         {/* TAB 1: SPLIT-PANE CLINICAL PRESCRIPTION WORKBENCH          */}
         {/* ========================================================= */}
         {activeTab === "prescription" && (
-          <div className="flex flex-col">
+          <div className="flex flex-col h-full">
             {/* Clinic Letterhead Header Strip */}
-            <div className="px-5 py-3.5 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] flex flex-wrap items-center justify-between gap-3">
+            <div className="px-5 py-3 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] flex flex-wrap items-center justify-between gap-3 shrink-0">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-[var(--brand-primary)] shrink-0" />
@@ -230,9 +232,9 @@ export function ClinicalStudioPreview() {
             </div>
 
             {/* 2-Column Split Clinical Pad */}
-            <div className="grid md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-[var(--border-subtle)]">
+            <div className="grid md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-[var(--border-subtle)] flex-1 min-h-0">
               {/* Left Rail: Patient Vitals & Chief Complaints (5 cols) */}
-              <div className="md:col-span-5 p-4 sm:p-5 bg-[var(--bg-app)]/50 space-y-4">
+              <div className="md:col-span-5 p-4 sm:p-5 bg-[var(--bg-app)]/50 space-y-4 md:overflow-y-auto">
                 {/* Patient Identity */}
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
@@ -326,8 +328,8 @@ export function ClinicalStudioPreview() {
               </div>
 
               {/* Right Pane: Rx Medications & Formulary Quick-Add (7 cols) */}
-              <div className="md:col-span-7 p-4 sm:p-5 flex flex-col justify-between gap-4">
-                <div className="space-y-3">
+              <div className="md:col-span-7 p-4 sm:p-5 flex flex-col justify-between gap-3 md:min-h-0">
+                <div className="space-y-3 md:overflow-y-auto md:pr-1">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
                       <span className="text-lg font-serif italic font-black text-[var(--brand-text)] leading-none">
@@ -423,7 +425,7 @@ export function ClinicalStudioPreview() {
         {/* TAB 2: WIDESCREEN LIVE WAITING ROOM TV MONITOR             */}
         {/* ========================================================= */}
         {activeTab === "queue" && (
-          <div className="p-5 sm:p-6 grid md:grid-cols-12 gap-5 items-stretch">
+          <div className="p-5 sm:p-6 grid md:grid-cols-12 gap-5 items-stretch h-full">
             {/* Left TV Call Display (7 cols) */}
             <div className="md:col-span-7 p-5 rounded-xl bg-slate-950 text-white border border-slate-800 flex flex-col justify-between gap-4">
               <div className="flex items-center justify-between border-b border-slate-800 pb-3 text-xs">
@@ -520,7 +522,7 @@ export function ClinicalStudioPreview() {
         {/* TAB 3: WIDESCREEN PATIENT DIGITAL PASS & REMINDERS         */}
         {/* ========================================================= */}
         {activeTab === "patient" && (
-          <div className="p-5 sm:p-6 grid md:grid-cols-12 gap-5 items-stretch">
+          <div className="p-5 sm:p-6 grid md:grid-cols-12 gap-5 items-stretch h-full">
             {/* Left QR Digital Pass (6 cols) */}
             <div className="md:col-span-6 p-4 rounded-xl bg-[var(--bg-subtle)]/60 border border-[var(--border-subtle)] flex flex-col justify-between gap-4">
               <div className="flex items-center justify-between gap-2">
@@ -620,6 +622,7 @@ export function ClinicalStudioPreview() {
             </div>
           </div>
         )}
+        </div>
 
         {/* Bottom Subtle Interactive Hint Strip */}
         <div className="px-4 py-2 border-t border-[var(--border-subtle)] bg-[var(--bg-subtle)]/50 flex items-center justify-between text-[11px] text-[var(--text-muted)]">

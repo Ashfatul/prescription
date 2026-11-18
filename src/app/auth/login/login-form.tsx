@@ -114,15 +114,10 @@ export function LoginForm() {
     setError("");
   };
 
-  const handleSelectRole = (roleEmail: string) => {
-    setEmail(roleEmail);
-    setError("");
-  };
-
   return (
     <AuthShell
       activeBadge={t("uiVerifiedClinicalAccess")}
-      companion={<LoginCompanion onSelectRole={handleSelectRole} currentEmail={email} />}
+      companion={<LoginCompanion />}
       deckMaxWidth="max-w-5xl"
     >
       <div className="w-full max-w-md mx-auto my-auto space-y-6">
@@ -243,7 +238,7 @@ export function LoginForm() {
                     className="w-full input-icon-left !pl-11 pr-4 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[44px] h-[44px]"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="doctor@hospital.org"
+                    placeholder={t.authEmailPlaceholder}
                     type="email"
                     required
                   />

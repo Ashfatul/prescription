@@ -1,11 +1,27 @@
 "use client";
 
-import { useEffect } from "react";
+import { createContext, useContext, useEffect } from "react";
 import { ThemeProvider, useTheme } from "next-themes";
 import { LanguageProvider } from "@/lib/i18n/language-context";
 import { AuthProvider, AuthUser } from "@/lib/auth/auth-context";
 import { PwaRegister } from "@/components/common/pwa-register";
 import { ToastProvider } from "@/components/common/toast-provider";
+
+export interface PublicSiteSettings {
+  hospitalName: string;
+  hospitalTagline?: string;
+  supportEmail: string;
+}
+
+const SiteSettingsContext = createContext<PublicSiteSettings>({
+  hospitalName: "",
+  hospitalTagline: "",
+  supportEmail: "support@ppms.local",
+});
+
+export function useSiteSettings() {
+  return useContext(SiteSettingsContext);
+}
 
 // Suppress React 19 false-positive warning for theme scripts
 if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
@@ -60,12 +76,20 @@ export function Providers({
   initialUser,
   initialAccent,
   initialTheme = "system",
+  initialSiteSettings,
 }: {
   children: React.ReactNode;
   initialUser?: AuthUser | null;
   initialAccent?: string;
   initialTheme?: string;
+  initialSiteSettings?: PublicSiteSettings;
 }) {
+  const siteSettings: PublicSiteSettings = initialSiteSettings || {
+    hospitalName: "",
+    hospitalTagline: "",
+    supportEmail: "support@ppms.local",
+  };
+
   return (
     <ThemeProvider
       attribute="class"
@@ -73,16 +97,18 @@ export function Providers({
       enableSystem
       disableTransitionOnChange
     >
-      <LanguageProvider>
-        <ToastProvider>
-          <AuthProvider initialUser={initialUser}>
-            <AccentSync initialAccent={initialAccent} />
-            <ThemeSync />
-            <PwaRegister />
-            {children}
-          </AuthProvider>
-        </ToastProvider>
-      </LanguageProvider>
+      <SiteSettingsContext.Provider value={siteSettings}>
+        <LanguageProvider>
+          <ToastProvider>
+            <AuthProvider initialUser={initialUser}>
+              <AccentSync initialAccent={initialAccent} />
+              <ThemeSync />
+              <PwaRegister />
+              {children}
+            </AuthProvider>
+          </ToastProvider>
+        </LanguageProvider>
+      </SiteSettingsContext.Provider>
     </ThemeProvider>
   );
 }

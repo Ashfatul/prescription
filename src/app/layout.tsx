@@ -5,6 +5,7 @@ import "./globals.css";
 import { env } from "@/lib/env";
 import { Providers } from "@/components/layout/providers";
 import { getCurrentUserFromCookie } from "@/lib/auth/session";
+import { getHospitalSettings } from "@/features/settings/settings.service";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -26,52 +27,71 @@ export const viewport: Viewport = {
     maximumScale: 5,
 };
 
-export const metadata: Metadata = {
-    title: `${env.appName} | Patient Prescription Management System`,
-    description:
-        "A full-stack multi-clinic prescription and appointment management system.",
-    manifest: "/manifest.webmanifest",
-    applicationName: env.appName,
-    appleWebApp: {
-        capable: true,
-        statusBarStyle: "default",
-        title: env.appName,
-    },
-    formatDetection: {
-        telephone: false,
-    },
-    icons: {
-        icon: [
-            { url: "/favicon.ico", sizes: "any" },
-            { url: "/icons/icon.svg", type: "image/svg+xml" },
-            {
-                url: "/icons/icon-192x192.png",
-                sizes: "192x192",
-                type: "image/png",
-            },
-            {
-                url: "/icons/icon-512x512.png",
-                sizes: "512x512",
-                type: "image/png",
-            },
-        ],
-        apple: [
-            {
-                url: "/icons/apple-touch-icon.png",
-                sizes: "180x180",
-                type: "image/png",
-            },
-        ],
-    },
-};
+export async function generateMetadata(): Promise<Metadata> {
+    const settings = await getHospitalSettings();
+    const appTitle = settings.hospitalName?.trim() || env.appName;
+    const appTagline =
+        settings.hospitalTagline?.trim() ||
+        "Patient Prescription Management System";
+
+    return {
+        title: {
+            default: `${appTitle} | ${appTagline}`,
+            template: `%s | ${appTitle}`,
+        },
+        description: appTagline,
+        manifest: "/manifest.webmanifest",
+        applicationName: appTitle,
+        appleWebApp: {
+            capable: true,
+            statusBarStyle: "default",
+            title: appTitle,
+        },
+        formatDetection: {
+            telephone: false,
+        },
+        icons: {
+            icon: [
+                { url: "/favicon.ico", sizes: "any" },
+                { url: "/icons/icon.svg", type: "image/svg+xml" },
+                {
+                    url: "/icons/icon-192x192.png",
+                    sizes: "192x192",
+                    type: "image/png",
+                },
+                {
+                    url: "/icons/icon-512x512.png",
+                    sizes: "512x512",
+                    type: "image/png",
+                },
+            ],
+            apple: [
+                {
+                    url: "/icons/apple-touch-icon.png",
+                    sizes: "180x180",
+                    type: "image/png",
+                },
+            ],
+        },
+    };
+}
 
 export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const cookieStore = await cookies();
-    const user = await getCurrentUserFromCookie();
+    const [cookieStore, user, hospitalSettings] = await Promise.all([
+        cookies(),
+        getCurrentUserFromCookie(),
+        getHospitalSettings(),
+    ]);
+
+    const initialSiteSettings = {
+        hospitalName: hospitalSettings.hospitalName || "",
+        hospitalTagline: hospitalSettings.hospitalTagline || "",
+        supportEmail: hospitalSettings.supportEmail || "support@ppms.local",
+    };
 
     const safeUser = user
         ? {
@@ -111,6 +131,7 @@ export default async function RootLayout({
                     initialUser={safeUser}
                     initialAccent={initialAccent}
                     initialTheme={initialTheme}
+                    initialSiteSettings={initialSiteSettings}
                 >
                     {children}
                 </Providers>

@@ -13,7 +13,7 @@ import { isSystemInstalled } from "@/features/setup/setup.service";
 import { db } from "@/lib/db";
 
 export const metadata: Metadata = {
-  title: "Consulting Physicians & Specialists Directory | PPMS",
+  title: "Consulting Physicians & Specialists Directory",
   description: "Browse registered hospital physicians, specialist chambers, visiting hours, and real-time live serial queues.",
 };
 
@@ -48,7 +48,7 @@ export default async function DoctorsPage({ searchParams }: DoctorsPageProps) {
 
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] flex flex-col">
-      <Header loggedIn={!!user} />
+      <Header loggedIn={!!user} initialSettings={settings} />
 
       <main className="flex-1 w-full">
         {/* Top Directory Hero Banner */}
@@ -62,7 +62,7 @@ export default async function DoctorsPage({ searchParams }: DoctorsPageProps) {
         />
 
         {/* Directory Content Area */}
-        <section className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
           <DoctorList initialLimit={9} clinicSlug={clinicSlug} />
         </section>
       </main>

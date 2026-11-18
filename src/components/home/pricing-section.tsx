@@ -32,7 +32,7 @@ export function PricingSection({
       id="pricing"
       className="w-full py-16 sm:py-24 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] scroll-mt-20"
     >
-      <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Split Header: Title Left, Billing Switcher Right */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b border-[var(--border-subtle)]">
           <div className="space-y-2 max-w-[54ch]">

@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { getCurrentUserFromCookie } from "@/lib/auth/session";
+import { getHospitalSettings } from "@/features/settings/settings.service";
 import { getDoctorQueue } from "@/features/doctors/doctor.service";
 import { DoctorProfileView } from "@/components/doctors/doctor-profile-view";
 
@@ -24,11 +25,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 
   if (!doctor) {
-    return { title: "Doctor Profile | PPMS" };
+    return { title: "Doctor Profile" };
   }
 
   return {
-    title: `${doctor.user.name} - ${doctor.specialization} | Specialist Profile`,
+    title: `${doctor.user.name} - ${doctor.specialization}`,
     description: `View chamber schedule, credentials, BMDC registration, and book consultation with ${doctor.user.name} (${doctor.specialization}).`,
   };
 }
@@ -36,8 +37,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function DoctorDetailPage({ params }: Props) {
   const { id } = await params;
 
-  const [currentUser, doctor] = await Promise.all([
+  const [currentUser, settings, doctor] = await Promise.all([
     getCurrentUserFromCookie(),
+    getHospitalSettings(),
     db.doctor.findUnique({
       where: { id },
       include: {
@@ -65,7 +67,7 @@ export default async function DoctorDetailPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] flex flex-col">
-      <Header loggedIn={!!currentUser} />
+      <Header loggedIn={!!currentUser} initialSettings={settings} />
 
       <DoctorProfileView
         doctor={{
@@ -100,7 +102,7 @@ export default async function DoctorDetailPage({ params }: Props) {
         isStaffRole={isStaffRole}
       />
 
-      <Footer />
+      <Footer initialSettings={settings} />
     </div>
   );
 }

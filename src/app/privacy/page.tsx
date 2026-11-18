@@ -6,7 +6,7 @@ import { getCurrentUserFromCookie } from "@/lib/auth/session";
 import { getHospitalSettings } from "@/features/settings/settings.service";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy & Health Data Protection | PPMS",
+  title: "Privacy Policy & Health Data Protection",
   description: "Comprehensive privacy and clinical health data governance policy for Patient Prescription Management System.",
 };
 
@@ -18,7 +18,7 @@ export default async function PrivacyPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] flex flex-col">
-      <Header loggedIn={!!user} />
+      <Header loggedIn={!!user} initialSettings={settings} />
       <PrivacyView settings={settings} />
       <Footer initialSettings={settings} />
     </div>

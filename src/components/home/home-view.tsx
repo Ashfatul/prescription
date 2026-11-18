@@ -117,7 +117,7 @@ export function HomeView({
         <div className="pointer-events-none absolute inset-0 clinical-grid-bg [mask-image:radial-gradient(ellipse_80%_75%_at_50%_20%,#000_40%,transparent_100%)]" />
         <div className="pointer-events-none absolute inset-0 hero-brand-glow" />
 
-        <div className="relative w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-14 sm:pt-14 sm:pb-20 lg:pt-16 lg:pb-20">
+        <div className="relative w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-14 sm:pt-14 sm:pb-20 lg:pt-16 lg:pb-20">
           <div className="grid lg:grid-cols-12 gap-10 xl:gap-12 items-center">
             {/* Left Rail: Crisp Clinical Editorial Copy (5 cols) */}
             <div className="lg:col-span-5 space-y-6 text-left">
@@ -211,7 +211,7 @@ export function HomeView({
         {/* INTEGRATED ARCHITECTURAL TELEMETRY LEDGER RAIL            */}
         {/* ========================================================= */}
         <div className="relative w-full border-y border-[var(--border-subtle)] bg-[var(--bg-surface)]">
-          <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-[var(--border-subtle)]">
               {telemetryItems.map((item) => {
                 const Icon = item.icon;
@@ -257,7 +257,7 @@ export function HomeView({
         id="features"
         className="w-full py-16 sm:py-24 bg-[var(--bg-app)] scroll-mt-20"
       >
-        <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           {/* Split Widescreen Section Header */}
           <div className="grid lg:grid-cols-12 gap-4 lg:gap-8 items-end border-b border-[var(--border-subtle)] pb-8">
             <div className="lg:col-span-7 space-y-2">
@@ -563,7 +563,7 @@ export function HomeView({
         id="how-it-works"
         className="w-full py-16 sm:py-24 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] scroll-mt-20"
       >
-        <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-12 gap-10 xl:gap-14 items-start">
             {/* Sticky Left Editorial Column (4 cols) */}
             <div className="lg:col-span-4 lg:sticky lg:top-24 space-y-4">
@@ -631,7 +631,7 @@ export function HomeView({
         id="doctors"
         className="w-full py-16 sm:py-24 border-t border-[var(--border-subtle)] bg-[var(--bg-app)] scroll-mt-20"
       >
-        <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           {/* Split Header */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-[var(--border-subtle)]">
             <div className="space-y-1.5">
@@ -675,7 +675,7 @@ export function HomeView({
       {/* EMERGENCY DISPATCH & HOSPITAL HOTLINE BAND                */}
       {/* ========================================================= */}
       <section className="w-full border-t border-[var(--border-subtle)] bg-[var(--bg-app)] py-14 sm:py-20">
-        <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative overflow-hidden rounded-xl bg-slate-950 text-white border border-slate-800 p-7 sm:p-10 lg:p-12">
             {/* Accent radial highlight derived from active brand palette */}
             <div

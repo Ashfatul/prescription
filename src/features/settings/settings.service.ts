@@ -151,31 +151,31 @@ export async function getHospitalSettings(): Promise<HospitalSettings> {
         }
 
         const hospitalName =
-            settingsMap.hospital_name ||
             settingsMap.hospitalName ||
-            settingsMap.system_name ||
+            settingsMap.hospital_name ||
             settingsMap.systemName ||
+            settingsMap.system_name ||
             DEFAULT_HOSPITAL_SETTINGS.hospitalName;
 
         const hospitalTagline =
-            settingsMap.hospital_tagline ||
             settingsMap.hospitalTagline ||
+            settingsMap.hospital_tagline ||
             DEFAULT_HOSPITAL_SETTINGS.hospitalTagline ||
             "";
 
         const contactPhone =
-            settingsMap.contact_phone ||
             settingsMap.contactPhone ||
+            settingsMap.contact_phone ||
             DEFAULT_HOSPITAL_SETTINGS.contactPhone;
 
         const emergencyHotline =
-            settingsMap.emergency_hotline ||
             settingsMap.emergencyHotline ||
+            settingsMap.emergency_hotline ||
             DEFAULT_HOSPITAL_SETTINGS.emergencyHotline;
 
         const supportEmail =
-            settingsMap.support_email ||
             settingsMap.supportEmail ||
+            settingsMap.support_email ||
             DEFAULT_HOSPITAL_SETTINGS.supportEmail;
 
         const requireEmailVerification =

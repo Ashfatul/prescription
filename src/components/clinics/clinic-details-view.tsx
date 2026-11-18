@@ -78,7 +78,7 @@ export function ClinicDetailsView({
     <main className="flex-1 w-full">
       {/* Top Hero Banner */}
       <section className="w-full border-b border-[var(--border-subtle)] bg-[radial-gradient(ellipse_80%_60%_at_50%_-15%,rgba(15,118,110,0.14),transparent)] dark:bg-[radial-gradient(ellipse_80%_60%_at_50%_-15%,rgba(20,184,166,0.16),transparent)]">
-        <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6">
+        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-xs text-slate-500">
             <Link href="/" className="hover:text-[var(--brand-text)] flex items-center gap-1 transition">
@@ -107,16 +107,14 @@ export function ClinicDetailsView({
                     {clinic.name}
                   </h1>
                   <span
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider border ${
-                      clinic.status === "ACTIVE"
-                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-                        : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
-                    }`}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider border ${clinic.status === "ACTIVE"
+                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                      : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                      }`}
                   >
                     <span
-                      className={`w-2 h-2 rounded-full ${
-                        clinic.status === "ACTIVE" ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
-                      }`}
+                      className={`w-2 h-2 rounded-full ${clinic.status === "ACTIVE" ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
+                        }`}
                     />
                     {clinic.status === "ACTIVE"
                       ? (t("uiActiveClinicalChamber"))
@@ -220,7 +218,7 @@ export function ClinicDetailsView({
       </section>
 
       {/* Clinic Main Content Body */}
-      <section className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-12">
+      <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-12">
         {/* Section 1: Facility Location & Contact Profile */}
         <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-6 sm:p-8 space-y-6 shadow-xs">
           <div className="flex items-center gap-2 pb-3 border-b border-[var(--border-subtle)]">
@@ -357,11 +355,10 @@ export function ClinicDetailsView({
                       </div>
 
                       <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border shrink-0 ${
-                          isAdmin
-                            ? "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20"
-                            : "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20"
-                        }`}
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border shrink-0 ${isAdmin
+                          ? "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20"
+                          : "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20"
+                          }`}
                       >
                         {member.role.name}
                       </span>

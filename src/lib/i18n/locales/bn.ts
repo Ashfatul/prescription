@@ -1497,6 +1497,15 @@ export const bn = {
    ,"activeTenantStatus": "সক্রিয়"
    ,"interactivePreviewHint": "ইন্টারঅ্যাক্টিভ প্রিভিউ — চিপ ক্লিক করুন বা ট্যাব বদলান"
    ,"directDispatchLabel": "২৪/৭ জরুরি ডেস্ক"
+   ,"authWorkspacesBadge": "একীভূত ক্লিনিকাল পোর্টাল"
+   ,"authWorkspacesDesc": "আপনার নির্ধারিত ক্লিনিক বা রোগী অ্যাকাউন্ট দিয়ে সাইন ইন করুন। আপনার ভূমিকা অনুযায়ী ড্যাশবোর্ড স্বয়ংক্রিয়ভাবে খুলবে।"
+   ,"authBadgeClinicalLead": "চিকিৎসক"
+   ,"authBadgeHospitalOps": "ক্লিনিক অ্যাডমিন"
+   ,"authBadgeFrontDesk": "ফ্রন্ট ডেস্ক"
+   ,"authBadgeHealthPass": "হেলথ পাস"
+   ,"authEmailPlaceholder": "name@clinic.com"
+   ,"authHipaaBmdcValidated": "HIPAA ও BMDC যাচাইকৃত"
+   ,"authPlatformSubtitle": "পেশেন্ট প্রেসক্রিপশন ম্যানেজমেন্ট সিস্টেম"
 } as const;
 
 export default bn;

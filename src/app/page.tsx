@@ -68,7 +68,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] selection:bg-[var(--brand-primary)] selection:text-white flex flex-col">
       {/* Front Page Header */}
-      <Header loggedIn={isLoggedIn} />
+      <Header loggedIn={isLoggedIn} initialSettings={settings} />
 
       {/* Fully Localized Interactive Home View */}
       <HomeView

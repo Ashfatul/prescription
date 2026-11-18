@@ -9,7 +9,7 @@ import { db } from "@/lib/db";
 import { RoleName } from "@prisma/client";
 
 export const metadata: Metadata = {
-  title: "Clinical Staff & Healthcare Team Directory | PPMS",
+  title: "Clinical Staff & Healthcare Team Directory",
   description: "Browse registered hospital receptionists, front-desk triage staff, clinic administrators, and clinical coordinators on the platform.",
 };
 
@@ -73,7 +73,7 @@ export default async function StaffPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] flex flex-col">
-      <Header loggedIn={!!user} />
+      <Header loggedIn={!!user} initialSettings={settings} />
 
       <main className="flex-1 w-full">
         {/* Top Directory Hero Banner */}
@@ -84,7 +84,7 @@ export default async function StaffPage() {
         />
 
         {/* Directory Content Area */}
-        <section className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
           <StaffDirectory initialStaff={staff} clinics={orgs} />
         </section>
       </main>
