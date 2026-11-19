@@ -42,6 +42,7 @@ export const PERMISSION_CATEGORIES = [
   "Prescription Templates",
   "Clinical Prescriptions",
   "Appointments & Queues",
+  "Clinical Communications",
   "System & Analytics",
 ] as const;
 
@@ -52,6 +53,7 @@ export interface PermissionDefinition {
   label: string;
   category: PermissionCategory;
   description: string;
+  superAdminOnly?: boolean;
 }
 
 export const AVAILABLE_PERMISSIONS: PermissionDefinition[] = [
@@ -223,36 +225,179 @@ export const AVAILABLE_PERMISSIONS: PermissionDefinition[] = [
     description: "Allows cancelling bookings and voiding queue tokens.",
   },
 
+  // Clinical Communications
+  {
+    id: "chat:access",
+    label: "Clinical Chat & Consultation Hub",
+    category: "Clinical Communications",
+    description: "Allows participating in clinical consultation messages, triage chats, and inter-staff messaging.",
+  },
+  {
+    id: "announcements:publish",
+    label: "Broadcast Announcements",
+    category: "Clinical Communications",
+    description: "Allows broadcasting clinic alerts, public notices, and department updates.",
+  },
+  {
+    id: "reports:upload",
+    label: "Upload Diagnostic Test Reports",
+    category: "Clinical Communications",
+    description: "Allows attaching pathology lab results, imaging scans, and PDF documents to patient files.",
+  },
+
   // System & Analytics
   {
     id: "analytics:view",
-    label: "View System Analytics",
+    label: "View System & Clinic Analytics",
     category: "System & Analytics",
     description: "Allows viewing high-level hospital KPIs, patient volume, and prescription counts.",
   },
   {
-    id: "roles:manage",
-    label: "Manage Roles & Permissions",
+    id: "activity:view",
+    label: "View Security Audit Logs",
     category: "System & Analytics",
-    description: "Allows modifying granular access control rules and feature permissions across roles.",
+    description: "Allows inspecting administrative audit trails, user logins, and operational modifications.",
+  },
+  {
+    id: "roles:manage",
+    label: "Manage Subordinate Roles & Permissions",
+    category: "System & Analytics",
+    description: "Allows clinic administrators and super-admins to modify granular access control for subordinate roles (Doctor, Staff, Patient).",
+    superAdminOnly: false,
+  },
+  {
+    id: "roles:manage_all",
+    label: "Manage All System Roles & Administration",
+    category: "System & Analytics",
+    description: "Root platform Super Admin only: allows modifying access control and permissions for all roles including platform administrators.",
+    superAdminOnly: true,
   },
   {
     id: "settings:manage",
-    label: "Manage System Settings",
+    label: "Manage Global System Settings",
     category: "System & Analytics",
-    description: "Allows modifying global hospital configuration, branding, and defaults.",
+    description: "Root platform Super Admin only: allows modifying global hospital configuration, branding, and defaults.",
+    superAdminOnly: true,
+  },
+  {
+    id: "organizations:manage",
+    label: "Manage Multi-Clinic Organizations",
+    category: "System & Analytics",
+    description: "Root platform Super Admin only: allows onboarding, approving, and suspending independent clinic tenant organizations.",
+    superAdminOnly: true,
+  },
+  {
+    id: "pricing:manage",
+    label: "Manage SaaS Plans & Subscriptions",
+    category: "System & Analytics",
+    description: "Root platform Super Admin only: allows configuring subscription tiers, feature packages, and billing parameters.",
+    superAdminOnly: true,
+  },
+  {
+    id: "translations:manage",
+    label: "Manage Platform Translations",
+    category: "System & Analytics",
+    description: "Root platform Super Admin only: allows customizing global language dictionaries and system translations.",
+    superAdminOnly: true,
   },
 ];
 
 export type PermissionKey = (typeof AVAILABLE_PERMISSIONS)[number]["id"];
 
 /**
+ * Super Admin-only permissions that clinic administrators cannot assign or possess.
+ */
+export const SUPER_ADMIN_ONLY_PERMISSIONS: string[] = AVAILABLE_PERMISSIONS
+  .filter((p) => p.superAdminOnly)
+  .map((p) => p.id);
+
+/**
+ * Subordinate roles that a Clinic Administrator is authorized to manage.
+ */
+export const SUBORDINATE_ROLES: RoleName[] = [
+  RoleName.DOCTOR,
+  RoleName.STAFF,
+  RoleName.PATIENT,
+];
+
+/**
+ * All roles in the PPMS platform.
+ */
+export const ALL_ROLES: RoleName[] = [
+  RoleName.SUPER_ADMIN,
+  RoleName.ADMIN,
+  RoleName.DOCTOR,
+  RoleName.STAFF,
+  RoleName.PATIENT,
+];
+
+/**
+ * Determines which roles a given user role can configure permissions for.
+ */
+export function getManageableRoles(userRole?: string | null): RoleName[] {
+  if (userRole === RoleName.SUPER_ADMIN) {
+    return ALL_ROLES;
+  }
+  if (userRole === RoleName.ADMIN) {
+    return SUBORDINATE_ROLES;
+  }
+  return [];
+}
+
+/**
  * Standard recommended default permissions for each role.
+ * Notice: Clinic Admin (ADMIN) is strictly scoped to clinic operations and subordinate management.
+ * Clinic Admin NEVER receives Super Admin root capabilities (settings:manage, organizations:manage, etc.)
+ * or physician prescribing authority (prescriptions:create, prescriptions:edit).
  */
 export const DEFAULT_ROLE_PERMISSIONS: Record<RoleName, string[]> = {
   SUPER_ADMIN: AVAILABLE_PERMISSIONS.map((p) => p.id),
 
-  ADMIN: AVAILABLE_PERMISSIONS.map((p) => p.id),
+  ADMIN: [
+    // Users & Accounts
+    "users:view",
+    "users:create",
+    "users:edit",
+    "users:delete",
+
+    // Formulary Catalog
+    "medicines:view",
+    "medicines:create",
+    "medicines:edit",
+    "medicines:delete",
+
+    // Diagnostic Tests
+    "tests:view",
+    "tests:create",
+    "tests:edit",
+    "tests:delete",
+
+    // Prescription Templates
+    "templates:view",
+    "templates:create",
+    "templates:edit",
+    "templates:delete",
+
+    // Clinical Prescriptions (Admin audits and prints; doctors write)
+    "prescriptions:view_all",
+    "prescriptions:print",
+
+    // Appointments & Queues
+    "appointments:view_all",
+    "appointments:book",
+    "appointments:manage_queue",
+    "appointments:cancel",
+
+    // Clinical Communications
+    "chat:access",
+    "announcements:publish",
+    "reports:upload",
+
+    // System & Analytics
+    "analytics:view",
+    "activity:view",
+    "roles:manage", // Manages subordinate roles (Doctor, Staff, Patient)
+  ],
 
   DOCTOR: [
     "medicines:view",
@@ -266,6 +411,8 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<RoleName, string[]> = {
     "prescriptions:print",
     "appointments:view_own",
     "appointments:manage_queue",
+    "chat:access",
+    "reports:upload",
   ],
 
   STAFF: [
@@ -285,6 +432,8 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<RoleName, string[]> = {
     "appointments:book",
     "appointments:manage_queue",
     "appointments:cancel",
+    "chat:access",
+    "reports:upload",
     "analytics:view",
   ],
 
@@ -293,6 +442,8 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<RoleName, string[]> = {
     "prescriptions:print",
     "appointments:view_own",
     "appointments:book",
+    "chat:access",
+    "reports:upload",
   ],
 };
 
@@ -308,4 +459,27 @@ export function hasPermission(
   if (isSuperAdmin) return true;
   if (!permissions || !Array.isArray(permissions)) return false;
   return permissions.includes(requiredPermission) || permissions.includes("*");
+}
+
+/**
+ * Returns true if a permission is restricted strictly to platform Super Admin.
+ */
+export function isSuperAdminPermission(permissionId: string): boolean {
+  return SUPER_ADMIN_ONLY_PERMISSIONS.includes(permissionId);
+}
+
+/**
+ * Checks whether an actor role is authorized to configure permissions for a target role.
+ * Super Admin can configure any role.
+ * Clinic Admin can ONLY configure subordinate roles (Doctor, Staff, Patient), never Super Admin or Clinic Admin.
+ */
+export function canManageRole(
+  actorRole: string | undefined | null,
+  targetRole: RoleName
+): boolean {
+  if (actorRole === RoleName.SUPER_ADMIN) return true;
+  if (actorRole === RoleName.ADMIN) {
+    return SUBORDINATE_ROLES.includes(targetRole);
+  }
+  return false;
 }
