@@ -24,6 +24,7 @@ import {
 import { SearchableSelect, SelectOption } from "@/components/common/searchable-select";
 import { PrescriptionPreviewModal } from "@/components/dashboard/prescription-preview-modal";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 
 export type DoctorInfo = {
   id: string;
@@ -724,9 +725,11 @@ export function PrescriptionEditor({
           fileType: data.data.fileType,
         },
       ]);
+      notifyToast(language === "bn" ? "ফাইল সফলভাবে সংযুক্ত হয়েছে।" : "File attachment uploaded successfully.", "success");
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to upload file";
+      const msg = err instanceof Error ? err.message : (language === "bn" ? "ফাইল আপলোড করতে ব্যর্থ হয়েছে।" : "Failed to upload file");
       setAttachmentError(msg);
+      notifyToast(msg, "error");
     } finally {
       setUploadingAttachment(false);
       e.target.value = "";
@@ -740,11 +743,14 @@ export function PrescriptionEditor({
     setErrorMessage("");
 
     if (!currentPatient) {
-      setErrorMessage("No queued patient selected. Please select a patient from the queue.");
+      const err = language === "bn"
+        ? "কোনো রোগী নির্বাচিত নেই। অনুগ্রহ করে কিউ থেকে একজন রোগী নির্বাচন করুন।"
+        : "No queued patient selected. Please select a patient from the queue.";
+      setErrorMessage(err);
+      notifyToast(err, "error");
       setSubmitting(false);
       return;
     }
-
 
     const payload = {
       doctorId: doctor.id,
@@ -802,7 +808,9 @@ export function PrescriptionEditor({
       setSubmitting(false);
 
       if (!res.ok || !data.success) {
-        setErrorMessage(data.message || "Failed to save prescription.");
+        const errMsg = data.message || (language === "bn" ? "প্রেসক্রিপশন সংরক্ষণ করতে ব্যর্থ হয়েছে।" : "Failed to save prescription.");
+        setErrorMessage(errMsg);
+        notifyToast(errMsg, "error");
         return;
       }
 
@@ -810,9 +818,23 @@ export function PrescriptionEditor({
       const nextVer = data.data.version || (editingPrescription ? (editingPrescription.version || 1) + 1 : 1);
       setSavedVersionNumber(nextVer);
       onPrescriptionCreated?.(data.data.id, currentAppointment?.id);
-    } catch {
+
+      const successMsg = isRevision
+        ? (language === "bn"
+            ? `প্রেসক্রিপশন সংস্করণ #${nextVer} সফলভাবে সংরক্ষিত এবং আপডেট করা হয়েছে!`
+            : `Prescription revision #${nextVer} updated and saved successfully!`)
+        : (language === "bn"
+            ? `প্রেসক্রিপশন সফলভাবে সংরক্ষিত ও প্রদান করা হয়েছে! (${currentPatient.user.name})`
+            : `Prescription issued and saved successfully for ${currentPatient.user.name}!`);
+
+      notifyToast(successMsg, "success");
+    } catch (err: unknown) {
       setSubmitting(false);
-      setErrorMessage("Network error while issuing prescription.");
+      const errMsg = err instanceof Error
+        ? err.message
+        : (language === "bn" ? "প্রেসক্রিপশন প্রদানের সময় নেটওয়ার্ক ত্রুটি ঘটেছে।" : "Network error while issuing prescription.");
+      setErrorMessage(errMsg);
+      notifyToast(errMsg, "error");
     }
   };
 
@@ -823,6 +845,12 @@ export function PrescriptionEditor({
     setChangeReason("");
     onCancelRevision?.();
     onCallNextPatient?.();
+    notifyToast(
+      language === "bn"
+        ? "পরবর্তী রোগীর জন্য ওয়ার্কস্পেস প্রস্তুত।"
+        : "Workspace prepared for next consultation.",
+      "info"
+    );
   };
 
   const patientReports = currentPatient?.testReports || [];
@@ -876,7 +904,18 @@ export function PrescriptionEditor({
                 value={selectedTemplateId}
                 placeholder={t.layoutTemplate}
                 searchPlaceholder={t.searchTemplates}
-                onChange={(val) => setSelectedTemplateId(val)}
+                onChange={(val) => {
+                  setSelectedTemplateId(val);
+                  const tpl = templates.find((t) => t.id === val);
+                  if (tpl) {
+                    notifyToast(
+                      language === "bn"
+                        ? `লেআউট টেমপ্লেট নির্বাচন করা হয়েছে: ${tpl.name}`
+                        : `Layout template applied: ${tpl.name}`,
+                      "info"
+                    );
+                  }
+                }}
               />
             </div>
           )}
@@ -1828,8 +1867,11 @@ export function PrescriptionEditor({
                   </div>
                   <button
                     type="button"
-                    onClick={() => setAttachments((prev) => prev.filter((_, i) => i !== idx))}
-                    className="p-1 text-rose-500 hover:text-rose-700"
+                    onClick={() => {
+                      setAttachments((prev) => prev.filter((_, i) => i !== idx));
+                      notifyToast(language === "bn" ? "সংযুক্তি সরানো হয়েছে।" : "Attachment removed.", "info");
+                    }}
+                    className="p-1 text-rose-500 hover:text-rose-700 cursor-pointer"
                   >
                     ✕
                   </button>

@@ -14,6 +14,7 @@ import { AnnouncementsBanner } from "@/components/dashboard/announcements-banner
 import { AnnouncementsManager } from "@/components/dashboard/announcements-manager";
 import { useAuth } from "@/lib/auth/auth-context";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { notifyToast } from "@/lib/toast";
 import {
   Share2,
   Clock,
@@ -888,6 +889,12 @@ export function DoctorDashboardView({
                               onClick={() => {
                                 setPrescriptionToRevise(p);
                                 setSelectedAppointmentId(null);
+                                notifyToast(
+                                  language === "bn"
+                                    ? `প্রেসক্রিপশন #${p.id.slice(-6)} সংশোধনের জন্য প্রস্তুত করা হয়েছে (v${(p.version || 1) + 1})`
+                                    : `Prescription #${p.id.slice(-6)} loaded for revision (v${(p.version || 1) + 1})`,
+                                  "info"
+                                );
                                 router.replace("/dashboard/doctor?tab=prescription");
                               }}
                               title="Revise prescription and create a new version"
@@ -1039,6 +1046,12 @@ export function DoctorDashboardView({
                   setHistoryModalPrescription(null);
                   setPrescriptionToRevise(target);
                   setSelectedAppointmentId(null);
+                  notifyToast(
+                    language === "bn"
+                      ? `প্রেসক্রিপশন #${target.id.slice(-6)} সংশোধনের জন্য প্রস্তুত করা হয়েছে (v${(target.version || 1) + 1})`
+                      : `Prescription #${target.id.slice(-6)} loaded for revision (v${(target.version || 1) + 1})`,
+                    "info"
+                  );
                   router.replace("/dashboard/doctor?tab=prescription");
                 }}
                 className="px-4 py-2.5 rounded-xl bg-amber-500 text-white text-xs font-bold hover:bg-amber-600 transition shadow-xs cursor-pointer"

@@ -30,6 +30,7 @@ import { createGoogleCalendarAppointmentUrl } from "@/lib/calendar";
 import { useAuth } from "@/lib/auth/auth-context";
 import { useLanguage } from "@/lib/i18n/language-context";
 import { DoctorScheduleDisplay } from "@/components/doctors/doctor-schedule-display";
+import { notifyToast } from "@/lib/toast";
 
 export interface PatientDoctorItem {
   id: string;
@@ -253,11 +254,15 @@ export function PatientDashboardView({
       });
       const data = await res.json();
       if (data.success) {
-        setReminderMessage("Medicine dosage reminders added to your schedule!");
+        const msg = language === "bn" ? "ওষুধ খাওয়ার রিমাইন্ডার আপনার সময়সূচীতে যুক্ত হয়েছে!" : "Medicine dosage reminders added to your schedule!";
+        setReminderMessage(msg);
+        notifyToast(msg, "success");
         setTimeout(() => setReminderMessage(null), 4000);
+      } else {
+        notifyToast(data.message || (language === "bn" ? "রিমাইন্ডার তৈরি করতে ব্যর্থ হয়েছে।" : "Failed to generate reminders."), "error");
       }
     } catch {
-      // Ignore
+      notifyToast(language === "bn" ? "নেটওয়ার্ক ত্রুটি ঘটেছে।" : "Network error occurred.", "error");
     } finally {
       setGeneratingRemindersId(null);
     }
@@ -293,19 +298,22 @@ export function PatientDashboardView({
         throw new Error(data.message || "Failed to cancel appointment");
       }
 
+      const cancelMsg = `Appointment #${cancellationTarget.serialNumber} successfully cancelled.${
+        data.data?.refundStatus === "REFUNDED"
+          ? ` Full refund of $${data.data?.refundAmount ?? cancellationTarget.fee} has been credited to your payment method.`
+          : ""
+      }`;
       setCancellationTarget(null);
       setPaymentBanner({
         type: "success",
-        message: `Appointment #${cancellationTarget.serialNumber} successfully cancelled.${
-          data.data?.refundStatus === "REFUNDED"
-            ? ` Full refund of $${data.data?.refundAmount ?? cancellationTarget.fee} has been credited to your payment method.`
-            : ""
-        }`,
+        message: cancelMsg,
       });
+      notifyToast(cancelMsg, "success");
       router.refresh();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Error cancelling appointment";
       setCancellationError(msg);
+      notifyToast(msg, "error");
     } finally {
       setCancellationSubmitting(false);
     }
