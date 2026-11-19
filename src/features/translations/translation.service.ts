@@ -58,6 +58,15 @@ function mergeLanguageEntries(
   return { ...english, ...getStaticDictionary(code), ...databaseEntries };
 }
 
+let cachedCatalog: { data: Awaited<ReturnType<typeof computeTranslationCatalog>>; timestamp: number } | null = null;
+const bundleCache = new Map<string, { data: unknown; timestamp: number }>();
+const TRANSLATION_CACHE_TTL_MS = 180_000; // 3 minutes
+
+export function invalidateTranslationCache() {
+  cachedCatalog = null;
+  bundleCache.clear();
+}
+
 async function readDatabaseLanguages() {
   return db.translationLanguage.findMany({
     where: { isActive: true },
@@ -66,7 +75,7 @@ async function readDatabaseLanguages() {
   });
 }
 
-export async function getTranslationCatalog() {
+async function computeTranslationCatalog() {
   const databaseLanguages = await readDatabaseLanguages();
   const databaseByCode = new Map(databaseLanguages.map((language) => [language.code, language]));
   const englishDatabaseEntries = Object.fromEntries(
@@ -114,7 +123,30 @@ export async function getTranslationCatalog() {
   return { languages, englishKeys: Object.keys(english) };
 }
 
+export async function getTranslationCatalog() {
+  const now = Date.now();
+  if (cachedCatalog && now - cachedCatalog.timestamp < TRANSLATION_CACHE_TTL_MS) {
+    return cachedCatalog.data;
+  }
+  const data = await computeTranslationCatalog();
+  cachedCatalog = { data, timestamp: now };
+  return data;
+}
+
 export async function getTranslationBundle(code = "en") {
+  const now = Date.now();
+  const cached = bundleCache.get(code);
+  if (cached && now - cached.timestamp < TRANSLATION_CACHE_TTL_MS) {
+    return cached.data as {
+      language: string;
+      languages: TranslationLanguageInfo[];
+      englishKeys: string[];
+      englishTranslations: TranslationMap;
+      overrides: TranslationMap;
+      translations: TranslationMap;
+    };
+  }
+
   const catalog = await getTranslationCatalog();
   const selected = catalog.languages.find((language) => language.code === code) || catalog.languages[0];
   const [selectedLanguage, englishLanguage] = await Promise.all([
@@ -138,7 +170,7 @@ export async function getTranslationBundle(code = "en") {
     (selectedLanguage?.translations || []).map((entry) => [entry.key, entry.value]),
   );
 
-  return {
+  const result = {
     language: selected?.code || "en",
     languages: catalog.languages,
     englishKeys: catalog.englishKeys,
@@ -146,6 +178,9 @@ export async function getTranslationBundle(code = "en") {
     overrides: entries,
     translations: mergeLanguageEntries(selected?.code || "en", english, entries),
   };
+
+  bundleCache.set(code, { data: result, timestamp: now });
+  return result;
 }
 
 export async function createTranslationLanguage(input: {
@@ -176,6 +211,7 @@ export async function createTranslationLanguage(input: {
 
   await saveTranslationEntries(language.id, normalizeEntries(input.translations));
   await saveEnglishEntries(normalizeEntries(input.englishTranslations));
+  invalidateTranslationCache();
   return getTranslationBundle(code);
 }
 
@@ -233,6 +269,7 @@ export async function updateTranslationLanguage(
 
   await saveTranslationEntries(language.id, normalizeEntries(input.translations));
   await saveEnglishEntries(normalizeEntries(input.englishTranslations));
+  invalidateTranslationCache();
   return getTranslationBundle(code);
 }
 
@@ -242,5 +279,6 @@ export async function deleteTranslationLanguage(code: string) {
     throw new AppError("Built-in languages cannot be deleted", 400);
   }
   await db.translationLanguage.delete({ where: { code } });
+  invalidateTranslationCache();
   return { deleted: true };
 }

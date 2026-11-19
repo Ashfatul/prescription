@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { cache } from "react";
 import QRCode from "qrcode";
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
@@ -149,7 +150,7 @@ export async function sendPrescriptionShareEmail(params: {
   };
 }
 
-export async function getPrescriptionByShareToken(token: string) {
+export const getPrescriptionByShareToken = cache(async (token: string) => {
   const prescription = await db.prescription.findUnique({
     where: { shareToken: token },
     include: {
@@ -171,4 +172,4 @@ export async function getPrescriptionByShareToken(token: string) {
   }
 
   return prescription;
-}
+});

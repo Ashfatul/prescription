@@ -81,6 +81,9 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
     let active = true;
 
     const load = async () => {
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") {
+        return;
+      }
       try {
         const queryParam = clinicSlug ? `?clinic=${encodeURIComponent(clinicSlug)}` : "";
         const res = await fetch(`/api/public/doctors${queryParam}`);
@@ -97,11 +100,19 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
     };
 
     void load();
-    const timer = setInterval(load, 8000);
+    const timer = setInterval(load, 45000);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void load();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       active = false;
       clearInterval(timer);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [clinicSlug]);
 
@@ -145,7 +156,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
   if (loading && !doctors.length) {
     return (
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {[1, 2, 3].map((i) => (
+        {[1, 2, 3, 4, 5, 6].map((i) => (
           <div
             key={i}
             className="p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] animate-pulse space-y-4"

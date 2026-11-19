@@ -53,6 +53,9 @@ export function NotificationBell() {
   const panelRef = useRef<HTMLDivElement>(null);
 
   const fetchNotifications = () => {
+    if (typeof document !== "undefined" && document.visibilityState !== "visible") {
+      return;
+    }
     fetch("/api/notifications")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
@@ -66,7 +69,14 @@ export function NotificationBell() {
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 20000); // 20s poll
+    const interval = setInterval(fetchNotifications, 30000); // 30s poll
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        fetchNotifications();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
 
     // Close on click outside
     function handleClickOutside(e: MouseEvent) {
@@ -78,6 +88,7 @@ export function NotificationBell() {
 
     return () => {
       clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibility);
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);

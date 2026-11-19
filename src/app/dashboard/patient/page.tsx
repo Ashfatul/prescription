@@ -3,6 +3,88 @@ import { requirePageUser } from "@/lib/auth/page-auth";
 import { db } from "@/lib/db";
 import { PatientDashboardView } from "@/components/patient/patient-dashboard-view";
 
+type PatientPrescriptionItem = Awaited<
+  ReturnType<
+    typeof db.prescription.findMany<{
+      where: { patientId: string };
+      include: {
+        doctor: {
+          include: {
+            user: {
+              select: {
+                name: true;
+              };
+            };
+          };
+        };
+        versions: {
+          select: {
+            id: true;
+            versionNumber: true;
+            changeReason: true;
+            createdAt: true;
+          };
+        };
+      };
+    }>
+  >
+>[number];
+
+async function fetchPatientPrescriptions(patientId: string): Promise<PatientPrescriptionItem[]> {
+  try {
+    return await db.prescription.findMany({
+      where: { patientId },
+      include: {
+        doctor: {
+          include: {
+            user: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        versions: {
+          select: {
+            id: true,
+            versionNumber: true,
+            changeReason: true,
+            createdAt: true,
+          },
+          orderBy: { versionNumber: "desc" },
+        },
+      },
+      orderBy: { updatedAt: "desc" },
+      take: 30,
+    });
+  } catch {
+    try {
+      const base = await db.prescription.findMany({
+        where: { patientId },
+        include: {
+          doctor: {
+            include: {
+              user: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: { updatedAt: "desc" },
+        take: 30,
+      });
+      return base.map((p) => ({
+        ...p,
+        versions: [],
+      })) as PatientPrescriptionItem[];
+    } catch {
+      return [];
+    }
+  }
+}
+
 export default async function PatientDashboardPage() {
   const user = await requirePageUser([RoleName.PATIENT]);
 
@@ -37,7 +119,8 @@ export default async function PatientDashboardPage() {
     });
   }
 
-  const [appointments, doctors] = await Promise.all([
+  // Parallelize appointments, doctors, and prescriptions concurrently
+  const [appointments, doctors, prescriptions] = await Promise.all([
     db.appointment.findMany({
       where: { patientId: patient.id },
       include: {
@@ -67,88 +150,8 @@ export default async function PatientDashboardPage() {
       orderBy: { createdAt: "desc" },
       take: 12,
     }),
+    fetchPatientPrescriptions(patient.id),
   ]);
-
-  type PatientPrescriptionItem = Awaited<
-    ReturnType<
-      typeof db.prescription.findMany<{
-        where: { patientId: string };
-        include: {
-          doctor: {
-            include: {
-              user: {
-                select: {
-                  name: true,
-                },
-              },
-            };
-          };
-          versions: {
-            select: {
-              id: true;
-              versionNumber: true;
-              changeReason: true;
-              createdAt: true;
-            };
-          };
-        };
-      }>
-    >
-  >[number];
-
-  let prescriptions: PatientPrescriptionItem[] = [];
-  try {
-    prescriptions = await db.prescription.findMany({
-      where: { patientId: patient.id },
-      include: {
-        doctor: {
-          include: {
-            user: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
-        versions: {
-          select: {
-            id: true,
-            versionNumber: true,
-            changeReason: true,
-            createdAt: true,
-          },
-          orderBy: { versionNumber: "desc" },
-        },
-      },
-      orderBy: { updatedAt: "desc" },
-      take: 30,
-    });
-  } catch {
-    try {
-      const base = await db.prescription.findMany({
-        where: { patientId: patient.id },
-        include: {
-          doctor: {
-            include: {
-              user: {
-                select: {
-                  name: true,
-                },
-              },
-            },
-          },
-        },
-        orderBy: { updatedAt: "desc" },
-        take: 30,
-      });
-      prescriptions = base.map((p) => ({
-        ...p,
-        versions: [],
-      })) as PatientPrescriptionItem[];
-    } catch {
-      prescriptions = [];
-    }
-  }
 
   const serializedAppointments = appointments.map((a) => ({
     id: a.id,

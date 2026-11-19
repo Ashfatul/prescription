@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Bell, Check, CheckCheck, ExternalLink } from "lucide-react";
+import { SkeletonTable } from "@/components/common/skeleton";
 
 type NotificationItem = {
   id: string;
@@ -72,7 +73,7 @@ export default function NotificationsPage() {
       </header>
 
       {loading ? (
-        <p className="py-12 text-center text-sm text-slate-500">Loading notifications...</p>
+        <SkeletonTable rows={5} />
       ) : items.length === 0 ? (
         <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-12 text-center text-sm text-slate-500">You are all caught up.</div>
       ) : (

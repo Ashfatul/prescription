@@ -43,10 +43,11 @@ export interface SetupStatus {
   hasExistingData?: boolean;
 }
 
-// Memory cache for installation status (5s TTL to prevent hitting DB on every single layout/request)
+// Adaptive memory cache for installation status (1 hour TTL once installed, 5s during setup)
 let cachedInstalledStatus: boolean | null = null;
 let lastCacheCheckTime = 0;
-const CACHE_TTL_MS = 5000;
+const UNINSTALLED_CACHE_TTL_MS = 5000;
+const INSTALLED_CACHE_TTL_MS = 3600_000; // 1 hour once system is confirmed operational
 
 export function invalidateInstallCache() {
   cachedInstalledStatus = null;
@@ -98,7 +99,8 @@ export async function checkDatabaseConnection(): Promise<{
  */
 export async function isSystemInstalled(): Promise<boolean> {
   const now = Date.now();
-  if (cachedInstalledStatus !== null && now - lastCacheCheckTime < CACHE_TTL_MS) {
+  const activeTtl = cachedInstalledStatus ? INSTALLED_CACHE_TTL_MS : UNINSTALLED_CACHE_TTL_MS;
+  if (cachedInstalledStatus !== null && now - lastCacheCheckTime < activeTtl) {
     return cachedInstalledStatus;
   }
 

@@ -112,6 +112,8 @@ export async function GET(req: NextRequest) {
       currentSerial: currentSerialByDoctor.get(doctor.id) ?? 0,
     }));
 
-    return ok(withQueue);
+    const res = ok(withQueue);
+    res.headers.set("Cache-Control", "public, max-age=15, stale-while-revalidate=30");
+    return res;
   });
 }

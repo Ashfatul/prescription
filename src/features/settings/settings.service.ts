@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { db } from "@/lib/db";
 
 export interface HospitalSettings {
@@ -35,13 +36,38 @@ export const DEFAULT_HOSPITAL_SETTINGS: HospitalSettings = {
     requirePatientVerification: true,
 };
 
+// In-memory TTL cache to eliminate redundant DB hits across all pages and layouts
+interface CacheEntry<T> {
+    data: T;
+    timestamp: number;
+}
+const CACHE_TTL_MS = 60_000; // 60 seconds TTL
+
+let cachedHospitalSettings: CacheEntry<HospitalSettings> | null = null;
+let cachedEmailVerification: CacheEntry<boolean> | null = null;
+let cachedOrgApproval: CacheEntry<boolean> | null = null;
+const cachedPatientVerification = new Map<string, CacheEntry<boolean>>();
+
+export function invalidateSettingsCache() {
+    cachedHospitalSettings = null;
+    cachedEmailVerification = null;
+    cachedOrgApproval = null;
+    cachedPatientVerification.clear();
+}
+
 export async function isEmailVerificationRequired(): Promise<boolean> {
+    const now = Date.now();
+    if (cachedEmailVerification && now - cachedEmailVerification.timestamp < CACHE_TTL_MS) {
+        return cachedEmailVerification.data;
+    }
+
     try {
         const setting = await db.systemSetting.findUnique({
             where: { key: "auth_require_email_verification" },
         });
-        if (!setting) return true;
-        return setting.value === "true";
+        const result = setting ? setting.value === "true" : true;
+        cachedEmailVerification = { data: result, timestamp: now };
+        return result;
     } catch {
         return true;
     }
@@ -50,6 +76,7 @@ export async function isEmailVerificationRequired(): Promise<boolean> {
 export async function setEmailVerificationRequired(
     required: boolean,
 ): Promise<void> {
+    invalidateSettingsCache();
     await db.systemSetting.upsert({
         where: { key: "auth_require_email_verification" },
         create: {
@@ -65,18 +92,25 @@ export async function setEmailVerificationRequired(
 }
 
 export async function isOrgApprovalRequired(): Promise<boolean> {
+    const now = Date.now();
+    if (cachedOrgApproval && now - cachedOrgApproval.timestamp < CACHE_TTL_MS) {
+        return cachedOrgApproval.data;
+    }
+
     try {
         const setting = await db.systemSetting.findUnique({
             where: { key: "auth_require_org_approval" },
         });
-        if (!setting) return true;
-        return setting.value === "true";
+        const result = setting ? setting.value === "true" : false;
+        cachedOrgApproval = { data: result, timestamp: now };
+        return result;
     } catch {
         return false;
     }
 }
 
 export async function setOrgApprovalRequired(required: boolean): Promise<void> {
+    invalidateSettingsCache();
     await db.systemSetting.upsert({
         where: { key: "auth_require_org_approval" },
         create: {
@@ -94,6 +128,13 @@ export async function setOrgApprovalRequired(required: boolean): Promise<void> {
 export async function isPatientVerificationRequired(
     orgId?: string,
 ): Promise<boolean> {
+    const now = Date.now();
+    const cacheKey = orgId || "global";
+    const cached = cachedPatientVerification.get(cacheKey);
+    if (cached && now - cached.timestamp < CACHE_TTL_MS) {
+        return cached.data;
+    }
+
     try {
         if (orgId) {
             const org = await db.organization.findUnique({
@@ -108,6 +149,7 @@ export async function isPatientVerificationRequired(
                 orgSettings &&
                 typeof orgSettings.requirePatientVerification === "boolean"
             ) {
+                cachedPatientVerification.set(cacheKey, { data: orgSettings.requirePatientVerification, timestamp: now });
                 return orgSettings.requirePatientVerification;
             }
         }
@@ -115,8 +157,9 @@ export async function isPatientVerificationRequired(
         const setting = await db.systemSetting.findUnique({
             where: { key: "auth_require_patient_verification" },
         });
-        if (!setting) return true;
-        return setting.value === "true";
+        const result = setting ? setting.value === "true" : false;
+        cachedPatientVerification.set(cacheKey, { data: result, timestamp: now });
+        return result;
     } catch {
         return false;
     }
@@ -125,6 +168,7 @@ export async function isPatientVerificationRequired(
 export async function setPatientVerificationRequired(
     required: boolean,
 ): Promise<void> {
+    invalidateSettingsCache();
     await db.systemSetting.upsert({
         where: { key: "auth_require_patient_verification" },
         create: {
@@ -139,7 +183,12 @@ export async function setPatientVerificationRequired(
     });
 }
 
-export async function getHospitalSettings(): Promise<HospitalSettings> {
+async function fetchHospitalSettingsFromDb(): Promise<HospitalSettings> {
+    const now = Date.now();
+    if (cachedHospitalSettings && now - cachedHospitalSettings.timestamp < CACHE_TTL_MS) {
+        return cachedHospitalSettings.data;
+    }
+
     try {
         const records = await db.systemSetting.findMany({
             where: { category: { in: ["hospital", "auth", "general", "system"] } },
@@ -193,7 +242,7 @@ export async function getHospitalSettings(): Promise<HospitalSettings> {
                 ? settingsMap["auth_require_patient_verification"] === "true"
                 : DEFAULT_HOSPITAL_SETTINGS.requirePatientVerification;
 
-        return {
+        const result: HospitalSettings = {
             hospitalName,
             hospitalTagline,
             hospitalBranch:
@@ -221,15 +270,23 @@ export async function getHospitalSettings(): Promise<HospitalSettings> {
             requireOrgApproval,
             requirePatientVerification,
         };
+
+        cachedHospitalSettings = { data: result, timestamp: now };
+        return result;
     } catch (err) {
         console.error("Failed to load hospital settings from database:", err);
         return DEFAULT_HOSPITAL_SETTINGS;
     }
 }
 
+export const getHospitalSettings = cache(async (): Promise<HospitalSettings> => {
+    return fetchHospitalSettingsFromDb();
+});
+
 export async function updateHospitalSettings(
     updates: Partial<HospitalSettings>,
 ): Promise<HospitalSettings> {
+    invalidateSettingsCache();
     const entries = Object.entries(updates) as [
         keyof HospitalSettings,
         string | boolean,

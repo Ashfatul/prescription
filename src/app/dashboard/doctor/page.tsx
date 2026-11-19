@@ -3,106 +3,34 @@ import { DoctorDashboardView } from "@/components/dashboard/doctor-dashboard-vie
 import { requirePageUser } from "@/lib/auth/page-auth";
 import { db } from "@/lib/db";
 
-export default async function DoctorDashboardPage() {
-  const user = await requirePageUser(["DOCTOR"]);
-
-  const doctor = await db.doctor.findUnique({
-    where: { userId: user.id },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          phone: true,
-          imageUrl: true,
-          signatureUrl: true,
-        },
-      },
-    },
-  });
-
-  if (!doctor) {
-    return <DoctorNotFoundCard />;
-  }
-
-  const [todaysAppointments, patients] = await Promise.all([
-    db.appointment.findMany({
-      where: {
-        doctorId: doctor.id,
-        status: {
-          not: "CANCELLED",
-        },
-      },
+type PrescriptionItem = Awaited<
+  ReturnType<
+    typeof db.prescription.findMany<{
+      where: { doctorId: string };
       include: {
         patient: {
           include: {
             user: {
               select: {
-                id: true,
-                name: true,
-                email: true,
-                phone: true,
-              },
-            },
-            testReports: {
-              orderBy: { createdAt: "desc" },
-              take: 10,
-            },
-          },
-        },
-      },
-      orderBy: { serialNumber: "asc" },
-      take: 50,
-    }),
-    db.patient.findMany({
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            phone: true,
-          },
-        },
-        testReports: {
-          orderBy: { createdAt: "desc" },
-          take: 5,
-        },
-      },
-      take: 50,
-      orderBy: { createdAt: "desc" },
-    }),
-  ]);
-
-  type PrescriptionItem = Awaited<
-    ReturnType<
-      typeof db.prescription.findMany<{
-        where: { doctorId: string };
-        include: {
-          patient: {
-            include: {
-              user: {
-                select: {
-                  id: true;
-                  name: true;
-                  email: true;
-                  phone: true;
-                };
+                id: true;
+                name: true;
+                email: true;
+                phone: true;
               };
             };
           };
-          template: true;
-          versions: true;
         };
-      }>
-    >
-  >[number];
+        template: true;
+        versions: true;
+      };
+    }>
+  >
+>[number];
 
-  let recentPrescriptions: PrescriptionItem[] = [];
+async function fetchDoctorPrescriptions(doctorId: string): Promise<PrescriptionItem[]> {
   try {
-    recentPrescriptions = await db.prescription.findMany({
-      where: { doctorId: doctor.id },
+    return await db.prescription.findMany({
+      where: { doctorId },
       include: {
         patient: {
           include: {
@@ -128,7 +56,7 @@ export default async function DoctorDashboardPage() {
     console.warn("Retrying prescription query with resilient fallback:", queryErr);
     try {
       const basePrescriptions = await db.prescription.findMany({
-        where: { doctorId: doctor.id },
+        where: { doctorId },
         include: {
           patient: {
             include: {
@@ -177,14 +105,89 @@ export default async function DoctorDashboardPage() {
         allVersions = [];
       }
 
-      recentPrescriptions = basePrescriptions.map((p) => ({
+      return basePrescriptions.map((p) => ({
         ...p,
         versions: allVersions.filter((v) => v.prescriptionId === p.id),
       })) as PrescriptionItem[];
     } catch {
-      recentPrescriptions = [];
+      return [];
     }
   }
+}
+
+export default async function DoctorDashboardPage() {
+  const user = await requirePageUser(["DOCTOR"]);
+
+  const doctor = await db.doctor.findUnique({
+    where: { userId: user.id },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          imageUrl: true,
+          signatureUrl: true,
+        },
+      },
+    },
+  });
+
+  if (!doctor) {
+    return <DoctorNotFoundCard />;
+  }
+
+  // Parallelize all doctor dashboard data requests concurrently
+  const [todaysAppointments, patients, recentPrescriptions] = await Promise.all([
+    db.appointment.findMany({
+      where: {
+        doctorId: doctor.id,
+        status: {
+          not: "CANCELLED",
+        },
+      },
+      include: {
+        patient: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                phone: true,
+              },
+            },
+            testReports: {
+              orderBy: { createdAt: "desc" },
+              take: 10,
+            },
+          },
+        },
+      },
+      orderBy: { serialNumber: "asc" },
+      take: 50,
+    }),
+    db.patient.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+          },
+        },
+        testReports: {
+          orderBy: { createdAt: "desc" },
+          take: 5,
+        },
+      },
+      take: 50,
+      orderBy: { createdAt: "desc" },
+    }),
+    fetchDoctorPrescriptions(doctor.id),
+  ]);
 
   // Format appointments with serialized dates for client component
   const serializedAppointments = todaysAppointments.map((appt) => ({

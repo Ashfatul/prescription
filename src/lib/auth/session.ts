@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 import { RoleName } from "@prisma/client";
@@ -17,7 +18,7 @@ export async function getAuthFromRequest(req: NextRequest) {
   return verifyToken(token);
 }
 
-export async function getCurrentUserFromCookie() {
+export const getCurrentUserFromCookie = cache(async () => {
   try {
     const cookieStore = await cookies();
     const token =
@@ -39,7 +40,7 @@ export async function getCurrentUserFromCookie() {
   } catch {
     return null;
   }
-}
+});
 
 export async function requireUser(req: NextRequest, allowedRoles?: RoleName[]) {
   const payload = await getAuthFromRequest(req);

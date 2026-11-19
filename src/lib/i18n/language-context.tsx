@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   BUILT_IN_LANGUAGES,
   dictionary,
@@ -51,14 +51,21 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [remoteTranslations, setRemoteTranslations] = useState<Record<string, Record<string, string>>>({});
   const [translationsLoading, setTranslationsLoading] = useState(false);
 
-  const loadLanguage = useCallback(async (lang: string) => {
+  const fetchedLanguages = useRef<Set<string>>(new Set());
+
+  const loadLanguage = useCallback(async (lang: string, force = false) => {
+    if (!force && fetchedLanguages.current.has(lang)) {
+      return;
+    }
+
     try {
       const response = await fetch(`/api/i18n?language=${encodeURIComponent(lang)}`, {
-        cache: "no-store",
+        cache: "default",
       });
       const payload = await response.json();
       if (!response.ok || !payload.success || !payload.data) return;
 
+      fetchedLanguages.current.add(lang);
       setLanguages(payload.data.languages || [...BUILT_IN_LANGUAGES]);
       setRemoteTranslations((current) => ({
         ...current,
@@ -72,7 +79,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const refreshTranslations = useCallback(async () => {
     setTranslationsLoading(true);
     try {
-      await loadLanguage(language);
+      await loadLanguage(language, true);
     } finally {
       setTranslationsLoading(false);
     }

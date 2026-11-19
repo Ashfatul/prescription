@@ -162,6 +162,10 @@ model User {
   chatMessages            ChatMessage[]
   createdAt               DateTime         @default(now())
   updatedAt               DateTime         @updatedAt
+
+  @@index([organizationId])
+  @@index([roleId])
+  @@index([createdAt])
 }
 
 model Doctor {
@@ -197,6 +201,7 @@ model Doctor {
   updatedAt       DateTime       @updatedAt
 
   @@index([organizationId])
+  @@index([available])
 }
 
 model Patient {
@@ -258,6 +263,8 @@ model Appointment {
 
   @@unique([doctorId, appointmentDate, serialNumber])
   @@index([doctorId, appointmentDate])
+  @@index([doctorId, status])
+  @@index([patientId, createdAt])
   @@index([organizationId])
   @@index([patientId])
 }
@@ -291,6 +298,9 @@ model Prescription {
   updatedAt            DateTime                 @updatedAt
 
   @@index([organizationId])
+  @@index([doctorId, updatedAt])
+  @@index([patientId, updatedAt])
+  @@index([createdAt])
   @@index([doctorId])
   @@index([patientId])
 }
@@ -338,7 +348,9 @@ model TestReport {
   updatedAt      DateTime         @updatedAt
 
   @@index([patientId])
+  @@index([patientId, createdAt])
   @@index([doctorId])
+  @@index([doctorId, createdAt])
   @@index([organizationId])
 }
 
@@ -470,6 +482,7 @@ model Notification {
   createdAt DateTime         @default(now())
 
   @@index([userId, read])
+  @@index([userId, createdAt])
 }
 
 model Announcement {

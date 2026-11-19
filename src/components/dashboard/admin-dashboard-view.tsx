@@ -379,7 +379,7 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
                   {t("uiHospitalDirectoryAccessAccounts")}
                 </h2>
                 <p className="text-xs text-[var(--text-secondary)]">
-                  {users.length} {t("uiVerifiedAccountsInDatabase")}
+                  {stats.users} {t("uiVerifiedAccountsInDatabase")}
                 </p>
               </div>
 
@@ -411,13 +411,13 @@ export function AdminDashboardView({ stats, users }: AdminDashboardViewProps) {
               ))}
             </div>
 
-            {users.length > 9 && (
+            {stats.users > 9 && (
               <div className="pt-2 text-center">
                 <Link
                   href="/dashboard/admin?tab=users"
                   className="text-xs font-bold text-[var(--brand-primary)] hover:underline"
                 >
-                  View and manage all {users.length} accounts →
+                  View and manage all {stats.users} accounts →
                 </Link>
               </div>
             )}

@@ -6,7 +6,37 @@ export interface TopStatItem {
   percentage: number;
 }
 
-export async function getDashboardStats(organizationId?: string) {
+export interface DashboardStats {
+  users: number;
+  doctors: number;
+  patients: number;
+  appointments: number;
+  prescriptions: number;
+  topMedicines: TopStatItem[];
+  topDiagnoses: TopStatItem[];
+  sampleSize: number;
+}
+
+// In-memory 30s cache to avoid recalculating stats on every quick page navigation
+const statsCache = new Map<string, { data: DashboardStats; timestamp: number }>();
+const STATS_CACHE_TTL_MS = 30_000;
+
+export function invalidateStatsCache(organizationId?: string) {
+  if (organizationId) {
+    statsCache.delete(organizationId);
+  } else {
+    statsCache.clear();
+  }
+}
+
+export async function getDashboardStats(organizationId?: string): Promise<DashboardStats> {
+  const cacheKey = organizationId || "global";
+  const now = Date.now();
+  const cached = statsCache.get(cacheKey);
+  if (cached && now - cached.timestamp < STATS_CACHE_TTL_MS) {
+    return cached.data;
+  }
+
   const userWhere = organizationId ? { organizationId } : {};
   const doctorWhere = organizationId ? { OR: [{ organizationId }, { user: { organizationId } }] } : {};
   const patientWhere = organizationId ? { OR: [{ organizationId }, { user: { organizationId } }] } : {};
@@ -83,7 +113,7 @@ export async function getDashboardStats(organizationId?: string) {
       percentage: totalDiagnosesRecorded > 0 ? Math.round((count / totalDiagnosesRecorded) * 100) : 0,
     }));
 
-  return {
+  const result: DashboardStats = {
     users,
     doctors,
     patients,
@@ -93,4 +123,7 @@ export async function getDashboardStats(organizationId?: string) {
     topDiagnoses,
     sampleSize: recentPrescriptions.length,
   };
+
+  statsCache.set(cacheKey, { data: result, timestamp: now });
+  return result;
 }

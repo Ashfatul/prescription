@@ -18,6 +18,26 @@ export async function listUsers(organizationId?: string) {
   });
 }
 
+export async function getRecentUsers(organizationId?: string, take = 9) {
+  const whereClause: Prisma.UserWhereInput = organizationId ? { organizationId } : {};
+
+  return db.user.findMany({
+    where: whereClause,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take,
+  });
+}
+
 export async function createUser(input: unknown, creatorUserId?: string) {
   const data = createUserSchema.parse(input);
   const role = await db.role.findUnique({ where: { name: data.role } });

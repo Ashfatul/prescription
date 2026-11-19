@@ -14,7 +14,10 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   return withErrorHandling(req, async () => {
     const { searchParams } = new URL(req.url);
-    return ok(await getTranslationBundle(searchParams.get("language") || "en"));
+    const bundle = await getTranslationBundle(searchParams.get("language") || "en");
+    const res = ok(bundle);
+    res.headers.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+    return res;
   });
 }
 
