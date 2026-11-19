@@ -468,11 +468,16 @@ export function PrintablePrescriptionView({
                   </div>
                 )}
 
-                {tests.length > 0 && (
-                  <div className="mb-5">
-                    <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
-                      {t.investigationsAdvised}
-                    </h3>
+                {/* Diagnostic Tests / Investigations */}
+                <div className="mb-5">
+                  <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
+                    {t.investigationsAdvised}
+                  </h3>
+                  {tests.length === 0 ? (
+                    <p className="mt-1.5 text-xs italic opacity-60">
+                      {isBn ? "কোনো পরীক্ষা নেই (None)" : "None"}
+                    </p>
+                  ) : (
                     <ul className="mt-2 space-y-2 text-xs">
                       {tests.map((test, idx) => (
                         <li key={idx} className="flex flex-col">
@@ -487,8 +492,8 @@ export function PrintablePrescriptionView({
                         </li>
                       ))}
                     </ul>
-                  </div>
-                )}
+                  )}
+                </div>
 
                 {tplContent.showClinicalNotes !== false && notes && (
                   <div className="mb-5">
@@ -519,7 +524,12 @@ export function PrintablePrescriptionView({
                     fontSize: tplContent.rxItemFontSize ? `${tplContent.rxItemFontSize}px` : undefined,
                   }}
                 >
-                  {medicines.map((med, idx) => (
+                  {medicines.length === 0 ? (
+                    <div className="rounded-xl border border-dashed border-zinc-200/80 bg-zinc-50/50 p-4 text-xs italic opacity-60 print:border-none print:p-0">
+                      {isBn ? "কোনো ওষুধ নির্দেশিত নেই (None)" : "None"}
+                    </div>
+                  ) : (
+                    medicines.map((med, idx) => (
                     <div
                       key={idx}
                       className="rounded-xl border border-zinc-200/60 bg-white/60 p-3 shadow-xs print:border-b print:border-zinc-200 print:p-2 print:shadow-none"
@@ -556,7 +566,8 @@ export function PrintablePrescriptionView({
                         )}
                       </div>
                     </div>
-                  ))}
+                  ))
+                )}
                 </div>
 
                 {/* Advice & Special Instructions */}

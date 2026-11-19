@@ -5,6 +5,7 @@ import {
   Calendar,
   CheckCircle2,
   Clock,
+  Coins,
   Edit,
   Loader2,
   MapPin,
@@ -15,6 +16,7 @@ import {
 } from "lucide-react";
 import { createGoogleCalendarAppointmentUrl } from "@/lib/calendar";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { CustomSelect } from "@/components/common/custom-select";
 
 type DoctorItem = {
   id: string;
@@ -24,6 +26,14 @@ type DoctorItem = {
   chamberAddress?: string | null;
   contactNumber?: string | null;
   visitingHours?: string | null;
+  doctorFee?: number | null;
+  clinicFee?: number | null;
+  newPatientFee?: number | null;
+  doctorFollowupFee?: number | null;
+  clinicFollowupFee?: number | null;
+  followupFee?: number | null;
+  followupValidityDays?: number | null;
+  reportFreeDays?: number | null;
   scheduleJson?: { days?: string[]; startTime?: string; endTime?: string; chamber?: string } | null;
   available: boolean;
   user: {
@@ -42,7 +52,7 @@ type DoctorItem = {
 };
 
 export function StaffSchedulingManager() {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const [doctors, setDoctors] = useState<DoctorItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,10 +63,19 @@ export function StaffSchedulingManager() {
   const [scheduleDays, setScheduleDays] = useState<string[]>([]);
   const [scheduleStart, setScheduleStart] = useState("09:00");
   const [scheduleEnd, setScheduleEnd] = useState("13:00");
+  const [doctorFee, setDoctorFee] = useState<number>(40);
+  const [clinicFee, setClinicFee] = useState<number>(10);
+  const [doctorFollowupFee, setDoctorFollowupFee] = useState<number>(25);
+  const [clinicFollowupFee, setClinicFollowupFee] = useState<number>(5);
+  const [followupValidityDays, setFollowupValidityDays] = useState<number>(90);
+  const [reportFreeDays, setReportFreeDays] = useState<number>(2);
   const [saving, setSaving] = useState(false);
 
   // Search filter
   const [search, setSearch] = useState("");
+
+  const totalConsultationFee = (Number(doctorFee) || 0) + (Number(clinicFee) || 0);
+  const totalFollowupFee = (Number(doctorFollowupFee) || 0) + (Number(clinicFollowupFee) || 0);
 
   const fetchDoctors = () => {
     setLoading(true);
@@ -112,6 +131,12 @@ export function StaffSchedulingManager() {
     setScheduleDays(doc.scheduleJson?.days || ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"]);
     setScheduleStart(doc.scheduleJson?.startTime || "09:00");
     setScheduleEnd(doc.scheduleJson?.endTime || "13:00");
+    setDoctorFee(doc.doctorFee ?? 40);
+    setClinicFee(doc.clinicFee ?? 10);
+    setDoctorFollowupFee(doc.doctorFollowupFee ?? 25);
+    setClinicFollowupFee(doc.clinicFollowupFee ?? 5);
+    setFollowupValidityDays(doc.followupValidityDays ?? 90);
+    setReportFreeDays(doc.reportFreeDays ?? 2);
   };
 
   const handleSaveSchedule = async (e: React.FormEvent) => {
@@ -133,6 +158,14 @@ export function StaffSchedulingManager() {
           },
           chamberAddress,
           contactNumber,
+          doctorFee: Number(doctorFee) || 0,
+          clinicFee: Number(clinicFee) || 0,
+          newPatientFee: totalConsultationFee,
+          doctorFollowupFee: Number(doctorFollowupFee) || 0,
+          clinicFollowupFee: Number(clinicFollowupFee) || 0,
+          followupFee: totalFollowupFee,
+          followupValidityDays: Number(followupValidityDays) || 90,
+          reportFreeDays: Number(reportFreeDays) ?? 2,
         }),
       });
       const data = await res.json();
@@ -270,6 +303,28 @@ export function StaffSchedulingManager() {
                     )}
                   </div>
 
+                  {/* Pricing Breakdown Badge */}
+                  <div className="p-3 rounded-lg bg-[var(--brand-surface)] border border-[var(--brand-border)] text-xs text-[var(--brand-text)] flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold">{t.newPatientFeeLabel}:</span>
+                      <span className="font-mono font-black text-sm">
+                        ${doc.newPatientFee ?? ((doc.doctorFee ?? 40) + (doc.clinicFee ?? 10))}
+                      </span>
+                      <span className="text-[10px] opacity-75 font-medium">
+                        (Dr: ${doc.doctorFee ?? 40} + Clinic: ${doc.clinicFee ?? 10})
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold">{t.followupFeeLabel}:</span>
+                      <span className="font-mono font-black text-sm">
+                        ${doc.followupFee ?? ((doc.doctorFollowupFee ?? 25) + (doc.clinicFollowupFee ?? 5))}
+                      </span>
+                      <span className="text-[10px] opacity-75 font-medium">
+                        (Dr: ${doc.doctorFollowupFee ?? 25} + Clinic: ${doc.clinicFollowupFee ?? 5})
+                      </span>
+                    </div>
+                  </div>
+
                   {/* Today's Appointments Mini Queue */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
@@ -399,16 +454,16 @@ export function StaffSchedulingManager() {
         </div>
       )}
 
-      {/* Edit Doctor Schedule Modal */}
+      {/* Edit Doctor Schedule & Pricing Modal */}
       {editingDoctor && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-md rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
+          <div className="w-full max-w-xl rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <div>
                 <h3 className="font-bold text-slate-900 dark:text-white text-base">
-                  {t.editChamberSchedule}
+                  {t.editChamberSchedule} &amp; {t.pricingScheduleConfiguration}
                 </h3>
-                <p className="text-xs text-slate-500">{editingDoctor.user.name}</p>
+                <p className="text-xs text-slate-500">{editingDoctor.user.name} • {editingDoctor.specialization}</p>
               </div>
               <button
                 type="button"
@@ -420,60 +475,216 @@ export function StaffSchedulingManager() {
             </div>
 
             <form onSubmit={handleSaveSchedule} className="flex flex-col flex-1 min-h-0 overflow-hidden">
-              <div className="modal-body flex-1 overflow-y-auto p-6 space-y-4 text-xs">
-                <div className="space-y-1.5">
-                  <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    {t.visitingHoursDays}
-                  </label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map((day) => (
-                      <button
-                        key={day}
-                        type="button"
-                        onClick={() => setScheduleDays((current) => current.includes(day) ? current.filter((item) => item !== day) : [...current, day])}
-                        className={`rounded-lg border px-2.5 py-1.5 text-[11px] font-bold ${scheduleDays.includes(day) ? "border-[var(--brand-primary)] bg-[var(--brand-primary)] text-white" : "border-[var(--border-default)] bg-[var(--bg-app)] text-slate-500"}`}
-                      >
-                        {day.slice(0, 3)}
-                      </button>
-                    ))}
+              <div className="modal-body flex-1 overflow-y-auto p-6 space-y-5 text-xs">
+                {/* Notice Banner */}
+                <div className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-3 text-xs text-[var(--brand-text)] flex items-center gap-2">
+                  <span className="font-bold shrink-0">💡 {t.pricingBreakdownNotice}</span>
+                </div>
+
+                {/* Section A: Chamber Roster & Timing */}
+                <div className="space-y-3 pb-4 border-b border-[var(--border-subtle)]">
+                  <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider text-[11px]">
+                    <Clock className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
+                    <span>{t.visitingHoursLabel} &amp; {t.chamberRoomLocation}</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 pt-1.5">
-                    <label className="space-y-1 text-[10px] font-bold text-slate-500">
-                      <span>Start time</span>
-                      <input type="time" required value={scheduleStart} onChange={(e) => setScheduleStart(e.target.value)} className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--bg-app)] px-3 py-2 text-sm text-slate-900 dark:text-white" />
+
+                  <div className="space-y-1.5">
+                    <label className="font-semibold text-slate-600 dark:text-slate-400 text-[11px]">
+                      {t.visitingHoursDays}
                     </label>
-                    <label className="space-y-1 text-[10px] font-bold text-slate-500">
-                      <span>End time</span>
-                      <input type="time" required value={scheduleEnd} onChange={(e) => setScheduleEnd(e.target.value)} className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--bg-app)] px-3 py-2 text-sm text-slate-900 dark:text-white" />
-                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map((day) => (
+                        <button
+                          key={day}
+                          type="button"
+                          onClick={() => setScheduleDays((current) => current.includes(day) ? current.filter((item) => item !== day) : [...current, day])}
+                          className={`rounded-lg border px-2.5 py-1.5 text-[11px] font-bold cursor-pointer transition ${scheduleDays.includes(day) ? "border-[var(--brand-primary)] bg-[var(--brand-primary)] text-white" : "border-[var(--border-default)] bg-[var(--bg-app)] text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"}`}
+                        >
+                          {day.slice(0, 3)}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 pt-1.5">
+                      <label className="space-y-1 text-[10px] font-bold text-slate-500">
+                        <span>Start time</span>
+                        <input type="time" required value={scheduleStart} onChange={(e) => setScheduleStart(e.target.value)} className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--bg-app)] px-3 py-2 text-sm text-slate-900 dark:text-white" />
+                      </label>
+                      <label className="space-y-1 text-[10px] font-bold text-slate-500">
+                        <span>End time</span>
+                        <input type="time" required value={scheduleEnd} onChange={(e) => setScheduleEnd(e.target.value)} className="w-full rounded-xl border border-[var(--border-default)] bg-[var(--bg-app)] px-3 py-2 text-sm text-slate-900 dark:text-white" />
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    <div className="space-y-1">
+                      <label className="font-semibold text-slate-600 dark:text-slate-400 text-[11px]">
+                        {t.chamberRoomLocation}
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. Room 301, 3rd Floor"
+                        value={chamberAddress}
+                        onChange={(e) => setChamberAddress(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white text-xs"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="font-semibold text-slate-600 dark:text-slate-400 text-[11px]">
+                        {t.chamberContactPhone}
+                      </label>
+                      <input
+                        type="tel"
+                        placeholder="+880 1711-234567"
+                        value={contactNumber}
+                        onChange={(e) => setContactNumber(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white text-xs"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    {t.chamberRoomLocation}
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Room 301, 3rd Floor"
-                    value={chamberAddress}
-                    onChange={(e) => setChamberAddress(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white"
-                  />
-                </div>
+                {/* Section B: Pricing & Fee Configuration */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider text-[11px]">
+                    <Coins className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>{t.pricingScheduleConfiguration}</span>
+                  </div>
 
-                <div className="space-y-1.5">
-                  <label className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
-                    {t.chamberContactPhone}
-                  </label>
-                  <input
-                    type="tel"
-                    placeholder="+880 1711-234567"
-                    value={contactNumber}
-                    onChange={(e) => setContactNumber(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-default)] text-slate-900 dark:text-white"
-                  />
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {/* First Consultation Box */}
+                    <div className="p-3.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-app)] space-y-2.5">
+                      <div className="flex items-center justify-between pb-1.5 border-b border-[var(--border-subtle)]">
+                        <span className="font-bold text-[11px] text-slate-800 dark:text-slate-200">
+                          {t.newPatientFeeLabel}
+                        </span>
+                        <div className="text-right">
+                          <span className="text-[10px] uppercase font-bold text-slate-400 block">{t.totalPatientFee}</span>
+                          <span className="text-sm font-black text-emerald-600 dark:text-emerald-400 font-mono">
+                            ${totalConsultationFee}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-0.5">
+                            {t.doctorCharge} ($)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            required
+                            value={doctorFee}
+                            onChange={(e) => setDoctorFee(Math.max(0, Number(e.target.value)))}
+                            className="w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-2.5 py-1.5 text-xs font-mono font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-0.5">
+                            {t.clinicCharge} ($)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            required
+                            value={clinicFee}
+                            onChange={(e) => setClinicFee(Math.max(0, Number(e.target.value)))}
+                            className="w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-2.5 py-1.5 text-xs font-mono font-bold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Follow-up Box */}
+                    <div className="p-3.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-app)] space-y-2.5">
+                      <div className="flex items-center justify-between pb-1.5 border-b border-[var(--border-subtle)]">
+                        <span className="font-bold text-[11px] text-slate-800 dark:text-slate-200">
+                          {t.followupFeeLabel}
+                        </span>
+                        <div className="text-right">
+                          <span className="text-[10px] uppercase font-bold text-slate-400 block">{t.totalPatientFee}</span>
+                          <span className="text-sm font-black text-teal-600 dark:text-teal-400 font-mono">
+                            ${totalFollowupFee}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-0.5">
+                            {t.doctorFollowupCharge} ($)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            required
+                            value={doctorFollowupFee}
+                            onChange={(e) => setDoctorFollowupFee(Math.max(0, Number(e.target.value)))}
+                            className="w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-2.5 py-1.5 text-xs font-mono font-bold"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-0.5">
+                            {t.clinicFollowupCharge} ($)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            required
+                            value={clinicFollowupFee}
+                            onChange={(e) => setClinicFollowupFee(Math.max(0, Number(e.target.value)))}
+                            className="w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-2.5 py-1.5 text-xs font-mono font-bold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 pt-1">
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                        {t.followupValidityLabel}
+                      </label>
+                      <CustomSelect
+                        allowClear={false}
+                        value={String(followupValidityDays)}
+                        onChange={(val) => setFollowupValidityDays(Number(val))}
+                        options={[
+                          { value: "30", label: t.opt30Days },
+                          { value: "60", label: t.opt60Days },
+                          { value: "90", label: t.opt90Days },
+                          { value: "180", label: t.opt180Days },
+                        ]}
+                        searchable={false}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                        {t.freeReportReviewLabel}
+                      </label>
+                      <CustomSelect
+                        allowClear={false}
+                        value={String(reportFreeDays)}
+                        onChange={(val) => setReportFreeDays(Number(val))}
+                        options={[
+                          { value: "0", label: t.optNoFree },
+                          { value: "2", label: t.opt2Days },
+                          { value: "3", label: t.opt3Days },
+                          { value: "5", label: t.opt5Days },
+                          { value: "7", label: t.opt7Days },
+                        ]}
+                        searchable={false}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 

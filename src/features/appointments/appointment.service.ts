@@ -77,7 +77,11 @@ export async function calculateDoctorConsultationFee(doctorId: string, patientId
     select: {
       id: true,
       consultationFee: true,
+      doctorFee: true,
+      clinicFee: true,
       newPatientFee: true,
+      doctorFollowupFee: true,
+      clinicFollowupFee: true,
       followupFee: true,
       followupValidityDays: true,
       reportFreeDays: true,
@@ -89,8 +93,13 @@ export async function calculateDoctorConsultationFee(doctorId: string, patientId
     throw new AppError("Doctor not found", 404);
   }
 
-  const newPatientFee = doctor.newPatientFee ?? 50;
-  const followupFee = doctor.followupFee ?? 30;
+  const doctorFee = doctor.doctorFee ?? 40;
+  const clinicFee = doctor.clinicFee ?? 10;
+  const newPatientFee = doctor.newPatientFee ?? (doctorFee + clinicFee);
+
+  const doctorFollowupFee = doctor.doctorFollowupFee ?? 25;
+  const clinicFollowupFee = doctor.clinicFollowupFee ?? 5;
+  const followupFee = doctor.followupFee ?? (doctorFollowupFee + clinicFollowupFee);
   const followupValidityDays = doctor.followupValidityDays ?? 90;
   const reportFreeDays = doctor.reportFreeDays ?? 2;
 
@@ -98,9 +107,13 @@ export async function calculateDoctorConsultationFee(doctorId: string, patientId
     return {
       visitType: "NEW" as const,
       fee: newPatientFee,
+      doctorFee,
+      clinicFee,
       isFreeReportReview: false,
       followupEligible: false,
       newPatientFee,
+      doctorFollowupFee,
+      clinicFollowupFee,
       followupFee,
       followupValidityDays,
       reportFreeDays,
@@ -156,12 +169,16 @@ export async function calculateDoctorConsultationFee(doctorId: string, patientId
     return {
       visitType: "NEW" as const,
       fee: newPatientFee,
+      doctorFee,
+      clinicFee,
       isFreeReportReview: false,
       followupEligible: false,
       previousPrescriptionId: null,
       daysSinceLastVisit: null,
       lastVisitDate: null,
       newPatientFee,
+      doctorFollowupFee,
+      clinicFollowupFee,
       followupFee,
       followupValidityDays,
       reportFreeDays,
@@ -178,12 +195,16 @@ export async function calculateDoctorConsultationFee(doctorId: string, patientId
     return {
       visitType: "REPORT_REVIEW" as const,
       fee: 0,
+      doctorFee: 0,
+      clinicFee: 0,
       isFreeReportReview: true,
       followupEligible: true,
       previousPrescriptionId,
       daysSinceLastVisit: diffDays,
       lastVisitDate,
       newPatientFee,
+      doctorFollowupFee,
+      clinicFollowupFee,
       followupFee,
       followupValidityDays,
       reportFreeDays,
@@ -196,12 +217,16 @@ export async function calculateDoctorConsultationFee(doctorId: string, patientId
     return {
       visitType: "FOLLOWUP" as const,
       fee: followupFee,
+      doctorFee: doctorFollowupFee,
+      clinicFee: clinicFollowupFee,
       isFreeReportReview: false,
       followupEligible: true,
       previousPrescriptionId,
       daysSinceLastVisit: diffDays,
       lastVisitDate,
       newPatientFee,
+      doctorFollowupFee,
+      clinicFollowupFee,
       followupFee,
       followupValidityDays,
       reportFreeDays,
@@ -213,12 +238,16 @@ export async function calculateDoctorConsultationFee(doctorId: string, patientId
   return {
     visitType: "NEW" as const,
     fee: newPatientFee,
+    doctorFee,
+    clinicFee,
     isFreeReportReview: false,
     followupEligible: false,
     previousPrescriptionId,
     daysSinceLastVisit: diffDays,
     lastVisitDate,
     newPatientFee,
+    doctorFollowupFee,
+    clinicFollowupFee,
     followupFee,
     followupValidityDays,
     reportFreeDays,
@@ -347,14 +376,31 @@ export async function createAppointment(
   }
 
   let finalFee = 0;
+  let finalDoctorFee = 0;
+  let finalClinicFee = 0;
+
   if (visitType === "REPORT_REVIEW") {
     finalFee = 0;
-  } else if (data.fee !== undefined) {
-    finalFee = data.fee;
+    finalDoctorFee = 0;
+    finalClinicFee = 0;
   } else if (visitType === "FOLLOWUP") {
-    finalFee = calculatedFee.followupFee;
+    finalFee = data.fee !== undefined ? data.fee : calculatedFee.followupFee;
+    finalDoctorFee = calculatedFee.doctorFollowupFee;
+    finalClinicFee = calculatedFee.clinicFollowupFee;
+    if (data.fee !== undefined && finalDoctorFee + finalClinicFee > 0) {
+      const ratio = finalDoctorFee / (finalDoctorFee + finalClinicFee);
+      finalDoctorFee = Math.round(data.fee * ratio * 100) / 100;
+      finalClinicFee = Math.round((data.fee - finalDoctorFee) * 100) / 100;
+    }
   } else {
-    finalFee = calculatedFee.newPatientFee;
+    finalFee = data.fee !== undefined ? data.fee : calculatedFee.newPatientFee;
+    finalDoctorFee = calculatedFee.doctorFee;
+    finalClinicFee = calculatedFee.clinicFee;
+    if (data.fee !== undefined && finalDoctorFee + finalClinicFee > 0) {
+      const ratio = finalDoctorFee / (finalDoctorFee + finalClinicFee);
+      finalDoctorFee = Math.round(data.fee * ratio * 100) / 100;
+      finalClinicFee = Math.round((data.fee - finalDoctorFee) * 100) / 100;
+    }
   }
 
   let paymentStatus = data.paymentStatus;
@@ -416,6 +462,8 @@ export async function createAppointment(
       notes: data.notes,
       visitType,
       fee: finalFee,
+      doctorFee: finalDoctorFee,
+      clinicFee: finalClinicFee,
       paymentStatus,
       paymentMethod,
       stripeSessionId: data.stripeSessionId,
@@ -469,8 +517,22 @@ export async function createAppointment(
             doctorId: data.doctorId,
             patientId: finalPatientId,
           },
-          success_url: `${origin}/dashboard/patient?tab=overview&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${origin}/dashboard/patient?tab=overview&canceled=true&appointment_id=${appointment.id}`,
+          success_url:
+            authUser?.role === RoleName.ADMIN || authUser?.role === RoleName.SUPER_ADMIN
+              ? `${origin}/dashboard/admin?tab=appointments&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`
+              : authUser?.role === RoleName.STAFF
+              ? `${origin}/dashboard/staff?tab=appointments&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`
+              : authUser?.role === RoleName.DOCTOR
+              ? `${origin}/dashboard/doctor?tab=appointments&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`
+              : `${origin}/dashboard/patient?tab=overview&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url:
+            authUser?.role === RoleName.ADMIN || authUser?.role === RoleName.SUPER_ADMIN
+              ? `${origin}/dashboard/admin?tab=appointments&canceled=true&appointment_id=${appointment.id}`
+              : authUser?.role === RoleName.STAFF
+              ? `${origin}/dashboard/staff?tab=appointments&canceled=true&appointment_id=${appointment.id}`
+              : authUser?.role === RoleName.DOCTOR
+              ? `${origin}/dashboard/doctor?tab=appointments&canceled=true&appointment_id=${appointment.id}`
+              : `${origin}/dashboard/patient?tab=overview&canceled=true&appointment_id=${appointment.id}`,
         });
 
         stripeCheckoutUrl = session.url;

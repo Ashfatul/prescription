@@ -1,9 +1,12 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { useAuth } from "@/lib/auth/auth-context";
 import {
   CreditCard,
   ShieldCheck,
@@ -19,6 +22,7 @@ function StripeDemoContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t, language } = useLanguage();
+  const { user } = useAuth();
 
   const appointmentId = searchParams.get("appointmentId") || "";
   const feeParam = searchParams.get("fee") || "50";
@@ -27,6 +31,14 @@ function StripeDemoContent() {
   const visitType = searchParams.get("visitType") || "NEW";
 
   const feeNumber = parseFloat(feeParam) || 50;
+
+  const returnDashboardUrl = (() => {
+    if (!user) return "/dashboard";
+    if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") return "/dashboard/admin?tab=appointments";
+    if (user.role === "STAFF") return "/dashboard/staff?tab=appointments";
+    if (user.role === "DOCTOR") return "/dashboard/doctor?tab=appointments";
+    return "/dashboard/patient?tab=overview";
+  })();
 
   const [cardNumber, setCardNumber] = useState("4242 •••• •••• 4242");
   const [expiry, setExpiry] = useState("12 / 28");
@@ -62,7 +74,10 @@ function StripeDemoContent() {
 
       setPaymentSuccess(true);
       setTimeout(() => {
-        router.push(`/dashboard/patient?tab=overview&paid=true&appointment_id=${appointmentId}`);
+        const dest = returnDashboardUrl.includes("?")
+          ? `${returnDashboardUrl}&paid=true&appointment_id=${appointmentId}`
+          : `${returnDashboardUrl}?paid=true&appointment_id=${appointmentId}`;
+        router.push(dest);
       }, 1200);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Payment simulation failed";
@@ -76,11 +91,11 @@ function StripeDemoContent() {
       {/* Brand & Security Header */}
       <div className="w-full max-w-4xl mb-6 flex items-center justify-between">
         <Link
-          href="/dashboard/patient"
+          href={returnDashboardUrl}
           className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>{t.backToPatientPortal}</span>
+          <span>{user?.role === "PATIENT" ? t.backToPatientPortal : t("uiBackToDashboard", "Back to Dashboard")}</span>
         </Link>
 
         <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
@@ -293,7 +308,7 @@ function StripeDemoContent() {
           <div className="flex items-center justify-between text-[11px] text-slate-400 pt-3 border-t border-slate-200/60 dark:border-slate-800/60">
             <span>{t.poweredByStripe}</span>
             <Link
-              href="/dashboard/patient"
+              href={returnDashboardUrl}
               className="hover:underline text-slate-500 dark:text-slate-400"
             >
               {t.cancelAndReturn}

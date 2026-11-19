@@ -54,7 +54,7 @@ export const prescriptionSchema = z.object({
   patientId: z.string().min(1),
   appointmentId: z.string().optional(),
   notes: z.string().optional(),
-  medicines: z.array(medicineItem).min(1),
+  medicines: z.array(medicineItem).default([]),
   tests: z.array(testItem).default([]),
   vitals: vitalsSchema,
   clinicalInfo: clinicalInfoSchema,

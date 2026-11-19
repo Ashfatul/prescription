@@ -184,7 +184,11 @@ model Doctor {
   bio             String?
   visitingHours          String?
   consultationFee        String?
+  doctorFee              Float?         @default(40)
+  clinicFee              Float?         @default(10)
   newPatientFee          Float?         @default(50)
+  doctorFollowupFee      Float?         @default(25)
+  clinicFollowupFee      Float?         @default(5)
   followupFee            Float?         @default(30)
   followupValidityDays   Int?           @default(90)
   reportFreeDays         Int?           @default(2)
@@ -237,6 +241,8 @@ model Appointment {
   notes                  String?
   visitType              String?           @default("NEW")
   fee                    Float?            @default(0)
+  doctorFee              Float?            @default(0)
+  clinicFee              Float?            @default(0)
   paymentStatus          String?           @default("PENDING")
   paymentMethod          String?
   stripeSessionId        String?

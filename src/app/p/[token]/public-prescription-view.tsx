@@ -285,12 +285,17 @@ export function PublicPrescriptionView({
               </div>
             )}
 
-            {tests.length > 0 && (
-              <div className="space-y-2">
-                <h3 className="font-bold text-slate-500 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                  <Activity className="w-3.5 h-3.5 text-teal-600" />
-                  <span>{t.investigationsTests}</span>
-                </h3>
+            {/* Investigations / Diagnostic Tests */}
+            <div className="space-y-2">
+              <h3 className="font-bold text-slate-500 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <Activity className="w-3.5 h-3.5 text-teal-600" />
+                <span>{t.investigationsTests}</span>
+              </h3>
+              {tests.length === 0 ? (
+                <p className="text-xs text-slate-400 italic">
+                  {language === "bn" ? "কোনো পরীক্ষা নেই (None)" : "None"}
+                </p>
+              ) : (
                 <ul className="space-y-1.5 pl-4 list-disc text-slate-700">
                   {tests.map((testItem, idx) => (
                     <li key={idx} className="leading-tight">
@@ -303,8 +308,8 @@ export function PublicPrescriptionView({
                     </li>
                   ))}
                 </ul>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Right Column: Rx (Medicines) & Lifestyle Advice */}

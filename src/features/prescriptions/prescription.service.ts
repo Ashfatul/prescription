@@ -168,7 +168,7 @@ export async function createPrescription(input: unknown) {
   }
   const shareToken = `rx-${crypto.randomBytes(8).toString("hex")}`;
 
-  const created = await db.$transaction(async (tx) => {
+  const createdId = await db.$transaction(async (tx) => {
     let effectiveAppointmentId = data.appointmentId || null;
     if (!effectiveAppointmentId) {
       const today = new Date();
@@ -251,10 +251,15 @@ export async function createPrescription(input: unknown) {
       });
     }
 
-    return tx.prescription.findUnique({
-      where: { id: prescription.id },
-      include: prescriptionFullInclude,
-    });
+    return prescription.id;
+  }, {
+    maxWait: 5000,
+    timeout: 20000,
+  });
+
+  const created = await db.prescription.findUnique({
+    where: { id: createdId },
+    include: prescriptionFullInclude,
   });
 
   if (created && created.patient?.user && created.doctor?.user) {
@@ -420,10 +425,15 @@ export async function updatePrescription(id: string, input: unknown) {
       });
     }
 
-    return tx.prescription.findUnique({
-      where: { id },
-      include: prescriptionFullInclude,
-    });
+    return id;
+  }, {
+    maxWait: 5000,
+    timeout: 20000,
+  });
+
+  return db.prescription.findUnique({
+    where: { id },
+    include: prescriptionFullInclude,
   });
 }
 

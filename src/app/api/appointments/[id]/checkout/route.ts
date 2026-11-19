@@ -80,8 +80,22 @@ export async function POST(
             doctorId: appointment.doctorId,
             patientId: appointment.patientId,
           },
-          success_url: `${origin}/dashboard/patient?tab=overview&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${origin}/dashboard/patient?tab=overview&canceled=true&appointment_id=${appointment.id}`,
+          success_url:
+            auth.role === "ADMIN" || auth.role === "SUPER_ADMIN"
+              ? `${origin}/dashboard/admin?tab=appointments&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`
+              : auth.role === "STAFF"
+              ? `${origin}/dashboard/staff?tab=appointments&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`
+              : auth.role === "DOCTOR"
+              ? `${origin}/dashboard/doctor?tab=appointments&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`
+              : `${origin}/dashboard/patient?tab=overview&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url:
+            auth.role === "ADMIN" || auth.role === "SUPER_ADMIN"
+              ? `${origin}/dashboard/admin?tab=appointments&canceled=true&appointment_id=${appointment.id}`
+              : auth.role === "STAFF"
+              ? `${origin}/dashboard/staff?tab=appointments&canceled=true&appointment_id=${appointment.id}`
+              : auth.role === "DOCTOR"
+              ? `${origin}/dashboard/doctor?tab=appointments&canceled=true&appointment_id=${appointment.id}`
+              : `${origin}/dashboard/patient?tab=overview&canceled=true&appointment_id=${appointment.id}`,
         });
 
         await db.appointment.update({

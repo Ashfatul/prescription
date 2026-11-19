@@ -144,15 +144,6 @@ export function AuthProvider({
   const [loading, setLoading] = useState<boolean>(initialUser === undefined);
   const [prevInitialUser, setPrevInitialUser] = useState(initialUser);
 
-  // Sync state if initialUser prop changes across page navigations
-  if (initialUser !== prevInitialUser) {
-    setPrevInitialUser(initialUser);
-    setUser(initialUser !== undefined ? normalizeUser(initialUser) : null);
-    if (initialUser !== undefined) {
-      setLoading(false);
-    }
-  }
-
   const refreshUser = useCallback(async (): Promise<AuthUser | null> => {
     try {
       const res = await fetch("/api/auth/me", { cache: "no-store" });
@@ -180,9 +171,28 @@ export function AuthProvider({
     }
   }, []);
 
+  // Sync state if initialUser prop changes across page navigations
+  if (initialUser !== prevInitialUser) {
+    setPrevInitialUser(initialUser);
+    if (initialUser) {
+      setUser(normalizeUser(initialUser));
+      setLoading(false);
+    } else if (initialUser === null) {
+      // If client already has an active authenticated user in state, do not immediately wipe it to null.
+      // Dynamic page transitions or intermediate redirects might evaluate initialUser as null.
+      // Verify with /api/auth/me rather than throwing away the active session.
+      if (!user) {
+        setUser(null);
+        setLoading(false);
+      } else {
+        void refreshUser();
+      }
+    }
+  }
+
   useEffect(() => {
     let ignore = false;
-    if (initialUser === undefined) {
+    if (initialUser === undefined || (initialUser === null && !user)) {
       fetch("/api/auth/me", { cache: "no-store" })
         .then((res) => (res.ok ? res.json() : null))
         .then((json) => {
@@ -210,7 +220,7 @@ export function AuthProvider({
     return () => {
       ignore = true;
     };
-  }, [initialUser]);
+  }, [initialUser, user]);
 
   // Sync auth & theme events across browser tabs
   useEffect(() => {

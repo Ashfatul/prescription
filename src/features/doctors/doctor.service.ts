@@ -66,6 +66,14 @@ export async function createDoctor(input: unknown, organizationId?: string) {
     }
   }
 
+  const docF = data.doctorFee ?? 40;
+  const clnF = data.clinicFee ?? 10;
+  const newPatientFee = data.newPatientFee ?? (docF + clnF);
+
+  const docFollowF = data.doctorFollowupFee ?? 25;
+  const clnFollowF = data.clinicFollowupFee ?? 5;
+  const followupFee = data.followupFee ?? (docFollowF + clnFollowF);
+
   return db.doctor.create({
     data: {
       userId: data.userId,
@@ -80,6 +88,14 @@ export async function createDoctor(input: unknown, organizationId?: string) {
       bio: data.bio,
       visitingHours: data.visitingHours,
       consultationFee: data.consultationFee,
+      doctorFee: docF,
+      clinicFee: clnF,
+      newPatientFee: newPatientFee,
+      doctorFollowupFee: docFollowF,
+      clinicFollowupFee: clnFollowF,
+      followupFee: followupFee,
+      followupValidityDays: data.followupValidityDays ?? 90,
+      reportFreeDays: data.reportFreeDays ?? 2,
       experienceYears: data.experienceYears,
       signatureUrl: data.signatureUrl,
       available: data.available,
@@ -100,10 +116,27 @@ export async function updateDoctor(id: string, input: unknown) {
     throw new AppError("Doctor not found", 404);
   }
 
+  // Calculate composite fees so total fee and breakdown remain 100% consistent
+  let computedNewPatientFee = data.newPatientFee;
+  if (data.doctorFee !== undefined || data.clinicFee !== undefined) {
+    const docF = data.doctorFee !== undefined ? (data.doctorFee ?? 0) : (existing.doctorFee ?? 40);
+    const clnF = data.clinicFee !== undefined ? (data.clinicFee ?? 0) : (existing.clinicFee ?? 10);
+    computedNewPatientFee = docF + clnF;
+  }
+
+  let computedFollowupFee = data.followupFee;
+  if (data.doctorFollowupFee !== undefined || data.clinicFollowupFee !== undefined) {
+    const docFollowF = data.doctorFollowupFee !== undefined ? (data.doctorFollowupFee ?? 0) : (existing.doctorFollowupFee ?? 25);
+    const clnFollowF = data.clinicFollowupFee !== undefined ? (data.clinicFollowupFee ?? 0) : (existing.clinicFollowupFee ?? 5);
+    computedFollowupFee = docFollowF + clnFollowF;
+  }
+
   const updated = await db.doctor.update({
     where: { id },
     data: {
       ...data,
+      newPatientFee: computedNewPatientFee !== undefined ? computedNewPatientFee : data.newPatientFee,
+      followupFee: computedFollowupFee !== undefined ? computedFollowupFee : data.followupFee,
       scheduleJson: (data.scheduleJson ?? undefined) as Prisma.InputJsonValue | undefined,
     },
     include: {

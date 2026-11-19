@@ -21,7 +21,11 @@ export type DoctorProfile = {
   bio?: string | null;
   visitingHours?: string | null;
   consultationFee?: string | null;
+  doctorFee?: number | null;
+  clinicFee?: number | null;
   newPatientFee?: number | null;
+  doctorFollowupFee?: number | null;
+  clinicFollowupFee?: number | null;
   followupFee?: number | null;
   followupValidityDays?: number | null;
   reportFreeDays?: number | null;
@@ -53,10 +57,15 @@ export function DoctorProfileEditor({
   const [bio, setBio] = useState(doctor.bio || "");
   const [visitingHours, setVisitingHours] = useState(doctor.visitingHours || "");
   const [consultationFee, setConsultationFee] = useState(doctor.consultationFee || "");
-  const [newPatientFee, setNewPatientFee] = useState<number>(doctor.newPatientFee ?? 50);
-  const [followupFee, setFollowupFee] = useState<number>(doctor.followupFee ?? 30);
+  const [doctorFee, setDoctorFee] = useState<number>(doctor.doctorFee ?? 40);
+  const [clinicFee, setClinicFee] = useState<number>(doctor.clinicFee ?? 10);
+  const [doctorFollowupFee, setDoctorFollowupFee] = useState<number>(doctor.doctorFollowupFee ?? 25);
+  const [clinicFollowupFee, setClinicFollowupFee] = useState<number>(doctor.clinicFollowupFee ?? 5);
   const [followupValidityDays, setFollowupValidityDays] = useState<number>(doctor.followupValidityDays ?? 90);
   const [reportFreeDays, setReportFreeDays] = useState<number>(doctor.reportFreeDays ?? 2);
+
+  const totalConsultationFee = (Number(doctorFee) || 0) + (Number(clinicFee) || 0);
+  const totalFollowupFee = (Number(doctorFollowupFee) || 0) + (Number(clinicFollowupFee) || 0);
   const [experienceYears, setExperienceYears] = useState(doctor.experienceYears || "");
   const [signatureUrl, setSignatureUrl] = useState(doctor.signatureUrl || doctor.user.signatureUrl || "");
   const [available, setAvailable] = useState(doctor.available);
@@ -206,8 +215,12 @@ export function DoctorProfileEditor({
           bio,
           visitingHours,
           consultationFee,
-          newPatientFee: Number(newPatientFee) || 50,
-          followupFee: Number(followupFee) || 30,
+          doctorFee: Number(doctorFee) || 0,
+          clinicFee: Number(clinicFee) || 0,
+          newPatientFee: totalConsultationFee,
+          doctorFollowupFee: Number(doctorFollowupFee) || 0,
+          clinicFollowupFee: Number(clinicFollowupFee) || 0,
+          followupFee: totalFollowupFee,
           followupValidityDays: Number(followupValidityDays) || 90,
           reportFreeDays: Number(reportFreeDays) ?? 2,
           experienceYears,
@@ -243,8 +256,12 @@ export function DoctorProfileEditor({
         bio,
         visitingHours,
         consultationFee,
-        newPatientFee: Number(newPatientFee) || 50,
-        followupFee: Number(followupFee) || 30,
+        doctorFee: Number(doctorFee) || 0,
+        clinicFee: Number(clinicFee) || 0,
+        newPatientFee: totalConsultationFee,
+        doctorFollowupFee: Number(doctorFollowupFee) || 0,
+        clinicFollowupFee: Number(clinicFollowupFee) || 0,
+        followupFee: totalFollowupFee,
         followupValidityDays: Number(followupValidityDays) || 90,
         reportFreeDays: Number(reportFreeDays) ?? 2,
         experienceYears,
@@ -523,41 +540,124 @@ export function DoctorProfileEditor({
             </span>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-                {t.newPatientFeeLabel} ($) *
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="1"
-                required
-                value={newPatientFee}
-                onChange={(e) => setNewPatientFee(Number(e.target.value))}
-                placeholder="50"
-                className="w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-3.5 py-2.5 text-xs font-mono font-bold outline-none focus:border-[var(--brand-primary)]"
-              />
-              <span className="mt-1 block text-[10px] text-slate-400">{t.firstTimeConsultationCharge}</span>
+          {/* Notice Banner */}
+          <div className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-3 text-xs text-[var(--brand-text)] flex items-center gap-2.5">
+            <span className="font-bold shrink-0">💡 {t.pricingBreakdownNotice}</span>
+          </div>
+
+          {/* Pricing Grid */}
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Box 1: New Patient Consultation */}
+            <div className="p-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-app)] space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
+                <div>
+                  <h5 className="font-bold text-xs text-slate-800 dark:text-slate-200">
+                    {t.newPatientFeeLabel}
+                  </h5>
+                  <p className="text-[10px] text-slate-500">{t.firstTimeConsultationCharge}</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">{t.totalPatientFee}</span>
+                  <span className="text-base font-black text-emerald-600 dark:text-emerald-400 font-mono">
+                    ${totalConsultationFee}
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1 block text-[11px] font-semibold text-slate-600 dark:text-slate-400">
+                    {t.doctorCharge} ($) *
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    required
+                    value={doctorFee}
+                    onChange={(e) => setDoctorFee(Math.max(0, Number(e.target.value)))}
+                    placeholder="40"
+                    className="w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 py-2 text-xs font-mono font-bold outline-none focus:border-[var(--brand-primary)]"
+                  />
+                  <span className="mt-0.5 block text-[10px] text-slate-400">Doctor&apos;s net share</span>
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-[11px] font-semibold text-slate-600 dark:text-slate-400">
+                    {t.clinicCharge} ($) *
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    required
+                    value={clinicFee}
+                    onChange={(e) => setClinicFee(Math.max(0, Number(e.target.value)))}
+                    placeholder="10"
+                    className="w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 py-2 text-xs font-mono font-bold outline-none focus:border-[var(--brand-primary)]"
+                  />
+                  <span className="mt-0.5 block text-[10px] text-slate-400">Clinic chamber fee</span>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-                {t.followupFeeLabel} ($) *
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="1"
-                required
-                value={followupFee}
-                onChange={(e) => setFollowupFee(Number(e.target.value))}
-                placeholder="30"
-                className="w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-3.5 py-2.5 text-xs font-mono font-bold outline-none focus:border-[var(--brand-primary)]"
-              />
-              <span className="mt-1 block text-[10px] text-slate-400">{t.returningPatientRate}</span>
-            </div>
+            {/* Box 2: Follow-up Consultation */}
+            <div className="p-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-app)] space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
+                <div>
+                  <h5 className="font-bold text-xs text-slate-800 dark:text-slate-200">
+                    {t.followupFeeLabel}
+                  </h5>
+                  <p className="text-[10px] text-slate-500">{t.returningPatientRate}</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">{t.totalPatientFee}</span>
+                  <span className="text-base font-black text-teal-600 dark:text-teal-400 font-mono">
+                    ${totalFollowupFee}
+                  </span>
+                </div>
+              </div>
 
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1 block text-[11px] font-semibold text-slate-600 dark:text-slate-400">
+                    {t.doctorFollowupCharge} ($) *
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    required
+                    value={doctorFollowupFee}
+                    onChange={(e) => setDoctorFollowupFee(Math.max(0, Number(e.target.value)))}
+                    placeholder="25"
+                    className="w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 py-2 text-xs font-mono font-bold outline-none focus:border-[var(--brand-primary)]"
+                  />
+                  <span className="mt-0.5 block text-[10px] text-slate-400">Doctor&apos;s follow-up share</span>
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-[11px] font-semibold text-slate-600 dark:text-slate-400">
+                    {t.clinicFollowupCharge} ($) *
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    required
+                    value={clinicFollowupFee}
+                    onChange={(e) => setClinicFollowupFee(Math.max(0, Number(e.target.value)))}
+                    placeholder="5"
+                    className="w-full rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 py-2 text-xs font-mono font-bold outline-none focus:border-[var(--brand-primary)]"
+                  />
+                  <span className="mt-0.5 block text-[10px] text-slate-400">Clinic follow-up fee</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Validity & Free Report Review */}
+          <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                 {t.followupValidityLabel}
@@ -599,13 +699,13 @@ export function DoctorProfileEditor({
           </div>
 
           {/* Visual Policy Explanation Strip */}
-          <div className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-3 text-xs text-[var(--brand-text)] flex flex-wrap items-center justify-between gap-3">
-            <div className="space-y-0.5">
-              <span className="font-bold block">{t.summaryOfChamberPolicy}</span>
-              <p className="text-[11px] leading-relaxed opacity-90">
-                • <strong>{t("uiFirstVisitConsultationRate")}</strong> {language === "bn" ? `প্রথম পরামর্শে ফি $${newPatientFee}।` : `Charged $${newPatientFee} for first consultation.`}<br />
+          <div className="rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] p-3.5 text-xs text-[var(--brand-text)] flex flex-wrap items-center justify-between gap-3">
+            <div className="space-y-1">
+              <span className="font-bold block text-sm">{t.summaryOfChamberPolicy}</span>
+              <p className="text-[11px] leading-relaxed opacity-95">
+                • <strong>{t("uiFirstVisitConsultationRate")}</strong> {language === "bn" ? `প্রথম পরামর্শে রোগী পরিশোধ করবেন $${totalConsultationFee} (ডাক্তার: $${doctorFee} + ক্লিনিক: $${clinicFee})।` : `Patient pays $${totalConsultationFee} for first consultation (Doctor: $${doctorFee} + Clinic: $${clinicFee}).`}<br />
                 • <strong>{t("uiDiagnosticReportShowing")}</strong> {language === "bn" ? `ভিজিটের ${reportFreeDays} দিনের মধ্যে বিনামূল্যে ($০.০০)।` : `Free ($0.00) within ${reportFreeDays} days of initial visit.`}<br />
-                • <strong>{t("uiFollowUpVisits")}</strong> {language === "bn" ? `পূর্বের প্রেসক্রিপশনসহ ${followupValidityDays} দিনের মধ্যে আসলে ফি $${followupFee}।` : `Charged $${followupFee} if presenting within ${followupValidityDays} days with verified previous prescription.`}
+                • <strong>{t("uiFollowUpVisits")}</strong> {language === "bn" ? `পূর্বের প্রেসক্রিপশনসহ ${followupValidityDays} দিনের মধ্যে আসলে রোগী পরিশোধ করবেন $${totalFollowupFee} (ডাক্তার: $${doctorFollowupFee} + ক্লিনিক: $${clinicFollowupFee})।` : `Patient pays $${totalFollowupFee} if presenting within ${followupValidityDays} days with verified previous prescription (Doctor: $${doctorFollowupFee} + Clinic: $${clinicFollowupFee}).`}
               </p>
             </div>
           </div>

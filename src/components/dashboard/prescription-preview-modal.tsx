@@ -290,23 +290,29 @@ function PrescriptionPageSheet({
             )}
 
             {/* Diagnostic Tests Advised */}
-            {page.tests.length > 0 && (
+            {page.pageNumber === 1 && (
               <div className="space-y-1 text-xs">
                 <h3 className="font-bold uppercase tracking-wider text-slate-500 text-[11px] pb-1 border-b border-slate-200">
                   {t.investigationsAdvised}
                 </h3>
-                <ol className="list-decimal list-inside space-y-1.5 pt-1 text-slate-800 font-medium">
-                  {page.tests.map((tItem, idx) => (
-                    <li key={idx} className="leading-tight">
-                      <span>{tItem.name}</span>
-                      {tItem.instructions && (
-                        <span className="block text-[11px] text-slate-500 italic ml-4">
-                          ({tItem.instructions})
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ol>
+                {page.tests.length === 0 ? (
+                  <p className="text-xs text-slate-400 italic pt-1">
+                    {language === "bn" ? "কোনো পরীক্ষা নেই (None)" : "None"}
+                  </p>
+                ) : (
+                  <ol className="list-decimal list-inside space-y-1.5 pt-1 text-slate-800 font-medium">
+                    {page.tests.map((tItem, idx) => (
+                      <li key={idx} className="leading-tight">
+                        <span>{tItem.name}</span>
+                        {tItem.instructions && (
+                          <span className="block text-[11px] text-slate-500 italic ml-4">
+                            ({tItem.instructions})
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+                )}
               </div>
             )}
           </div>
@@ -326,7 +332,7 @@ function PrescriptionPageSheet({
             <div className="space-y-4">
               {page.medicines.length === 0 ? (
                 <p className="text-xs text-slate-400 italic">
-                  {t("uiNoMedicinesOnThisPage")}
+                  {language === "bn" ? "কোনো ওষুধ নেই (None)" : "None"}
                 </p>
               ) : (
                 page.medicines.map((med, idx) => (
