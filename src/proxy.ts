@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth/jwt";
 import { AUTH_COOKIE } from "@/lib/auth/constants";
-import { canAccessDashboardPath } from "@/lib/auth/rbac";
+import { canAccessDashboardPath, getDashboardPathForRole } from "@/lib/auth/rbac";
 import { RESERVED_SLUGS } from "@/lib/organizations/slug";
 
 function extractSubdomain(req: NextRequest): string | null {
@@ -107,10 +107,10 @@ export async function proxy(req: NextRequest) {
 
   const payload = token ? await verifyToken(token) : null;
 
-  // If user is already authenticated and visits /auth/login or /auth/register, redirect to /dashboard
+  // If user is already authenticated and visits /auth/login or /auth/register, redirect to their role dashboard
   if (pathname === "/auth/login" || pathname === "/auth/register") {
     if (payload) {
-      return applySecurityHeaders(NextResponse.redirect(new URL("/dashboard", req.url)), req);
+      return applySecurityHeaders(NextResponse.redirect(new URL(getDashboardPathForRole(payload.role), req.url)), req);
     }
     return applySecurityHeaders(
       NextResponse.next({

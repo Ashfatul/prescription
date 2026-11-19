@@ -6,7 +6,7 @@ import { createUser } from "@/features/users/user.service";
 import { ok } from "@/lib/http";
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
-import { getAuthFromRequest } from "@/lib/auth/session";
+import { getAuthFromRequest, isRequestSecure } from "@/lib/auth/session";
 import { hashPassword } from "@/lib/auth/password";
 import { signToken } from "@/lib/auth/jwt";
 import { AUTH_COOKIE } from "@/lib/auth/constants";
@@ -15,6 +15,7 @@ import { medicineService, testService } from "@/features/catalog/catalog.service
 import { isEmailVerificationRequired, isOrgApprovalRequired } from "@/features/settings/settings.service";
 import { sendTemplatedEmail } from "@/features/email-templates/email-template.service";
 import { validateSlugAvailability } from "@/features/organizations/organization.service";
+import { DEFAULT_ROLE_PERMISSIONS } from "@/lib/auth/permissions";
 
 export async function POST(req: NextRequest) {
   return withErrorHandling(req, async () => {
@@ -101,7 +102,7 @@ export async function POST(req: NextRequest) {
         adminRole = await db.role.create({
           data: {
             name: RoleName.ADMIN,
-            permissions: ["*"],
+            permissions: DEFAULT_ROLE_PERMISSIONS[RoleName.ADMIN],
           },
         });
       }
@@ -261,10 +262,12 @@ export async function POST(req: NextRequest) {
         { status: 201 }
       );
 
+      const isSecure = isRequestSecure(req);
+
       response.cookies.set(AUTH_COOKIE, token, {
         httpOnly: true,
         sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
+        secure: isSecure,
         path: "/",
         maxAge: 60 * 60 * 24 * 7,
       });
@@ -284,27 +287,15 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const host = req.headers.get("host") || "localhost:3000";
+    const protocol = req.headers.get("x-forwarded-proto") || "http";
+    const appUrl = `${protocol}://${host}`;
+
     const auth = await getAuthFromRequest(req);
-    const user = await createUser(body, auth?.sub);
+    const user = await createUser(body, auth?.sub, { appUrl });
 
-    // If verification is required and user has a pending verification token, dispatch verification email
+    // If verification is required and user has a pending verification token, return verification response
     if (user && !user.emailVerified && user.emailVerificationToken) {
-      const host = req.headers.get("host") || "localhost:3000";
-      const protocol = req.headers.get("x-forwarded-proto") || "http";
-      const verifyUrl = `${protocol}://${host}/auth/verify-email?token=${user.emailVerificationToken}`;
-
-      await sendTemplatedEmail({
-        key: "EMAIL_VERIFICATION",
-        to: user.email,
-        variables: {
-          userName: user.name,
-          userEmail: user.email,
-          verifyUrl,
-          token: user.emailVerificationToken,
-        },
-        organizationId: user.organizationId,
-      });
-
       return NextResponse.json(
         {
           success: true,

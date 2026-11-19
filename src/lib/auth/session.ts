@@ -7,6 +7,14 @@ import { AppError } from "@/lib/errors";
 import { verifyToken } from "@/lib/auth/jwt";
 import { AUTH_COOKIE } from "@/lib/auth/constants";
 
+export function isRequestSecure(req: Request | NextRequest): boolean {
+  const forwardedProto = req.headers.get("x-forwarded-proto");
+  if (forwardedProto) {
+    return forwardedProto.split(",")[0].trim().toLowerCase() === "https";
+  }
+  return req.url.startsWith("https:");
+}
+
 export async function getAuthFromRequest(req: NextRequest) {
   const token =
     req.cookies.get(AUTH_COOKIE)?.value ||

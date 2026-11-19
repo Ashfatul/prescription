@@ -7,7 +7,6 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { useRouter } from "next/navigation";
 
 export interface AuthUser {
   id: string;
@@ -139,7 +138,6 @@ export function AuthProvider({
   children: React.ReactNode;
   initialUser?: AuthUser | null;
 }) {
-  const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(
     initialUser !== undefined ? normalizeUser(initialUser) : null
   );
@@ -442,10 +440,9 @@ export function AuthProvider({
         }
       }
 
-      router.push("/auth/login");
-      router.refresh();
+      window.location.href = "/auth/login";
     }
-  }, [router]);
+  }, []);
 
   return (
     <AuthContext.Provider

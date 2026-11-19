@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withErrorHandling } from "@/lib/api-handler";
-import { requireUser } from "@/lib/auth/session";
+import { requireUser, isRequestSecure } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { updateUserPreferences } from "@/features/users/user.service";
 import { ok } from "@/lib/http";
@@ -33,11 +33,13 @@ export async function PATCH(req: NextRequest) {
       data: updated,
     });
 
+    const isSecure = isRequestSecure(req);
+
     if (updated.theme) {
       response.cookies.set("ppms_theme", updated.theme, {
         path: "/",
         sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
+        secure: isSecure,
         maxAge: 60 * 60 * 24 * 365,
       });
     }
@@ -46,7 +48,7 @@ export async function PATCH(req: NextRequest) {
       response.cookies.set("ppms_accent", updated.accent, {
         path: "/",
         sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
+        secure: isSecure,
         maxAge: 60 * 60 * 24 * 365,
       });
     }

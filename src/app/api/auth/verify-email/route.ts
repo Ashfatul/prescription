@@ -5,6 +5,7 @@ import { withErrorHandling } from "@/lib/api-handler";
 import { AppError } from "@/lib/errors";
 import { signToken } from "@/lib/auth/jwt";
 import { AUTH_COOKIE } from "@/lib/auth/constants";
+import { isRequestSecure } from "@/lib/auth/session";
 import { logActivity } from "@/features/activity-log/activity-log.service";
 
 export async function GET(req: NextRequest) {
@@ -124,10 +125,12 @@ export async function GET(req: NextRequest) {
       },
     });
 
+    const isSecure = isRequestSecure(req);
+
     res.cookies.set(AUTH_COOKIE, sessionToken, {
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      secure: isSecure,
       path: "/",
       maxAge: 60 * 60 * 24 * 7,
     });

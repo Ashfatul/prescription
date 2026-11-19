@@ -38,7 +38,16 @@ export async function getRecentUsers(organizationId?: string, take = 9) {
   });
 }
 
-export async function createUser(input: unknown, creatorUserId?: string) {
+export interface CreateUserOptions {
+  sendVerificationEmail?: boolean;
+  appUrl?: string;
+}
+
+export async function createUser(
+  input: unknown,
+  creatorUserId?: string,
+  options?: CreateUserOptions
+) {
   const data = createUserSchema.parse(input);
   const role = await db.role.findUnique({ where: { name: data.role } });
   if (!role) {
@@ -225,8 +234,8 @@ export async function createUser(input: unknown, creatorUserId?: string) {
     });
   }
 
-  if (shouldRequireVerification && verificationToken) {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  if (options?.sendVerificationEmail !== false && shouldRequireVerification && verificationToken) {
+    const appUrl = options?.appUrl || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     await sendTemplatedEmail({
       key: "EMAIL_VERIFICATION",
       to: user.email,

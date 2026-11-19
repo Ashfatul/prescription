@@ -22,3 +22,12 @@ export function canAccessDashboardPath(pathname: string, role: AppRole) {
 
   return true;
 }
+
+export function getDashboardPathForRole(role?: string | null): string {
+  if (!role) return "/dashboard";
+  if (role === "SUPER_ADMIN" || role === "ADMIN") return "/dashboard/admin";
+  if (role === "DOCTOR") return "/dashboard/doctor";
+  if (role === "STAFF") return "/dashboard/staff";
+  if (role === "PATIENT") return "/dashboard/patient";
+  return "/dashboard";
+}

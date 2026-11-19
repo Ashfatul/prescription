@@ -21,6 +21,7 @@ import { AuthShell } from "@/components/auth/auth-shell";
 import { LoginCompanion } from "@/components/auth/login-companion";
 import { useLanguage } from "@/lib/i18n/language-context";
 import { notifyToast } from "@/lib/toast";
+import { getDashboardPathForRole } from "@/lib/auth/rbac";
 
 export function LoginForm() {
   const router = useRouter();
@@ -40,12 +41,13 @@ export function LoginForm() {
   const [useBackupCode, setUseBackupCode] = useState(false);
   const [twoFactorLoading, setTwoFactorLoading] = useState(false);
 
-  // If user is already authenticated on the client, redirect to dashboard immediately
+  // If user is already authenticated on the client, redirect to role dashboard immediately
   useEffect(() => {
     if (!authLoading && user) {
-      router.replace("/dashboard");
+      const target = getDashboardPathForRole(user.role);
+      window.location.href = target;
     }
-  }, [user, authLoading, router]);
+  }, [user, authLoading]);
 
   const performLogin = async (loginEmail: string, loginPassword: string) => {
     setLoading(true);
@@ -77,8 +79,8 @@ export function LoginForm() {
     }
 
     notifyToast(t("uiLoginSuccessful"), "success");
-    router.push("/dashboard");
-    router.refresh();
+    const target = getDashboardPathForRole(res.user?.role || user?.role);
+    window.location.href = target;
   };
 
   const onSubmit = (e: FormEvent) => {
@@ -103,8 +105,8 @@ export function LoginForm() {
     }
 
     notifyToast(t("uiLoginSuccessful"), "success");
-    router.push("/dashboard");
-    router.refresh();
+    const target = getDashboardPathForRole(res.user?.role || user?.role);
+    window.location.href = target;
   };
 
   const cancel2FA = () => {

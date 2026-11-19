@@ -42,6 +42,10 @@ export async function POST(req: NextRequest) {
       body.organizationId = user.organizationId;
     }
 
-    return ok(await createUser(body, user.sub), 201);
+    const host = req.headers.get("host") || "localhost:3000";
+    const protocol = req.headers.get("x-forwarded-proto") || "http";
+    const appUrl = `${protocol}://${host}`;
+
+    return ok(await createUser(body, user.sub, { appUrl }), 201);
   });
 }

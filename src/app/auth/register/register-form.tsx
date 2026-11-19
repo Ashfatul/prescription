@@ -274,8 +274,7 @@ export function RegisterForm({ onModeChange, onSlugChange }: RegisterFormProps =
         const loginRes = await login(email.trim().toLowerCase(), password);
         if (loginRes.success) {
           notifyToast(t("uiRegistrationSuccessful"), "success");
-          router.refresh();
-          router.push("/dashboard/admin");
+          window.location.href = "/dashboard/admin";
         } else {
           notifyToast(loginRes.error || t("uiRegistrationSuccessfulButLogin"), "info");
           router.push("/auth/login?registered=true");
@@ -318,8 +317,7 @@ export function RegisterForm({ onModeChange, onSlugChange }: RegisterFormProps =
         const loginRes = await login(email.trim().toLowerCase(), password);
         if (loginRes.success) {
           notifyToast(t("uiRegistrationSuccessful"), "success");
-          router.refresh();
-          router.push("/dashboard/patient");
+          window.location.href = "/dashboard/patient";
         } else {
           notifyToast(loginRes.error || t("uiRegistrationSuccessfulButLogin"), "info");
           router.push("/auth/login?registered=true");
