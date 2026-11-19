@@ -530,44 +530,44 @@ export function PrintablePrescriptionView({
                     </div>
                   ) : (
                     medicines.map((med, idx) => (
-                    <div
-                      key={idx}
-                      className="rounded-xl border border-zinc-200/60 bg-white/60 p-3 shadow-xs print:border-b print:border-zinc-200 print:p-2 print:shadow-none"
-                    >
-                      <div className="flex flex-wrap items-baseline justify-between gap-2">
-                        <div className="flex items-baseline gap-1.5">
-                          <span className="font-mono text-xs font-bold opacity-50">{idx + 1}.</span>
-                          <span className="text-xs font-semibold uppercase" style={{ color: themeColor }}>
-                            {med.type || "Tab"}.
-                          </span>
-                          <span className="text-sm font-bold">{med.name}</span>
-                          {med.dosage && (
-                            <span className="text-xs font-medium opacity-75">({med.dosage})</span>
+                      <div
+                        key={idx}
+                        className="rounded-xl border border-zinc-200/60 bg-white/60 p-3 shadow-xs print:border-b print:border-zinc-200 print:p-2 print:shadow-none"
+                      >
+                        <div className="flex flex-wrap items-baseline justify-between gap-2">
+                          <div className="flex items-baseline gap-1.5">
+                            <span className="font-mono text-xs font-bold opacity-50">{idx + 1}.</span>
+                            <span className="text-xs font-semibold uppercase" style={{ color: themeColor }}>
+                              {med.type || "Tab"}.
+                            </span>
+                            <span className="text-sm font-bold">{med.name}</span>
+                            {med.dosage && (
+                              <span className="text-xs font-medium opacity-75">({med.dosage})</span>
+                            )}
+                          </div>
+
+                          {med.duration && (
+                            <span className="rounded bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-zinc-700 print:bg-transparent">
+                              ⏱ {med.duration}
+                            </span>
                           )}
                         </div>
 
-                        {med.duration && (
-                          <span className="rounded bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-zinc-700 print:bg-transparent">
-                            ⏱ {med.duration}
-                          </span>
-                        )}
+                        <div className="mt-1.5 flex flex-wrap items-center gap-3 pl-4 text-xs">
+                          {med.frequency && (
+                            <span className="font-bold tracking-wide opacity-90">
+                              {med.frequency}
+                            </span>
+                          )}
+                          {med.instructions && (
+                            <span className="italic opacity-70">
+                              • {med.instructions}
+                            </span>
+                          )}
+                        </div>
                       </div>
-
-                      <div className="mt-1.5 flex flex-wrap items-center gap-3 pl-4 text-xs">
-                        {med.frequency && (
-                          <span className="font-bold tracking-wide opacity-90">
-                            {med.frequency}
-                          </span>
-                        )}
-                        {med.instructions && (
-                          <span className="italic opacity-70">
-                            • {med.instructions}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))
-                )}
+                    ))
+                  )}
                 </div>
 
                 {/* Advice & Special Instructions */}
