@@ -1,5 +1,5 @@
 import { endOfDay, startOfDay } from "date-fns";
-import { AppointmentStatus, NotificationType, RoleName, OrganizationStatus } from "@prisma/client";
+import { AppointmentStatus, NotificationType, RoleName, OrganizationStatus, Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import {
@@ -475,6 +475,10 @@ export async function createAppointment(
       dietRequired: data.dietRequired ?? false,
       dietInstructionsJson: data.dietInstructions,
       dietNotes: data.dietNotes,
+      vitalsJson: (data.vitals as Prisma.InputJsonValue) ?? undefined,
+      isTriageCompleted: data.isTriageCompleted ?? (data.vitals ? true : false),
+      triagedAt: data.vitals ? new Date() : null,
+      triagedBy: data.vitals && authUser ? (authUser.role || "STAFF") : null,
       status: initialStatus,
       verifiedAt,
       verifiedBy,
@@ -502,9 +506,8 @@ export async function createAppointment(
                 currency: "usd",
                 product_data: {
                   name: `Doctor Consultation - ${doctorRec.user.name}`,
-                  description: `${
-                    visitType === "FOLLOWUP" ? "Follow-up Consultation" : "New Patient Visit"
-                  } • Serial #${serial}`,
+                  description: `${visitType === "FOLLOWUP" ? "Follow-up Consultation" : "New Patient Visit"
+                    } • Serial #${serial}`,
                 },
                 unit_amount: Math.round(finalFee * 100),
               },
@@ -521,18 +524,18 @@ export async function createAppointment(
             authUser?.role === RoleName.ADMIN || authUser?.role === RoleName.SUPER_ADMIN
               ? `${origin}/dashboard/admin?tab=appointments&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`
               : authUser?.role === RoleName.STAFF
-              ? `${origin}/dashboard/staff?tab=appointments&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`
-              : authUser?.role === RoleName.DOCTOR
-              ? `${origin}/dashboard/doctor?tab=appointments&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`
-              : `${origin}/dashboard/patient?tab=overview&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`,
+                ? `${origin}/dashboard/staff?tab=appointments&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`
+                : authUser?.role === RoleName.DOCTOR
+                  ? `${origin}/dashboard/doctor?tab=appointments&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`
+                  : `${origin}/dashboard/patient?tab=overview&paid=true&appointment_id=${appointment.id}&session_id={CHECKOUT_SESSION_ID}`,
           cancel_url:
             authUser?.role === RoleName.ADMIN || authUser?.role === RoleName.SUPER_ADMIN
               ? `${origin}/dashboard/admin?tab=appointments&canceled=true&appointment_id=${appointment.id}`
               : authUser?.role === RoleName.STAFF
-              ? `${origin}/dashboard/staff?tab=appointments&canceled=true&appointment_id=${appointment.id}`
-              : authUser?.role === RoleName.DOCTOR
-              ? `${origin}/dashboard/doctor?tab=appointments&canceled=true&appointment_id=${appointment.id}`
-              : `${origin}/dashboard/patient?tab=overview&canceled=true&appointment_id=${appointment.id}`,
+                ? `${origin}/dashboard/staff?tab=appointments&canceled=true&appointment_id=${appointment.id}`
+                : authUser?.role === RoleName.DOCTOR
+                  ? `${origin}/dashboard/doctor?tab=appointments&canceled=true&appointment_id=${appointment.id}`
+                  : `${origin}/dashboard/patient?tab=overview&canceled=true&appointment_id=${appointment.id}`,
         });
 
         stripeCheckoutUrl = session.url;
@@ -568,7 +571,19 @@ export async function createAppointment(
 export async function confirmAppointment(
   id: string,
   user: { role: RoleName; userId: string; name?: string },
-  notes?: string
+  notes?: string,
+  extraData?: {
+    vitals?: Record<string, unknown> | null;
+    diseases?: string[];
+    allergies?: string[];
+    medicalFlags?: string[];
+    dietRequired?: boolean;
+    dietInstructions?: string[];
+    dietNotes?: string;
+    isTriageCompleted?: boolean;
+    paymentMethod?: string;
+    paymentStatus?: string;
+  }
 ) {
   if (user.role === RoleName.PATIENT) {
     throw new AppError("Unauthorized: Patients cannot confirm appointments. Only clinic staff or doctors can confirm.", 403);
@@ -594,6 +609,21 @@ export async function confirmAppointment(
       verifiedAt: new Date(),
       verifiedBy: user.name || `Clinic Staff (${user.role})`,
       verificationNotes: notes || "Doctor availability, timing, and payment verified by clinic staff.",
+      ...(extraData?.vitals !== undefined ? { vitalsJson: extraData.vitals as Prisma.InputJsonValue } : {}),
+      ...(extraData?.diseases !== undefined ? { diseasesJson: extraData.diseases as Prisma.InputJsonValue } : {}),
+      ...(extraData?.allergies !== undefined ? { allergiesJson: extraData.allergies as Prisma.InputJsonValue } : {}),
+      ...(extraData?.medicalFlags !== undefined ? { medicalFlagsJson: extraData.medicalFlags as Prisma.InputJsonValue } : {}),
+      ...(extraData?.dietRequired !== undefined ? { dietRequired: extraData.dietRequired } : {}),
+      ...(extraData?.dietInstructions !== undefined ? { dietInstructionsJson: extraData.dietInstructions as Prisma.InputJsonValue } : {}),
+      ...(extraData?.dietNotes !== undefined ? { dietNotes: extraData.dietNotes } : {}),
+      ...(extraData?.isTriageCompleted !== undefined
+        ? { isTriageCompleted: extraData.isTriageCompleted }
+        : extraData?.vitals
+          ? { isTriageCompleted: true }
+          : {}),
+      ...(extraData?.vitals ? { triagedAt: new Date(), triagedBy: user.name || `Clinic Staff (${user.role})` } : {}),
+      ...(extraData?.paymentMethod ? { paymentMethod: extraData.paymentMethod } : {}),
+      ...(extraData?.paymentStatus ? { paymentStatus: extraData.paymentStatus } : {}),
     },
     include: appointmentInclude,
   });
@@ -777,7 +807,18 @@ export async function updateAppointment(
 
   // If status is being transitioned to CONFIRMED and user is provided
   if (data.status === AppointmentStatus.CONFIRMED && user) {
-    return confirmAppointment(id, user, data.verificationNotes || undefined);
+    return confirmAppointment(id, user, data.verificationNotes || undefined, {
+      vitals: data.vitals,
+      diseases: data.diseases,
+      allergies: data.allergies,
+      medicalFlags: data.medicalFlags,
+      dietRequired: data.dietRequired,
+      dietInstructions: data.dietInstructions,
+      dietNotes: data.dietNotes,
+      isTriageCompleted: data.isTriageCompleted,
+      paymentMethod: data.paymentMethod,
+      paymentStatus: data.paymentStatus,
+    });
   }
 
   return db.appointment.update({
@@ -795,6 +836,19 @@ export async function updateAppointment(
       ...(data.verifiedAt !== undefined ? { verifiedAt: data.verifiedAt ? new Date(data.verifiedAt) : null } : {}),
       ...(data.verifiedBy !== undefined ? { verifiedBy: data.verifiedBy } : {}),
       ...(data.verificationNotes !== undefined ? { verificationNotes: data.verificationNotes } : {}),
+      ...(data.vitals !== undefined ? { vitalsJson: data.vitals as Prisma.InputJsonValue } : {}),
+      ...(data.diseases !== undefined ? { diseasesJson: data.diseases as Prisma.InputJsonValue } : {}),
+      ...(data.allergies !== undefined ? { allergiesJson: data.allergies as Prisma.InputJsonValue } : {}),
+      ...(data.medicalFlags !== undefined ? { medicalFlagsJson: data.medicalFlags as Prisma.InputJsonValue } : {}),
+      ...(data.dietRequired !== undefined ? { dietRequired: data.dietRequired } : {}),
+      ...(data.dietInstructions !== undefined ? { dietInstructionsJson: data.dietInstructions as Prisma.InputJsonValue } : {}),
+      ...(data.dietNotes !== undefined ? { dietNotes: data.dietNotes } : {}),
+      ...(data.isTriageCompleted !== undefined
+        ? { isTriageCompleted: data.isTriageCompleted }
+        : data.vitals
+          ? { isTriageCompleted: true }
+          : {}),
+      ...(data.vitals && user ? { triagedAt: new Date(), triagedBy: user.name || `Clinic Staff (${user.role})` } : {}),
     },
     include: appointmentInclude,
   });

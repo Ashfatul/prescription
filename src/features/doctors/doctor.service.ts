@@ -183,6 +183,10 @@ export async function getDoctorQueue(id: string) {
       medicalFlagsJson: true,
       dietRequired: true,
       dietInstructionsJson: true,
+      vitalsJson: true,
+      isTriageCompleted: true,
+      triagedAt: true,
+      triagedBy: true,
       patient: {
         select: {
           id: true,

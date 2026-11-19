@@ -1577,6 +1577,20 @@ export const bn = {
    ,"uiDeselectAll": "সব অনির্বাচন করুন"
    ,"uiManageableScopeNotice": "ব্যবস্থাপনাধীন রোলসমূহ: চিকিৎসক, স্টাফ, রোগী"
    ,"uiCategoryCollapsibleHint": "ক্যাটাগরি প্রসারিত বা সংকুচিত করতে হেডারে ক্লিক করুন"
+   ,"uiTriageAndIntakeDetails": "পরামর্শ-পূর্ব ট্রায়াজ ও বিবরণ"
+   ,"uiMarkReadyForDoctor": "ডাক্তারের কিউতে প্রস্তুত করুন"
+   ,"uiReadyForDoctorQueue": "পরামর্শের জন্য প্রস্তুত"
+   ,"uiTriageCompletedBadge": "ট্রায়াজ প্রস্তুত"
+   ,"uiTriagePendingBadge": "ট্রায়াজ বাকি"
+   ,"uiEditVitalsAndContext": "ভাইটালস ও ইতিহাস পরিবর্তন করুন"
+   ,"uiClinicalOverrideTitle": "চিকিৎসকের ক্লিনিক্যাল পরিবর্তন: ভাইটালস ও ইতিহাস"
+   ,"uiSaveAndApply": "সংরক্ষণ ও প্রয়োগ করুন"
+   ,"uiRecordedByStaff": "স্টাফ ট্রায়াজ"
+   ,"uiNoKnownAllergies": "কোনো জানা ওষুধের এলার্জি নেই (NKDA)"
+   ,"uiNoChronicIllness": "কোনো দীর্ঘস্থায়ী রোগ নথিবদ্ধ নেই"
+   ,"uiOpenTriageModal": "ট্রায়াজ ও প্রস্তুতি"
+   ,"uiVitalsMeasuredByFrontDesk": "ফ্রন্ট ডেস্ক ট্রায়াজ কর্তৃক পরিমাপিত"
+   ,"uiReMeasureVitalsPrompt": "চেম্বার পরামর্শ চলাকালে পুনরায় পরিমাপ করা হলে নিচের মানগুলো পরিবর্তন করুন:"
 } as const;
 
 export default bn;

@@ -17,6 +17,9 @@ import {
   Stethoscope,
   Activity,
   ShieldAlert,
+  ShieldCheck,
+  HeartPulse,
+  Edit3,
   Phone,
   Mail,
   FileSearch,
@@ -87,6 +90,10 @@ export type AppointmentInfo = {
   dietRequired?: boolean | null;
   dietInstructionsJson?: unknown;
   dietNotes?: string | null;
+  vitalsJson?: unknown;
+  isTriageCompleted?: boolean | null;
+  triagedAt?: string | null;
+  triagedBy?: string | null;
   patient: PatientInfo;
 };
 
@@ -439,14 +446,15 @@ export function PrescriptionEditor({
   const [docContact, setDocContact] = useState(initO.contactNumber || doctor.contactNumber || "");
   const docSignatureUrl = initO.signatureUrl || doctor.signatureUrl || doctor.user?.signatureUrl || "";
 
-  // Triage Vitals (Staff prepared, Doctor can refine)
-  const initV = (initialPrescriptionToRevise?.vitalsJson as Record<string, string>) || {};
+  // Triage Vitals (Staff prepared, Doctor can refine via viewer/override)
+  const initV = (initialPrescriptionToRevise?.vitalsJson as Record<string, string>) || (currentAppointment?.vitalsJson as Record<string, string>) || {};
   const [bp, setBp] = useState(initV.bp || triage.bp || "");
   const [pulse, setPulse] = useState(initV.pulse || triage.pulse || "");
   const [temp, setTemp] = useState(initV.temp || triage.temp || "");
   const [weight, setWeight] = useState(initV.weight || triage.weight || "");
   const [bloodSugar, setBloodSugar] = useState(initV.bloodSugar || "");
   const [spo2, setSpo2] = useState(initV.spo2 || "");
+  const [showClinicalOverrideModal, setShowClinicalOverrideModal] = useState(false);
 
   // Clinical History & Allergies (Staff triage populated)
   const initC = (initialPrescriptionToRevise?.clinicalInfoJson as Record<string, string>) || {};
@@ -475,7 +483,6 @@ export function PrescriptionEditor({
 
   const [medicalHistory, setMedicalHistory] = useState(initialHistory);
   const [allergies, setAllergies] = useState(initialAllergies);
-  const [clinicalContextEditable, setClinicalContextEditable] = useState(false);
 
   // Complaints & Diagnosis
   const [complaints, setComplaints] = useState(
@@ -1073,153 +1080,377 @@ export function PrescriptionEditor({
           </div>
         </div>
 
-        {/* Triage Vitals Strip */}
-        <div>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-2 flex items-center gap-1.5">
-            <Activity className="w-3.5 h-3.5 text-rose-500" />
-            <span>{t.triageVitalsRecorded}</span>
-          </span>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
-              <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.bpUnit}</label>
-              <input
-                type="text"
-                value={bp}
-                onChange={(e) => setBp(e.target.value)}
-                placeholder="120/80"
-                className="w-full mt-1 font-mono font-bold text-xs text-slate-900 dark:text-white bg-transparent focus:outline-none"
-              />
+        {/* Sleek Pre-Consultation Telemetry & Clinical Context (Staff Prepared - Doctor Viewer by Default) */}
+        <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-xs space-y-3.5">
+          {/* Header Strip: Title + Status + Modify CTA */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800/80">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span className="p-1 rounded-md bg-rose-500/10 text-rose-500">
+                <Activity className="w-4 h-4" />
+              </span>
+              <div>
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                  {t("uiVitalsMeasuredByFrontDesk", "Pre-Consultation Vitals & Triage")}
+                </span>
+                <span className="text-[10px] text-slate-400">
+                  {currentAppointment?.triagedBy
+                    ? `${t("uiRecordedByStaff", "Staff Triage")}: ${currentAppointment.triagedBy}`
+                    : (currentAppointment?.isTriageCompleted
+                        ? t("uiTriageCompletedBadge", "Triage Ready")
+                        : t("uiTriageVitalsRecorded", "Recorded by Front Desk"))}
+                </span>
+              </div>
+              {currentAppointment?.isTriageCompleted || bp || pulse || temp || weight ? (
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-bold flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  <span>{t("uiTriageCompletedBadge", "Triage Ready")}</span>
+                </span>
+              ) : (
+                <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[10px] font-bold flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" />
+                  <span>{t("uiTriagePendingBadge", "Triage Pending Front Desk")}</span>
+                </span>
+              )}
             </div>
 
-            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
-              <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.pulseUnit}</label>
-              <input
-                type="text"
-                value={pulse}
-                onChange={(e) => setPulse(e.target.value)}
-                placeholder="72 bpm"
-                className="w-full mt-1 font-mono font-bold text-xs text-slate-900 dark:text-white bg-transparent focus:outline-none"
-              />
+            <button
+              type="button"
+              onClick={() => setShowClinicalOverrideModal(true)}
+              className="self-start sm:self-auto px-3.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+            >
+              <Edit3 className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
+              <span>{t("uiEditVitalsAndContext", "Modify Vitals & History")}</span>
+            </button>
+          </div>
+
+          {/* Metric Telemetry Strip (Read-Only) */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/70 dark:border-slate-800/70">
+              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
+                {t.bpUnit}
+              </span>
+              <div className="mt-1 flex items-baseline gap-1">
+                <span className="text-sm sm:text-base font-mono font-black text-slate-900 dark:text-white">
+                  {bp || "—"}
+                </span>
+                {bp && !bp.toLowerCase().includes("mm") && (
+                  <span className="text-[10px] text-slate-400 font-medium">mmHg</span>
+                )}
+              </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
-              <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.tempUnit}</label>
-              <input
-                type="text"
-                value={temp}
-                onChange={(e) => setTemp(e.target.value)}
-                placeholder="98.6 °F"
-                className="w-full mt-1 font-mono font-bold text-xs text-slate-900 dark:text-white bg-transparent focus:outline-none"
-              />
+            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/70 dark:border-slate-800/70">
+              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
+                {t.pulseUnit}
+              </span>
+              <div className="mt-1 flex items-baseline gap-1">
+                <span className="text-sm sm:text-base font-mono font-black text-slate-900 dark:text-white">
+                  {pulse || "—"}
+                </span>
+                {pulse && !pulse.toLowerCase().includes("bpm") && (
+                  <span className="text-[10px] text-slate-400 font-medium">bpm</span>
+                )}
+              </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
-              <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.weightUnit}</label>
-              <input
-                type="text"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-                placeholder="65 kg"
-                className="w-full mt-1 font-mono font-bold text-xs text-slate-900 dark:text-white bg-transparent focus:outline-none"
-              />
+            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/70 dark:border-slate-800/70">
+              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
+                {t.tempUnit}
+              </span>
+              <div className="mt-1 flex items-baseline gap-1">
+                <span className="text-sm sm:text-base font-mono font-black text-slate-900 dark:text-white">
+                  {temp || "—"}
+                </span>
+                {temp && !temp.includes("°") && (
+                  <span className="text-[10px] text-slate-400 font-medium">°F</span>
+                )}
+              </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
-              <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.bloodSugarUnit}</label>
-              <input
-                type="text"
-                value={bloodSugar}
-                onChange={(e) => setBloodSugar(e.target.value)}
-                placeholder="7.2 mmol/L"
-                className="w-full mt-1 font-mono font-bold text-xs text-slate-900 dark:text-white bg-transparent focus:outline-none"
-              />
+            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/70 dark:border-slate-800/70">
+              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
+                {t.weightUnit}
+              </span>
+              <div className="mt-1 flex items-baseline gap-1">
+                <span className="text-sm sm:text-base font-mono font-black text-slate-900 dark:text-white">
+                  {weight || "—"}
+                </span>
+                {weight && !weight.toLowerCase().includes("kg") && (
+                  <span className="text-[10px] text-slate-400 font-medium">kg</span>
+                )}
+              </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80">
-              <label className="text-[10px] font-bold text-slate-500 uppercase block">{t.spo2Unit}</label>
-              <input
-                type="text"
-                value={spo2}
-                onChange={(e) => setSpo2(e.target.value)}
-                placeholder="98%"
-                className="w-full mt-1 font-mono font-bold text-xs text-slate-900 dark:text-white bg-transparent focus:outline-none"
-              />
+            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/70 dark:border-slate-800/70">
+              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
+                {t.bloodSugarUnit}
+              </span>
+              <div className="mt-1 flex items-baseline gap-1">
+                <span className="text-sm sm:text-base font-mono font-black text-slate-900 dark:text-white truncate">
+                  {bloodSugar || "—"}
+                </span>
+              </div>
             </div>
+
+            <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200/70 dark:border-slate-800/70">
+              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
+                {t.spo2Unit}
+              </span>
+              <div className="mt-1 flex items-baseline gap-1">
+                <span className="text-sm sm:text-base font-mono font-black text-slate-900 dark:text-white">
+                  {spo2 || "—"}
+                </span>
+                {spo2 && !spo2.includes("%") && (
+                  <span className="text-[10px] text-slate-400 font-medium">%</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Dual Summary: Allergies & Medical History (Read-Only) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-1">
+            {/* Allergies Card */}
+            {allergies.trim() ? (
+              <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-950 dark:text-rose-100 flex items-start gap-2.5">
+                <ShieldAlert className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase font-extrabold tracking-wider text-rose-700 dark:text-rose-300">
+                      {t.drugAllergiesWarnings}
+                    </span>
+                    <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-rose-200 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200">
+                      {t.safetyCritical}
+                    </span>
+                  </div>
+                  <p className="text-xs font-semibold mt-0.5 break-words text-rose-900 dark:text-rose-200 whitespace-pre-line leading-relaxed">
+                    {allergies}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 text-slate-500 flex items-center gap-2.5">
+                <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
+                    {t.drugAllergiesWarnings}
+                  </span>
+                  <p className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                    {t("uiNoKnownAllergies", "No Known Drug Allergies (NKDA)")}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Medical History Card */}
+            {medicalHistory.trim() ? (
+              <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-950 dark:text-blue-100 flex items-start gap-2.5">
+                <HeartPulse className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                <div className="min-w-0 flex-1">
+                  <span className="text-[10px] uppercase font-extrabold tracking-wider text-blue-700 dark:text-blue-300 block">
+                    {t.medicalHistoryStaff}
+                  </span>
+                  <p className="text-xs font-semibold mt-0.5 break-words text-blue-900 dark:text-blue-200 whitespace-pre-line leading-relaxed">
+                    {medicalHistory}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="p-3 rounded-lg bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 text-slate-500 flex items-center gap-2.5">
+                <FileText className="w-4 h-4 text-slate-400 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
+                    {t.medicalHistoryStaff}
+                  </span>
+                  <p className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                    {t("uiNoChronicIllness", "No Chronic Illness Recorded")}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Safety Critical Alerts (History & Allergies from Staff Intake) */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-2">
-          {/* Drug Allergies Alert */}
-          <div className="p-4 rounded-lg bg-rose-50/60 dark:bg-rose-950/30 border border-rose-200/70 dark:border-rose-900/60 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-rose-700 dark:text-rose-300 flex items-center gap-1.5">
-                <ShieldAlert className="w-3.5 h-3.5" />
-                <span>{t.drugAllergiesWarnings}</span>
-              </span>
-              <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-200 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200">
-                {t.safetyCritical}
-              </span>
-            </div>
-            <textarea
-              rows={2}
-              value={allergies}
-              onChange={(e) => setAllergies(e.target.value)}
-              readOnly={!clinicalContextEditable}
-              placeholder={t.allergiesInputPlaceholder}
-              className="w-full px-3 py-2 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white focus:outline-none"
-            />
-            <div className="flex flex-wrap gap-1.5">
-              {ALLERGY_PRESETS.map((a) => (
+        {/* Doctor Clinical Override Modal (Allows Doctor to Refine Vitals or Clinical Context) */}
+        {showClinicalOverrideModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs animate-in fade-in">
+            <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-800 bg-[var(--bg-elevated)] p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-primary)]">
+                    <Edit3 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
+                      {t("uiClinicalOverrideTitle", "Physician Clinical Override: Vitals & History")}
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      {t("uiReMeasureVitalsPrompt", "If re-measured during chamber consultation, update the values below:")}
+                    </p>
+                  </div>
+                </div>
                 <button
-                  key={a}
                   type="button"
-                  onClick={() => appendAllergy(a)}
-                  className="px-2 py-0.5 rounded-lg bg-white dark:bg-slate-900 text-[11px] font-semibold text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900/40 hover:bg-rose-100 transition cursor-pointer"
+                  onClick={() => setShowClinicalOverrideModal(false)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
                 >
-                  + {a}
+                  <X className="w-5 h-5" />
                 </button>
-              ))}
-            </div>
-          </div>
+              </div>
 
-          {/* Medical History */}
-          <div className="p-4 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                {t.medicalHistoryStaff}
-              </span>
-              <button
-                type="button"
-                onClick={() => setClinicalContextEditable((current) => !current)}
-                className="text-[10px] font-bold text-[var(--brand-text)] hover:underline"
-              >
-                {clinicalContextEditable ? t("uiLockClinicalContext", "Lock") : t("uiEditClinicalContext", "Edit")}
-              </button>
-            </div>
-            <textarea
-              rows={2}
-              value={medicalHistory}
-              onChange={(e) => setMedicalHistory(e.target.value)}
-              readOnly={!clinicalContextEditable}
-              placeholder={t.chronicConditionsPlaceholder}
-              className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white focus:outline-none"
-            />
-            <div className="flex flex-wrap gap-1.5">
-              {HISTORY_PRESETS.map((h) => (
+              {/* Vitals Form Inputs */}
+              <div className="space-y-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+                  Vital Signs (Re-measurement)
+                </span>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">{t.bpUnit}</label>
+                    <input
+                      type="text"
+                      value={bp}
+                      onChange={(e) => setBp(e.target.value)}
+                      placeholder="120/80"
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white font-mono font-bold focus:outline-none focus:border-[var(--brand-primary)]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">{t.pulseUnit}</label>
+                    <input
+                      type="text"
+                      value={pulse}
+                      onChange={(e) => setPulse(e.target.value)}
+                      placeholder="72 bpm"
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white font-mono font-bold focus:outline-none focus:border-[var(--brand-primary)]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">{t.tempUnit}</label>
+                    <input
+                      type="text"
+                      value={temp}
+                      onChange={(e) => setTemp(e.target.value)}
+                      placeholder="98.6 °F"
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white font-mono font-bold focus:outline-none focus:border-[var(--brand-primary)]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">{t.weightUnit}</label>
+                    <input
+                      type="text"
+                      value={weight}
+                      onChange={(e) => setWeight(e.target.value)}
+                      placeholder="65 kg"
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white font-mono font-bold focus:outline-none focus:border-[var(--brand-primary)]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">{t.bloodSugarUnit}</label>
+                    <input
+                      type="text"
+                      value={bloodSugar}
+                      onChange={(e) => setBloodSugar(e.target.value)}
+                      placeholder="7.2 mmol/L"
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white font-mono font-bold focus:outline-none focus:border-[var(--brand-primary)]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">{t.spo2Unit}</label>
+                    <input
+                      type="text"
+                      value={spo2}
+                      onChange={(e) => setSpo2(e.target.value)}
+                      placeholder="98%"
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white font-mono font-bold focus:outline-none focus:border-[var(--brand-primary)]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Drug Allergies Form */}
+              <div className="space-y-2 p-3.5 rounded-lg bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200/60 dark:border-rose-900/50">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-rose-700 dark:text-rose-300 flex items-center gap-1.5">
+                    <ShieldAlert className="w-3.5 h-3.5" />
+                    <span>{t.drugAllergiesWarnings}</span>
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-200 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200">
+                    {t.safetyCritical}
+                  </span>
+                </div>
+                <textarea
+                  rows={2}
+                  value={allergies}
+                  onChange={(e) => setAllergies(e.target.value)}
+                  placeholder={t.allergiesInputPlaceholder}
+                  className="w-full px-3 py-2 rounded-lg border border-rose-200 dark:border-rose-900/50 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white focus:outline-none"
+                />
+                <div className="flex flex-wrap gap-1.5">
+                  {ALLERGY_PRESETS.map((a) => (
+                    <button
+                      key={a}
+                      type="button"
+                      onClick={() => appendAllergy(a)}
+                      className="px-2 py-0.5 rounded-md bg-white dark:bg-slate-900 text-[11px] font-semibold text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900/40 hover:bg-rose-100 transition cursor-pointer"
+                    >
+                      + {a}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Medical History Form */}
+              <div className="space-y-2 p-3.5 rounded-lg bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800">
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
+                  {t.medicalHistoryStaff}
+                </span>
+                <textarea
+                  rows={2}
+                  value={medicalHistory}
+                  onChange={(e) => setMedicalHistory(e.target.value)}
+                  placeholder={t.chronicConditionsPlaceholder}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white focus:outline-none"
+                />
+                <div className="flex flex-wrap gap-1.5">
+                  {HISTORY_PRESETS.map((h) => (
+                    <button
+                      key={h}
+                      type="button"
+                      onClick={() => appendHistory(h)}
+                      className="px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 text-[11px] font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition cursor-pointer"
+                    >
+                      + {h}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
-                  key={h}
                   type="button"
-                  onClick={() => appendHistory(h)}
-                  className="px-2 py-0.5 rounded-lg bg-white dark:bg-slate-800 text-[11px] font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition cursor-pointer"
+                  onClick={() => setShowClinicalOverrideModal(false)}
+                  className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition cursor-pointer"
                 >
-                  + {h}
+                  {t.cancel}
                 </button>
-              ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowClinicalOverrideModal(false);
+                    notifyToast(
+                      language === "bn"
+                        ? "ক্লিনিক্যাল তথ্য ও ভাইটালস সফলভাবে আপডেট করা হয়েছে।"
+                        : "Clinical vitals and context updated by physician.",
+                      "success"
+                    );
+                  }}
+                  className="px-5 py-2 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-95 transition cursor-pointer shadow-xs"
+                >
+                  {t("uiSaveAndApply", "Save & Apply")}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

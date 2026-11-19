@@ -19,7 +19,19 @@ export async function POST(
         role: auth.role,
         userId: auth.sub,
       },
-      body.verificationNotes || body.notes
+      body.verificationNotes || body.notes,
+      {
+        vitals: body.vitals,
+        diseases: body.diseases,
+        allergies: body.allergies,
+        medicalFlags: body.medicalFlags,
+        dietRequired: body.dietRequired,
+        dietInstructions: body.dietInstructions,
+        dietNotes: body.dietNotes,
+        isTriageCompleted: body.isTriageCompleted,
+        paymentMethod: body.paymentMethod,
+        paymentStatus: body.paymentStatus,
+      }
     );
 
     return ok(result);

@@ -83,6 +83,10 @@ export interface AppointmentRecord {
   dietRequired?: boolean | null;
   dietInstructionsJson?: string[] | null;
   dietNotes?: string | null;
+  vitalsJson?: Record<string, string> | null;
+  isTriageCompleted?: boolean | null;
+  triagedAt?: string | null;
+  triagedBy?: string | null;
   doctor: {
     id: string;
     specialization: string;
@@ -298,7 +302,26 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
     dietNotes: "",
   });
 
-  // Reception Payment & Fee State
+  // Staff Pre-Consultation Triage Modal State
+  const [triageModalAppt, setTriageModalAppt] = useState<AppointmentRecord | null>(null);
+  const [triageBp, setTriageBp] = useState("120/80");
+  const [triagePulse, setTriagePulse] = useState("72");
+  const [triageTemp, setTriageTemp] = useState("98.6");
+  const [triageWeight, setTriageWeight] = useState("");
+  const [triageBloodSugar, setTriageBloodSugar] = useState("");
+  const [triageSpo2, setTriageSpo2] = useState("98");
+  const [triageComplaint, setTriageComplaint] = useState("");
+  const [triageIntake, setTriageIntake] = useState<ClinicalIntakeData>({
+    diseases: [],
+    allergies: [],
+    medicalFlags: [],
+    dietRequired: false,
+    dietInstructions: [],
+    dietNotes: "",
+  });
+  const [savingTriage, setSavingTriage] = useState(false);
+  const [walkinBloodSugar, setWalkinBloodSugar] = useState("");
+  const [walkinSpo2, setWalkinSpo2] = useState("");
   const [staffFeeBreakdown, setStaffFeeBreakdown] = useState<FeeBreakdown | null>(null);
   const [staffVisitType, setStaffVisitType] = useState<"NEW" | "FOLLOWUP" | "REPORT_REVIEW">("NEW");
   const [staffPaymentMethod, setStaffPaymentMethod] = useState<"CASH" | "CARD_POS" | "WAIVED">("CASH");
@@ -545,6 +568,104 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
     }
   };
 
+  const handleOpenTriageModal = (appt: AppointmentRecord) => {
+    setTriageModalAppt(appt);
+    const v = (appt.vitalsJson as Record<string, string>) || {};
+    let extractedBp = v.bp || "";
+    let extractedPulse = v.pulse || "";
+    let extractedTemp = v.temp || "";
+    let extractedWeight = v.weight || "";
+    let extractedComplaint = "";
+
+    if (appt.notes) {
+      const bpM = appt.notes.match(/BP:\s*([^,|]+)/i);
+      if (bpM && bpM[1] !== "N/A" && !extractedBp) extractedBp = bpM[1].trim();
+      const pM = appt.notes.match(/Pulse:\s*([^,|]+)/i);
+      if (pM && pM[1] !== "N/A" && !extractedPulse) extractedPulse = pM[1].trim();
+      const tM = appt.notes.match(/Temp:\s*([^,|]+)/i);
+      if (tM && tM[1] !== "N/A" && !extractedTemp) extractedTemp = tM[1].trim();
+      const wM = appt.notes.match(/Wt:\s*([^,|]+)/i);
+      if (wM && wM[1] !== "N/A" && !extractedWeight) extractedWeight = wM[1].trim();
+      const cM = appt.notes.match(/Complaint:\s*([^|]+)/i);
+      if (cM) extractedComplaint = cM[1].trim();
+      else if (!appt.notes.includes("Vitals -")) extractedComplaint = appt.notes;
+    }
+
+    setTriageBp(extractedBp || "120/80");
+    setTriagePulse(extractedPulse || "72");
+    setTriageTemp(extractedTemp || "98.6");
+    setTriageWeight(extractedWeight || "");
+    setTriageBloodSugar(v.bloodSugar || "");
+    setTriageSpo2(v.spo2 || "98");
+    setTriageComplaint(extractedComplaint);
+
+    setTriageIntake({
+      diseases: Array.isArray(appt.diseasesJson) ? (appt.diseasesJson as string[]) : [],
+      allergies: Array.isArray(appt.allergiesJson) ? (appt.allergiesJson as string[]) : [],
+      medicalFlags: Array.isArray(appt.medicalFlagsJson) ? (appt.medicalFlagsJson as string[]) : [],
+      dietRequired: !!appt.dietRequired,
+      dietInstructions: Array.isArray(appt.dietInstructionsJson) ? (appt.dietInstructionsJson as string[]) : [],
+      dietNotes: appt.dietNotes || "",
+    });
+  };
+
+  const handleSaveStaffTriage = async (markReadyForDoctor: boolean) => {
+    if (!triageModalAppt) return;
+    setSavingTriage(true);
+    try {
+      const vitalsPayload = {
+        bp: triageBp.trim(),
+        pulse: triagePulse.trim(),
+        temp: triageTemp.trim(),
+        weight: triageWeight.trim(),
+        bloodSugar: triageBloodSugar.trim(),
+        spo2: triageSpo2.trim(),
+      };
+
+      const res = await fetch(`/api/appointments/${triageModalAppt.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: markReadyForDoctor ? "CONFIRMED" : triageModalAppt.status,
+          notes: triageComplaint.trim() || undefined,
+          vitals: vitalsPayload,
+          diseases: triageIntake.diseases,
+          allergies: triageIntake.allergies,
+          medicalFlags: triageIntake.medicalFlags,
+          dietRequired: triageIntake.dietRequired,
+          dietInstructions: triageIntake.dietInstructions,
+          dietNotes: triageIntake.dietNotes,
+          isTriageCompleted: true,
+          verificationNotes: markReadyForDoctor
+            ? "Pre-consultation triage verified and queued for doctor by clinic staff."
+            : undefined,
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.message || "Failed to update triage information");
+      }
+
+      const msg = markReadyForDoctor
+        ? (language === "bn"
+            ? `সিরিয়াল #${triageModalAppt.serialNumber} (${triageModalAppt.patient.user.name})-এর ট্রায়াজ সম্পন্ন হয়েছে এবং ডাক্তারের কিউতে পাঠানো হয়েছে!`
+            : `Serial #${triageModalAppt.serialNumber} (${triageModalAppt.patient.user.name}) triage completed and marked Ready for Doctor's Queue!`)
+        : (language === "bn"
+            ? "ট্রায়াজ তথ্য সফলভাবে সংরক্ষিত হয়েছে।"
+            : "Triage details saved successfully.");
+
+      notifyToast(msg, "success");
+      setTriageModalAppt(null);
+      void loadData();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to save triage";
+      notifyToast(msg, "error");
+    } finally {
+      setSavingTriage(false);
+    }
+  };
+
   // Action: Mark Payment Collected & Confirm simultaneously
   const handleCollectPaymentAndConfirm = async (
     id: string,
@@ -753,6 +874,15 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
           dietRequired: intake.dietRequired,
           dietInstructions: intake.dietInstructions,
           dietNotes: intake.dietNotes,
+          vitals: {
+            bp: bp || "",
+            pulse: pulse || "",
+            temp: temp || "",
+            weight: weight || "",
+            bloodSugar: walkinBloodSugar || "",
+            spo2: walkinSpo2 || "",
+          },
+          isTriageCompleted: true,
         }),
       });
 
@@ -773,6 +903,8 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
       setWalkinAge("");
       setWalkinHistory("");
       setComplaint("");
+      setWalkinBloodSugar("");
+      setWalkinSpo2("");
       setIntake({
         diseases: [],
         allergies: [],
@@ -1279,13 +1411,15 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                             <HeartPulse className="w-3.5 h-3.5" />
                             4. Triage & Intake
                           </span>
-                          <span className="text-[10px] font-bold text-slate-500">
-                            {appt.visitType === "REPORT_REVIEW"
-                              ? "Report Review"
-                              : appt.visitType === "FOLLOWUP"
-                              ? "Follow-up"
-                              : "First Visit"}
-                          </span>
+                          {appt.isTriageCompleted || appt.vitalsJson ? (
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[9px] font-black uppercase">
+                              ✓ Triage Ready
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[9px] font-black uppercase">
+                              ! Triage Pending
+                            </span>
+                          )}
                         </div>
 
                         <div className="space-y-1.5">
@@ -1365,6 +1499,16 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                             <span>Collect ${appt.fee} Cash & Confirm</span>
                           </button>
                         )}
+
+                        {/* Pre-Consultation Triage Details Sheet & Approval */}
+                        <button
+                          type="button"
+                          onClick={() => handleOpenTriageModal(appt)}
+                          className="px-4 py-2.5 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] hover:brightness-95 text-[var(--brand-text)] text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+                        >
+                          <HeartPulse className="w-3.5 h-3.5 text-rose-500" />
+                          <span>{t("uiOpenTriageModal", "Triage & Prepare for Doctor")}</span>
+                        </button>
 
                         {/* Standard Confirm & Activate button (mark as simple active) */}
                         <button
@@ -1571,7 +1715,7 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                   <Activity className="w-3.5 h-3.5 text-rose-500" />
                   Pre-Consultation Vitals & Triage (Optional)
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
                   <input
                     type="text"
                     placeholder="BP (120/80)"
@@ -1598,6 +1742,20 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                     placeholder="Weight (65 kg)"
                     value={weight}
                     onChange={(e) => setWeight(e.target.value)}
+                    className="px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-slate-900 dark:text-white"
+                  />
+                  <input
+                    type="text"
+                    placeholder="RBS (7.2 mmol/L)"
+                    value={walkinBloodSugar}
+                    onChange={(e) => setWalkinBloodSugar(e.target.value)}
+                    className="px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-slate-900 dark:text-white"
+                  />
+                  <input
+                    type="text"
+                    placeholder="SpO2 (98%)"
+                    value={walkinSpo2}
+                    onChange={(e) => setWalkinSpo2(e.target.value)}
                     className="px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-slate-900 dark:text-white"
                   />
                 </div>
@@ -1925,6 +2083,15 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                       </td>
                       <td className="py-3 px-3 text-right">
                         <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenTriageModal(appt)}
+                            title="Pre-consultation vitals & clinical triage"
+                            className="px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-200 cursor-pointer flex items-center gap-1"
+                          >
+                            <HeartPulse className="w-3 h-3 text-rose-500" />
+                            <span>Triage</span>
+                          </button>
                           <button
                             type="button"
                             onClick={() => openReportUploadModal(appt.patient.id, appt.patient.user.name, appt.doctor.id)}
@@ -2683,6 +2850,252 @@ export function ReceptionManager({ initialTab = "verifications" }: ReceptionMana
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* 4. PRE-CONSULTATION STAFF CLINICAL TRIAGE MODAL */}
+      {triageModalAppt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto animate-in fade-in">
+          <div className="relative w-full max-w-3xl my-8 rounded-xl bg-[var(--bg-elevated)] border border-slate-200 dark:border-slate-800 p-6 sm:p-7 shadow-2xl space-y-6">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                  <HeartPulse className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">
+                      {t("uiTriageAndIntakeDetails", "Pre-Consultation Triage & Details")}
+                    </h3>
+                    <span className="px-2.5 py-0.5 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-[10px] font-bold uppercase">
+                      Serial #{triageModalAppt.serialNumber}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Patient: <strong className="text-slate-800 dark:text-slate-200">{triageModalAppt.patient.user.name}</strong> • Dr. {triageModalAppt.doctor.user.name} ({triageModalAppt.doctor.specialization})
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setTriageModalAppt(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+              >
+                <XCircle className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Section 1: Pre-Consultation Vitals Measurement */}
+            <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <Activity className="w-4 h-4 text-rose-500" />
+                  <span>1. Pre-Consultation Vital Signs (Small Tests)</span>
+                </span>
+                <span className="text-[10px] text-slate-500">
+                  Staff recorded before sending to doctor
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                <div>
+                  <label className="text-[10px] font-bold uppercase text-slate-500 block mb-1">
+                    {t.bpUnit}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="120/80"
+                    value={triageBp}
+                    onChange={(e) => setTriageBp(e.target.value)}
+                    className="w-full px-3 py-2 text-xs font-mono font-bold rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-bold uppercase text-slate-500 block mb-1">
+                    {t.pulseUnit}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="72 bpm"
+                    value={triagePulse}
+                    onChange={(e) => setTriagePulse(e.target.value)}
+                    className="w-full px-3 py-2 text-xs font-mono font-bold rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-bold uppercase text-slate-500 block mb-1">
+                    {t.tempUnit}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="98.6 °F"
+                    value={triageTemp}
+                    onChange={(e) => setTriageTemp(e.target.value)}
+                    className="w-full px-3 py-2 text-xs font-mono font-bold rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-bold uppercase text-slate-500 block mb-1">
+                    {t.weightUnit}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="65 kg"
+                    value={triageWeight}
+                    onChange={(e) => setTriageWeight(e.target.value)}
+                    className="w-full px-3 py-2 text-xs font-mono font-bold rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-bold uppercase text-slate-500 block mb-1">
+                    {t.bloodSugarUnit}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="7.2 mmol/L"
+                    value={triageBloodSugar}
+                    onChange={(e) => setTriageBloodSugar(e.target.value)}
+                    className="w-full px-3 py-2 text-xs font-mono font-bold rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-bold uppercase text-slate-500 block mb-1">
+                    {t.spo2Unit}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="98%"
+                    value={triageSpo2}
+                    onChange={(e) => setTriageSpo2(e.target.value)}
+                    className="w-full px-3 py-2 text-xs font-mono font-bold rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)]"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Section 2: Primary Complaint / Symptoms */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                2. Patient Stated Symptoms & Reason for Visit
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. High fever for 3 days, sore throat & headache"
+                value={triageComplaint}
+                onChange={(e) => setTriageComplaint(e.target.value)}
+                className={inputClasses}
+              />
+            </div>
+
+            {/* Section 3: Clinical Intake (History, Allergies, Flags) */}
+            <div className="space-y-2">
+              <span className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                3. Past Illnesses, Drug Allergies & Safety Warnings
+              </span>
+              <ClinicalIntakeForm
+                value={triageIntake}
+                onChange={setTriageIntake}
+              />
+            </div>
+
+            {/* Section 4: Desk Payment Status */}
+            {triageModalAppt.paymentStatus !== "PAID" && triageModalAppt.paymentStatus !== "WAIVED" && (triageModalAppt.fee ?? 0) > 0 && (
+              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-950 dark:text-amber-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-amber-600 shrink-0" />
+                  <div>
+                    <span className="text-xs font-bold block">Consultation Fee Due: ${triageModalAppt.fee}</span>
+                    <span className="text-[11px] opacity-80">Collect fee before sending patient into consultation chamber</span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <button
+                    type="button"
+                    disabled={markingPaymentId === triageModalAppt.id}
+                    onClick={async () => {
+                      await handleMarkPaymentOnly(triageModalAppt.id, "CASH");
+                      setTriageModalAppt((prev) => prev ? { ...prev, paymentStatus: "PAID", paymentMethod: "CASH" } : null);
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition cursor-pointer"
+                  >
+                    Collect Cash
+                  </button>
+                  <button
+                    type="button"
+                    disabled={markingPaymentId === triageModalAppt.id}
+                    onClick={async () => {
+                      await handleMarkPaymentOnly(triageModalAppt.id, "CARD_POS");
+                      setTriageModalAppt((prev) => prev ? { ...prev, paymentStatus: "PAID", paymentMethod: "CARD_POS" } : null);
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition cursor-pointer"
+                  >
+                    Card POS
+                  </button>
+                  <button
+                    type="button"
+                    disabled={markingPaymentId === triageModalAppt.id}
+                    onClick={async () => {
+                      await handleMarkPaymentOnly(triageModalAppt.id, "WAIVED");
+                      setTriageModalAppt((prev) => prev ? { ...prev, paymentStatus: "WAIVED", paymentMethod: "WAIVED" } : null);
+                    }}
+                    className="px-3 py-1.5 rounded-lg border border-amber-600/40 text-amber-900 dark:text-amber-200 text-xs font-bold hover:bg-amber-600/10 transition cursor-pointer"
+                  >
+                    Waive Fee
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Modal Footer Actions */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+              <span className="text-[11px] text-slate-400">
+                Staff prepares and verifies all vitals and history so doctor can focus purely on prescribing.
+              </span>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setTriageModalAppt(null)}
+                  className="px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={savingTriage}
+                  onClick={() => handleSaveStaffTriage(false)}
+                  className="px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 transition cursor-pointer disabled:opacity-50"
+                >
+                  Save Draft
+                </button>
+                <button
+                  type="button"
+                  disabled={savingTriage}
+                  onClick={() => handleSaveStaffTriage(true)}
+                  className="px-6 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-extrabold shadow-md hover:opacity-95 transition cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                >
+                  {savingTriage ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>{t("uiActivating")}</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>{t("uiMarkReadyForDoctor", "Mark Ready for Doctor's Queue")}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

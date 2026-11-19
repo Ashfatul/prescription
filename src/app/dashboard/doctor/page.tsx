@@ -207,6 +207,10 @@ export default async function DoctorDashboardPage() {
     dietRequired: appt.dietRequired ?? null,
     dietInstructionsJson: appt.dietInstructionsJson ?? null,
     dietNotes: appt.dietNotes || null,
+    vitalsJson: appt.vitalsJson ?? null,
+    isTriageCompleted: appt.isTriageCompleted ?? false,
+    triagedAt: appt.triagedAt?.toISOString() || null,
+    triagedBy: appt.triagedBy || null,
     patient: {
       id: appt.patient.id,
       gender: appt.patient.gender,

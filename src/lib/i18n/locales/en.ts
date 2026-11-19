@@ -1577,6 +1577,20 @@ export const en = {
    ,"uiDeselectAll": "Deselect All"
    ,"uiManageableScopeNotice": "Managing permissions for: Doctor, Staff, Patient"
    ,"uiCategoryCollapsibleHint": "Click category header to expand or collapse"
+   ,"uiTriageAndIntakeDetails": "Pre-Consultation Triage & Details"
+   ,"uiMarkReadyForDoctor": "Mark Ready for Doctor's Queue"
+   ,"uiReadyForDoctorQueue": "Ready for Consultation"
+   ,"uiTriageCompletedBadge": "Triage Ready"
+   ,"uiTriagePendingBadge": "Triage Pending"
+   ,"uiEditVitalsAndContext": "Modify Vitals & History"
+   ,"uiClinicalOverrideTitle": "Physician Clinical Override: Vitals & History"
+   ,"uiSaveAndApply": "Save & Apply"
+   ,"uiRecordedByStaff": "Staff Triage"
+   ,"uiNoKnownAllergies": "No Known Drug Allergies (NKDA)"
+   ,"uiNoChronicIllness": "No Chronic Illness Recorded"
+   ,"uiOpenTriageModal": "Triage & Prepare"
+   ,"uiVitalsMeasuredByFrontDesk": "Measured by Front Desk Triage"
+   ,"uiReMeasureVitalsPrompt": "If re-measured during chamber consultation, update the values below:"
 } as const;
 
 export default en;

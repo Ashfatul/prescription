@@ -19,6 +19,8 @@ export const appointmentSchema = z.object({
   dietRequired: z.boolean().optional(),
   dietInstructions: z.array(z.string()).optional(),
   dietNotes: z.string().optional(),
+  vitals: z.record(z.string(), z.any()).optional().nullable(),
+  isTriageCompleted: z.boolean().optional(),
 });
 
 export const appointmentUpdateSchema = z.object({
@@ -34,6 +36,16 @@ export const appointmentUpdateSchema = z.object({
   verifiedAt: z.string().or(z.date()).optional().nullable(),
   verifiedBy: z.string().optional().nullable(),
   verificationNotes: z.string().optional().nullable(),
+  vitals: z.record(z.string(), z.any()).optional().nullable(),
+  diseases: z.array(z.string()).optional(),
+  allergies: z.array(z.string()).optional(),
+  medicalFlags: z.array(z.string()).optional(),
+  dietRequired: z.boolean().optional(),
+  dietInstructions: z.array(z.string()).optional(),
+  dietNotes: z.string().optional(),
+  isTriageCompleted: z.boolean().optional(),
+  triagedAt: z.string().or(z.date()).optional().nullable(),
+  triagedBy: z.string().optional().nullable(),
 });
 
 export const appointmentCancelSchema = z.object({
@@ -46,4 +58,9 @@ export const appointmentConfirmSchema = z.object({
   verificationNotes: z.string().optional(),
   paymentMethod: z.enum(["STRIPE", "CASH", "CARD_POS", "WAIVED"]).optional(),
   paymentStatus: z.enum(["PENDING", "PAID", "WAIVED"]).optional(),
+  vitals: z.record(z.string(), z.any()).optional().nullable(),
+  diseases: z.array(z.string()).optional(),
+  allergies: z.array(z.string()).optional(),
+  medicalFlags: z.array(z.string()).optional(),
+  isTriageCompleted: z.boolean().optional(),
 });

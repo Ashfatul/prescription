@@ -263,6 +263,10 @@ model Appointment {
   dietRequired           Boolean?          @default(false)
   dietInstructionsJson   Json?
   dietNotes              String?
+  vitalsJson             Json?
+  isTriageCompleted      Boolean?          @default(false)
+  triagedAt              DateTime?
+  triagedBy              String?
   prescription           Prescription?
   createdAt              DateTime          @default(now())
   updatedAt              DateTime          @updatedAt
