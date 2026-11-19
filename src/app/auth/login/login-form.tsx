@@ -43,11 +43,11 @@ export function LoginForm() {
 
   // If user is already authenticated on the client, redirect to role dashboard immediately
   useEffect(() => {
-    if (!authLoading && user) {
+    if (!authLoading && user && !loading) {
       const target = getDashboardPathForRole(user.role);
-      window.location.href = target;
+      router.replace(target);
     }
-  }, [user, authLoading]);
+  }, [user, authLoading, loading, router]);
 
   const performLogin = async (loginEmail: string, loginPassword: string) => {
     setLoading(true);
@@ -80,7 +80,7 @@ export function LoginForm() {
 
     notifyToast(t("uiLoginSuccessful"), "success");
     const target = getDashboardPathForRole(res.user?.role || user?.role);
-    window.location.href = target;
+    router.replace(target);
   };
 
   const onSubmit = (e: FormEvent) => {
@@ -106,7 +106,7 @@ export function LoginForm() {
 
     notifyToast(t("uiLoginSuccessful"), "success");
     const target = getDashboardPathForRole(res.user?.role || user?.role);
-    window.location.href = target;
+    router.replace(target);
   };
 
   const cancel2FA = () => {
