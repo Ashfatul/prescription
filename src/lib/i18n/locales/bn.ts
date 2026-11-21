@@ -1675,6 +1675,13 @@ export const bn = {
    ,"noteForPatient": "রোগীর জন্য বার্তা"
    ,"noteForPatientPlaceholder": "রোগীর জন্য একটি ছোট আশ্বস্তকর বার্তা লিখুন..."
    ,"noteForPatientHint": "এই বার্তাটি প্রেসক্রিপশনে মুদ্রিত হয় এবং রোগীর সাথে শেয়ার করা হয়।"
+   ,"uiMedicineInformation": "ওষুধের তথ্য"
+   ,"uiDoseScheduleInfo": "মাত্রা ও সময়সূচী"
+   ,"uiFormulationPlaceholder": "ফর্মুলেশন..."
+   ,"uiStrengthPlaceholder": "যেমন ২০মিগ্রা, ৫০০মিগ্রা, ১০মিলি"
+   ,"uiDosePlaceholder": "যেমন ১ + ০ + ১"
+   ,"uiTimingPlaceholder": "যেমন খাবারের ৩০ মিনিট আগে"
+   ,"uiDurationPlaceholder": "যেমন ৭ দিন"
 } as const;
 
 export default bn;

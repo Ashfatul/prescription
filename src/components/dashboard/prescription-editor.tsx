@@ -820,11 +820,11 @@ export function PrescriptionEditor({
 
       const successMsg = isRevision
         ? (language === "bn"
-            ? `প্রেসক্রিপশন সংস্করণ #${nextVer} সফলভাবে সংরক্ষিত এবং আপডেট করা হয়েছে!`
-            : `Prescription revision #${nextVer} updated and saved successfully!`)
+          ? `প্রেসক্রিপশন সংস্করণ #${nextVer} সফলভাবে সংরক্ষিত এবং আপডেট করা হয়েছে!`
+          : `Prescription revision #${nextVer} updated and saved successfully!`)
         : (language === "bn"
-            ? `প্রেসক্রিপশন সফলভাবে সংরক্ষিত ও প্রদান করা হয়েছে! (${currentPatient.user.name})`
-            : `Prescription issued and saved successfully for ${currentPatient.user.name}!`);
+          ? `প্রেসক্রিপশন সফলভাবে সংরক্ষিত ও প্রদান করা হয়েছে! (${currentPatient.user.name})`
+          : `Prescription issued and saved successfully for ${currentPatient.user.name}!`);
 
       notifyToast(successMsg, "success");
     } catch (err: unknown) {
@@ -953,9 +953,8 @@ export function PrescriptionEditor({
 
             <div className="flex flex-wrap items-center gap-2.5">
               <Link
-                href={`/prescriptions/${createdPrescriptionId}/print${
-                  savedVersionNumber ? `?version=${savedVersionNumber}` : ""
-                }`}
+                href={`/prescriptions/${createdPrescriptionId}/print${savedVersionNumber ? `?version=${savedVersionNumber}` : ""
+                  }`}
                 target="_blank"
                 className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-bold shadow-sm hover:opacity-95 transition"
               >
@@ -1006,8 +1005,8 @@ export function PrescriptionEditor({
                   {currentAppointment.visitType === "FOLLOWUP"
                     ? t.followupVisit
                     : currentAppointment.visitType === "REPORT_REVIEW"
-                    ? t.reportReviewFree
-                    : t.firstConsultation}
+                      ? t.reportReviewFree
+                      : t.firstConsultation}
                 </span>
               )}
               {currentAppointment?.paymentStatus && (
@@ -1088,8 +1087,8 @@ export function PrescriptionEditor({
                   {currentAppointment?.triagedBy
                     ? `${t("uiRecordedByStaff", "Staff Triage")}: ${currentAppointment.triagedBy}`
                     : (currentAppointment?.isTriageCompleted
-                        ? t("uiTriageCompletedBadge", "Triage Ready")
-                        : t("uiTriageVitalsRecorded", "Recorded by Front Desk"))}
+                      ? t("uiTriageCompletedBadge", "Triage Ready")
+                      : t("uiTriageVitalsRecorded", "Recorded by Front Desk"))}
                 </span>
               </div>
               {currentAppointment?.isTriageCompleted || bp || pulse || temp || weight ? (
@@ -1594,453 +1593,415 @@ export function PrescriptionEditor({
           </div>
         </div>
 
-        {/* SECTION 4: Prescribed Medications (℞ Rx Section - Requirement 11) */}
-        <div className="p-6 rounded-xl bg-[var(--bg-surface)] border-2 border-[var(--brand-primary)]/40 shadow-sm space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
-            <div className="flex items-center gap-2.5">
-              <span className="text-3xl font-serif font-black text-[var(--brand-primary)]">℞</span>
+        {/* SECTIONS 4 & 5: Diagnostics (left) + Medications (right) — half / half */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-stretch">
+          {/* Prescribed Medications */}
+          <div className="xl:order-2 h-full p-5 sm:p-6 rounded-xl bg-[var(--bg-surface)] border-2 border-[var(--brand-primary)]/40 shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <span className="text-3xl font-serif font-black text-[var(--brand-primary)]">℞</span>
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
+                    3. {t.medications}
+                  </span>
+                  <p className="text-xs text-slate-500">
+                    {t.selectBrandGenericAuto}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => addMedicine()}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-95 shadow-sm transition cursor-pointer self-start sm:self-auto"
+              >
+                <Plus className="w-4 h-4" />
+                <span>{t.addMedicine}</span>
+              </button>
+            </div>
+
+            {/* Medicine Cards List */}
+            <div className="space-y-4">
+              {medicines.length === 0 ? (
+                <div className="p-8 rounded-xl border border-dashed border-[var(--border-default)] bg-[var(--bg-subtle)]/40 text-center space-y-2.5">
+                  <p className="text-xs font-semibold text-[var(--text-secondary)]">
+                    {language === "bn" ? "কোনো ওষুধ যোগ করা হয়নি (ঐচ্ছিক)" : "No medications added yet (optional)"}
+                  </p>
+                </div>
+              ) : (
+                medicines.map((med, index) => (
+                  <div
+                    key={index}
+                    className="p-5 rounded-lg bg-[var(--bg-app)] border border-slate-200/90 dark:border-slate-800/90 space-y-4 hover:border-[var(--brand-border)] transition-all shadow-xs"
+                  >
+                    {/* Card Header */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-200/60 dark:border-slate-800/60">
+                      <div className="flex items-center gap-2.5">
+                        <span className="w-7 h-7 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-black flex items-center justify-center shadow-xs">
+                          #{index + 1}
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs uppercase tracking-wide">
+                          {med.type || "Tablet"}
+                        </span>
+                        <span className="font-extrabold text-sm text-slate-900 dark:text-white">
+                          {med.name || t.newMedication}
+                        </span>
+                        {med.dosage && (
+                          <span className="text-xs font-bold text-[var(--brand-text)] bg-[var(--brand-surface)] px-2 py-0.5 rounded-md border border-[var(--brand-border)]">
+                            {med.dosage}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => cloneMedicine(index)}
+                          className="px-2.5 py-1 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition cursor-pointer flex items-center gap-1"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                          <span>{t.duplicate}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeMedicine(index)}
+                          className="px-2.5 py-1 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer flex items-center gap-1"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>{t.remove}</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Single-column editing — medicine identity, then dosing */}
+                    <div className="grid grid-cols-2 gap-3">
+                      {/* LEFT — Medicine information */}
+                      <div className="space-y-2.5 p-3.5 rounded-lg bg-[var(--bg-surface)] border border-slate-200/80 dark:border-slate-800/80">
+                        <p className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--brand-text)]">
+                          {t("uiMedicineInformation", "Medicine information")}
+                        </p>
+
+                        <div className="space-y-1">
+                          <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                            {t.formulationLabel}
+                          </label>
+                          <SearchableSelect
+                            size="sm"
+                            options={FORMULATION_OPTIONS}
+                            value={med.type}
+                            placeholder={t("uiFormulationPlaceholder", "Formulation...")}
+                            allowCustom
+                            onChange={(val) => updateMedicine(index, "type", val)}
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                            {t.drugBrandSearchLabel}
+                          </label>
+                          <SearchableSelect
+                            size="sm"
+                            options={catalogMedicines.filter(
+                              (option) => option.badge === med.type || option.value === med.name
+                            )}
+                            value={med.name}
+                            placeholder={t("uiSearchBrandOrGenericE")}
+                            allowCustom
+                            onChange={(val, opt) => handleSelectMedicineFromCatalog(index, opt || { value: val, label: val })}
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                            {t.strengthDosageLabel}
+                          </label>
+                          <input
+                            type="text"
+                            value={med.dosage}
+                            onChange={(e) => updateMedicine(index, "dosage", e.target.value)}
+                            placeholder={t("uiStrengthPlaceholder", "e.g. 20mg, 500mg, 10ml")}
+                            className="w-full min-h-[38px] px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20"
+                          />
+                        </div>
+                      </div>
+
+                      {/* RIGHT — Dose & schedule selectors */}
+                      <div className="space-y-2.5 p-3.5 rounded-lg bg-[var(--bg-surface)] border border-slate-200/80 dark:border-slate-800/80">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--brand-text)]">
+                            {t("uiDoseScheduleInfo", "Dose & schedule")}
+                          </p>
+                          <span className="text-[10px] font-mono font-bold text-[var(--brand-text)]">
+                            {med.frequency || t("uiNotSpecified2")}
+                          </span>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                            {t.doseScheduleFrequency}
+                          </label>
+                          <SearchableSelect
+                            size="sm"
+                            searchable
+                            allowCustom
+                            options={FREQUENCY_PRESETS}
+                            value={med.frequency}
+                            placeholder={t("uiDosePlaceholder", "e.g. 1 + 0 + 1")}
+                            onChange={(val) => updateMedicine(index, "frequency", val)}
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                            {t.timingMealRelation}
+                          </label>
+                          <SearchableSelect
+                            size="sm"
+                            searchable
+                            allowCustom
+                            options={TIMING_PRESETS}
+                            value={med.instructions}
+                            placeholder={t("uiTimingPlaceholder", "e.g. 30 mins before meal")}
+                            onChange={(val) => updateMedicine(index, "instructions", val)}
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                            {t.courseDurationLabel}
+                          </label>
+                          <SearchableSelect
+                            size="sm"
+                            searchable
+                            allowCustom
+                            options={DURATION_PRESETS}
+                            value={med.duration}
+                            placeholder={t("uiDurationPlaceholder", "e.g. 7 Days")}
+                            onChange={(val) => updateMedicine(index, "duration", val)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Diagnostic Lab Investigations Advised */}
+          <div className="xl:order-1 h-full p-5 sm:p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                  2. {t.medications}
+                  2. {t.diagnosticInvestigationsAdvised}
                 </span>
-                <p className="text-xs text-slate-500">
-                  {t.selectBrandGenericAuto}
-                </p>
+                <p className="text-xs text-slate-500">{t.orderLabTestsDesc}</p>
               </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => addMedicine()}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-95 shadow-sm transition cursor-pointer self-start sm:self-auto"
-            >
-              <Plus className="w-4 h-4" />
-              <span>{t.addMedicine}</span>
-            </button>
-          </div>
-
-          {/* Medicine Cards List */}
-          <div className="space-y-4">
-            {medicines.length === 0 ? (
-              <div className="p-8 rounded-xl border border-dashed border-[var(--border-default)] bg-[var(--bg-subtle)]/40 text-center space-y-2.5">
-                <p className="text-xs font-semibold text-[var(--text-secondary)]">
-                  {language === "bn" ? "কোনো ওষুধ যোগ করা হয়নি (ঐচ্ছিক)" : "No medications added yet (optional)"}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => addMedicine()}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-bold hover:opacity-90 transition cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>{t.addMedicine}</span>
-                </button>
-              </div>
-            ) : (
-              medicines.map((med, index) => (
-              <div
-                key={index}
-                className="p-5 rounded-lg bg-[var(--bg-app)] border border-slate-200/90 dark:border-slate-800/90 space-y-4 hover:border-[var(--brand-border)] transition-all shadow-xs"
+              <button
+                type="button"
+                onClick={() => addTest()}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-95 shadow-sm transition cursor-pointer self-start sm:self-auto"
               >
-                {/* Card Header */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-200/60 dark:border-slate-800/60">
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-7 h-7 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-black flex items-center justify-center shadow-xs">
-                      #{index + 1}
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs uppercase tracking-wide">
-                      {med.type || "Tablet"}
-                    </span>
-                    <span className="font-extrabold text-sm text-slate-900 dark:text-white">
-                      {med.name || t.newMedication}
-                    </span>
-                    {med.dosage && (
-                      <span className="text-xs font-bold text-[var(--brand-text)] bg-[var(--brand-surface)] px-2 py-0.5 rounded-md border border-[var(--brand-border)]">
-                        {med.dosage}
-                      </span>
-                    )}
-                  </div>
+                {t.addInvestigationBtn}
+              </button>
+            </div>
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => cloneMedicine(index)}
-                      className="px-2.5 py-1 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition cursor-pointer flex items-center gap-1"
-                    >
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>{t.duplicate}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => removeMedicine(index)}
-                      className="px-2.5 py-1 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer flex items-center gap-1"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>{t.remove}</span>
-                    </button>
-                  </div>
+            {/* Tests List — each row uses a searchable select with inline create */}
+            <div className="space-y-3">
+              {tests.length === 0 ? (
+                <div className="p-8 rounded-xl border border-dashed border-[var(--border-default)] bg-[var(--bg-subtle)]/40 text-center space-y-2.5">
+                  <p className="text-xs font-semibold text-[var(--text-secondary)]">
+                    {language === "bn" ? "কোনো পরীক্ষা যোগ করা হয়নি (ঐচ্ছিক)" : "No diagnostic tests added yet (optional)"}
+                  </p>
                 </div>
-
-                {/* Field 1: Formulation, Brand Name, Strength */}
-                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                  <div className="sm:col-span-3">
-                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                      {t.formulationLabel}
-                    </label>
-                    <SearchableSelect
-                      options={FORMULATION_OPTIONS}
-                      value={med.type}
-                      placeholder="Formulation..."
-                      searchPlaceholder="Search form..."
-                      allowCustom
-                      onChange={(val) => updateMedicine(index, "type", val)}
-                    />
-                  </div>
-
-                  <div className="sm:col-span-6">
-                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                      {t.drugBrandSearchLabel}
-                    </label>
-                    <SearchableSelect
-                      options={catalogMedicines.filter(
-                        (option) => option.badge === med.type || option.value === med.name
-                      )}
-                      value={med.name}
-                      placeholder={t("uiSearchBrandOrGenericE")}
-                      allowCustom
-                      onChange={(val, opt) => handleSelectMedicineFromCatalog(index, opt || { value: val, label: val })}
-                    />
-                  </div>
-
-                  <div className="sm:col-span-3">
-                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                      {t.strengthDosageLabel}
-                    </label>
-                    <input
-                      type="text"
-                      value={med.dosage}
-                      onChange={(e) => updateMedicine(index, "dosage", e.target.value)}
-                      placeholder="e.g. 20mg, 500mg, 10ml"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20"
-                    />
-                  </div>
-                </div>
-
-                {/* Field 2: Frequency with Clear Pill Badges */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                      {t.doseScheduleFrequency}
-                    </label>
-                    <span className="text-[11px] font-mono font-bold text-[var(--brand-text)]">
-                      {t("uiDose")} {med.frequency || (t("uiNotSpecified2"))}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <input
-                      type="text"
-                      value={med.frequency}
-                      onChange={(e) => updateMedicine(index, "frequency", e.target.value)}
-                      placeholder="e.g. 1 + 0 + 1"
-                      className="w-32 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs font-bold focus:outline-none"
-                    />
-                    {FREQUENCY_PRESETS.map((f) => {
-                      const isSelected = med.frequency === f;
-                      return (
-                        <button
-                          key={f}
-                          type="button"
-                          onClick={() => updateMedicine(index, "frequency", f)}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer border ${
-                            isSelected
-                              ? "bg-[var(--brand-primary)] text-white border-[var(--brand-primary)] shadow-xs"
-                              : "bg-[var(--bg-surface)] text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[var(--brand-border)] hover:bg-[var(--brand-surface)]"
-                          }`}
-                        >
-                          {f}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Field 3: Timing & Duration */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-                  <div className="space-y-1.5">
-                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                      {t.timingMealRelation}
-                    </label>
-                    <input
-                      type="text"
-                      value={med.instructions}
-                      onChange={(e) => updateMedicine(index, "instructions", e.target.value)}
-                      placeholder="e.g. 30 mins before breakfast & dinner"
-                      className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs focus:outline-none"
-                    />
-                    <div className="flex flex-wrap gap-1.5">
-                      {TIMING_PRESETS.map((tItem) => (
-                        <button
-                          key={tItem}
-                          type="button"
-                          onClick={() => updateMedicine(index, "instructions", tItem)}
-                          className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[var(--bg-surface)] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition cursor-pointer"
-                        >
-                          {tItem}
-                        </button>
-                      ))}
+              ) : (
+                tests.map((test, index) => (
+                  <div
+                    key={index}
+                    className="p-3.5 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 space-y-2.5"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-black text-xs text-[var(--brand-primary)]">#{index + 1}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeTest(index)}
+                        className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition cursor-pointer"
+                        title={t.remove}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                          {t.diagnosticInvestigationsAdvised}
+                        </label>
+                        <SearchableSelect
+                          size="sm"
+                          options={catalogTests}
+                          value={test.name}
+                          placeholder={t.searchDiagnosticTestsPlaceholder}
+                          allowCustom
+                          onChange={(val) => updateTest(index, "name", val)}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                          {t.testInstructionsPlaceholder}
+                        </label>
+                        <input
+                          type="text"
+                          value={test.instructions}
+                          onChange={(e) => updateTest(index, "instructions", e.target.value)}
+                          placeholder={t.testInstructionsPlaceholder}
+                          className="w-full min-h-[38px] px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs focus:outline-none"
+                        />
+                      </div>
                     </div>
                   </div>
-
-                  <div className="space-y-1.5">
-                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                      {t.courseDurationLabel}
-                    </label>
-                    <input
-                      type="text"
-                      value={med.duration}
-                      onChange={(e) => updateMedicine(index, "duration", e.target.value)}
-                      placeholder="e.g. 7 Days"
-                      className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-[var(--bg-surface)] text-xs font-semibold focus:outline-none"
-                    />
-                    <div className="flex flex-wrap gap-1.5">
-                      {DURATION_PRESETS.map((d) => (
-                        <button
-                          key={d}
-                          type="button"
-                          onClick={() => updateMedicine(index, "duration", d)}
-                          className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[var(--bg-surface)] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition cursor-pointer"
-                        >
-                          {d}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-          </div>
-
-          <div className="pt-2 flex justify-center">
-            <button
-              type="button"
-              onClick={() => addMedicine()}
-              className="px-6 py-2.5 rounded-lg border-2 border-dashed border-[var(--brand-primary)]/40 hover:border-[var(--brand-primary)] bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-bold transition cursor-pointer flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              <span>+ {t.addPrescribedMedicine}</span>
-            </button>
+                ))
+              )}
+            </div>
           </div>
         </div>
 
-        {/* SECTION 5: Diagnostic Lab Investigations Advised */}
-        <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
-                3. {t.diagnosticInvestigationsAdvised}
-              </span>
-              <p className="text-xs text-slate-500">{t.orderLabTestsDesc}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => addTest()}
-              className="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-            >
-              {t.addInvestigationBtn}
-            </button>
-          </div>
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-stretch">
 
-          {/* Tests List — each row uses a searchable select with inline create */}
-          <div className="space-y-3">
-            {tests.length === 0 ? (
-              <div className="p-8 rounded-xl border border-dashed border-[var(--border-default)] bg-[var(--bg-subtle)]/40 text-center space-y-2.5">
-                <p className="text-xs font-semibold text-[var(--text-secondary)]">
-                  {language === "bn" ? "কোনো পরীক্ষা যোগ করা হয়নি (ঐচ্ছিক)" : "No diagnostic tests added yet (optional)"}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => addTest()}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-surface)] text-[var(--brand-text)] text-xs font-bold hover:opacity-90 transition cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>{t.addInvestigationBtn}</span>
-                </button>
-              </div>
-            ) : (
-              tests.map((test, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-1 sm:grid-cols-12 gap-3 p-3.5 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 items-center"
-                >
-                  <div className="sm:col-span-1 text-center font-black text-xs text-[var(--brand-primary)]">
-                    #{index + 1}
-                  </div>
-                  <div className="sm:col-span-6">
-                    <SearchableSelect
-                      options={catalogTests}
-                      value={test.name}
-                      placeholder={t.searchDiagnosticTestsPlaceholder}
-                      allowCustom
-                      onChange={(val) => updateTest(index, "name", val)}
-                    />
-                  </div>
-                  <div className="sm:col-span-4">
-                    <input
-                      type="text"
-                      value={test.instructions}
-                      onChange={(e) => updateTest(index, "instructions", e.target.value)}
-                      placeholder={t.testInstructionsPlaceholder}
-                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-xs focus:outline-none"
-                    />
-                  </div>
-                  <div className="sm:col-span-1 text-right">
-                    <button
-                      type="button"
-                      onClick={() => removeTest(index)}
-                      className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition cursor-pointer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+          {/* SECTION 6: Advice & Follow-Up */}
+          <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
+              4. {t.adviceAndLifestyle}
+            </span>
+
+            <div className="grid grid-cols-1 gap-6">
+              {/* Advice — one searchable selector with inline create */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                    {t.adviceAndLifestyle}
+                  </label>
+                  {adviceValues.length > 0 && (
+                    <span className="px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-[10px] font-bold">
+                      {adviceValues.length}
+                    </span>
+                  )}
                 </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* SECTION 6: Advice & Follow-Up */}
-        <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
-          <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)]">
-            4. {t.adviceAndLifestyle}
-          </span>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Advice — one searchable selector with inline create */}
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between gap-2">
-                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-                  {t.adviceAndLifestyle}
-                </label>
-                {adviceValues.length > 0 && (
-                  <span className="px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-[10px] font-bold">
-                    {adviceValues.length}
-                  </span>
-                )}
-              </div>
-              <SearchableSelect
-                multiple
-                searchable
-                allowCustom
-                options={ADVICE_OPTIONS}
-                values={adviceValues}
-                onChangeValues={setAdviceValues}
-                placeholder={t("searchAdvice", "Search or add lifestyle advice")}
-                searchPlaceholder={t("searchAdvice", "Search or add lifestyle advice")}
-              />
-            </div>
-
-            {/* Follow-up & Notes */}
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-                  {t.nextConsultationVisit}
-                </label>
                 <SearchableSelect
+                  multiple
                   searchable
                   allowCustom
-                  options={FOLLOWUP_PRESETS}
-                  value={followUp}
-                  onChange={(val) => setFollowUp(val)}
-                  placeholder={t.followUpPlaceholder}
-                  searchPlaceholder={t.followUpPlaceholder}
+                  options={ADVICE_OPTIONS}
+                  values={adviceValues}
+                  onChangeValues={setAdviceValues}
+                  placeholder={t("searchAdvice", "Search or add lifestyle advice")}
+                  searchPlaceholder={t("searchAdvice", "Search or add lifestyle advice")}
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-                  {t.privatePhysicianNotes}
-                </label>
-                <textarea
-                  rows={5}
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder={t.internalNotesPlaceholder}
-                  className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium min-h-[120px] resize-y"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-                  {t("noteForPatient", "Note for Patient")}
-                </label>
-                <textarea
-                  rows={5}
-                  value={patientNote}
-                  onChange={(e) => setPatientNote(e.target.value)}
-                  placeholder={t("noteForPatientPlaceholder", "A short reassuring message for the patient...")}
-                  className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium min-h-[120px] resize-y"
-                />
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  {t("noteForPatientHint", "This message is printed on the prescription and shared with the patient.")}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* SECTION 7: File Attachments */}
-        <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)] flex items-center gap-1.5">
-              <Paperclip className="w-3.5 h-3.5" />
-              <span>5. {t.prescriptionAttachmentsOptional}</span>
-            </span>
-            <label className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold cursor-pointer transition shadow-2xs">
-              <Upload className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
-              <span>{uploadingAttachment ? t.uploadingAttachment : t.attachFileBtn}</span>
-              <input
-                type="file"
-                accept="image/*,.pdf,.doc,.docx"
-                onChange={handleUploadAttachment}
-                disabled={uploadingAttachment}
-                className="hidden"
-              />
-            </label>
-          </div>
-
-          {attachmentError && (
-            <div className="p-3 rounded-lg bg-rose-50 text-rose-600 text-xs">{attachmentError}</div>
-          )}
-
-          {attachments.length === 0 ? (
-            <p className="text-xs text-slate-400 py-3 text-center bg-slate-50/50 dark:bg-slate-900/50 rounded-lg border border-dashed border-slate-200 dark:border-slate-800">
-              {t.noFilesAttached}
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {attachments.map((att, idx) => (
-                <div
-                  key={att.id}
-                  className="p-3 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs"
-                >
-                  <div className="flex items-center gap-2 truncate">
-                    <FileText className="w-4 h-4 text-[var(--brand-primary)] shrink-0" />
-                    <span className="font-semibold truncate">{att.name}</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAttachments((prev) => prev.filter((_, i) => i !== idx));
-                      notifyToast(language === "bn" ? "সংযুক্তি সরানো হয়েছে।" : "Attachment removed.", "info");
-                    }}
-                    className="p-1 text-rose-500 hover:text-rose-700 cursor-pointer"
-                  >
-                    ✕
-                  </button>
+              {/* Follow-up & Notes */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                    {t.nextConsultationVisit}
+                  </label>
+                  <SearchableSelect
+                    searchable
+                    allowCustom
+                    options={FOLLOWUP_PRESETS}
+                    value={followUp}
+                    onChange={(val) => setFollowUp(val)}
+                    placeholder={t.followUpPlaceholder}
+                    searchPlaceholder={t.followUpPlaceholder}
+                  />
                 </div>
-              ))}
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                    {t.privatePhysicianNotes}
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder={t.internalNotesPlaceholder}
+                    className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium min-h-[120px] resize-y"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                    {t("noteForPatient", "Note for Patient")}
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={patientNote}
+                    onChange={(e) => setPatientNote(e.target.value)}
+                    placeholder={t("noteForPatientPlaceholder", "A short reassuring message for the patient...")}
+                    className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium min-h-[120px] resize-y"
+                  />
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    {t("noteForPatientHint", "This message is printed on the prescription and shared with the patient.")}
+                  </p>
+                </div>
+              </div>
             </div>
-          )}
+          </div>
+
+          {/* SECTION 7: File Attachments */}
+          <div className="p-6 rounded-xl bg-[var(--bg-surface)] border border-slate-200/90 dark:border-slate-800/90 shadow-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-[var(--brand-text)] flex items-center gap-1.5">
+                <Paperclip className="w-3.5 h-3.5" />
+                <span>5. {t.prescriptionAttachmentsOptional}</span>
+              </span>
+              <label className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold cursor-pointer transition shadow-2xs">
+                <Upload className="w-3.5 h-3.5 text-[var(--brand-primary)]" />
+                <span>{uploadingAttachment ? t.uploadingAttachment : t.attachFileBtn}</span>
+                <input
+                  type="file"
+                  accept="image/*,.pdf,.doc,.docx"
+                  onChange={handleUploadAttachment}
+                  disabled={uploadingAttachment}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            {attachmentError && (
+              <div className="p-3 rounded-lg bg-rose-50 text-rose-600 text-xs">{attachmentError}</div>
+            )}
+
+            {attachments.length === 0 ? (
+              <p className="text-xs text-slate-400 py-3 text-center bg-slate-50/50 dark:bg-slate-900/50 rounded-lg border border-dashed border-slate-200 dark:border-slate-800">
+                {t.noFilesAttached}
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {attachments.map((att, idx) => (
+                  <div
+                    key={att.id}
+                    className="p-3 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs"
+                  >
+                    <div className="flex items-center gap-2 truncate">
+                      <FileText className="w-4 h-4 text-[var(--brand-primary)] shrink-0" />
+                      <span className="font-semibold truncate">{att.name}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAttachments((prev) => prev.filter((_, i) => i !== idx));
+                        notifyToast(language === "bn" ? "সংযুক্তি সরানো হয়েছে।" : "Attachment removed.", "info");
+                      }}
+                      className="p-1 text-rose-500 hover:text-rose-700 cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
         </div>
 
         {/* Submit Bar */}
@@ -2066,82 +2027,84 @@ export function PrescriptionEditor({
             )}
           </button>
         </div>
-      </form>
+      </form >
 
       {/* Patient Lab Reports Drawer / Modal */}
-      {showReportsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="w-full max-w-2xl rounded-xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-              <div>
-                <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                  <FileSearch className="w-4 h-4 text-[var(--brand-primary)]" />
-                  <span>{t.attachedLabReportsScans}</span>
-                </h3>
-                <p className="text-xs text-slate-500">
-                  {t.uploadedByTriageStaffFor} {currentPatient?.user.name}
-                </p>
+      {
+        showReportsModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <div className="w-full max-w-2xl rounded-xl bg-[var(--bg-surface)] border border-slate-200 dark:border-slate-800 p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div>
+                  <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                    <FileSearch className="w-4 h-4 text-[var(--brand-primary)]" />
+                    <span>{t.attachedLabReportsScans}</span>
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    {t.uploadedByTriageStaffFor} {currentPatient?.user.name}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowReportsModal(false)}
+                  className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowReportsModal(false)}
-                className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
 
-            <div className="max-h-96 overflow-y-auto space-y-3">
-              {patientReports.length === 0 ? (
-                <p className="text-center py-8 text-xs text-slate-400">
-                  {t("uiNoLabReportsFoundFor")}
-                </p>
-              ) : (
-                patientReports.map((r) => (
-                  <div
-                    key={r.id}
-                    className="p-4 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between gap-3 text-xs"
-                  >
-                    <div className="space-y-0.5 min-w-0">
-                      <span className="font-bold text-slate-900 dark:text-white block truncate">
-                        {r.title}
-                      </span>
-                      <p className="text-[11px] text-slate-500 truncate">
-                        {r.description || r.originalName} • {r.reportDate ? new Date(r.reportDate).toLocaleDateString() : ""}
-                      </p>
-                      {r.notes && (
-                        <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">
-                          {t("uiNotes")} {r.notes}
-                        </p>
-                      )}
-                    </div>
-
-                    <a
-                      href={r.fileUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-90 transition"
+              <div className="max-h-96 overflow-y-auto space-y-3">
+                {patientReports.length === 0 ? (
+                  <p className="text-center py-8 text-xs text-slate-400">
+                    {t("uiNoLabReportsFoundFor")}
+                  </p>
+                ) : (
+                  patientReports.map((r) => (
+                    <div
+                      key={r.id}
+                      className="p-4 rounded-lg bg-[var(--bg-app)] border border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between gap-3 text-xs"
                     >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      <span>{t.view}</span>
-                    </a>
-                  </div>
-                ))
-              )}
-            </div>
+                      <div className="space-y-0.5 min-w-0">
+                        <span className="font-bold text-slate-900 dark:text-white block truncate">
+                          {r.title}
+                        </span>
+                        <p className="text-[11px] text-slate-500 truncate">
+                          {r.description || r.originalName} • {r.reportDate ? new Date(r.reportDate).toLocaleDateString() : ""}
+                        </p>
+                        {r.notes && (
+                          <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">
+                            {t("uiNotes")} {r.notes}
+                          </p>
+                        )}
+                      </div>
 
-            <div className="pt-2 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setShowReportsModal(false)}
-                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300"
-              >
-                {t.close}
-              </button>
+                      <a
+                        href={r.fileUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--brand-primary)] text-white text-xs font-bold hover:opacity-90 transition"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>{t.view}</span>
+                      </a>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowReportsModal(false)}
+                  className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300"
+                >
+                  {t.close}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Live Multi-Page Prescription Modal */}
       <PrescriptionPreviewModal
@@ -2189,6 +2152,6 @@ export function PrescriptionEditor({
         medicines={medicines}
         tests={tests}
       />
-    </div>
+    </div >
   );
 }

@@ -1675,6 +1675,13 @@ export const en = {
    ,"noteForPatient": "Note for Patient"
    ,"noteForPatientPlaceholder": "A short reassuring message for the patient..."
    ,"noteForPatientHint": "This message is printed on the prescription and shared with the patient."
+   ,"uiMedicineInformation": "Medicine information"
+   ,"uiDoseScheduleInfo": "Dose & schedule"
+   ,"uiFormulationPlaceholder": "Formulation..."
+   ,"uiStrengthPlaceholder": "e.g. 20mg, 500mg, 10ml"
+   ,"uiDosePlaceholder": "e.g. 1 + 0 + 1"
+   ,"uiTimingPlaceholder": "e.g. 30 mins before meal"
+   ,"uiDurationPlaceholder": "e.g. 7 Days"
 } as const;
 
 export default en;
