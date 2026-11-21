@@ -267,7 +267,7 @@ export function ClinicSubscriptionView() {
                 className="px-6 py-3 rounded-lg bg-[var(--brand-primary)] hover:opacity-95 text-white text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Sparkles className="w-4 h-4" />
-                <span>{sub.isTrial ? t.upgradeWithStripeSandbox : t.changePackage}</span>
+                <span>{sub.isTrial ? t.upgradeWithStripe : t.changePackage}</span>
               </button>
             </div>
           </div>
@@ -490,14 +490,13 @@ export function ClinicSubscriptionView() {
         </div>
       </div>
 
-      {/* Stripe Sandbox Upgrade Modal */}
+      {/* Stripe Upgrade Modal */}
       <StripeUpgradeModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         currentPlanId={targetPlanId || sub.plan?.id}
         organizationId={sub.organizationId}
         organizationName={sub.organizationName}
-        onSuccess={fetchDetails}
       />
     </div>
   );

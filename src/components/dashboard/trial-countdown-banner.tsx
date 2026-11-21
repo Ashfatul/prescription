@@ -146,7 +146,7 @@ export function TrialCountdownBanner() {
             className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-xs flex items-center gap-2 cursor-pointer shrink-0"
           >
             <CreditCard className="w-4 h-4" />
-            <span>{t.upgradeWithStripeSandbox}</span>
+            <span>{t.upgradeWithStripe}</span>
           </button>
         </div>
       ) : (
@@ -238,21 +238,20 @@ export function TrialCountdownBanner() {
                 className="px-4 py-2.5 rounded-xl bg-[var(--brand-primary)] hover:opacity-95 text-white text-xs font-bold transition shadow-xs flex items-center gap-2 cursor-pointer shrink-0"
               >
                 <Sparkles className="w-4 h-4" />
-                <span>{t.upgradeWithStripeSandbox}</span>
+                <span>{t.upgradeWithStripe}</span>
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Stripe Sandbox Upgrade Modal */}
+      {/* Stripe Upgrade Modal */}
       <StripeUpgradeModal
         isOpen={showUpgradeModal}
         onClose={() => setShowUpgradeModal(false)}
         currentPlanId={sub.plan?.id}
         organizationId={sub.organizationId}
         organizationName={sub.organizationName}
-        onSuccess={fetchSubscription}
       />
     </>
   );

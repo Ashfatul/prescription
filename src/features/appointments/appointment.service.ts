@@ -551,11 +551,11 @@ export async function createAppointment(
       }
     }
 
-    // In Demo / Sandbox mode without Stripe API keys configured in .env:
     if (!stripeCheckoutUrl) {
-      stripeCheckoutUrl = `${origin}/checkout/stripe-demo?appointmentId=${appointment.id}&fee=${finalFee}&doctor=${encodeURIComponent(
-        doctorRec.user.name
-      )}&serial=${serial}&visitType=${visitType}`;
+      throw new AppError(
+        "Stripe Checkout is not configured. Set STRIPE_SECRET_KEY in the server environment.",
+        503,
+      );
     }
   }
 

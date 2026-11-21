@@ -320,7 +320,6 @@ export const uiEn = {
     uiDigitalVersionTracking: "Digital Version Tracking",
     uiDigitallyVerified: "Digitally Verified",
     uiDirectHotlineEmergency: "Direct Hotline & Emergency",
-    uiDirectSandboxCard: "Direct Sandbox Card",
     uiDismiss: "Dismiss",
     uiDispensingPharmacists: "Dispensing Pharmacists:",
     uiDoNOTUSETHISPLATFORM:
@@ -794,7 +793,6 @@ export const uiEn = {
     uiPrivacyPolicyHealthDataProtection:
         "Privacy Policy & Health Data Protection",
     uiProcessingCancellation: "Processing Cancellation...",
-    uiProcessingStripeSandbox: "Processing Stripe Sandbox...",
     uiProtectedByHIPAABMDCCompliant:
         "Protected by HIPAA & BMDC compliant security standards.",
     uiProtectedByHIPAABMDCCompliant2:
@@ -1788,7 +1786,6 @@ export const uiBn = {
     uiDigitalVersionTracking: "ডিজিটাল সংস্করণ ট্র্যাকিং",
     uiDigitallyVerified: "ডিজিটালি যাচাইকৃত",
     uiDirectHotlineEmergency: "সরাসরি হটলাইন ও জরুরি সেবা",
-    uiDirectSandboxCard: "সরাসরি স্যান্ডবক্স কার্ড",
     uiDismiss: "বন্ধ করুন",
     uiDispensingPharmacists: "ফার্মাসিস্টদের করণীয়:",
     uiDoNOTUSETHISPLATFORM:
@@ -2259,7 +2256,6 @@ export const uiBn = {
     uiPrivacyPolicyHealthDataProtection:
         "গোপনীয়তা নীতি ও স্বাস্থ্য ডেটা সুরক্ষা",
     uiProcessingCancellation: "বাতিল প্রক্রিয়াধীন...",
-    uiProcessingStripeSandbox: "প্রক্রিয়াকরণ করা হচ্ছে...",
     uiProtectedByHIPAABMDCCompliant:
         "বিএমডিসি ও স্বাস্থ্য নিরাপত্তা মানদণ্ড দ্বারা সুরক্ষিত।",
     uiProtectedByHIPAABMDCCompliant2:

@@ -2,17 +2,12 @@
 
 import { useEffect, useState, useTransition } from "react";
 import {
-  CreditCard,
-  ShieldCheck,
+  AlertTriangle,
   CheckCircle2,
-  X,
+  CreditCard,
   Loader2,
   Sparkles,
-  Zap,
-  Lock,
-  AlertTriangle,
-  User,
-  Calendar,
+  X,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
 import { notifyToast } from "@/lib/toast";
@@ -33,7 +28,6 @@ interface StripeUpgradeModalProps {
   currentPlanId?: string | null;
   organizationId?: string;
   organizationName?: string;
-  onSuccess?: () => void;
 }
 
 export function StripeUpgradeModal({
@@ -42,22 +36,14 @@ export function StripeUpgradeModal({
   currentPlanId,
   organizationId,
   organizationName,
-  onSuccess,
 }: StripeUpgradeModalProps) {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const [plans, setPlans] = useState<PricingPlan[]>([]);
   const [selectedPlanId, setSelectedPlanId] = useState<string>(currentPlanId || "");
   const [loadingPlans, setLoadingPlans] = useState(true);
-
-  // Card form state
-  const [cardHolder, setCardHolder] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvc, setCvc] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
   const [initiatingStripe, setInitiatingStripe] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   // Load active plans
   useEffect(() => {
@@ -88,59 +74,21 @@ export function StripeUpgradeModal({
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !isPending) {
+      if (e.key === "Escape" && !initiatingStripe) {
         onClose();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, isPending, onClose]);
+  }, [isOpen, initiatingStripe, onClose]);
 
   if (!isOpen) return null;
 
   const selectedPlan = plans.find((p) => p.id === selectedPlanId);
 
-  // Quick auto-fill test cards
-  const handleAutoFillTestCard = () => {
-    setCardHolder("Dr. John Dorian");
-    setCardNumber("4242 4242 4242 4242");
-    setExpiry("12/28");
-    setCvc("888");
-    setError("");
-  };
-
-  const handleCardNumberChange = (value: string) => {
-    const raw = value.replace(/\D/g, "").slice(0, 16);
-    const formatted = raw.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
-    setCardNumber(formatted);
-  };
-
-  const handleExpiryChange = (value: string) => {
-    const raw = value.replace(/\D/g, "").slice(0, 4);
-    if (raw.length >= 3) {
-      setExpiry(`${raw.slice(0, 2)}/${raw.slice(2)}`);
-    } else {
-      setExpiry(raw);
-    }
-  };
-
-  const handleCvcChange = (value: string) => {
-    const raw = value.replace(/\D/g, "").slice(0, 4);
-    setCvc(raw);
-  };
-
-  // Detect card brand
-  const getCardBrand = () => {
-    const clean = cardNumber.replace(/\s+/g, "");
-    if (clean.startsWith("4")) return "Visa";
-    if (clean.startsWith("51") || clean.startsWith("55") || clean.startsWith("22")) return "Mastercard";
-    if (clean.startsWith("34") || clean.startsWith("37")) return "Amex";
-    return null;
-  };
-
-  const handleOfficialStripeCheckout = async () => {
+  const handleStripeCheckout = () => {
     if (!selectedPlanId) {
-      const message = "Please select a plan to upgrade.";
+      const message = t("uiSelectPlanToUpgrade", "Please select a plan to upgrade.");
       setError(message);
       notifyToast(message, "error");
       return;
@@ -148,101 +96,38 @@ export function StripeUpgradeModal({
     setInitiatingStripe(true);
     setError("");
 
-    try {
-      const res = await fetch("/api/stripe/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          planId: selectedPlanId,
-          organizationId: organizationId,
-        }),
-      });
-      const data = await res.json();
-      if (data.success && data.isRealStripe && data.url) {
-        // Redirect to official Stripe Hosted Checkout
-        window.location.href = data.url;
-        return;
-      }
-
-      if (!data.isRealStripe) {
-        const message = data.message || "To use live Stripe Checkout, set STRIPE_SECRET_KEY in .env. You can use direct Sandbox card below.";
-        setError(message);
-        notifyToast(message, "error");
-      } else {
-        const message = data.message || "Failed to create Stripe Checkout session.";
-        setError(message);
-        notifyToast(message, "error");
-      }
-    } catch {
-      const message = "Network error while connecting to Stripe API.";
-      setError(message);
-      notifyToast(message, "error");
-    } finally {
-      setInitiatingStripe(false);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedPlanId) {
-      const message = "Please select a plan to upgrade.";
-      setError(message);
-      notifyToast(message, "error");
-      return;
-    }
-    if (!cardNumber.trim() || cardNumber.replace(/\s+/g, "").length < 15) {
-      const message = "Please enter a valid 16-digit card number.";
-      setError(message);
-      notifyToast(message, "error");
-      return;
-    }
-    if (!expiry.trim() || expiry.length < 5) {
-      const message = "Please enter card expiry in MM/YY format.";
-      setError(message);
-      notifyToast(message, "error");
-      return;
-    }
-    if (!cvc.trim() || cvc.length < 3) {
-      const message = "Please enter a valid 3 or 4-digit CVC security code.";
-      setError(message);
-      notifyToast(message, "error");
-      return;
-    }
-
-    setError("");
-
     startTransition(async () => {
       try {
-        const res = await fetch("/api/subscription", {
+        const res = await fetch("/api/stripe/create-checkout-session", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            organizationId,
             planId: selectedPlanId,
-            cardHolder: cardHolder.trim() || undefined,
-            cardNumber,
-            expiry,
-            cvc,
+            organizationId: organizationId,
           }),
         });
-
         const data = await res.json();
-        if (data.success) {
-          setSuccess(true);
-          notifyToast(data.message || t("uiSubscriptionUpgradeSuccessful"), "success");
-          setTimeout(() => {
-            onSuccess?.();
-            onClose();
-          }, 2400);
-        } else {
-          const message = data.error || data.message || "Stripe sandbox transaction failed.";
-          setError(message);
-          notifyToast(message, "error");
+
+        if (data.success && data.url) {
+          // Redirect to Stripe-hosted checkout (live or Stripe test keys).
+          window.location.href = data.url;
+          return;
         }
-      } catch {
-        const message = "Network communication error. Please try again.";
+
+        const message =
+          data.message ||
+          t(
+            "uiStripeCheckoutUnavailable",
+            "Stripe Checkout is unavailable. Please check the Stripe server configuration."
+          );
         setError(message);
         notifyToast(message, "error");
+      } catch {
+        const message = t("uiStripeConnectionError", "Network error while connecting to Stripe.");
+        setError(message);
+        notifyToast(message, "error");
+      } finally {
+        setInitiatingStripe(false);
       }
     });
   };
@@ -261,14 +146,14 @@ export function StripeUpgradeModal({
                 {t("uiUpgradeClinicSubscription")}
               </h3>
               <p className="text-xs text-slate-500">
-                {organizationName ? `${organizationName}` : (t("uiActivateUnlimitedClinicalOperations"))}
+                {organizationName || t("uiActivateUnlimitedClinicalOperations")}
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            disabled={isPending}
+            disabled={initiatingStripe}
             className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -277,271 +162,115 @@ export function StripeUpgradeModal({
 
         {/* Modal Body */}
         <div className="modal-body flex-1 overflow-y-auto p-6 space-y-6">
-          {success ? (
-            <div className="py-12 text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center animate-bounce">
-                <CheckCircle2 className="w-10 h-10" />
-              </div>
-              <h4 className="text-xl font-bold text-slate-900 dark:text-white">
-                {t("uiSubscriptionActivated")}
-              </h4>
-              <p className="text-sm text-slate-600 dark:text-slate-300 max-w-md mx-auto">
-                {language === "bn"
-                  ? `স্ট্রাইপ স্যান্ডবক্সের মাধ্যমে সফলভাবে পেমেন্ট সম্পন্ন হয়েছে। আপনার ক্লিনিক এখন ${selectedPlan?.name || ""} প্ল্যানে সক্রিয় রয়েছে।`
-                  : `Payment processed via Stripe Sandbox. Your clinic is now on the ${selectedPlan?.name || ""} plan with active subscription.`}
-              </p>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>{t.status}: {t.activeStatus}</span>
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Step 1: Select Plan */}
-              <div className="space-y-2.5">
-                <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  {t.availableClinicSaaS}
-                </label>
-                {loadingPlans ? (
-                  <div className="h-28 rounded-lg bg-slate-100 dark:bg-slate-800 animate-pulse" />
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    {plans.map((plan) => {
-                      const isSelected = selectedPlanId === plan.id;
-                      return (
-                        <div
-                          key={plan.id}
-                          onClick={() => setSelectedPlanId(plan.id)}
-                          className={`relative p-4 rounded-lg border transition-all cursor-pointer flex flex-col justify-between ${
-                            isSelected
-                              ? "border-[var(--brand-primary)] bg-[var(--brand-surface)]/40 shadow-xs ring-2 ring-[var(--brand-primary)]"
-                              : "border-[var(--border-default)] hover:border-slate-300 dark:hover:border-slate-700 bg-[var(--bg-surface)]"
-                          }`}
-                        >
-                          {plan.isPopular && (
-                            <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full bg-[var(--brand-primary)] text-white text-[9px] font-bold uppercase tracking-wider shadow-xs">
-                              {t.mostPopular}
-                            </span>
-                          )}
-                          <div>
-                            <div className="flex items-center justify-between mb-1">
-                              <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                                {plan.name}
-                              </h4>
-                              {isSelected && (
-                                <CheckCircle2 className="w-3.5 h-3.5 text-[var(--brand-primary)] shrink-0" />
-                              )}
-                            </div>
-                            <div className="flex items-baseline gap-1 my-2">
-                              <span className="text-xl font-black text-slate-900 dark:text-white">
-                                ${plan.price}
-                              </span>
-                              <span className="text-[10px] text-slate-400">/{plan.billingCycle}</span>
-                            </div>
-                            <p className="text-[11px] text-slate-500 line-clamp-2">
-                              {plan.description}
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {/* Official Stripe Hosted Checkout */}
-              <div className="p-5 rounded-lg border-2 border-indigo-500/20 bg-indigo-50/40 dark:bg-indigo-950/20 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-[#635BFF] text-white flex items-center justify-center font-black text-xs shadow-xs">
-                      S
-                    </div>
-                    <div>
-                      <h5 className="text-xs font-bold text-slate-900 dark:text-white">
-                        {t.payWithStripeCheckout}
-                      </h5>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                        {t("uiPayViaStripeSAuthentic")}
-                      </p>
-                    </div>
-                  </div>
-                  <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold border border-indigo-500/20">
-                    Live / Testmode
-                  </span>
-                </div>
-
-                <button
-                  type="button"
-                  disabled={initiatingStripe || isPending}
-                  onClick={() => void handleOfficialStripeCheckout()}
-                  className="w-full min-h-[44px] rounded-xl bg-[#635BFF] hover:bg-[#5851EA] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer disabled:opacity-50"
-                >
-                  {initiatingStripe ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      {t("uiConnectingToStripeAPI")}
-                    </>
-                  ) : (
-                    <>
-                      <CreditCard className="w-4 h-4" />
-                      {t.payWithStripeCheckout} (${selectedPlan?.price || 49}/{selectedPlan?.billingCycle || "mo"})
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {/* Divider */}
-              <div className="flex items-center gap-3">
-                <div className="flex-1 h-px bg-[var(--border-subtle)]" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  {t.orPayWithSandboxCard}
-                </span>
-                <div className="flex-1 h-px bg-[var(--border-subtle)]" />
-              </div>
-
-              {/* Step 2: Stripe Sandbox Payment Information */}
-              <div className="p-4 rounded-lg border border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-[var(--brand-primary)]" />
-                    <span className="text-xs font-bold text-slate-900 dark:text-white">
-                      {t("uiDirectSandboxCard")}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold border border-amber-500/20">
-                      Sandbox Mode
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleAutoFillTestCard}
-                    className="text-xs font-bold text-[var(--brand-primary)] hover:underline inline-flex items-center gap-1 cursor-pointer"
-                  >
-                    <Zap className="w-3.5 h-3.5" />
-                    <span>{t.autoFillTestCard}</span>
-                  </button>
-                </div>
-
-                {error && (
-                  <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 shrink-0" />
-                    <span>{error}</span>
-                  </div>
-                )}
-
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1 block">
-                      {t.cardHolderName}
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={cardHolder}
-                        onChange={(e) => setCardHolder(e.target.value)}
-                        placeholder="Doctor or Clinic Administrator"
-                        className="w-full input-icon-left !pl-11 pr-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
-                      />
-                      <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">
-                        {t.cardNumber}
-                      </label>
-                      {getCardBrand() && (
-                        <span className="text-[10px] font-bold text-[var(--brand-primary)] uppercase">
-                          {getCardBrand()}
+          {/* Plan selection */}
+          <div className="space-y-2.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              {t.availableClinicSaaS}
+            </label>
+            {loadingPlans ? (
+              <div className="h-28 rounded-lg bg-slate-100 dark:bg-slate-800 animate-pulse" />
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {plans.map((plan) => {
+                  const isSelected = selectedPlanId === plan.id;
+                  return (
+                    <div
+                      key={plan.id}
+                      onClick={() => {
+                        setSelectedPlanId(plan.id);
+                        setError("");
+                      }}
+                      className={`relative p-4 rounded-lg border transition-all cursor-pointer flex flex-col justify-between ${
+                        isSelected
+                          ? "border-[var(--brand-primary)] bg-[var(--brand-surface)]/40 shadow-xs ring-2 ring-[var(--brand-primary)]"
+                          : "border-[var(--border-default)] hover:border-slate-300 dark:hover:border-slate-700 bg-[var(--bg-surface)]"
+                      }`}
+                    >
+                      {plan.isPopular && (
+                        <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full bg-[var(--brand-primary)] text-white text-[9px] font-bold uppercase tracking-wider shadow-xs">
+                          {t.mostPopular}
                         </span>
                       )}
-                    </div>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={cardNumber}
-                        onChange={(e) => handleCardNumberChange(e.target.value)}
-                        placeholder="4242  4242  4242  4242"
-                        className="w-full input-icon-left !pl-11 pr-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm font-mono tracking-wider text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
-                      />
-                      <CreditCard className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1 block">
-                        {t.expiryDate}
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={expiry}
-                          onChange={(e) => handleExpiryChange(e.target.value)}
-                          placeholder="MM / YY"
-                          className="w-full input-icon-left !pl-11 pr-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm font-mono text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
-                        />
-                        <Calendar className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                            {plan.name}
+                          </h4>
+                          {isSelected && (
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[var(--brand-primary)] shrink-0" />
+                          )}
+                        </div>
+                        <div className="flex items-baseline gap-1 my-2">
+                          <span className="text-xl font-black text-slate-900 dark:text-white">
+                            ${plan.price}
+                          </span>
+                          <span className="text-[10px] text-slate-400">/{plan.billingCycle}</span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 line-clamp-2">
+                          {plan.description}
+                        </p>
                       </div>
                     </div>
-                    <div>
-                      <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1 block">
-                        {t.cvcCode}
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="password"
-                          value={cvc}
-                          onChange={(e) => handleCvcChange(e.target.value)}
-                          placeholder="123"
-                          maxLength={4}
-                          className="w-full input-icon-left !pl-11 pr-4 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] text-sm font-mono text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--brand-primary)]/20 transition-all min-h-[46px] sm:min-h-[48px] h-[46px] sm:h-[48px]"
-                        />
-                        <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2 flex items-center justify-between text-[11px] text-slate-500 border-t border-[var(--border-subtle)]">
-                  <div className="flex items-center gap-1.5">
-                    <Lock className="w-3.5 h-3.5 text-emerald-500" />
-                    <span>256-bit Encrypted SSL Sandbox</span>
-                  </div>
-                  <span>{t.instantActivationNotice}</span>
-                </div>
+                  );
+                })}
               </div>
+            )}
+          </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  disabled={isPending}
-                  className="px-4 py-2.5 rounded-xl border border-[var(--border-default)] text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-                >
-                  {t.cancel}
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="px-6 py-2.5 rounded-xl bg-[var(--brand-primary)] hover:opacity-95 text-white text-xs font-bold transition shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-60"
-                >
-                  {isPending ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>{t("uiProcessingStripeSandbox")}</span>
-                    </>
-                  ) : (
-                    <>
-                      <ShieldCheck className="w-4 h-4" />
-                      <span>{language === "bn" ? `$${selectedPlan?.price || 49} পেমেন্ট ও আপগ্রেড করুন` : `Pay $${selectedPlan?.price || 49} & Upgrade Clinic`}</span>
-                    </>
-                  )}
-                </button>
+          {/* Secure payment via Stripe */}
+          <div className="p-5 rounded-lg border-2 border-indigo-500/20 bg-indigo-50/40 dark:bg-indigo-950/20 space-y-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-[#635BFF] text-white flex items-center justify-center font-black text-xs shadow-xs">
+                S
               </div>
-            </form>
-          )}
+              <div>
+                <h5 className="text-xs font-bold text-slate-900 dark:text-white">
+                  {t.payWithStripeCheckout}
+                </h5>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  {t("uiPayViaStripeSAuthentic", "Secure payment powered by Stripe.")}
+                </p>
+              </div>
+            </div>
+
+            {error && (
+              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <button
+              type="button"
+              disabled={initiatingStripe || loadingPlans}
+              onClick={handleStripeCheckout}
+              className="w-full min-h-[44px] rounded-xl bg-[#635BFF] hover:bg-[#5851EA] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer disabled:opacity-50"
+            >
+              {initiatingStripe ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {t("uiConnectingToStripeAPI")}
+                </>
+              ) : (
+                <>
+                  <CreditCard className="w-4 h-4" />
+                  {t.payWithStripeCheckout} (${selectedPlan?.price || 49}/{selectedPlan?.billingCycle || "mo"})
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="modal-footer shrink-0 px-6 py-4 border-t border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-end gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={initiatingStripe}
+            className="px-4 py-2.5 rounded-xl border border-[var(--border-default)] text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+          >
+            {t.cancel}
+          </button>
         </div>
       </div>
     </div>

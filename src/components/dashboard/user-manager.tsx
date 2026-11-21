@@ -272,7 +272,7 @@ export function UserManager() {
           onClick={handleOpenCreate}
           className="flex items-center gap-2 min-h-[42px] sm:min-h-[44px] px-5 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs sm:text-sm font-bold shadow-md hover:opacity-90 transition-all cursor-pointer self-start md:self-auto shrink-0"
         >
-          <span>➕</span>
+          <span>+</span>
           <span>{t.registerNewAccount}</span>
         </button>
       </div>
@@ -322,11 +322,10 @@ export function UserManager() {
               key={role}
               type="button"
               onClick={() => setRoleFilter(role)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                roleFilter === role
-                  ? "bg-[var(--brand-primary)] text-white shadow-xs"
-                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${roleFilter === role
+                ? "bg-[var(--brand-primary)] text-white shadow-xs"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                }`}
             >
               {role === "ALL" ? t.allRoles : role.replace("_", " ")}
             </button>
@@ -499,18 +498,18 @@ export function UserManager() {
                     options={
                       currentUser?.role === "SUPER_ADMIN"
                         ? [
-                            { value: "DOCTOR", label: "DOCTOR (Physician & Chamber Practitioner)", badge: "Physician" },
-                            { value: "STAFF", label: "STAFF (Hospital Front Desk & Queue Operator)", badge: "Front Desk" },
-                            { value: "PATIENT", label: "PATIENT (Patient Portal Access)", badge: "Patient" },
-                            { value: "ADMIN", label: "ADMIN (Clinic Administrator)", badge: "Admin" },
-                            { value: "SUPER_ADMIN", label: "SUPER_ADMIN (Hospital Network Executive)", badge: "Executive" },
-                          ]
+                          { value: "DOCTOR", label: "DOCTOR (Physician & Chamber Practitioner)", badge: "Physician" },
+                          { value: "STAFF", label: "STAFF (Hospital Front Desk & Queue Operator)", badge: "Front Desk" },
+                          { value: "PATIENT", label: "PATIENT (Patient Portal Access)", badge: "Patient" },
+                          { value: "ADMIN", label: "ADMIN (Clinic Administrator)", badge: "Admin" },
+                          { value: "SUPER_ADMIN", label: "SUPER_ADMIN (Hospital Network Executive)", badge: "Executive" },
+                        ]
                         : [
-                            { value: "DOCTOR", label: "DOCTOR (Physician & Chamber Practitioner)", badge: "Physician" },
-                            { value: "STAFF", label: "STAFF (Hospital Front Desk & Queue Operator)", badge: "Front Desk" },
-                            { value: "PATIENT", label: "PATIENT (Patient Portal Access)", badge: "Patient" },
-                            { value: "ADMIN", label: "ADMIN (Clinic Administrator)", badge: "Admin" },
-                          ]
+                          { value: "DOCTOR", label: "DOCTOR (Physician & Chamber Practitioner)", badge: "Physician" },
+                          { value: "STAFF", label: "STAFF (Hospital Front Desk & Queue Operator)", badge: "Front Desk" },
+                          { value: "PATIENT", label: "PATIENT (Patient Portal Access)", badge: "Patient" },
+                          { value: "ADMIN", label: "ADMIN (Clinic Administrator)", badge: "Admin" },
+                        ]
                     }
                     searchable={false}
                   />
@@ -697,18 +696,18 @@ export function UserManager() {
                     options={
                       currentUser?.role === "SUPER_ADMIN"
                         ? [
-                            { value: "DOCTOR", label: "DOCTOR", badge: "Physician" },
-                            { value: "STAFF", label: "STAFF", badge: "Front Desk" },
-                            { value: "PATIENT", label: "PATIENT", badge: "Patient" },
-                            { value: "ADMIN", label: "ADMIN", badge: "Admin" },
-                            { value: "SUPER_ADMIN", label: "SUPER_ADMIN", badge: "Executive" },
-                          ]
+                          { value: "DOCTOR", label: "DOCTOR", badge: "Physician" },
+                          { value: "STAFF", label: "STAFF", badge: "Front Desk" },
+                          { value: "PATIENT", label: "PATIENT", badge: "Patient" },
+                          { value: "ADMIN", label: "ADMIN", badge: "Admin" },
+                          { value: "SUPER_ADMIN", label: "SUPER_ADMIN", badge: "Executive" },
+                        ]
                         : [
-                            { value: "DOCTOR", label: "DOCTOR", badge: "Physician" },
-                            { value: "STAFF", label: "STAFF", badge: "Front Desk" },
-                            { value: "PATIENT", label: "PATIENT", badge: "Patient" },
-                            { value: "ADMIN", label: "ADMIN", badge: "Admin" },
-                          ]
+                          { value: "DOCTOR", label: "DOCTOR", badge: "Physician" },
+                          { value: "STAFF", label: "STAFF", badge: "Front Desk" },
+                          { value: "PATIENT", label: "PATIENT", badge: "Patient" },
+                          { value: "ADMIN", label: "ADMIN", badge: "Admin" },
+                        ]
                     }
                     searchable={false}
                   />

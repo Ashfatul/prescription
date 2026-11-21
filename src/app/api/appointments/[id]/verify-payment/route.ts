@@ -37,11 +37,16 @@ export async function POST(
       throw new AppError("Unauthorized access to appointment", 403);
     }
 
-    // 1. If real Stripe is configured and a valid non-demo sessionId is provided
     const stripe = getStripeServer();
-    if (stripe && isStripeConfigured() && sessionId && !sessionId.startsWith("demo_")) {
-      try {
-        const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (!stripe || !isStripeConfigured() || !sessionId) {
+      throw new AppError(
+        "Stripe is not configured or no checkout session was provided.",
+        503,
+      );
+    }
+
+    try {
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
         if (session.payment_status === "paid" || session.status === "complete") {
           const updated = await db.appointment.update({
             where: { id },
@@ -57,21 +62,13 @@ export async function POST(
           });
           return ok({ success: true, appointment: updated, verifiedVia: "STRIPE_API" });
         }
-      } catch (err) {
-        console.error("Error retrieving Stripe session:", err);
-      }
+    } catch (err) {
+      console.error("Error retrieving Stripe session:", err);
     }
 
-    // 2. Demo Sandbox mode / Verified test transaction
-    const updated = await db.appointment.update({
-      where: { id },
-      data: {
-        paymentStatus: "PAID",
-        paymentMethod: "STRIPE",
-        stripeSessionId: sessionId || appointment.stripeSessionId || `demo_${Date.now()}`,
-      },
-    });
-
-    return ok({ success: true, appointment: updated, verifiedVia: "SANDBOX_SIMULATION" });
+    throw new AppError(
+      "Stripe session is not paid or could not be verified.",
+      402,
+    );
   });
 }

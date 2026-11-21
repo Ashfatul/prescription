@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import { OrganizationStatus, RoleName } from "@prisma/client";
-import { logActivity } from "@/features/activity-log/activity-log.service";
 
 export type ClinicSubscriptionInfo = {
   isSuperAdmin?: boolean;
@@ -246,104 +245,6 @@ export async function getClinicSubscription(organizationId: string): Promise<Cli
       staff: staffPercent,
       patients: patPercent,
       prescriptions: rxPercent,
-    },
-  };
-}
-
-export type ProcessUpgradeParams = {
-  organizationId: string;
-  planId: string;
-  cardHolder?: string;
-  cardNumber: string;
-  expiry: string;
-  cvc: string;
-  userId?: string;
-  userName?: string;
-};
-
-export async function processStripeSandboxUpgrade(params: ProcessUpgradeParams) {
-  const org = await db.organization.findUnique({
-    where: { id: params.organizationId },
-    include: { plan: true },
-  });
-
-  if (!org) {
-    throw new AppError("Organization not found", 404);
-  }
-
-  const newPlan = await db.pricingPlan.findUnique({
-    where: { id: params.planId },
-  });
-
-  if (!newPlan) {
-    throw new AppError("Selected pricing plan not found", 404);
-  }
-
-  // Clean and validate card details
-  const cleanCardNumber = params.cardNumber.replace(/\s+/g, "");
-  if (cleanCardNumber.length < 13 || cleanCardNumber.length > 19) {
-    throw new AppError("Invalid card number format for Stripe Sandbox", 400);
-  }
-
-  // Test failure simulation for Stripe sandbox cards
-  if (cleanCardNumber.endsWith("0002")) {
-    throw new AppError("Stripe Sandbox: Card was declined (test card code: declined)", 402);
-  }
-  if (cleanCardNumber.endsWith("0069")) {
-    throw new AppError("Stripe Sandbox: Insufficient funds (test card code: insufficient_funds)", 402);
-  }
-
-  const cardLast4 = cleanCardNumber.slice(-4);
-  const mockSubId = `sub_sandbox_${Math.random().toString(36).substring(2, 9)}_${Date.now()}`;
-  const mockCustId = org.stripeCustomerId || `cus_sandbox_${Math.random().toString(36).substring(2, 9)}`;
-
-  // 30 days subscription duration
-  const subscriptionEndsAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-
-  // Update organization to ACTIVE with upgraded plan
-  const updatedOrg = await db.organization.update({
-    where: { id: org.id },
-    data: {
-      status: OrganizationStatus.ACTIVE,
-      planId: newPlan.id,
-      trialEndsAt: null,
-      subscriptionStatus: "active",
-      subscriptionEndsAt,
-      stripeSubscriptionId: mockSubId,
-      stripeCustomerId: mockCustId,
-    },
-    include: { plan: true },
-  });
-
-  // Log audit activity
-  await logActivity({
-    organizationId: org.id,
-    userId: params.userId,
-    userName: params.userName || "Clinic Admin",
-    userRole: "SUPER_ADMIN",
-    action: "SUBSCRIPTION_UPGRADED",
-    entityType: "Subscription",
-    entityId: mockSubId,
-    detailsJson: {
-      planName: newPlan.name,
-      price: newPlan.price,
-      billingCycle: newPlan.billingCycle,
-      cardLast4,
-      stripeSubscriptionId: mockSubId,
-      stripeCustomerId: mockCustId,
-      paymentMode: "STRIPE_SANDBOX_TESTMODE",
-    },
-  });
-
-  return {
-    success: true,
-    message: `Clinic successfully upgraded to ${newPlan.name}!`,
-    organization: updatedOrg,
-    plan: newPlan,
-    subscription: {
-      status: "active",
-      endsAt: subscriptionEndsAt,
-      stripeSubscriptionId: mockSubId,
     },
   };
 }

@@ -60,10 +60,15 @@ export async function POST(req: NextRequest) {
 
         const stripe = getStripeServer();
 
-        // 1. If valid Stripe secret key is present, create actual Stripe Checkout session
-        if (stripe && isStripeConfigured()) {
-            try {
-                const session = await stripe.checkout.sessions.create({
+        if (!stripe || !isStripeConfigured()) {
+            throw new AppError(
+                "Stripe Checkout is not configured. Set STRIPE_SECRET_KEY in the server environment.",
+                503,
+            );
+        }
+
+        try {
+            const session = await stripe.checkout.sessions.create({
                     mode: "subscription",
                     line_items: [
                         {
@@ -105,31 +110,13 @@ export async function POST(req: NextRequest) {
                     url: session.url,
                     sessionId: session.id,
                 });
-            } catch (stripeErr: unknown) {
-                const errObj = stripeErr as Error;
-                console.error(
-                    "Stripe Checkout Session Creation Error:",
-                    errObj.message,
-                );
-                throw new AppError(`Stripe Error: ${errObj.message}`, 400);
-            }
+        } catch (stripeErr: unknown) {
+            const errObj = stripeErr as Error;
+            console.error(
+                "Stripe Checkout Session Creation Error:",
+                errObj.message,
+            );
+            throw new AppError(`Stripe Error: ${errObj.message}`, 400);
         }
-
-        // 2. Fallback when STRIPE_SECRET_KEY is not configured yet
-        return ok({
-            success: true,
-            isRealStripe: false,
-            message:
-                "Stripe API key is not configured in .env. To enable live/sandbox Stripe Checkout, set STRIPE_SECRET_KEY in your .env file.",
-            plan: {
-                id: plan.id,
-                name: plan.name,
-                price: plan.price,
-            },
-            organization: {
-                id: org.id,
-                name: org.name,
-            },
-        });
     });
 }

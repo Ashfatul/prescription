@@ -54,9 +54,14 @@ export async function POST(
 
     const stripe = getStripeServer();
 
-    // 1. Live Stripe Checkout Session
-    if (stripe && isStripeConfigured()) {
-      try {
+    if (!stripe || !isStripeConfigured()) {
+      throw new AppError(
+        "Stripe Checkout is not configured. Set STRIPE_SECRET_KEY in the server environment.",
+        503,
+      );
+    }
+
+    try {
         const session = await stripe.checkout.sessions.create({
           mode: "payment",
           line_items: [
@@ -109,21 +114,10 @@ export async function POST(
           url: session.url,
           sessionId: session.id,
         });
-      } catch (stripeErr: unknown) {
-        const err = stripeErr as Error;
-        console.error("Failed to generate Stripe checkout session:", err.message);
-      }
+    } catch (stripeErr: unknown) {
+      const err = stripeErr as Error;
+      console.error("Failed to generate Stripe checkout session:", err.message);
+      throw new AppError(`Stripe Error: ${err.message}`, 400);
     }
-
-    // 2. Demo Sandbox Mode Fallback URL
-    const demoUrl = `${origin}/checkout/stripe-demo?appointmentId=${appointment.id}&fee=${fee}&doctor=${encodeURIComponent(
-      appointment.doctor.user.name
-    )}&serial=${appointment.serialNumber}&visitType=${appointment.visitType || "NEW"}`;
-
-    return ok({
-      success: true,
-      isRealStripe: false,
-      url: demoUrl,
-    });
   });
 }
