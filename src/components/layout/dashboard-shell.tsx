@@ -212,8 +212,11 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
       .catch(() => {});
   }, []);
 
-  // Sync subscription quota info
+  // Sync subscription quota info — patients pay per appointment only and are
+  // never subject to a clinic subscription, so don't fetch or show quota data.
+  const isPatient = role === RoleName.PATIENT;
   useEffect(() => {
+    if (isPatient) return;
     fetch("/api/subscription")
       .then((res) => (res.ok ? res.json() : null))
       .then((res) => {
@@ -242,7 +245,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         }
       })
       .catch(() => {});
-  }, [role]);
+  }, [role, isPatient]);
 
   const onLogout = async () => {
     setUserMenuOpen(false);
@@ -779,8 +782,8 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         )}
       </div>
 
-      {/* Compact Clinic Quota Strip (Only for non-SuperAdmin clinic roles with subscription info) */}
-      {role !== RoleName.SUPER_ADMIN && subInfo && (
+      {/* Compact Clinic Quota Strip — clinic staff only, never patients */}
+      {role !== RoleName.SUPER_ADMIN && !isPatient && subInfo && (
         <div className={`shrink-0 ${isMini ? "px-2 pt-3 pb-1" : "px-3 pt-3 pb-1"}`}>
           {isMini ? (
             <Link
@@ -1005,7 +1008,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
                 >
                   {getRoleTitle(role)}
                 </span>
-              ) : subInfo ? (
+              ) : !isPatient && subInfo ? (
                 <Link
                   href={role === RoleName.ADMIN ? "/dashboard/admin?tab=billing" : "#"}
                   className="hidden md:inline-flex items-center gap-2 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-colors"
