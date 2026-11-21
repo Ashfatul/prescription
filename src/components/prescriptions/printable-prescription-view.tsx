@@ -31,6 +31,7 @@ export type ClinicalInfo = {
   diagnosis?: string;
   advice?: string;
   followUp?: string;
+  patientNote?: string;
   medicalHistory?: string;
   allergies?: string;
 };
@@ -589,6 +590,18 @@ export function PrintablePrescriptionView({
                     <span className="rounded bg-teal-50 px-2 py-0.5 text-teal-800 print:bg-transparent print:p-0">
                       {clinicalInfo.followUp}
                     </span>
+                  </div>
+                )}
+
+                {/* Personal Note From Doctor */}
+                {clinicalInfo.patientNote && (
+                  <div className="mt-4 rounded-xl border border-sky-200/80 bg-sky-50/70 p-3.5 print:bg-transparent print:border-zinc-300">
+                    <h4 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
+                      {t("noteForPatient", "Note for Patient")}
+                    </h4>
+                    <p className="mt-1.5 whitespace-pre-line leading-relaxed opacity-85">
+                      {clinicalInfo.patientNote}
+                    </p>
                   </div>
                 )}
 

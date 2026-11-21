@@ -1667,6 +1667,14 @@ export const en = {
    ,"uiLandingStep2Desc": "Book instantly and track your turn on the live chamber screen."
    ,"uiLandingStep3Title": "Consult & get Rx"
    ,"uiLandingStep3Desc": "Meet your doctor and receive a printed digital prescription."
+   ,"searchComplaints": "Search or add a chief complaint"
+   ,"searchDiagnosis": "Search or add a clinical diagnosis"
+   ,"staffReported": "Reported by staff at triage — edit or remove as needed."
+   ,"uiRxSearchSelectCreateHint": "Search, select or create inline"
+   ,"searchAdvice": "Search or add lifestyle advice"
+   ,"noteForPatient": "Note for Patient"
+   ,"noteForPatientPlaceholder": "A short reassuring message for the patient..."
+   ,"noteForPatientHint": "This message is printed on the prescription and shared with the patient."
 } as const;
 
 export default en;

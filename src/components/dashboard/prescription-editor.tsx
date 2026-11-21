@@ -23,8 +23,9 @@ import {
   Phone,
   Mail,
   FileSearch,
+  Info,
 } from "lucide-react";
-import { SearchableSelect, SelectOption } from "@/components/common/searchable-select";
+import { SearchableSelect, SelectOption } from "@/components/common/custom-select";
 import { PrescriptionPreviewModal } from "@/components/dashboard/prescription-preview-modal";
 import { useLanguage } from "@/lib/i18n/language-context";
 import { notifyToast } from "@/lib/toast";
@@ -196,6 +197,23 @@ const DIAGNOSIS_GROUPS = [
   },
 ];
 
+// Flat, searchable option lists with their clinical category shown as a badge.
+const COMPLAINT_OPTIONS: SelectOption[] = COMPLAINT_GROUPS.flatMap((group) =>
+  group.items.map((item) => ({ value: item, label: item, badge: group.category }))
+);
+
+const DIAGNOSIS_OPTIONS: SelectOption[] = DIAGNOSIS_GROUPS.flatMap((group) =>
+  group.items.map((item) => ({ value: item, label: item, badge: group.category }))
+);
+
+function parseBulletValues(text?: string | null): string[] {
+  if (!text) return [];
+  return text
+    .split("\n")
+    .map((line) => line.trim().replace(/^([•\-\–\—*]|\-\-)\s*/, "").trim())
+    .filter(Boolean);
+}
+
 const FREQUENCY_PRESETS = [
   "1 + 0 + 1",
   "1 + 1 + 1",
@@ -251,18 +269,10 @@ const ADVICE_GROUPS = [
   },
 ];
 
-const COMMON_TEST_CHIPS = [
-  { name: "CBC with ESR (Complete Blood Count)", instructions: "Clean blood sample" },
-  { name: "Fasting Blood Sugar (FBS)", instructions: "10-12 hours overnight fasting" },
-  { name: "HbA1c (Glycated Hemoglobin)", instructions: "Any time, non-fasting" },
-  { name: "Serum Creatinine", instructions: "Clean blood sample" },
-  { name: "Lipid Profile", instructions: "12 hours strict overnight fasting" },
-  { name: "Urine Routine & Microscopic (R/M/E)", instructions: "Midstream early morning sample" },
-  { name: "SGPT / ALT (Liver Function)", instructions: "Clean blood sample" },
-  { name: "Chest X-Ray P/A View", instructions: "Standard upright view" },
-  { name: "ECG (12 Lead)", instructions: "At complete resting state" },
-  { name: "USG of Whole Abdomen", instructions: "Empty stomach with full bladder" },
-];
+// Flat, searchable advice options with their category shown as a badge.
+const ADVICE_OPTIONS: SelectOption[] = ADVICE_GROUPS.flatMap((group) =>
+  group.items.map((item) => ({ value: item, label: item, badge: group.category }))
+);
 
 const HISTORY_PRESETS = [
   "Diabetes Mellitus (DM)",
@@ -311,26 +321,6 @@ const FORMULATION_OPTIONS: SelectOption[] = [
   { value: "Spray", label: "Spray", badge: "Spry" },
   { value: "Lotion", label: "Lotion", badge: "Lot" },
 ];
-
-// Helper to format text lines using standard "- " bullet (Requirement 6)
-function appendBulletLine(existingText: string, newItem: string, bullet = "- "): string {
-  const trimmed = existingText.trimEnd();
-  const cleanItem = newItem.trim().replace(/^([•\-\–\—*]|\-\-)\s*/, "");
-  const formattedLine = `${bullet}${cleanItem}`;
-
-  if (!trimmed) {
-    return formattedLine;
-  }
-
-  const existingLines = trimmed
-    .split("\n")
-    .map((line) => line.trim().replace(/^([•\-\–\—*]|\-\-)\s*/, ""));
-  if (existingLines.includes(cleanItem)) {
-    return trimmed;
-  }
-
-  return `${trimmed}\n${formattedLine}`;
-}
 
 function parseTriage(notes?: string | null) {
   if (!notes) return { complaint: "", bp: "", pulse: "", temp: "", weight: "" };
@@ -481,14 +471,28 @@ export function PrescriptionEditor({
     return "";
   }, [initC.allergies, currentAppointment?.allergiesJson]);
 
-  const [medicalHistory, setMedicalHistory] = useState(initialHistory);
-  const [allergies, setAllergies] = useState(initialAllergies);
+  // Staff-recorded history & allergies — editable through searchable selectors
+  const [historyValues, setHistoryValues] = useState<string[]>(() => parseBulletValues(initialHistory));
+  const [allergyValues, setAllergyValues] = useState<string[]>(() => parseBulletValues(initialAllergies));
 
-  // Complaints & Diagnosis
-  const [complaints, setComplaints] = useState(
-    initC.complaints || (triage.complaint ? `- ${triage.complaint}` : "")
+  // Keep the stored/printed text format (one "- " item per line) unchanged.
+  const medicalHistory = historyValues.map((value) => `- ${value}`).join("\n");
+  const allergies = allergyValues.map((value) => `- ${value}`).join("\n");
+
+  // Complaints & Diagnosis — staff triage value is selected by default and
+  // stays fully editable by the doctor through the searchable multi-select.
+  const [complaintValues, setComplaintValues] = useState<string[]>(() => {
+    const fromRecord = parseBulletValues(initC.complaints);
+    if (fromRecord.length) return fromRecord;
+    return triage.complaint ? [triage.complaint.trim()] : [];
+  });
+  const [diagnosisValues, setDiagnosisValues] = useState<string[]>(() =>
+    parseBulletValues(initC.diagnosis)
   );
-  const [diagnosis, setDiagnosis] = useState(initC.diagnosis || "");
+
+  // Keep the stored/printed text format (one "- " item per line) unchanged.
+  const complaints = complaintValues.map((value) => `- ${value}`).join("\n");
+  const diagnosis = diagnosisValues.map((value) => `- ${value}`).join("\n");
 
   // Prescribed Tests
   const [tests, setTests] = useState<TestRow[]>(() => {
@@ -510,13 +514,20 @@ export function PrescriptionEditor({
     return [];
   });
 
-  // Advice & Follow-Up
-  const [advice, setAdvice] = useState(
-    initC.advice ||
+  // Advice & Follow-Up — same searchable multi-select workflow as complaints
+  const [adviceValues, setAdviceValues] = useState<string[]>(() => {
+    const fromRecord = parseBulletValues(initC.advice);
+    if (fromRecord.length) return fromRecord;
+    return parseBulletValues(
       "- Drink plenty of boiled warm water.\n- Avoid oily, spicy, and outside street food.\n- Take complete bed rest."
-  );
+    );
+  });
   const [followUp, setFollowUp] = useState(initC.followUp || "After 7 days with investigation reports");
   const [notes, setNotes] = useState(initialPrescriptionToRevise?.notes || "");
+  const [patientNote, setPatientNote] = useState(initC.patientNote || "");
+
+  // Keep the stored/printed text format (one "- " item per line) unchanged.
+  const advice = adviceValues.map((value) => `- ${value}`).join("\n");
 
   // Attachments & Reports
   const [attachments, setAttachments] = useState<
@@ -681,26 +692,6 @@ export function PrescriptionEditor({
   };
 
   // Quick Preset Handlers (using standard "- " bullet)
-  const appendComplaint = (phrase: string) => {
-    setComplaints((prev) => appendBulletLine(prev, phrase, "- "));
-  };
-
-  const appendDiagnosis = (dx: string) => {
-    setDiagnosis((prev) => appendBulletLine(prev, dx, "- "));
-  };
-
-  const appendAdvice = (adv: string) => {
-    setAdvice((prev) => appendBulletLine(prev, adv, "- "));
-  };
-
-  const appendHistory = (item: string) => {
-    setMedicalHistory((prev) => appendBulletLine(prev, item, "- "));
-  };
-
-  const appendAllergy = (item: string) => {
-    setAllergies((prev) => appendBulletLine(prev, item, "- "));
-  };
-
   // File Attachment Upload
   const handleUploadAttachment = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -779,6 +770,7 @@ export function PrescriptionEditor({
         diagnosis: diagnosis.trim() || undefined,
         advice: advice.trim() || undefined,
         followUp: followUp.trim() || undefined,
+        patientNote: patientNote.trim() || undefined,
         medicalHistory: medicalHistory.trim() || undefined,
         allergies: allergies.trim() || undefined,
       },
@@ -1377,25 +1369,16 @@ export function PrescriptionEditor({
                     {t.safetyCritical}
                   </span>
                 </div>
-                <textarea
-                  rows={2}
-                  value={allergies}
-                  onChange={(e) => setAllergies(e.target.value)}
+                <SearchableSelect
+                  multiple
+                  searchable
+                  allowCustom
+                  options={ALLERGY_PRESETS}
+                  values={allergyValues}
+                  onChangeValues={setAllergyValues}
                   placeholder={t.allergiesInputPlaceholder}
-                  className="w-full px-3 py-2 rounded-lg border border-rose-200 dark:border-rose-900/50 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white focus:outline-none"
+                  searchPlaceholder={t.allergiesInputPlaceholder}
                 />
-                <div className="flex flex-wrap gap-1.5">
-                  {ALLERGY_PRESETS.map((a) => (
-                    <button
-                      key={a}
-                      type="button"
-                      onClick={() => appendAllergy(a)}
-                      className="px-2 py-0.5 rounded-md bg-white dark:bg-slate-900 text-[11px] font-semibold text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900/40 hover:bg-rose-100 transition cursor-pointer"
-                    >
-                      + {a}
-                    </button>
-                  ))}
-                </div>
               </div>
 
               {/* Medical History Form */}
@@ -1403,25 +1386,16 @@ export function PrescriptionEditor({
                 <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
                   {t.medicalHistoryStaff}
                 </span>
-                <textarea
-                  rows={2}
-                  value={medicalHistory}
-                  onChange={(e) => setMedicalHistory(e.target.value)}
+                <SearchableSelect
+                  multiple
+                  searchable
+                  allowCustom
+                  options={HISTORY_PRESETS}
+                  values={historyValues}
+                  onChangeValues={setHistoryValues}
                   placeholder={t.chronicConditionsPlaceholder}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-surface)] text-xs text-slate-900 dark:text-white focus:outline-none"
+                  searchPlaceholder={t.chronicConditionsPlaceholder}
                 />
-                <div className="flex flex-wrap gap-1.5">
-                  {HISTORY_PRESETS.map((h) => (
-                    <button
-                      key={h}
-                      type="button"
-                      onClick={() => appendHistory(h)}
-                      className="px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 text-[11px] font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition cursor-pointer"
-                    >
-                      + {h}
-                    </button>
-                  ))}
-                </div>
               </div>
 
               <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
@@ -1558,88 +1532,64 @@ export function PrescriptionEditor({
               <Stethoscope className="w-3.5 h-3.5" />
               <span>1. {t.chiefComplaints} & {t.clinicalDiagnosis}</span>
             </span>
-            <span className="text-[11px] text-slate-400 font-medium">{t("useDashForManualEntries")}</span>
+            <span className="text-[11px] text-slate-400 font-medium">
+              {t("uiRxSearchSelectCreateHint", "Search, select or create inline")}
+            </span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Chief Complaints */}
+            {/* Chief Complaints — one searchable selector with inline create */}
             <div className="space-y-2.5">
-              <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-                {t.chiefComplaints}
-              </label>
-              <textarea
-                rows={4}
-                value={complaints}
-                onChange={(e) => setComplaints(e.target.value)}
-                placeholder="- High fever for 3 days&#10;- Sore throat & headache"
-                className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium"
-              />
-
-              {/* Categorized Pill Presets (Requirement 5 & 6) */}
-              <div className="space-y-2 pt-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-                  {t.quickSelectPresets}
-                </span>
-                <div className="space-y-1.5">
-                  {COMPLAINT_GROUPS.map((grp) => (
-                    <div key={grp.category} className="flex flex-wrap items-center gap-1.5">
-                      <span className="text-[10px] font-bold text-slate-400 w-24 shrink-0">
-                        {grp.category}:
-                      </span>
-                      {grp.items.map((item) => (
-                        <button
-                          key={item}
-                          type="button"
-                          onClick={() => appendComplaint(item)}
-                          className="px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-[var(--bg-surface)] text-slate-700 dark:text-slate-300 border border-slate-200/90 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] hover:border-[var(--brand-border)] transition cursor-pointer shadow-2xs"
-                        >
-                          + {item}
-                        </button>
-                      ))}
-                    </div>
-                  ))}
-                </div>
+              <div className="flex items-center justify-between gap-2">
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                  {t.chiefComplaints}
+                </label>
+                {complaintValues.length > 0 && (
+                  <span className="px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-[10px] font-bold">
+                    {complaintValues.length}
+                  </span>
+                )}
               </div>
+              <SearchableSelect
+                multiple
+                searchable
+                allowCustom
+                options={COMPLAINT_OPTIONS}
+                values={complaintValues}
+                onChangeValues={setComplaintValues}
+                placeholder={t("searchComplaints", "Search or add a chief complaint")}
+                searchPlaceholder={t("searchComplaints", "Search or add a chief complaint")}
+              />
+              {triage.complaint && (
+                <p className="flex items-start gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+                  <Info className="w-3.5 h-3.5 text-sky-500 shrink-0 mt-0.5" />
+                  {t("staffReported", "Reported by staff at triage — edit or remove as needed.")}
+                </p>
+              )}
             </div>
 
-            {/* Clinical Diagnosis (Dx) */}
+            {/* Clinical Diagnosis — one searchable selector with inline create */}
             <div className="space-y-2.5">
-              <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-                {t.clinicalDiagnosis}
-              </label>
-              <textarea
-                rows={4}
-                value={diagnosis}
-                onChange={(e) => setDiagnosis(e.target.value)}
-                placeholder="- Upper Respiratory Tract Infection (URTI)&#10;- Mild Acute Gastritis"
-                className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium"
-              />
-
-              {/* Categorized Diagnosis Presets */}
-              <div className="space-y-2 pt-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-                  {t.commonDiagnoses}
-                </span>
-                <div className="space-y-1.5">
-                  {DIAGNOSIS_GROUPS.map((grp) => (
-                    <div key={grp.category} className="flex flex-wrap items-center gap-1.5">
-                      <span className="text-[10px] font-bold text-slate-400 w-24 shrink-0">
-                        {grp.category}:
-                      </span>
-                      {grp.items.map((item) => (
-                        <button
-                          key={item}
-                          type="button"
-                          onClick={() => appendDiagnosis(item)}
-                          className="px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-[var(--bg-surface)] text-slate-700 dark:text-slate-300 border border-slate-200/90 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] hover:border-[var(--brand-border)] transition cursor-pointer shadow-2xs"
-                        >
-                          + {item}
-                        </button>
-                      ))}
-                    </div>
-                  ))}
-                </div>
+              <div className="flex items-center justify-between gap-2">
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                  {t.clinicalDiagnosis}
+                </label>
+                {diagnosisValues.length > 0 && (
+                  <span className="px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-[10px] font-bold">
+                    {diagnosisValues.length}
+                  </span>
+                )}
               </div>
+              <SearchableSelect
+                multiple
+                searchable
+                allowCustom
+                options={DIAGNOSIS_OPTIONS}
+                values={diagnosisValues}
+                onChangeValues={setDiagnosisValues}
+                placeholder={t("searchDiagnosis", "Search or add a clinical diagnosis")}
+                searchPlaceholder={t("searchDiagnosis", "Search or add a clinical diagnosis")}
+              />
             </div>
           </div>
         </div>
@@ -1900,22 +1850,7 @@ export function PrescriptionEditor({
             </button>
           </div>
 
-          {/* Quick Test Chips */}
-          <div className="flex flex-wrap items-center gap-1.5 pb-2">
-            <span className="text-[11px] font-bold text-slate-500 mr-1">{t.quickSelectPresets}</span>
-            {COMMON_TEST_CHIPS.map((chip) => (
-              <button
-                key={chip.name}
-                type="button"
-                onClick={() => addTest(chip.name, chip.instructions)}
-                className="px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-[var(--bg-app)] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] hover:border-[var(--brand-border)] transition cursor-pointer"
-              >
-                + {chip.name.split(" (")[0]}
-              </button>
-            ))}
-          </div>
-
-          {/* Tests List */}
+          {/* Tests List — each row uses a searchable select with inline create */}
           <div className="space-y-3">
             {tests.length === 0 ? (
               <div className="p-8 rounded-xl border border-dashed border-[var(--border-default)] bg-[var(--bg-subtle)]/40 text-center space-y-2.5">
@@ -1980,78 +1915,74 @@ export function PrescriptionEditor({
           </span>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Advice */}
+            {/* Advice — one searchable selector with inline create */}
             <div className="space-y-2.5">
-              <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-                {t.adviceAndLifestyle}
-              </label>
-              <textarea
-                rows={4}
-                value={advice}
-                onChange={(e) => setAdvice(e.target.value)}
-                placeholder="- Drink plenty of boiled warm water.&#10;- Avoid oily and spicy foods."
-                className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium"
-              />
-
-              <div className="space-y-1.5 pt-1">
-                {ADVICE_GROUPS.map((grp) => (
-                  <div key={grp.category} className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[10px] font-bold text-slate-400 w-24 shrink-0">
-                      {grp.category}:
-                    </span>
-                    {grp.items.map((item) => (
-                      <button
-                        key={item}
-                        type="button"
-                        onClick={() => appendAdvice(item)}
-                        className="px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-[var(--bg-surface)] text-slate-700 dark:text-slate-300 border border-slate-200/90 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] hover:border-[var(--brand-border)] transition cursor-pointer shadow-2xs"
-                      >
-                        + {item}
-                      </button>
-                    ))}
-                  </div>
-                ))}
+              <div className="flex items-center justify-between gap-2">
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                  {t.adviceAndLifestyle}
+                </label>
+                {adviceValues.length > 0 && (
+                  <span className="px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-[10px] font-bold">
+                    {adviceValues.length}
+                  </span>
+                )}
               </div>
+              <SearchableSelect
+                multiple
+                searchable
+                allowCustom
+                options={ADVICE_OPTIONS}
+                values={adviceValues}
+                onChangeValues={setAdviceValues}
+                placeholder={t("searchAdvice", "Search or add lifestyle advice")}
+                searchPlaceholder={t("searchAdvice", "Search or add lifestyle advice")}
+              />
             </div>
 
-            {/* Follow-up & Private Notes */}
+            {/* Follow-up & Notes */}
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
                   {t.nextConsultationVisit}
                 </label>
-                <input
-                  type="text"
+                <SearchableSelect
+                  searchable
+                  allowCustom
+                  options={FOLLOWUP_PRESETS}
                   value={followUp}
-                  onChange={(e) => setFollowUp(e.target.value)}
+                  onChange={(val) => setFollowUp(val)}
                   placeholder={t.followUpPlaceholder}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs font-semibold focus:outline-none"
+                  searchPlaceholder={t.followUpPlaceholder}
                 />
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {FOLLOWUP_PRESETS.map((chip) => (
-                    <button
-                      key={chip}
-                      type="button"
-                      onClick={() => setFollowUp(chip)}
-                      className="px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-[var(--bg-surface)] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-[var(--brand-surface)] hover:text-[var(--brand-text)] transition cursor-pointer"
-                    >
-                      {chip}
-                    </button>
-                  ))}
-                </div>
               </div>
 
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
                   {t.privatePhysicianNotes}
                 </label>
-                <input
-                  type="text"
+                <textarea
+                  rows={5}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder={t.internalNotesPlaceholder}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs focus:outline-none"
+                  className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium min-h-[120px] resize-y"
                 />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                  {t("noteForPatient", "Note for Patient")}
+                </label>
+                <textarea
+                  rows={5}
+                  value={patientNote}
+                  onChange={(e) => setPatientNote(e.target.value)}
+                  placeholder={t("noteForPatientPlaceholder", "A short reassuring message for the patient...")}
+                  className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-[var(--bg-app)] text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[var(--brand-primary)] leading-relaxed font-medium min-h-[120px] resize-y"
+                />
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  {t("noteForPatientHint", "This message is printed on the prescription and shared with the patient.")}
+                </p>
               </div>
             </div>
           </div>
@@ -2251,6 +2182,7 @@ export function PrescriptionEditor({
           diagnosis,
           advice,
           followUp,
+          patientNote,
           medicalHistory,
           allergies,
         }}

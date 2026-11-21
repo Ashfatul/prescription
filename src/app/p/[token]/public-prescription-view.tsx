@@ -125,6 +125,7 @@ export function PublicPrescriptionView({
     : typeof clinicalInfo.advice === "string"
     ? [clinicalInfo.advice]
     : [];
+  const patientNote = (clinicalInfo.patientNote as string) || "";
 
   const doc = prescription.doctor;
   const patient = prescription.patient;
@@ -372,8 +373,8 @@ export function PublicPrescriptionView({
               )}
             </div>
 
-            {/* Advice & Notes */}
-            {(advice.length > 0 || prescription.notes) && (
+            {/* Advice & Doctor's Note For Patient */}
+            {(advice.length > 0 || patientNote) && (
               <div className="space-y-2 pt-2 border-t border-slate-200 text-xs">
                 <h3 className="font-bold text-slate-700 uppercase tracking-wider text-[11px]">
                   {t.clinicalAdviceInstructions}
@@ -385,10 +386,13 @@ export function PublicPrescriptionView({
                     ))}
                   </ul>
                 )}
-                {prescription.notes && (
-                  <p className="text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                    {prescription.notes}
-                  </p>
+                {patientNote && (
+                  <div className="mt-2 rounded-xl bg-sky-50/70 border border-sky-200 p-2.5">
+                    <p className="font-bold text-slate-700 uppercase tracking-wider text-[11px]">
+                      {t("noteForPatient", "Note for Patient")}
+                    </p>
+                    <p className="mt-1 text-slate-700 leading-relaxed whitespace-pre-line">{patientNote}</p>
+                  </div>
                 )}
               </div>
             )}

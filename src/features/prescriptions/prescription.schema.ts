@@ -31,6 +31,7 @@ const clinicalInfoSchema = z
     diagnosis: z.string().optional(),
     advice: z.string().optional(),
     followUp: z.string().optional(),
+    patientNote: z.string().optional(),
     medicalHistory: z.string().optional(),
     allergies: z.string().optional(),
   })

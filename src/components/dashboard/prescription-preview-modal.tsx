@@ -66,6 +66,7 @@ export interface PrescriptionPreviewModalProps {
     diagnosis?: string;
     advice?: string;
     followUp?: string;
+    patientNote?: string;
     medicalHistory?: string;
     allergies?: string;
   };
@@ -389,6 +390,17 @@ function PrescriptionPageSheet({
                   <div className="text-xs flex items-center gap-2 p-2.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-900 font-semibold">
                     <span>🗓️ {t.nextVisitRecommendation}:</span>
                     <span>{clinicalInfo.followUp}</span>
+                  </div>
+                )}
+
+                {clinicalInfo?.patientNote && (
+                  <div className="text-xs space-y-1">
+                    <h4 className="font-bold uppercase tracking-wider text-slate-500 text-[11px]">
+                      {t("noteForPatient", "Note for Patient")}:
+                    </h4>
+                    <p className="text-slate-800 leading-relaxed bg-sky-50/60 border border-sky-200/60 p-3 rounded-xl">
+                      {clinicalInfo.patientNote}
+                    </p>
                   </div>
                 )}
               </div>

@@ -16,7 +16,7 @@ export type SelectOptionInput = SelectOption | string;
 export interface SearchableSelectProps {
   options: SelectOptionInput[];
   value?: string;
-  onChange: (value: string, option?: SelectOption) => void;
+  onChange?: (value: string, option?: SelectOption) => void;
   placeholder?: string;
   searchPlaceholder?: string;
   allowCustom?: boolean;
@@ -29,6 +29,12 @@ export interface SearchableSelectProps {
   searchable?: boolean;
   size?: "sm" | "md";
   allowClear?: boolean;
+  /** Select several options inside one dropdown. */
+  multiple?: boolean;
+  /** Selected values when `multiple` is enabled. */
+  values?: string[];
+  /** Fired with the next value list when `multiple` is enabled. */
+  onChangeValues?: (values: string[]) => void;
 }
 
 export function SearchableSelect({
@@ -47,6 +53,9 @@ export function SearchableSelect({
   searchable,
   size = "md",
   allowClear = true,
+  multiple = false,
+  values,
+  onChangeValues,
 }: SearchableSelectProps) {
   const { t } = useLanguage();
   const effectivePlaceholder = placeholder || t.selectOption;
@@ -55,28 +64,31 @@ export function SearchableSelect({
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [createdOptions, setCreatedOptions] = useState<SelectOption[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Normalize options to SelectOption[]
+  // Normalize options to SelectOption[], including options created inline in multi mode
   const normalizedOptions: SelectOption[] = options.map((opt) =>
     typeof opt === "string" ? { value: opt, label: opt } : opt
   );
+  const allOptions = multiple ? [...normalizedOptions, ...createdOptions] : normalizedOptions;
+  const selectedValues = multiple ? values || [] : [];
 
-  const selectedOption = normalizedOptions.find((opt) => opt.value === value);
+  const selectedOption = multiple ? undefined : allOptions.find((opt) => opt.value === value);
 
   // Determine whether search bar should be displayed
-  const shouldShowSearch = searchable !== undefined ? searchable : normalizedOptions.length > 6;
+  const shouldShowSearch = searchable !== undefined ? searchable : allOptions.length > 6;
 
   // Filter options based on search query
-  const filteredOptions = normalizedOptions.filter(
+  const filteredOptions = allOptions.filter(
     (opt) =>
       opt.label.toLowerCase().includes(search.toLowerCase()) ||
       opt.description?.toLowerCase().includes(search.toLowerCase()) ||
       opt.badge?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const hasExactMatch = normalizedOptions.some(
+  const hasExactMatch = allOptions.some(
     (opt) => opt.label.toLowerCase() === search.trim().toLowerCase()
   );
 
@@ -102,17 +114,37 @@ export function SearchableSelect({
   };
 
   const handleSelect = (option: SelectOption) => {
-    onChange(option.value, option);
+    if (multiple) {
+      const next = selectedValues.includes(option.value)
+        ? selectedValues.filter((item) => item !== option.value)
+        : [...selectedValues, option.value];
+      onChangeValues?.(next);
+      setSearch("");
+      setHighlightedIndex(0);
+      return;
+    }
+    onChange?.(option.value, option);
     setIsOpen(false);
   };
 
   const handleAddCustom = () => {
     const trimmed = search.trim();
     if (!trimmed) return;
+    if (multiple) {
+      if (!allOptions.some((opt) => opt.value === trimmed)) {
+        setCreatedOptions((prev) => [...prev, { value: trimmed, label: trimmed }]);
+      }
+      if (!selectedValues.includes(trimmed)) {
+        onChangeValues?.([...selectedValues, trimmed]);
+      }
+      setSearch("");
+      setHighlightedIndex(0);
+      return;
+    }
     if (onAddCustom) {
       onAddCustom(trimmed);
     } else {
-      onChange(trimmed, { value: trimmed, label: trimmed });
+      onChange?.(trimmed, { value: trimmed, label: trimmed });
     }
     setIsOpen(false);
   };
@@ -162,7 +194,9 @@ export function SearchableSelect({
         onKeyDown={handleKeyDown}
         className={`w-full flex items-center justify-between gap-2.5 rounded-lg border transition-all outline-none cursor-pointer select-none ${
           size === "sm"
-            ? "px-3 py-1.5 text-xs min-h-[38px] h-[38px]"
+            ? `px-3 py-1.5 text-xs min-h-[38px]${multiple ? "" : " h-[38px]"}`
+            : multiple
+            ? "px-3.5 py-2 text-sm min-h-[46px] sm:min-h-[48px]"
             : "px-3.5 py-2 text-sm min-h-[42px] sm:min-h-[44px] h-[42px] sm:h-[44px]"
         } ${
           disabled
@@ -174,32 +208,85 @@ export function SearchableSelect({
             : "border-[var(--border-default)] bg-[var(--bg-surface)] hover:border-[var(--brand-border)]"
         }`}
       >
-        <div className="flex items-center gap-2 truncate">
-          {selectedOption ? (
-            <div className="flex items-center gap-2 truncate">
-              <span className="font-medium text-slate-900 dark:text-slate-100 truncate">
-                {selectedOption.label}
-              </span>
-              {selectedOption.badge && (
-                <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)]/50 shrink-0">
-                  {selectedOption.badge}
+        {multiple ? (
+          <div className="flex flex-wrap items-center gap-1.5 py-0.5 min-w-0">
+            {selectedValues.length > 0 ? (
+              selectedValues.map((val) => (
+                <span
+                  key={val}
+                  className="inline-flex items-center gap-1 max-w-full px-2 py-1 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-xs font-semibold"
+                >
+                  <span className="truncate">{val}</span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeValues?.(selectedValues.filter((item) => item !== val));
+                    }}
+                    aria-label={`${t.clearSelection}: ${val}`}
+                    className="p-0.5 rounded hover:bg-[var(--brand-primary)]/10 transition shrink-0"
+                  >
+                    <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
+                      <path
+                        fillRule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
                 </span>
-              )}
-            </div>
-          ) : value ? (
-            <span className="font-medium text-slate-900 dark:text-slate-100 truncate">{value}</span>
-          ) : (
-            <span className="text-slate-400 dark:text-slate-500">{effectivePlaceholder}</span>
-          )}
-        </div>
+              ))
+            ) : (
+              <span className="text-slate-400 dark:text-slate-500">{effectivePlaceholder}</span>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 truncate">
+            {selectedOption ? (
+              <div className="flex items-center gap-2 truncate">
+                <span className="font-medium text-slate-900 dark:text-slate-100 truncate">
+                  {selectedOption.label}
+                </span>
+                {selectedOption.badge && (
+                  <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)]/50 shrink-0">
+                    {selectedOption.badge}
+                  </span>
+                )}
+              </div>
+            ) : value ? (
+              <span className="font-medium text-slate-900 dark:text-slate-100 truncate">{value}</span>
+            ) : (
+              <span className="text-slate-400 dark:text-slate-500">{effectivePlaceholder}</span>
+            )}
+          </div>
+        )}
 
         <div className="flex items-center gap-1.5 shrink-0 text-slate-400">
-          {allowClear && value && !disabled && (
+          {allowClear && multiple && selectedValues.length > 0 && !disabled && (
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                onChange("");
+                onChangeValues?.([]);
+              }}
+              title={t.clearSelection}
+              className="hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg hover:bg-[var(--bg-subtle)] transition"
+            >
+              <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fillRule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+          )}
+          {allowClear && !multiple && value && !disabled && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onChange?.("");
               }}
               title={t.clearSelection}
               className="hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg hover:bg-[var(--bg-subtle)] transition"
@@ -249,7 +336,10 @@ export function SearchableSelect({
                 ref={inputRef}
                 type="text"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setHighlightedIndex(0);
+                }}
                 onKeyDown={handleKeyDown}
                 placeholder={effectiveSearchPlaceholder}
                 className="w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] py-2.5 input-icon-left !pl-11 pr-3.5 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-[var(--brand-primary)] focus:outline-none"
@@ -261,7 +351,7 @@ export function SearchableSelect({
           <div className="overflow-y-auto space-y-1 flex-1 pr-1 custom-scroll max-h-56">
             {filteredOptions.length > 0 ? (
               filteredOptions.map((opt, idx) => {
-                const isSelected = opt.value === value;
+                const isSelected = multiple ? selectedValues.includes(opt.value) : opt.value === value;
                 const isHighlighted = idx === highlightedIndex;
                 return (
                   <button
