@@ -1682,6 +1682,10 @@ export const bn = {
    ,"uiDosePlaceholder": "যেমন ১ + ০ + ১"
    ,"uiTimingPlaceholder": "যেমন খাবারের ৩০ মিনিট আগে"
    ,"uiDurationPlaceholder": "যেমন ৭ দিন"
+   ,"uiScanForPrescription": "প্রেসক্রিপশন দেখতে স্ক্যান করুন"
+   ,"uiPatientInformation": "রোগীর তথ্য"
+   ,"uiVersionShort": "সংস্করণ"
+   ,"uiVerifiedDigitalRx": "যাচাইকৃত ডিজিটাল প্রেসক্রিপশন"
 } as const;
 
 export default bn;

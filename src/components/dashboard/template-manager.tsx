@@ -9,8 +9,10 @@ import {
   SlidersHorizontal,
   Eye,
   AlertCircle,
+  QrCode,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { CustomSelect } from "@/components/common/custom-select";
 import { notifyToast } from "@/lib/toast";
 
 export interface CustomTextBlock {
@@ -67,6 +69,8 @@ export interface TemplateContent {
   showDiagnosis?: boolean;
   showSignatureBlock?: boolean;
   showDisclaimer?: boolean;
+  showQrCode?: boolean;
+  qrCodePosition?: "patient" | "footer";
   disclaimer?: string;
 
   // Floating text blocks
@@ -165,6 +169,8 @@ export function TemplateManager() {
   const [showDiagnosis, setShowDiagnosis] = useState(true);
   const [showSignatureBlock, setShowSignatureBlock] = useState(true);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
+  const [showQrCode, setShowQrCode] = useState(true);
+  const [qrCodePosition, setQrCodePosition] = useState<"patient" | "footer">("patient");
   const [disclaimer, setDisclaimer] = useState(
     "This is a legally verified computer-generated medical prescription. Please keep safe for follow-up review. For medical emergencies, dial 10678 immediately."
   );
@@ -401,6 +407,8 @@ export function TemplateManager() {
     setShowDiagnosis(c.showDiagnosis ?? true);
     setShowSignatureBlock(c.showSignatureBlock ?? true);
     setShowDisclaimer(c.showDisclaimer ?? true);
+    setShowQrCode(c.showQrCode ?? true);
+    setQrCodePosition(c.qrCodePosition ?? "patient");
     setDisclaimer(
       c.disclaimer ||
         "This is a legally verified computer-generated medical prescription. Please keep safe for follow-up review. For medical emergencies, dial 10678 immediately."
@@ -453,6 +461,8 @@ export function TemplateManager() {
       showDiagnosis,
       showSignatureBlock,
       showDisclaimer,
+      showQrCode,
+      qrCodePosition,
       disclaimer,
       customTextBlocks,
     };
@@ -1372,6 +1382,7 @@ export function TemplateManager() {
                       { id: "notes", label: "Clinical Complaints & History", val: showClinicalNotes, set: setShowClinicalNotes },
                       { id: "diagnosis", label: "Primary Diagnosis Section", val: showDiagnosis, set: setShowDiagnosis },
                       { id: "sig", label: "Physician Signature & Stamp Block", val: showSignatureBlock, set: setShowSignatureBlock },
+                      { id: "qr", label: "Prescription QR Code (links to digital Rx)", val: showQrCode, set: setShowQrCode },
                       { id: "disc", label: "Footer Disclaimer Bar", val: showDisclaimer, set: setShowDisclaimer },
                     ].map((item) => (
                       <label
@@ -1389,6 +1400,28 @@ export function TemplateManager() {
                         />
                       </label>
                     ))}
+
+                    {showQrCode && (
+                      <div className="pt-2">
+                        <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                          QR Code Position
+                        </label>
+                        <CustomSelect
+                          size="sm"
+                          allowClear={false}
+                          searchable={false}
+                          value={qrCodePosition}
+                          onChange={(val) => setQrCodePosition(val as "patient" | "footer")}
+                          options={[
+                            { value: "patient", label: "Patient information area" },
+                            { value: "footer", label: "Footer near signature" },
+                          ]}
+                        />
+                        <p className="mt-1 text-[10px] text-slate-500">
+                          The QR opens the public digital prescription for this record.
+                        </p>
+                      </div>
+                    )}
 
                     <div className="pt-2">
                       <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
@@ -1764,7 +1797,11 @@ export function TemplateManager() {
                       <span>{t.age}: <strong>{t("uiYrs")}</strong></span>
                       <span>{t.gender}: <strong>{t("genderFemale")}</strong></span>
                       <span>{t("uiDate")} <strong>{t("uiNov")}</strong></span>
-                      <span>Rx ID: <code className="font-mono text-[10px]">#RX-7892</code></span>
+                      {showQrCode && qrCodePosition === "patient" && (
+                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded border border-slate-300 bg-white text-slate-400" title="QR preview">
+                          <QrCode className="h-7 w-7" />
+                        </span>
+                      )}
                     </div>
 
                     {/* Vitals Box */}
@@ -1846,6 +1883,15 @@ export function TemplateManager() {
 
                   {/* Bottom Footer: Signature block and Disclaimer */}
                   <footer className="mt-8 pt-4 border-t-2" style={{ borderColor: themeColor }}>
+                    {showQrCode && qrCodePosition === "footer" && (
+                      <div className="flex flex-col items-center gap-1 text-slate-400">
+                        <span className="flex h-12 w-12 items-center justify-center rounded border border-slate-300 bg-white">
+                          <QrCode className="h-7 w-7" />
+                        </span>
+                        <span className="text-[9px]">QR</span>
+                      </div>
+                    )}
+
                     {showSignatureBlock && (
                       <div
                         className="flex justify-between items-end mb-3"

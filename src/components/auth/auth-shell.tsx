@@ -53,7 +53,7 @@ export function AuthShell({
       </div>
 
       {/* Full-Bleed Top Bar with Calibrated 1440px Inner Rail */}
-      <header className="relative z-10 w-full border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/85 backdrop-blur-xl">
+      <header className="relative z-30 w-full border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/85 backdrop-blur-xl">
         <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 sm:gap-5">
             <Link href="/" className="flex items-center gap-2.5 group" aria-label="Home">

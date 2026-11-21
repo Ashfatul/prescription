@@ -80,6 +80,8 @@ export type TemplateContent = {
   showDiagnosis?: boolean;
   showSignatureBlock?: boolean;
   showDisclaimer?: boolean;
+  showQrCode?: boolean;
+  qrCodePosition?: "patient" | "footer";
   disclaimer?: string;
   customTextBlocks?: CustomTextBlock[];
 };
@@ -117,6 +119,7 @@ export interface PrintablePrescriptionViewProps {
   vitals: Vitals;
   clinicalInfo: ClinicalInfo;
   tplContent: TemplateContent;
+  qrDataUrl?: string;
   attachments?: { id: string; file: { url: string; originalName: string } }[];
 }
 
@@ -137,6 +140,7 @@ export function PrintablePrescriptionView({
   vitals,
   clinicalInfo,
   tplContent,
+  qrDataUrl,
   attachments = [],
 }: PrintablePrescriptionViewProps) {
   const { t, language } = useLanguage();
@@ -152,6 +156,18 @@ export function PrintablePrescriptionView({
   const watermarkX = tplContent.watermarkX ?? 0;
   const watermarkY = tplContent.watermarkY ?? 0;
   const customTextBlocks = tplContent.customTextBlocks || [];
+  const showQrCode = tplContent.showQrCode !== false && !!qrDataUrl;
+  const qrPosition = tplContent.qrCodePosition || "patient";
+
+  const qrBlock = showQrCode ? (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img
+      src={qrDataUrl}
+      alt={t("uiScanForPrescription", "Scan to view prescription")}
+      title={t("uiScanForPrescription", "Scan to view prescription")}
+      className="h-14 w-14 shrink-0 rounded border border-zinc-200 object-contain print:h-14 print:w-14"
+    />
+  ) : null;
 
   const hospitalName =
     tplContent.hospitalName ||
@@ -202,6 +218,9 @@ export function PrintablePrescriptionView({
           borderColor: themeColor,
           backgroundColor: backgroundColor,
           color: textColor,
+          // Single source of truth for the document's base type size (default 12px,
+          // matching the template editor default) so no block falls back to 16px.
+          fontSize: tplContent.bodyFontSize ? `${tplContent.bodyFontSize}px` : "12px",
           paddingLeft: tplContent.contentPaddingX ? `${tplContent.contentPaddingX}px` : undefined,
           paddingRight: tplContent.contentPaddingX ? `${tplContent.contentPaddingX}px` : undefined,
         }}
@@ -261,19 +280,19 @@ export function PrintablePrescriptionView({
                 {/* Left Column: Doctor Profile */}
                 <div className="max-w-md">
                   <h1
-                    className="text-lg sm:text-xl font-bold tracking-tight"
+                    className="font-bold tracking-tight leading-tight"
                     style={{
                       color: themeColor,
-                      fontSize: tplContent.doctorTitleSize ? `${tplContent.doctorTitleSize}px` : undefined,
+                      fontSize: tplContent.doctorTitleSize ? `${tplContent.doctorTitleSize}px` : "17px",
                     }}
                   >
                     {doctor.name}
                   </h1>
-                  {doctor.degrees && <p className="text-xs sm:text-sm font-semibold opacity-90">{doctor.degrees}</p>}
-                  {doctor.specialization && <p className="text-xs font-medium opacity-85">{doctor.specialization}</p>}
-                  {doctor.designation && <p className="text-xs opacity-75">{doctor.designation}</p>}
+                  {doctor.degrees && <p className="text-xs font-semibold opacity-90">{doctor.degrees}</p>}
+                  {doctor.specialization && <p className="text-[11px] font-medium opacity-85">{doctor.specialization}</p>}
+                  {doctor.designation && <p className="text-[11px] opacity-75">{doctor.designation}</p>}
                   {doctor.hospitalAffiliation && (
-                    <p className="mt-0.5 text-xs font-semibold opacity-85">
+                    <p className="mt-0.5 text-[11px] font-semibold opacity-85">
                       🏥 {doctor.hospitalAffiliation}
                     </p>
                   )}
@@ -300,10 +319,10 @@ export function PrintablePrescriptionView({
                     />
                   )}
                   <h2
-                    className="text-base sm:text-lg font-black uppercase tracking-wider"
+                    className="font-black uppercase tracking-wider leading-tight"
                     style={{
                       color: themeColor,
-                      fontSize: tplContent.hospitalTitleSize ? `${tplContent.hospitalTitleSize}px` : undefined,
+                      fontSize: tplContent.hospitalTitleSize ? `${tplContent.hospitalTitleSize}px` : "22px",
                     }}
                   >
                     {hospitalName}
@@ -311,10 +330,10 @@ export function PrintablePrescriptionView({
                   {tplContent.showHospitalTagline !== false && hospitalTagline && (
                     <p className="text-[11px] italic opacity-75">{hospitalTagline}</p>
                   )}
-                  <p className="mt-0.5 text-xs opacity-75">{hospitalAddress}</p>
+                  <p className="mt-0.5 text-[11px] opacity-75">{hospitalAddress}</p>
                   {tplContent.showHospitalContactBar !== false && (
                     <>
-                      <p className="text-xs opacity-75">
+                      <p className="text-[11px] opacity-75">
                         {t("uiHotline")} <span className="font-semibold">{hospitalPhone}</span>
                       </p>
                       {tplContent.hospitalEmail && (
@@ -331,41 +350,46 @@ export function PrintablePrescriptionView({
 
             {/* Patient Details Strip */}
             <section className="mb-3.5 rounded-xl border border-zinc-200/80 bg-zinc-50/60 p-2.5 sm:p-3 print:bg-transparent print:border-zinc-300">
-              <div className="grid grid-cols-2 gap-2 sm:gap-3 text-xs sm:grid-cols-4">
-                <div>
-                  <span className="text-[11px] font-medium opacity-65">
-                    {t.patientName}:
-                  </span>
-                  <p className="text-sm font-bold">{patient.name}</p>
+              {/* Section label + version badge (kept out of the patient data fields) */}
+              <div className="mb-2 flex items-center justify-between gap-2 border-b border-zinc-200/70 pb-1.5 print:border-zinc-300">
+                <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">
+                  {t("uiPatientInformation", "Patient Information")}
+                </span>
+                <span className="rounded-full border border-zinc-300 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider opacity-80 print:border-zinc-400">
+                  {t("uiVersionShort", "Version")} {currentVersion}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="grid min-w-0 flex-1 grid-cols-1 gap-2 text-xs sm:grid-cols-3 sm:gap-3">
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-medium uppercase tracking-wide opacity-60">
+                      {t.patientName}
+                    </span>
+                    <p className="truncate text-xs font-bold">{patient.name}</p>
+                  </div>
+
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-medium uppercase tracking-wide opacity-60">
+                      {t("uiGenderAge")}
+                    </span>
+                    <p className="truncate text-xs font-semibold">
+                      {patient.gender || t("rolePatient")}{" "}
+                      {patientAgeYears !== null ? `(${patientAgeYears} ${t("uiYrs3")})` : ""}
+                    </p>
+                  </div>
+
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-medium uppercase tracking-wide opacity-60">
+                      {t("uiDateSerial2")}
+                    </span>
+                    <p className="truncate text-xs font-semibold">
+                      {formattedDate} {appointment ? `• #${appointment.serialNumber}` : ""}
+                    </p>
+                  </div>
                 </div>
 
-                <div>
-                  <span className="text-[11px] font-medium opacity-65">
-                    {t("uiGenderAge")}
-                  </span>
-                  <p className="text-sm font-semibold">
-                    {patient.gender || (t("rolePatient"))}{" "}
-                    {patientAgeYears !== null ? `(${patientAgeYears} ${t("uiYrs3")})` : ""}
-                  </p>
-                </div>
-
-                <div>
-                  <span className="text-[11px] font-medium opacity-65">
-                    {t("uiDateSerial2")}
-                  </span>
-                  <p className="text-sm font-semibold">
-                    {formattedDate} {appointment ? `• #${appointment.serialNumber}` : ""}
-                  </p>
-                </div>
-
-                <div>
-                  <span className="text-[11px] font-medium opacity-65">
-                    {t("uiPrescriptionNo")}
-                  </span>
-                  <p className="text-xs font-mono font-bold break-all">
-                    {id} • v{currentVersion}
-                  </p>
-                </div>
+                {qrPosition === "patient" && qrBlock}
               </div>
 
               {/* Revision note bar if present */}
@@ -427,7 +451,7 @@ export function PrintablePrescriptionView({
                 {/* Past Medical History / Comorbidities */}
                 {clinicalInfo.medicalHistory && (
                   <div className="mb-5">
-                    <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
+                    <h3 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: themeColor }}>
                       {t("uiMedicalHistoryHx")}
                     </h3>
                     <div className="mt-1.5 whitespace-pre-line leading-relaxed text-xs font-medium bg-zinc-50/70 p-2.5 rounded-lg border border-zinc-200/80 print:bg-transparent print:border-zinc-300">
@@ -439,7 +463,7 @@ export function PrintablePrescriptionView({
                 {/* Drug Allergies / Adverse Alerts */}
                 {clinicalInfo.allergies && (
                   <div className="mb-5">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-rose-600 print:text-black">
+                    <h3 className="text-[11px] font-bold uppercase tracking-wider text-rose-600 print:text-black">
                       {t("uiDrugAllergiesAlerts")}
                     </h3>
                     <div className="mt-1.5 whitespace-pre-line leading-relaxed text-xs font-semibold text-rose-900 bg-rose-50/70 p-2.5 rounded-lg border border-rose-200 print:bg-transparent print:text-black print:border-zinc-300">
@@ -449,10 +473,10 @@ export function PrintablePrescriptionView({
                 )}
                 {clinicalInfo.complaints && (
                   <div className="mb-5">
-                    <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
+                    <h3 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: themeColor }}>
                       {t.chiefComplaints}
                     </h3>
-                    <p className="mt-1.5 whitespace-pre-line leading-relaxed opacity-85">
+                    <p className="mt-1.5 whitespace-pre-line text-xs leading-relaxed opacity-85">
                       {clinicalInfo.complaints}
                     </p>
                   </div>
@@ -460,7 +484,7 @@ export function PrintablePrescriptionView({
 
                 {tplContent.showDiagnosis !== false && clinicalInfo.diagnosis && (
                   <div className="mb-5">
-                    <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
+                    <h3 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: themeColor }}>
                       {t("uiDiagnosisAssessment")}
                     </h3>
                     <div className="mt-1.5 rounded-lg border border-teal-200 bg-teal-50/50 p-2.5 text-xs font-semibold text-teal-900 whitespace-pre-line leading-relaxed print:bg-transparent print:border-zinc-300">
@@ -471,7 +495,7 @@ export function PrintablePrescriptionView({
 
                 {/* Diagnostic Tests / Investigations */}
                 <div className="mb-5">
-                  <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
+                  <h3 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: themeColor }}>
                     {t.investigationsAdvised}
                   </h3>
                   {tests.length === 0 ? (
@@ -498,10 +522,10 @@ export function PrintablePrescriptionView({
 
                 {tplContent.showClinicalNotes !== false && notes && (
                   <div className="mb-5">
-                    <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
+                    <h3 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: themeColor }}>
                       {t("uiClinicalNotes")}
                     </h3>
-                    <p className="mt-1.5 opacity-75">{notes}</p>
+                    <p className="mt-1.5 text-xs opacity-75">{notes}</p>
                   </div>
                 )}
               </aside>
@@ -513,7 +537,7 @@ export function PrintablePrescriptionView({
                   <span className="font-serif text-3xl font-extrabold italic" style={{ color: themeColor }}>
                     ℞
                   </span>
-                  <span className="text-xs font-bold uppercase tracking-widest opacity-60">
+                  <span className="text-[11px] font-bold uppercase tracking-widest opacity-60">
                     {t("uiPrescriptionMedication")}
                   </span>
                 </div>
@@ -541,7 +565,7 @@ export function PrintablePrescriptionView({
                             <span className="text-xs font-semibold uppercase" style={{ color: themeColor }}>
                               {med.type || "Tab"}.
                             </span>
-                            <span className="text-sm font-bold">{med.name}</span>
+                            <span className="text-[13px] font-bold">{med.name}</span>
                             {med.dosage && (
                               <span className="text-xs font-medium opacity-75">({med.dosage})</span>
                             )}
@@ -574,10 +598,10 @@ export function PrintablePrescriptionView({
                 {/* Advice & Special Instructions */}
                 {clinicalInfo.advice && (
                   <div className="mt-8 rounded-xl border border-zinc-200/80 bg-zinc-50/70 p-3.5 print:bg-transparent print:border-zinc-300">
-                    <h4 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
+                    <h4 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: themeColor }}>
                       {t.adviceAndLifestyle}
                     </h4>
-                    <p className="mt-1.5 whitespace-pre-line leading-relaxed opacity-85">
+                    <p className="mt-1.5 whitespace-pre-line text-xs leading-relaxed opacity-85">
                       {clinicalInfo.advice}
                     </p>
                   </div>
@@ -596,10 +620,10 @@ export function PrintablePrescriptionView({
                 {/* Personal Note From Doctor */}
                 {clinicalInfo.patientNote && (
                   <div className="mt-4 rounded-xl border border-sky-200/80 bg-sky-50/70 p-3.5 print:bg-transparent print:border-zinc-300">
-                    <h4 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
+                    <h4 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: themeColor }}>
                       {t("noteForPatient", "Note for Patient")}
                     </h4>
-                    <p className="mt-1.5 whitespace-pre-line leading-relaxed opacity-85">
+                    <p className="mt-1.5 whitespace-pre-line text-xs leading-relaxed opacity-85">
                       {clinicalInfo.patientNote}
                     </p>
                   </div>
@@ -608,7 +632,7 @@ export function PrintablePrescriptionView({
                 {/* Attached Lab Reports & Documents */}
                 {attachments && attachments.length > 0 && (
                   <div className="mt-6 rounded-xl border border-zinc-200/80 bg-zinc-50/70 p-3.5 print:bg-transparent print:border-zinc-300">
-                    <h4 className="text-xs font-bold uppercase tracking-wider" style={{ color: themeColor }}>
+                    <h4 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: themeColor }}>
                       📎 {t("uiAttachedDiagnosticReportsRecords")} ({attachments.length})
                     </h4>
                     <div className="mt-2 flex flex-wrap gap-2 text-xs">
@@ -645,19 +669,29 @@ export function PrintablePrescriptionView({
                 <div
                   className="max-w-md text-[10px] leading-relaxed opacity-75"
                   style={{
-                    fontSize: tplContent.disclaimerFontSize ? `${tplContent.disclaimerFontSize}px` : undefined,
+                    fontSize: tplContent.disclaimerFontSize ? `${tplContent.disclaimerFontSize}px` : "10px",
                   }}
                 >
                   <p>{disclaimer}</p>
-                  <p className="mt-1 font-mono text-[9px] opacity-60">
+                  <p className="mt-1 font-mono text-[10px] opacity-70">
                     {isBn
-                      ? `পিপিএমএস মেডিকেল সিস্টেমের মাধ্যমে প্রস্তুতকৃত • ডকুমেন্ট আইডি: ${id}`
-                      : `Generated via PPMS Medical Care System • Document ID: ${id}`}
+                      ? `প্রেসক্রিপশন আইডি: ${id} • ${t("uiVerifiedDigitalRx", "যাচাইকৃত ডিজিটাল প্রেসক্রিপশন")}`
+                      : `Prescription ID: ${id} • ${t("uiVerifiedDigitalRx", "Verified Digital Prescription")}`}
                   </p>
                 </div>
               )}
 
-              {/* Doctor Signature Block */}
+              {/* QR in footer when selected */}
+              {qrPosition === "footer" && qrBlock && (
+                <div className="flex flex-col items-center gap-1 text-center shrink-0">
+                  {qrBlock}
+                  <span className="text-[9px] font-medium opacity-60">
+                    {t("uiScanForPrescription", "Scan to view prescription")}
+                  </span>
+                </div>
+              )}
+
+              {/* Doctor Signature Block — single identity line */}
               {tplContent.showSignatureBlock !== false && (
                 <div className="text-center sm:text-right shrink-0">
                   <div className="inline-flex flex-col items-center sm:items-end justify-end min-w-[200px] border-b border-zinc-400 pb-1 text-center font-serif text-sm italic opacity-90 min-h-12">
@@ -672,14 +706,10 @@ export function PrintablePrescriptionView({
                       <div className="h-8 w-36 border-b border-dashed border-zinc-300" />
                     )}
                   </div>
-                  <p className="mt-1 text-xs font-bold">{doctor.name}</p>
-                  {doctor.specialization && <p className="text-[11px] opacity-75">{doctor.specialization}</p>}
-                  {doctor.bmdcRegNo && (
-                    <p className="text-[10px] font-mono opacity-70">
-                      {t("uiBmdc")} {doctor.bmdcRegNo}
-                    </p>
-                  )}
-                  <p className="text-[10px] opacity-60">{t.doctorsSignature}</p>
+                  <p className="mt-1 whitespace-nowrap text-[11px] font-bold">
+                    {doctor.name}
+                    {doctor.bmdcRegNo ? ` · ${t("uiBmdc")} ${doctor.bmdcRegNo}` : ""}
+                  </p>
                 </div>
               )}
             </div>

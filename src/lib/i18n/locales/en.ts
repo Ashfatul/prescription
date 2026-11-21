@@ -1682,6 +1682,10 @@ export const en = {
    ,"uiDosePlaceholder": "e.g. 1 + 0 + 1"
    ,"uiTimingPlaceholder": "e.g. 30 mins before meal"
    ,"uiDurationPlaceholder": "e.g. 7 Days"
+   ,"uiScanForPrescription": "Scan to view prescription"
+   ,"uiPatientInformation": "Patient Information"
+   ,"uiVersionShort": "Version"
+   ,"uiVerifiedDigitalRx": "Verified Digital Prescription"
 } as const;
 
 export default en;

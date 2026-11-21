@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { db } from "@/lib/db";
+import { getPrintablePrescriptionQr } from "@/features/prescriptions/prescription-share.service";
 import {
   PrintablePrescriptionView,
   MedicineItem,
@@ -122,6 +124,16 @@ export default async function PrintablePrescriptionPage({
 
   const tplContent = (prescription.template?.contentJson as TemplateContent) || {};
 
+  // Auto-generate a compact QR that opens this prescription's public view.
+  const headersList = await headers();
+  const host = headersList.get("x-forwarded-host") || headersList.get("host") || "localhost:3000";
+  const protocol = headersList.get("x-forwarded-proto") || "http";
+  const { qrDataUrl } = await getPrintablePrescriptionQr(
+    id,
+    prescription.shareToken,
+    `${protocol}://${host}`
+  );
+
   return (
     <PrintablePrescriptionView
       id={id}
@@ -157,6 +169,7 @@ export default async function PrintablePrescriptionPage({
       vitals={vitals}
       clinicalInfo={clinicalInfo}
       tplContent={tplContent}
+      qrDataUrl={qrDataUrl}
       attachments={prescription.attachments.map((att) => ({
         id: att.id,
         file: {

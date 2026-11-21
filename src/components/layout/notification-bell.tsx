@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import {
   Bell,
@@ -51,6 +52,13 @@ export function NotificationBell() {
   });
   const [savingPrefs, setSavingPrefs] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  const emptySubscribe = () => () => {};
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 
   const fetchNotifications = () => {
     if (typeof document !== "undefined" && document.visibilityState !== "visible") {
@@ -284,9 +292,10 @@ export function NotificationBell() {
         </div>
       )}
 
-      {/* Notification Alert Settings Modal */}
-      {settingsOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
+      {/* Notification Alert Settings Modal — portaled to body so the header's
+          backdrop-blur stacking context cannot trap its fixed positioning. */}
+      {settingsOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
           <div className="w-full max-w-md rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)] shadow-2xl modal-container max-h-[calc(100dvh-2.5rem)] flex flex-col overflow-hidden">
             <div className="modal-header shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-slate-50/50 dark:bg-slate-900/50">
               <div className="flex items-center gap-2">
@@ -401,7 +410,8 @@ export function NotificationBell() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

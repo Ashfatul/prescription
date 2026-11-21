@@ -89,6 +89,42 @@ export async function togglePrescriptionSharing(
   };
 }
 
+/**
+ * Ensures every prescription has a working public share link and returns a
+ * compact QR data URL for printing on the prescription sheet.
+ */
+export async function getPrintablePrescriptionQr(
+  prescriptionId: string,
+  shareToken: string | null,
+  baseUrl = ""
+) {
+  let token = shareToken;
+  if (!token) {
+    token = `rx-${crypto.randomBytes(8).toString("hex")}`;
+  }
+  // A printed QR must open the prescription, so make sure the public link is live.
+  await db.prescription.update({
+    where: { id: prescriptionId },
+    data: { shareToken: token, isPublicShareEnabled: true },
+  });
+
+  const domain = baseUrl.replace(/\/+$/, "");
+  const shareUrl = `${domain}/p/${token}`;
+
+  let qrDataUrl = "";
+  try {
+    qrDataUrl = await QRCode.toDataURL(shareUrl, {
+      width: 160,
+      margin: 1,
+      color: { dark: "#0f766e", light: "#ffffff" },
+    });
+  } catch (err) {
+    console.error("Print QR Code generation error:", err);
+  }
+
+  return { shareUrl, qrDataUrl };
+}
+
 export async function sendPrescriptionShareEmail(params: {
   prescriptionId: string;
   recipientEmail: string;
