@@ -1679,6 +1679,10 @@ export const bn = {
    ,"uiPatientInformation": "রোগীর তথ্য"
    ,"uiVersionShort": "সংস্করণ"
    ,"uiVerifiedDigitalRx": "যাচাইকৃত ডিজিটাল প্রেসক্রিপশন"
+   ,"uiExploreFeaturesDesc": "প্ল্যাটফর্মের বৈশিষ্ট্য ও ক্লিনিক্যাল টুলস।"
+   ,"uiExploreWorkflowDesc": "পরামর্শের কর্মপ্রবাহ কীভাবে কাজ করে।"
+   ,"uiExplorePricingDesc": "সাবস্ক্রিপশন প্যাকেজ তুলনা করুন।"
+   ,"uiAccountMenu": "অ্যাকাউন্ট"
 } as const;
 
 export default bn;

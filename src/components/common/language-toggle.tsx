@@ -14,7 +14,7 @@ export function LanguageToggle() {
       <button
         onClick={() => setOpen((value) => !value)}
         type="button"
-        className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] hover:border-[var(--brand-border)] text-xs font-bold text-[var(--text-primary)] transition cursor-pointer shadow-2xs shrink-0"
+        className="h-9 flex items-center gap-1.5 px-2.5 sm:px-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] hover:border-[var(--brand-border)] text-xs font-bold text-[var(--text-primary)] transition cursor-pointer shadow-2xs shrink-0"
         title={t.selectLanguage}
         aria-label={t.selectLanguage}
         aria-expanded={open}

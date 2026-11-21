@@ -173,7 +173,7 @@ export function ThemeCustomizer({
           type="button"
           onClick={handleToggle}
           title={t("uiThemeAccentSettings")}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shadow-xs cursor-pointer"
+          className="h-9 flex items-center gap-2 px-2.5 sm:px-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)] hover:border-[var(--brand-border)] transition-all shadow-2xs cursor-pointer"
         >
           <span
             className="w-3 h-3 rounded-full shrink-0 shadow-xs"
@@ -198,7 +198,7 @@ export function ThemeCustomizer({
 
         {isOpen && (
           <div
-            className={`absolute z-50 w-64 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl space-y-3 ${
+            className={`absolute z-50 w-64 p-3 rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] shadow-xl space-y-3 ${
               activeDir === "up" ? "bottom-full mb-2" : "top-full mt-2"
             } ${
               activeAlign === "left" ? "left-0" : "right-0"

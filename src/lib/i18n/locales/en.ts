@@ -1679,6 +1679,10 @@ export const en = {
    ,"uiPatientInformation": "Patient Information"
    ,"uiVersionShort": "Version"
    ,"uiVerifiedDigitalRx": "Verified Digital Prescription"
+   ,"uiExploreFeaturesDesc": "Platform features and clinical tools."
+   ,"uiExploreWorkflowDesc": "How the consultation workflow works."
+   ,"uiExplorePricingDesc": "Compare subscription packages."
+   ,"uiAccountMenu": "Account"
 } as const;
 
 export default en;

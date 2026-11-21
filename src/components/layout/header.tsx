@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import {
-    Calendar,
     Menu,
     X,
     Mail,
@@ -15,9 +14,7 @@ import {
     Sparkles,
     Stethoscope,
     HelpCircle,
-    LogIn,
     ChevronDown,
-    ClipboardList,
     CreditCard,
     UserPlus,
     ArrowRight,
@@ -25,6 +22,7 @@ import {
     Building2,
     Users,
     Layers,
+    UserRound,
 } from "lucide-react";
 import { LanguageToggle } from "@/components/common/language-toggle";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
@@ -54,7 +52,9 @@ export function Header({
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [exploreOpen, setExploreOpen] = useState(false);
+    const [profileOpen, setProfileOpen] = useState(false);
     const exploreRef = useRef<HTMLDivElement>(null);
+    const profileRef = useRef<HTMLDivElement>(null);
 
     const mounted = useSyncExternalStore(
         emptySubscribe,
@@ -107,21 +107,24 @@ export function Header({
         setPrevPathname(pathname);
         setMobileMenuOpen(false);
         setExploreOpen(false);
+        setProfileOpen(false);
     }
 
-    // Close Explore popover on outside click or Escape
+    // Close popovers on outside click or Escape
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
-            if (
-                exploreRef.current &&
-                !exploreRef.current.contains(e.target as Node)
-            ) {
+            const target = e.target as Node;
+            if (exploreRef.current && !exploreRef.current.contains(target)) {
                 setExploreOpen(false);
+            }
+            if (profileRef.current && !profileRef.current.contains(target)) {
+                setProfileOpen(false);
             }
         };
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
                 setExploreOpen(false);
+                setProfileOpen(false);
                 setMobileMenuOpen(false);
             }
         };
@@ -194,42 +197,55 @@ export function Header({
         return pathname.startsWith(href);
     };
 
+    // Keep the primary rail lean — everything else lives in Explore.
     const primaryLinks = [
         { href: "/clinics", label: t.clinics },
         { href: "/doctors", label: t.doctors },
         { href: "/live-queue", label: t.liveQueue, live: true },
-        { href: "/#features", label: t.navFeatures },
-        { href: "/#how-it-works", label: t.navWorkflow },
-        { href: "/#pricing", label: t.navPricing },
     ];
 
     const exploreLinks = [
+        {
+            href: "/#features",
+            title: t.navFeatures,
+            desc: t("uiExploreFeaturesDesc", "Platform features and clinical tools."),
+            icon: Sparkles,
+            badge: undefined,
+        },
+        {
+            href: "/#how-it-works",
+            title: t.navWorkflow,
+            desc: t("uiExploreWorkflowDesc", "How the consultation workflow works."),
+            icon: HelpCircle,
+            badge: undefined,
+        },
+        {
+            href: "/#pricing",
+            title: t.navPricing,
+            desc: t("uiExplorePricingDesc", "Compare subscription packages."),
+            icon: CreditCard,
+            badge: undefined,
+        },
         {
             href: "/staff",
             title: t.staff,
             desc: t.browseAllStaffDesc,
             icon: Users,
-            badge: t.teamBadge,
+            badge: undefined,
         },
         {
             href: "/dashboard/templates",
             title: t.templateStudioNav,
             desc: t.customInsigniaLetterheadDesc,
             icon: Layers,
-            badge: t.designBadge,
-        },
-        {
-            href: "/dashboard/staff",
-            title: t.receptionDesk,
-            desc: t.queueCheckinTriageDesc,
-            icon: ClipboardList,
-            badge: t.roleStaff,
+            badge: undefined,
         },
         {
             href: "/auth/register",
             title: t.createAccount,
             desc: t.createFreePatientAccountDesc,
             icon: UserPlus,
+            badge: undefined,
         },
     ];
 
@@ -391,71 +407,70 @@ export function Header({
                             </div>
                         </nav>
 
-                        {/* Right: Utilities & Authentication */}
+                        {/* Right: Utilities & Profile */}
                         <div className="flex items-center gap-2 shrink-0">
-                            <div className="hidden sm:flex items-center gap-1">
+                            <div className="hidden sm:flex items-center gap-1.5">
                                 <ThemeCustomizer compact />
                                 <LanguageToggle />
                             </div>
 
                             <div className="hidden sm:block h-5 w-px bg-[var(--border-subtle)] mx-0.5" />
 
-                            {/* Authenticated User Chip */}
-                            {user && (
-                                <div className="hidden xl:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-xs max-w-[160px]">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                                    <span className="font-semibold text-[var(--text-primary)] truncate">
-                                        {user.name.split(" ")[0]}
-                                    </span>
-                                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[var(--brand-surface)] text-[var(--brand-text)] shrink-0">
-                                        {user.role}
-                                    </span>
-                                </div>
-                            )}
-
-                            {isLoggedIn ? (
-                                <div className="flex items-center gap-1.5">
-                                    <Link
-                                        className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--brand-primary)] px-3.5 py-2 text-xs font-semibold text-white shadow-2xs hover:opacity-95 transition-opacity whitespace-nowrap"
-                                        href="/dashboard"
-                                    >
-                                        <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />
-                                        <span className="hidden sm:inline">
-                                            {t.dashboard}
-                                        </span>
-                                    </Link>
+                            {/* Single profile control — dashboard & logout live inside */}
+                            {!loading && (
+                                <div className="relative" ref={profileRef}>
                                     <button
-                                        className="rounded-lg border border-[var(--border-subtle)] p-2 text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-rose-500 transition-colors cursor-pointer shrink-0"
-                                        onClick={onLogout}
                                         type="button"
-                                        title={t.logout}
-                                        aria-label={t.logout}
+                                        onClick={() => setProfileOpen((v) => !v)}
+                                        aria-expanded={profileOpen}
+                                        aria-label={isLoggedIn ? t.logout : t.login}
+                                        title={isLoggedIn ? t("uiAccountMenu", "Account") : t.login}
+                                        className={`h-9 w-9 rounded-lg border flex items-center justify-center transition-colors cursor-pointer shrink-0 ${
+                                            profileOpen
+                                                ? "border-[var(--brand-border)] bg-[var(--brand-surface)] text-[var(--brand-text)]"
+                                                : "border-[var(--border-default)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)]"
+                                        }`}
                                     >
-                                        <LogOut className="w-3.5 h-3.5" />
+                                        <UserRound className="w-4 h-4" />
                                     </button>
+
+                                    {profileOpen && (
+                                        <div className="absolute right-0 top-full mt-2 w-44 rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] p-1.5 shadow-lg z-50">
+                                            {isLoggedIn ? (
+                                                <>
+                                                    <Link
+                                                        href="/dashboard"
+                                                        onClick={() => setProfileOpen(false)}
+                                                        className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)] transition-colors"
+                                                    >
+                                                        <LayoutDashboard className="w-3.5 h-3.5" />
+                                                        <span>{t.dashboard}</span>
+                                                    </Link>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setProfileOpen(false);
+                                                            void onLogout();
+                                                        }}
+                                                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                                                    >
+                                                        <LogOut className="w-3.5 h-3.5" />
+                                                        <span>{t.logout}</span>
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <Link
+                                                    href="/auth/login"
+                                                    onClick={() => setProfileOpen(false)}
+                                                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)] transition-colors"
+                                                >
+                                                    <UserRound className="w-3.5 h-3.5" />
+                                                    <span>{t.login}</span>
+                                                </Link>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
-                            ) : (
-                                !loading &&
-                                pathname !== "/auth/login" && (
-                                    <div className="flex items-center gap-1.5">
-                                        <Link
-                                            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 py-2 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors whitespace-nowrap"
-                                            href="/auth/login"
-                                        >
-                                            <LogIn className="w-3.5 h-3.5 sm:hidden" />
-                                            <span className="hidden sm:inline">
-                                                {t.login}
-                                            </span>
-                                        </Link>
-                                        <Link
-                                            href="/doctors"
-                                            className="hidden md:inline-flex items-center gap-1.5 rounded-lg bg-[var(--brand-primary)] px-3.5 py-2 text-xs font-semibold text-white shadow-2xs hover:opacity-95 transition-opacity whitespace-nowrap"
-                                        >
-                                            <Calendar className="w-3.5 h-3.5 shrink-0" />
-                                            <span>{t.bookAppointment}</span>
-                                        </Link>
-                                    </div>
-                                )
                             )}
 
                             {/* Mobile Menu Trigger (< lg) */}
@@ -666,34 +681,16 @@ export function Header({
                                             <span>{t("uiGoToDashboard")}</span>
                                         </Link>
                                     ) : (
-                                        <>
-                                            <Link
-                                                href="/auth/login"
-                                                onClick={(e) =>
-                                                    handleNavClick(
-                                                        e,
-                                                        "/auth/login",
-                                                    )
-                                                }
-                                                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-subtle)] text-[var(--text-primary)] text-xs font-semibold"
-                                            >
-                                                <LogIn className="w-4 h-4" />
-                                                <span>{t.signIn}</span>
-                                            </Link>
-                                            <Link
-                                                href="/doctors"
-                                                onClick={(e) =>
-                                                    handleNavClick(
-                                                        e,
-                                                        "/doctors",
-                                                    )
-                                                }
-                                                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--brand-primary)] text-white text-xs font-semibold"
-                                            >
-                                                <Calendar className="w-4 h-4" />
-                                                <span>{t.bookAppointment}</span>
-                                            </Link>
-                                        </>
+                                        <Link
+                                            href="/auth/login"
+                                            onClick={(e) =>
+                                                handleNavClick(e, "/auth/login")
+                                            }
+                                            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-subtle)] text-[var(--text-primary)] text-xs font-semibold"
+                                        >
+                                            <UserRound className="w-4 h-4" />
+                                            <span>{t.signIn}</span>
+                                        </Link>
                                     )}
                                 </div>
                             </div>
