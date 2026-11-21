@@ -57,18 +57,25 @@ export function PrintFloatingActionBar({
       )}
 
       {/* Floating Action Bar - Hidden in Print */}
-      <div className="mx-auto mb-6 flex max-w-4xl flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl bg-white px-5 py-3 shadow-md print:hidden dark:bg-zinc-900">
-        <div className="flex flex-wrap items-center gap-3">
+      <div className="mx-auto mb-6 flex max-w-4xl flex-col gap-3 rounded-xl bg-white px-4 py-3 shadow-md sm:flex-row sm:items-center sm:justify-between sm:gap-4 print:hidden dark:bg-zinc-900">
+        {/* Left: navigation + prescription identity */}
+        <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
           <Link
             href="/dashboard/doctor"
-            className="flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="shrink-0 flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800"
           >
             {t("uiBackToDashboard")}
           </Link>
-          <span className="text-xs text-zinc-500">
-            Rx ID: <code className="font-mono font-bold text-zinc-700 dark:text-zinc-300">{id}</code>
+          <span className="inline-flex min-w-0 items-center gap-1.5 whitespace-nowrap text-xs text-zinc-500">
+            <span className="shrink-0">Rx ID:</span>
+            <code
+              className="inline-block max-w-[260px] truncate font-mono font-bold text-zinc-700 dark:text-zinc-300"
+              title={id}
+            >
+              {id}
+            </code>
           </span>
-          <span className="px-2.5 py-0.5 rounded-full bg-[var(--brand-surface)] text-[var(--brand-text)] border border-[var(--brand-border)] text-xs font-bold">
+          <span className="shrink-0 rounded-full border border-[var(--brand-border)] bg-[var(--brand-surface)] px-2.5 py-0.5 text-xs font-bold text-[var(--brand-text)]">
             {language === "bn" ? `সংস্করণ ${currentVersion}` : `Version ${currentVersion}`}{" "}
             {isHistorical
               ? (t("uiArchivedSnapshot"))
@@ -76,7 +83,8 @@ export function PrintFloatingActionBar({
           </span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        {/* Right: actions — always stay together on one line */}
+        <div className="flex shrink-0 flex-wrap items-center justify-start gap-2.5 sm:justify-end">
           {/* Version Switcher if multiple versions exist */}
           {versions.length > 1 && (
             <div className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl">
