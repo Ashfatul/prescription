@@ -5,6 +5,42 @@ import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import { logActivity } from "@/features/activity-log/activity-log.service";
 import { ensureDefaultTemplates, sendTemplatedEmail } from "@/features/email-templates/email-template.service";
+import { createOrganization, validateSlugAvailability } from "@/features/organizations/organization.service";
+import { invalidateSettingsCache } from "@/features/settings/settings.service";
+import { cleanSlug, isValidSlugFormat } from "@/lib/organizations/slug";
+
+/**
+ * Everything required to fully provision the clinic (tenant) during onboarding.
+ * Core columns live on Organization; the remaining profile data is stored in
+ * Organization.settingsJson so it is immediately editable later.
+ */
+export interface ClinicOnboardingInput {
+  name: string;
+  slug?: string;
+  type?: string;
+  registrationNumber?: string;
+  establishedYear?: string;
+  website?: string;
+  email?: string;
+  phone?: string;
+  hotline?: string;
+  addressLine?: string;
+  city?: string;
+  district?: string;
+  postalCode?: string;
+  country?: string;
+  mapLink?: string;
+  about?: string;
+  openingTime?: string;
+  closingTime?: string;
+  workingDays?: string;
+  specialties?: string[] | string;
+  bedCount?: number | string;
+  consultationFee?: number | string;
+  followupValidityDays?: number | string;
+  reportFreeDays?: number | string;
+  logoUrl?: string;
+}
 
 export interface SetupBootstrapInput {
   systemName: string;
@@ -14,6 +50,10 @@ export interface SetupBootstrapInput {
   emergencyHotline?: string;
   defaultCurrency?: string;
   defaultTimezone?: string;
+
+  // First clinic / tenant profile captured in the onboarding wizard
+  clinic?: ClinicOnboardingInput;
+
   adminName: string;
   adminEmail: string;
   adminPassword: string;
@@ -285,6 +325,58 @@ export async function executeSystemBootstrap(input: SetupBootstrapInput) {
     );
   }
 
+  // 2c. Validate and normalise the clinic profile supplied in the onboarding wizard
+  const clinicInput = input.clinic;
+  const cleanClinicName = clinicInput?.name?.trim() || cleanName;
+  if (cleanClinicName.length < 2) {
+    throw new AppError("Clinic name must be at least 2 characters.", 400);
+  }
+
+  const cleanClinicSlug = cleanSlug(clinicInput?.slug?.trim() || cleanClinicName);
+  const slugFormat = isValidSlugFormat(cleanClinicSlug);
+  if (!slugFormat.valid) {
+    throw new AppError(slugFormat.reason || "Invalid clinic subdomain.", 400);
+  }
+  const slugAvailability = await validateSlugAvailability(cleanClinicSlug);
+  if (!slugAvailability.available) {
+    throw new AppError(slugAvailability.reason || "This clinic subdomain is already taken.", 409);
+  }
+
+  const clinicType = clinicInput?.type?.trim() || "clinic";
+  const clinicEmail =
+    clinicInput?.email?.trim().toLowerCase() ||
+    input.supportEmail?.trim().toLowerCase() ||
+    cleanAdminEmail;
+  const clinicPhone = clinicInput?.phone?.trim() || input.contactPhone?.trim() || "";
+  const clinicHotline = clinicInput?.hotline?.trim() || input.emergencyHotline?.trim() || "";
+  const clinicAddress = [
+    clinicInput?.addressLine,
+    clinicInput?.city,
+    clinicInput?.district,
+    clinicInput?.postalCode,
+    clinicInput?.country,
+  ]
+    .map((part) => part?.trim())
+    .filter(Boolean)
+    .join(", ");
+  const visitingHours = [
+    clinicInput?.workingDays?.trim(),
+    [clinicInput?.openingTime?.trim(), clinicInput?.closingTime?.trim()].filter(Boolean).join(" - "),
+  ]
+    .filter(Boolean)
+    .join(" | ");
+  const clinicSpecialties = (Array.isArray(clinicInput?.specialties)
+    ? clinicInput.specialties
+    : String(clinicInput?.specialties || "")
+        .split(",")
+        .map((item) => item.trim())
+  ).map((item) => String(item).trim()).filter(Boolean);
+  const toNonNegativeNumber = (value: unknown): number | undefined => {
+    if (value === undefined || value === null || value === "") return undefined;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined;
+  };
+
   // 3. Ensure all standard roles exist
   const roles = await Promise.all(
     Object.values(RoleName).map((roleName) =>
@@ -303,17 +395,52 @@ export async function executeSystemBootstrap(input: SetupBootstrapInput) {
 
   // 4. Save core system settings
   const settingsToUpsert = [
-    { key: "system_installed", value: "true", category: "system" },
-    { key: "hospital_name", value: cleanName, category: "general" },
-    { key: "hospitalName", value: cleanName, category: "hospital" },
+    { key: "system_name", value: cleanName, category: "system" },
+    { key: "systemName", value: cleanName, category: "system" },
+    { key: "hospital_name", value: cleanClinicName, category: "general" },
+    { key: "hospitalName", value: cleanClinicName, category: "hospital" },
     { key: "hospital_tagline", value: input.systemTagline?.trim() || "Clinical Prescribing & Hospital Management System", category: "general" },
     { key: "hospitalTagline", value: input.systemTagline?.trim() || "Clinical Prescribing & Hospital Management System", category: "hospital" },
-    { key: "support_email", value: input.supportEmail?.trim().toLowerCase() || cleanAdminEmail, category: "general" },
-    { key: "supportEmail", value: input.supportEmail?.trim().toLowerCase() || cleanAdminEmail, category: "hospital" },
-    { key: "contact_phone", value: input.contactPhone?.trim() || "", category: "general" },
-    { key: "contactPhone", value: input.contactPhone?.trim() || "", category: "hospital" },
-    { key: "emergency_hotline", value: input.emergencyHotline?.trim() || "", category: "general" },
-    { key: "emergencyHotline", value: input.emergencyHotline?.trim() || "", category: "hospital" },
+    { key: "support_email", value: clinicEmail, category: "general" },
+    { key: "supportEmail", value: clinicEmail, category: "hospital" },
+    { key: "contact_phone", value: clinicPhone, category: "general" },
+    { key: "contactPhone", value: clinicPhone, category: "hospital" },
+    { key: "emergency_hotline", value: clinicHotline, category: "general" },
+    { key: "emergencyHotline", value: clinicHotline, category: "hospital" },
+    { key: "hospital_address", value: clinicAddress, category: "general" },
+    { key: "hospitalAddress", value: clinicAddress, category: "hospital" },
+    { key: "hospital_website", value: clinicInput?.website?.trim() || "", category: "hospital" },
+    { key: "hospitalWebsite", value: clinicInput?.website?.trim() || "", category: "hospital" },
+    { key: "hospital_logo_url", value: clinicInput?.logoUrl?.trim() || "", category: "hospital" },
+    { key: "hospitalLogoUrl", value: clinicInput?.logoUrl?.trim() || "", category: "hospital" },
+    { key: "opd_visiting_hours", value: visitingHours, category: "hospital" },
+    { key: "opdVisitingHours", value: visitingHours, category: "hospital" },
+    { key: "chamber_days", value: clinicInput?.workingDays?.trim() || "", category: "hospital" },
+    { key: "chamberDays", value: clinicInput?.workingDays?.trim() || "", category: "hospital" },
+    { key: "clinic_name", value: cleanClinicName, category: "hospital" },
+    { key: "clinic_slug", value: cleanClinicSlug, category: "hospital" },
+    { key: "clinic_type", value: clinicType, category: "hospital" },
+    { key: "clinic_registration_number", value: clinicInput?.registrationNumber?.trim() || "", category: "hospital" },
+    { key: "clinic_city", value: clinicInput?.city?.trim() || "", category: "hospital" },
+    { key: "clinic_country", value: clinicInput?.country?.trim() || "", category: "hospital" },
+    { key: "clinic_map_link", value: clinicInput?.mapLink?.trim() || "", category: "hospital" },
+    { key: "clinic_specialties", value: clinicSpecialties.join(", "), category: "hospital" },
+    { key: "clinic_about", value: clinicInput?.about?.trim() || "", category: "hospital" },
+    {
+      key: "default_consultation_fee",
+      value: String(toNonNegativeNumber(clinicInput?.consultationFee) ?? 0),
+      category: "hospital",
+    },
+    {
+      key: "default_followup_validity_days",
+      value: String(toNonNegativeNumber(clinicInput?.followupValidityDays) ?? 90),
+      category: "hospital",
+    },
+    {
+      key: "default_report_free_days",
+      value: String(toNonNegativeNumber(clinicInput?.reportFreeDays) ?? 2),
+      category: "hospital",
+    },
     { key: "default_currency", value: input.defaultCurrency?.trim() || "BDT", category: "general" },
     { key: "default_timezone", value: input.defaultTimezone?.trim() || "Asia/Dhaka", category: "general" },
     { key: "auth_require_email_verification", value: "true", category: "auth" },
@@ -435,8 +562,47 @@ export async function executeSystemBootstrap(input: SetupBootstrapInput) {
     },
   });
 
-  // Invalidate cache immediately
-  invalidateInstallCache();
+  // 7b. Provision the fully configured first clinic and attach the admin to it
+  const organization = await createOrganization(
+    {
+      name: cleanClinicName,
+      slug: cleanClinicSlug,
+      contactEmail: clinicEmail,
+      contactPhone: clinicPhone,
+      address: clinicAddress,
+      logoUrl: clinicInput?.logoUrl?.trim() || undefined,
+      settingsJson: {
+        clinicType,
+        registrationNumber: clinicInput?.registrationNumber?.trim() || "",
+        establishedYear: clinicInput?.establishedYear?.trim() || "",
+        website: clinicInput?.website?.trim() || "",
+        hotline: clinicHotline,
+        city: clinicInput?.city?.trim() || "",
+        district: clinicInput?.district?.trim() || "",
+        postalCode: clinicInput?.postalCode?.trim() || "",
+        country: clinicInput?.country?.trim() || "",
+        mapLink: clinicInput?.mapLink?.trim() || "",
+        about: clinicInput?.about?.trim() || "",
+        visitingHours,
+        workingDays: clinicInput?.workingDays?.trim() || "",
+        openingTime: clinicInput?.openingTime?.trim() || "",
+        closingTime: clinicInput?.closingTime?.trim() || "",
+        specialties: clinicSpecialties,
+        bedCount: toNonNegativeNumber(clinicInput?.bedCount) ?? 0,
+        consultationFee: toNonNegativeNumber(clinicInput?.consultationFee) ?? 0,
+        followupValidityDays: toNonNegativeNumber(clinicInput?.followupValidityDays) ?? 90,
+        reportFreeDays: toNonNegativeNumber(clinicInput?.reportFreeDays) ?? 2,
+      },
+    },
+    user.id
+  );
+
+  await db.user.update({
+    where: { id: user.id },
+    data: { organizationId: organization.id, phone: clinicPhone || undefined },
+  });
+
+  invalidateSettingsCache();
 
   // 8. Dispatch Email Verification
   const host = input.host || "localhost:3000";
@@ -481,6 +647,14 @@ export async function executeSystemBootstrap(input: SetupBootstrapInput) {
     },
   });
 
+  // 10. Mark the platform installed only after the admin AND clinic are fully provisioned
+  await db.systemSetting.upsert({
+    where: { key: "system_installed" },
+    create: { key: "system_installed", value: "true", category: "system" },
+    update: { value: "true", category: "system" },
+  });
+  invalidateInstallCache();
+
   return {
     success: true,
     user: {
@@ -489,6 +663,19 @@ export async function executeSystemBootstrap(input: SetupBootstrapInput) {
       email: user.email,
     },
     systemName: cleanName,
+    clinic: {
+      id: organization.id,
+      name: organization.name,
+      slug: organization.slug,
+      type: clinicType,
+      registrationNumber: clinicInput?.registrationNumber?.trim() || "",
+      address: clinicAddress,
+      contactEmail: clinicEmail,
+      contactPhone: clinicPhone,
+      hotline: clinicHotline,
+      website: clinicInput?.website?.trim() || "",
+      logoUrl: clinicInput?.logoUrl?.trim() || "",
+    },
     verificationToken,
     verifyUrl,
     emailSent,

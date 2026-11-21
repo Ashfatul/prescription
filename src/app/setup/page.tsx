@@ -28,11 +28,20 @@ import {
   Activity,
   KeyRound,
   Globe2,
+  MapPin,
+  Clock,
+  Phone,
+  Pill,
+  FlaskConical,
+  CreditCard,
+  Shield,
+  CalendarDays,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
 import { CustomSelect } from "@/components/common/custom-select";
 import { LanguageToggle } from "@/components/common/language-toggle";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
+import { cleanSlug } from "@/lib/organizations/slug";
 
 interface SetupResult {
   user: {
@@ -41,6 +50,19 @@ interface SetupResult {
     email: string;
   };
   systemName: string;
+  clinic: {
+    id: string;
+    name: string;
+    slug: string;
+    type: string;
+    registrationNumber: string;
+    address: string;
+    contactEmail: string;
+    contactPhone: string;
+    hotline: string;
+    website: string;
+    logoUrl: string;
+  };
   verificationToken: string;
   verifyUrl: string;
   emailSent: boolean;
@@ -49,10 +71,24 @@ interface SetupResult {
 }
 
 export default function SetupPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+
+  const dayLabel = (days: number) =>
+    language === "bn" ? `${days} দিন` : `${days} ${days === 1 ? "Day" : "Days"}`;
+
+  const clinicTypeLabel = (value: string) => {
+    const labels: Record<string, string> = {
+      hospital: t.uiClinicTypeHospital,
+      polyclinic: t.uiClinicTypePolyclinic,
+      clinic: t.uiClinicTypeClinic,
+      diagnostic: t.uiClinicTypeDiagnostic,
+      telemedicine: t.uiClinicTypeTelemedicine,
+    };
+    return labels[value] || value;
+  };
 
   // Status & Step
-  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [alreadyInstalled, setAlreadyInstalled] = useState(false);
@@ -75,7 +111,35 @@ export default function SetupPage() {
   const [currency, setCurrency] = useState("BDT");
   const [timezone, setTimezone] = useState("Asia/Dhaka");
 
-  // Form Fields - Step 3: Outgoing Mail & SMTP
+  // Form Fields - Step 3: Clinic Profile
+  const [clinicName, setClinicName] = useState("");
+  const [clinicSlug, setClinicSlug] = useState("");
+  const [slugEdited, setSlugEdited] = useState(false);
+  const [clinicType, setClinicType] = useState("clinic");
+  const [registrationNumber, setRegistrationNumber] = useState("");
+  const [establishedYear, setEstablishedYear] = useState("");
+  const [clinicWebsite, setClinicWebsite] = useState("");
+  const [clinicEmail, setClinicEmail] = useState("");
+  const [clinicPhone, setClinicPhone] = useState("");
+  const [clinicHotline, setClinicHotline] = useState("");
+  const [addressLine, setAddressLine] = useState("");
+  const [city, setCity] = useState("");
+  const [district, setDistrict] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [country, setCountry] = useState("Bangladesh");
+  const [mapLink, setMapLink] = useState("");
+  const [aboutClinic, setAboutClinic] = useState("");
+  const [workingDays, setWorkingDays] = useState("Sat - Thu");
+  const [openingTime, setOpeningTime] = useState("09:00");
+  const [closingTime, setClosingTime] = useState("18:00");
+  const [specialties, setSpecialties] = useState("");
+  const [bedCount, setBedCount] = useState("");
+  const [consultationFee, setConsultationFee] = useState("");
+  const [followupValidityDays, setFollowupValidityDays] = useState("90");
+  const [reportFreeDays, setReportFreeDays] = useState("2");
+  const [logoUrl, setLogoUrl] = useState("");
+
+  // Form Fields - Step 4: Outgoing Mail & SMTP
   const [smtpEnabled, setSmtpEnabled] = useState(false);
   const [smtpPreset, setSmtpPreset] = useState("gmail");
   const [smtpHost, setSmtpHost] = useState("smtp.gmail.com");
@@ -90,7 +154,7 @@ export default function SetupPage() {
   const [testingSmtp, setTestingSmtp] = useState(false);
   const [smtpTestResult, setSmtpTestResult] = useState<{ success: boolean; message: string } | null>(null);
 
-  // Form Fields - Step 4: Root Super Admin
+  // Form Fields - Step 5: Root Super Admin
   const [adminName, setAdminName] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
@@ -99,7 +163,7 @@ export default function SetupPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Completed Setup Result - Step 5
+  // Completed Setup Result - Step 6
   const [setupResult, setSetupResult] = useState<SetupResult | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
   const [showManualActivation, setShowManualActivation] = useState(false);
@@ -299,7 +363,47 @@ export default function SetupPage() {
       return;
     }
     setFormError(null);
+    // Carry the platform identity forward so the clinic profile is never empty.
+    setClinicName((prev) => prev || systemName.trim());
+    if (!slugEdited) setClinicSlug(cleanSlug(clinicName || systemName).slice(0, 48));
+    setClinicEmail((prev) => prev || supportEmail.trim());
+    setClinicPhone((prev) => prev || contactPhone.trim());
+    setClinicHotline((prev) => prev || emergencyHotline.trim());
     setStep(3);
+  };
+
+  const handleClinicNameChange = (value: string) => {
+    setClinicName(value);
+    if (!slugEdited) setClinicSlug(cleanSlug(value).slice(0, 48));
+  };
+
+  const handleClinicSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!clinicName.trim()) {
+      setFormError(t.uiClinicRequiredName);
+      return;
+    }
+    const normalizedSlug = cleanSlug(clinicSlug);
+    if (normalizedSlug.length < 3 || normalizedSlug.length > 48 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(normalizedSlug)) {
+      setFormError(t.uiClinicSlugInvalid);
+      return;
+    }
+    if (clinicEmail.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clinicEmail.trim())) {
+      setFormError(t.uiClinicEmailInvalid);
+      return;
+    }
+    if (clinicWebsite.trim() && !/^https?:\/\/[^\s.]+\.[^\s]+$/i.test(clinicWebsite.trim())) {
+      setFormError(t.uiClinicWebsiteInvalid);
+      return;
+    }
+    const numericFields = [bedCount, consultationFee, followupValidityDays, reportFreeDays];
+    if (numericFields.some((value) => value.trim() !== "" && (!Number.isFinite(Number(value)) || Number(value) < 0))) {
+      setFormError(t.uiClinicFeeInvalid);
+      return;
+    }
+    setClinicSlug(normalizedSlug);
+    setFormError(null);
+    setStep(4);
   };
 
   const handleBootstrapSubmit = async (e?: React.FormEvent, forceWipe?: boolean) => {
@@ -340,6 +444,33 @@ export default function SetupPage() {
           emergencyHotline,
           defaultCurrency: currency,
           defaultTimezone: timezone,
+          clinic: {
+            name: clinicName.trim(),
+            slug: clinicSlug.trim(),
+            type: clinicType,
+            registrationNumber: registrationNumber.trim(),
+            establishedYear: establishedYear.trim(),
+            website: clinicWebsite.trim(),
+            email: clinicEmail.trim(),
+            phone: clinicPhone.trim(),
+            hotline: clinicHotline.trim(),
+            addressLine: addressLine.trim(),
+            city: city.trim(),
+            district: district.trim(),
+            postalCode: postalCode.trim(),
+            country,
+            mapLink: mapLink.trim(),
+            about: aboutClinic.trim(),
+            workingDays: workingDays.trim(),
+            openingTime: openingTime.trim(),
+            closingTime: closingTime.trim(),
+            specialties: specialties.trim(),
+            bedCount: bedCount.trim() ? Number(bedCount) : undefined,
+            consultationFee: consultationFee.trim() ? Number(consultationFee) : undefined,
+            followupValidityDays: followupValidityDays.trim() ? Number(followupValidityDays) : undefined,
+            reportFreeDays: reportFreeDays.trim() ? Number(reportFreeDays) : undefined,
+            logoUrl: logoUrl.trim(),
+          },
           adminName,
           adminEmail,
           adminPassword,
@@ -357,13 +488,20 @@ export default function SetupPage() {
 
       const json = await res.json();
       if (!res.ok || !json.success) {
-        setFormError(json.error || json.message || "Setup failed to complete.");
+        const message: string = json.error || json.message || "Setup failed to complete.";
+        if (/already taken|already exists/i.test(message) && /subdomain|clinic|slug/i.test(message)) {
+          setFormError(t.uiClinicSlugTaken);
+        } else if (/subdomain|slug/i.test(message)) {
+          setFormError(t.uiClinicSlugInvalid);
+        } else {
+          setFormError(message);
+        }
         setSubmitting(false);
         return;
       }
 
       setSetupResult(json.data);
-      setStep(5);
+      setStep(6);
     } catch (err: unknown) {
       setFormError(err instanceof Error ? err.message : "Network error completing setup.");
     } finally {
@@ -411,12 +549,25 @@ export default function SetupPage() {
   const stepsList = [
     { num: 1, label: t.uiStep1Database, short: t.uiStep1Short },
     { num: 2, label: t.uiStep2SystemIdentity, short: t.uiStep2Short },
-    { num: 3, label: t.uiStep3MailSmtp, short: t.uiStep3Short },
-    { num: 4, label: t.uiStep4SuperAdmin, short: t.uiStep4Short },
-    { num: 5, label: t.uiStep5Launchpad, short: t.uiStep5Short },
+    { num: 3, label: t.uiClinicStepTitle, short: t.uiClinicStepShort },
+    { num: 4, label: t.uiStep3MailSmtp, short: t.uiStep3Short },
+    { num: 5, label: t.uiStep4SuperAdmin, short: t.uiStep4Short },
+    { num: 6, label: t.uiStep5Launchpad, short: t.uiStep5Short },
   ];
 
-  const overallProgressPct = step * 20;
+  const overallProgressPct = Math.round((step / 6) * 100);
+
+  const quickLinks = [
+    { href: "/dashboard/admin?tab=organizations", icon: Building2, title: t.uiLinkClinics, desc: t.uiLinkClinicsDesc },
+    { href: "/dashboard/admin?tab=users", icon: Users, title: t.uiLinkUsers, desc: t.uiLinkUsersDesc },
+    { href: "/dashboard/admin?tab=catalog", icon: Pill, title: t.uiLinkCatalog, desc: t.uiLinkCatalogDesc },
+    { href: "/dashboard/admin?tab=tests", icon: FlaskConical, title: t.uiLinkTests, desc: t.uiLinkTestsDesc },
+    { href: "/dashboard/admin?tab=templates", icon: FileText, title: t.uiLinkTemplates, desc: t.uiLinkTemplatesDesc },
+    { href: "/dashboard/admin?tab=settings", icon: Shield, title: t.uiLinkSettings, desc: t.uiLinkSettingsDesc },
+    { href: "/doctors", icon: Stethoscope, title: t.uiLinkDoctors, desc: t.uiLinkDoctorsDesc },
+    { href: "/live-queue", icon: CalendarDays, title: t.uiLinkQueue, desc: t.uiLinkQueueDesc },
+    { href: "/dashboard/admin?tab=pricing", icon: CreditCard, title: t.uiLinkBilling, desc: t.uiLinkBillingDesc },
+  ];
 
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] flex flex-col transition-colors selection:bg-[var(--brand-primary)] selection:text-white">
@@ -456,7 +607,7 @@ export default function SetupPage() {
               </div>
             )}
             <div className="px-2.5 py-1 rounded-md bg-[var(--bg-subtle)] border border-[var(--border-subtle)] text-[11px] font-bold text-[var(--text-secondary)]">
-              Step {step} / 5
+              Step {step} / 6
             </div>
             <LanguageToggle />
             <ThemeCustomizer compact direction="down" align="right" />
@@ -572,8 +723,14 @@ export default function SetupPage() {
                     <strong>Support:</strong> {supportEmail.trim() || "support@hospital.org"}
                   </div>
                   <div className="truncate">
-                    <strong>Phone / Hot:</strong> {contactPhone.trim() || "+880 1700-000000"}{" "}
-                    {emergencyHotline ? `• Emg: ${emergencyHotline.trim()}` : ""}
+                    <strong>Phone / Hot:</strong> {clinicPhone.trim() || contactPhone.trim() || "+880 1700-000000"}{" "}
+                    {clinicHotline.trim() || emergencyHotline ? `• Emg: ${(clinicHotline || emergencyHotline).trim()}` : ""}
+                  </div>
+                  <div className="truncate">
+                    <strong>{t.uiClinicNameLabel.replace(" *", "")}:</strong>{" "}
+                    {clinicName.trim() || systemName.trim() || "—"}
+                    {[addressLine.trim(), city.trim()].filter(Boolean).length > 0 &&
+                      ` • ${[addressLine.trim(), city.trim()].filter(Boolean).join(", ")}`}
                   </div>
                 </div>
               </div>
@@ -625,22 +782,24 @@ export default function SetupPage() {
               <div className="pb-6 border-b border-[var(--border-subtle)]">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[var(--brand-surface)] text-[var(--brand-primary)]">
-                    Step {step} of 5
+                    Step {step} of 6
                   </span>
                 </div>
                 <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--text-primary)]">
                   {step === 1 && t.uiStep1Database}
                   {step === 2 && t.uiStep2SystemIdentity}
-                  {step === 3 && t.uiStep3MailSmtp}
-                  {step === 4 && t.uiStep4SuperAdmin}
-                  {step === 5 && t.uiStep5Launchpad}
+                  {step === 3 && t.uiClinicStepTitle}
+                  {step === 4 && t.uiStep3MailSmtp}
+                  {step === 5 && t.uiStep4SuperAdmin}
+                  {step === 6 && t.uiStep5Launchpad}
                 </h2>
                 <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1">
                   {step === 1 && t.uiDatabaseConnectedDesc}
                   {step === 2 && t.uiSetupWizardSubtitle}
-                  {step === 3 && t.uiSmtpSubtitle}
-                  {step === 4 && t.uiStep4Short}
-                  {step === 5 && t.uiSetupSuccessDesc}
+                  {step === 3 && t.uiClinicStepDesc}
+                  {step === 4 && t.uiSmtpSubtitle}
+                  {step === 5 && t.uiStep4Short}
+                  {step === 6 && t.uiSetupSuccessDesc}
                 </p>
               </div>
 
@@ -895,8 +1054,475 @@ export default function SetupPage() {
                 </form>
               )}
 
-              {/* Step 3: Outgoing Mail & SMTP Server */}
+              {/* Step 3: Clinic Profile — captures every detail the clinic needs */}
               {step === 3 && (
+                <form onSubmit={handleClinicSubmit} className="space-y-7">
+                  {formError && (
+                    <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/25 text-xs text-red-600 dark:text-red-400 flex items-start gap-2">
+                      <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span>{formError}</span>
+                    </div>
+                  )}
+
+                  {/* Identity */}
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3 pb-4 border-b border-[var(--border-subtle)]">
+                      <div className="w-10 h-10 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center shrink-0">
+                        <Building2 className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-[var(--text-primary)]">{t.uiClinicSectionIdentity}</h3>
+                        <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{t.uiClinicSectionIdentityDesc}</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5 sm:col-span-2">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicNameLabel}
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={clinicName}
+                          onChange={(e) => handleClinicNameChange(e.target.value)}
+                          placeholder={t.uiClinicNamePlaceholder}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5 sm:col-span-2">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicSlugLabel}
+                        </label>
+                        <div className="flex items-stretch gap-2">
+                          <div className="relative flex-1 min-w-0">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-mono text-[var(--text-muted)] pointer-events-none select-none">
+                              /clinics/
+                            </span>
+                            <input
+                              type="text"
+                              required
+                              value={clinicSlug}
+                              onChange={(e) => {
+                                setSlugEdited(true);
+                                setClinicSlug(cleanSlug(e.target.value).slice(0, 48));
+                              }}
+                              placeholder={t.uiClinicSlugPlaceholder}
+                              className="w-full pl-[76px] pr-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm font-mono text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSlugEdited(false);
+                              setClinicSlug(cleanSlug(clinicName).slice(0, 48));
+                            }}
+                            title={t.uiClinicRegenerateSlug}
+                            aria-label={t.uiClinicRegenerateSlug}
+                            className="px-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] text-[var(--text-secondary)] transition-all cursor-pointer min-h-[46px] shrink-0"
+                          >
+                            <RotateCw className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <p className="text-[11px] text-[var(--text-muted)]">{t.uiClinicSlugHint}</p>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <CustomSelect
+                          label={t.uiClinicTypeLabel}
+                          value={clinicType}
+                          onChange={(val) => setClinicType(val)}
+                          options={[
+                            { value: "hospital", label: t.uiClinicTypeHospital },
+                            { value: "polyclinic", label: t.uiClinicTypePolyclinic },
+                            { value: "clinic", label: t.uiClinicTypeClinic },
+                            { value: "diagnostic", label: t.uiClinicTypeDiagnostic },
+                            { value: "telemedicine", label: t.uiClinicTypeTelemedicine },
+                          ]}
+                          allowClear={false}
+                          searchable={false}
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicRegistrationLabel}
+                        </label>
+                        <input
+                          type="text"
+                          value={registrationNumber}
+                          onChange={(e) => setRegistrationNumber(e.target.value)}
+                          placeholder={t.uiClinicRegistrationPlaceholder}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicEstablishedLabel}
+                        </label>
+                        <input
+                          type="number"
+                          min="1800"
+                          max="2100"
+                          value={establishedYear}
+                          onChange={(e) => setEstablishedYear(e.target.value)}
+                          placeholder={t.uiClinicEstablishedPlaceholder}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicLogoLabel}
+                        </label>
+                        <input
+                          type="url"
+                          value={logoUrl}
+                          onChange={(e) => setLogoUrl(e.target.value)}
+                          placeholder={t.uiClinicLogoPlaceholder}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5 sm:col-span-2">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicAboutLabel}
+                        </label>
+                        <textarea
+                          rows={3}
+                          value={aboutClinic}
+                          onChange={(e) => setAboutClinic(e.target.value)}
+                          placeholder={t.uiClinicAboutPlaceholder}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all resize-y"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-[11px] font-semibold text-[var(--text-muted)] mr-1">
+                        {t.uiClinicQuickTypesTitle}
+                      </span>
+                      {[
+                        { value: "hospital", label: t.uiClinicTypeHospital },
+                        { value: "polyclinic", label: t.uiClinicTypePolyclinic },
+                        { value: "clinic", label: t.uiClinicTypeClinic },
+                        { value: "diagnostic", label: t.uiClinicTypeDiagnostic },
+                        { value: "telemedicine", label: t.uiClinicTypeTelemedicine },
+                      ].map((chip) => (
+                        <button
+                          key={chip.value}
+                          type="button"
+                          onClick={() => setClinicType(chip.value)}
+                          className={`px-3 py-1.5 rounded-md border text-xs font-semibold transition-all cursor-pointer ${
+                            clinicType === chip.value
+                              ? "border-[var(--brand-primary)] bg-[var(--brand-surface)] text-[var(--brand-primary)]"
+                              : "border-[var(--border-subtle)] bg-[var(--bg-app)] text-[var(--text-secondary)] hover:border-[var(--border-strong)]"
+                          }`}
+                        >
+                          {chip.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Contact & Location */}
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3 pb-4 border-b border-[var(--border-subtle)]">
+                      <div className="w-10 h-10 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center shrink-0">
+                        <MapPin className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-[var(--text-primary)]">{t.uiClinicSectionContact}</h3>
+                        <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{t.uiClinicSectionContactDesc}</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicEmailLabel}
+                        </label>
+                        <input
+                          type="email"
+                          value={clinicEmail}
+                          onChange={(e) => setClinicEmail(e.target.value)}
+                          placeholder={supportEmail || t.uiClinicEmailPlaceholder}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicPhoneLabel}
+                        </label>
+                        <input
+                          type="tel"
+                          value={clinicPhone}
+                          onChange={(e) => setClinicPhone(e.target.value)}
+                          placeholder={contactPhone || t.uiClinicPhonePlaceholder}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicHotlineLabel}
+                        </label>
+                        <input
+                          type="tel"
+                          value={clinicHotline}
+                          onChange={(e) => setClinicHotline(e.target.value)}
+                          placeholder={emergencyHotline || "999"}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicWebsiteLabel}
+                        </label>
+                        <input
+                          type="url"
+                          value={clinicWebsite}
+                          onChange={(e) => setClinicWebsite(e.target.value)}
+                          placeholder={t.uiClinicWebsitePlaceholder}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5 sm:col-span-2">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicAddressLabel}
+                        </label>
+                        <input
+                          type="text"
+                          value={addressLine}
+                          onChange={(e) => setAddressLine(e.target.value)}
+                          placeholder={t.uiClinicAddressPlaceholder}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicCityLabel}
+                        </label>
+                        <input
+                          type="text"
+                          value={city}
+                          onChange={(e) => setCity(e.target.value)}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicDistrictLabel}
+                        </label>
+                        <input
+                          type="text"
+                          value={district}
+                          onChange={(e) => setDistrict(e.target.value)}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicPostalLabel}
+                        </label>
+                        <input
+                          type="text"
+                          value={postalCode}
+                          onChange={(e) => setPostalCode(e.target.value)}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <CustomSelect
+                          label={t.uiClinicCountryLabel}
+                          value={country}
+                          onChange={(val) => setCountry(val)}
+                          options={[
+                            { value: "Bangladesh", label: "Bangladesh" },
+                            { value: "India", label: "India" },
+                            { value: "Pakistan", label: "Pakistan" },
+                            { value: "Nepal", label: "Nepal" },
+                            { value: "Sri Lanka", label: "Sri Lanka" },
+                            { value: "United States", label: "United States" },
+                            { value: "United Kingdom", label: "United Kingdom" },
+                            { value: "Canada", label: "Canada" },
+                            { value: "Australia", label: "Australia" },
+                            { value: "Other", label: language === "bn" ? "অন্যান্য" : "Other" },
+                          ]}
+                          allowClear={false}
+                          searchable={true}
+                        />
+                      </div>
+
+                      <div className="space-y-1.5 sm:col-span-2">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicMapLinkLabel}
+                        </label>
+                        <input
+                          type="url"
+                          value={mapLink}
+                          onChange={(e) => setMapLink(e.target.value)}
+                          placeholder={t.uiClinicMapPlaceholder}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Operations & clinical defaults */}
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3 pb-4 border-b border-[var(--border-subtle)]">
+                      <div className="w-10 h-10 rounded-lg bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center shrink-0">
+                        <Clock className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-[var(--text-primary)]">{t.uiClinicSectionOperations}</h3>
+                        <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{t.uiClinicSectionOperationsDesc}</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5 sm:col-span-2">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicWorkingDaysLabel}
+                        </label>
+                        <input
+                          type="text"
+                          value={workingDays}
+                          onChange={(e) => setWorkingDays(e.target.value)}
+                          placeholder={t.uiClinicWorkingDaysPlaceholder}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicOpeningTimeLabel}
+                        </label>
+                        <input
+                          type="time"
+                          value={openingTime}
+                          onChange={(e) => setOpeningTime(e.target.value)}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicClosingTimeLabel}
+                        </label>
+                        <input
+                          type="time"
+                          value={closingTime}
+                          onChange={(e) => setClosingTime(e.target.value)}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5 sm:col-span-2">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicSpecialtiesLabel}
+                        </label>
+                        <input
+                          type="text"
+                          value={specialties}
+                          onChange={(e) => setSpecialties(e.target.value)}
+                          placeholder={t.uiClinicSpecialtiesPlaceholder}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicBedCountLabel}
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={bedCount}
+                          onChange={(e) => setBedCount(e.target.value)}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                          {t.uiClinicConsultationFeeLabel}
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={consultationFee}
+                          onChange={(e) => setConsultationFee(e.target.value)}
+                          className="w-full px-4 py-3 rounded-lg border border-[var(--border-default)] bg-[var(--bg-app)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/20 focus:border-[var(--brand-primary)] transition-all min-h-[46px]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <CustomSelect
+                          label={t.uiClinicFollowupDaysLabel}
+                          value={followupValidityDays}
+                          onChange={(val) => setFollowupValidityDays(val)}
+                          options={[3, 5, 7, 14, 30, 90].map((n) => ({
+                            value: String(n),
+                            label: dayLabel(n),
+                          }))}
+                          allowClear={false}
+                          searchable={false}
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <CustomSelect
+                          label={t.uiClinicReportFreeDaysLabel}
+                          value={reportFreeDays}
+                          onChange={(val) => setReportFreeDays(val)}
+                          options={[0, 1, 2, 3, 7].map((n) => ({ value: String(n), label: dayLabel(n) }))}
+                          allowClear={false}
+                          searchable={false}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-lg border border-[var(--brand-primary)]/25 bg-[var(--brand-surface)]/40 flex items-start gap-3">
+                    <Sparkles className="w-4 h-4 text-[var(--brand-primary)] shrink-0 mt-0.5" />
+                    <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">{t.uiClinicProvisionNote}</p>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-[var(--border-subtle)]">
+                    <button
+                      type="button"
+                      onClick={() => setStep(2)}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-surface)] text-[var(--text-secondary)] font-semibold text-xs transition-all cursor-pointer min-h-[42px]"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      <span>{t.uiGoBack}</span>
+                    </button>
+
+                    <button
+                      type="submit"
+                      className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[var(--brand-primary)] hover:bg-[var(--brand-hover)] active:scale-[0.98] text-white font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer min-h-[42px]"
+                    >
+                      <span>{t.uiClinicCompleteProfile}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* Step 4: Outgoing Mail & SMTP Server */}
+              {step === 4 && (
                 <div className="space-y-6">
                   {/* Preset Provider Selector Cards */}
                   <div className="space-y-2">
@@ -1111,7 +1737,7 @@ export default function SetupPage() {
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-[var(--border-subtle)]">
                     <button
                       type="button"
-                      onClick={() => setStep(2)}
+                      onClick={() => setStep(3)}
                       className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-surface)] text-[var(--text-secondary)] font-semibold text-xs transition-all cursor-pointer min-h-[42px]"
                     >
                       <ArrowLeft className="w-4 h-4" />
@@ -1123,7 +1749,7 @@ export default function SetupPage() {
                         type="button"
                         onClick={() => {
                           setSmtpEnabled(false);
-                          setStep(4);
+                          setStep(5);
                         }}
                         className="px-4 py-2.5 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] text-xs font-semibold text-[var(--text-secondary)] transition-all cursor-pointer min-h-[42px]"
                       >
@@ -1134,7 +1760,7 @@ export default function SetupPage() {
                         type="button"
                         onClick={() => {
                           setSmtpEnabled(true);
-                          setStep(4);
+                          setStep(5);
                         }}
                         className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[var(--brand-primary)] hover:bg-[var(--brand-hover)] active:scale-[0.98] text-white font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer min-h-[42px]"
                       >
@@ -1146,8 +1772,8 @@ export default function SetupPage() {
                 </div>
               )}
 
-              {/* Step 4: Root Super Administrator */}
-              {step === 4 && (
+              {/* Step 5: Root Super Administrator */}
+              {step === 5 && (
                 <form onSubmit={(e) => handleBootstrapSubmit(e)} className="space-y-6">
                   {formError && (
                     <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/25 text-xs text-red-600 dark:text-red-400 flex items-start gap-2">
@@ -1278,7 +1904,7 @@ export default function SetupPage() {
                   <div className="flex items-center justify-between pt-4 border-t border-[var(--border-subtle)]">
                     <button
                       type="button"
-                      onClick={() => setStep(3)}
+                      onClick={() => setStep(4)}
                       className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-surface)] text-[var(--text-secondary)] font-semibold text-xs transition-all cursor-pointer min-h-[42px]"
                     >
                       <ArrowLeft className="w-4 h-4" />
@@ -1306,8 +1932,8 @@ export default function SetupPage() {
                 </form>
               )}
 
-              {/* Step 5: System Launchpad & Account Activation */}
-              {step === 5 && setupResult && (
+              {/* Step 6: System Launchpad & Account Activation */}
+              {step === 6 && setupResult && (
                 <div className="space-y-6">
                   <div className="p-6 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-start gap-4">
                     <div className="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
@@ -1430,64 +2056,140 @@ export default function SetupPage() {
                     </div>
                   )}
 
-                  {/* Launchpad Quick Start Cards */}
+                  {/* Clinic at a Glance — information captured during onboarding */}
                   <div className="space-y-4">
-                    <h4 className="text-sm sm:text-base font-bold text-[var(--text-primary)]">
-                      {t.uiNextStepsLaunchpad}
-                    </h4>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <Link
-                        href="/dashboard/admin"
-                        className="p-5 rounded-lg border border-[var(--border-subtle)] hover:border-[var(--brand-border)] bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)] transition-all flex flex-col justify-between group shadow-2xs"
-                      >
-                        <div className="w-10 h-10 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--brand-primary)] group-hover:scale-105 transition-transform mb-3">
-                          <Building2 className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <h5 className="text-xs sm:text-sm font-bold text-[var(--text-primary)] group-hover:text-[var(--brand-primary)] transition-colors">
-                            {t.uiCreateFirstClinic}
-                          </h5>
-                          <p className="text-[11px] text-[var(--text-muted)] mt-1 line-clamp-2 leading-relaxed">
-                            {t.uiCreateFirstClinicDesc}
-                          </p>
-                        </div>
-                      </Link>
-
-                      <Link
-                        href="/dashboard/admin"
-                        className="p-5 rounded-lg border border-[var(--border-subtle)] hover:border-[var(--brand-border)] bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)] transition-all flex flex-col justify-between group shadow-2xs"
-                      >
-                        <div className="w-10 h-10 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--brand-primary)] group-hover:scale-105 transition-transform mb-3">
-                          <Users className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <h5 className="text-xs sm:text-sm font-bold text-[var(--text-primary)] group-hover:text-[var(--brand-primary)] transition-colors">
-                            {t.uiAddDoctorsTitle}
-                          </h5>
-                          <p className="text-[11px] text-[var(--text-muted)] mt-1 line-clamp-2 leading-relaxed">
-                            {t.uiAddDoctorsDesc}
-                          </p>
-                        </div>
-                      </Link>
-
-                      <Link
-                        href="/dashboard/admin"
-                        className="p-5 rounded-lg border border-[var(--border-subtle)] hover:border-[var(--brand-border)] bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)] transition-all flex flex-col justify-between group shadow-2xs"
-                      >
-                        <div className="w-10 h-10 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--brand-primary)] group-hover:scale-105 transition-transform mb-3">
-                          <FileText className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <h5 className="text-xs sm:text-sm font-bold text-[var(--text-primary)] group-hover:text-[var(--brand-primary)] transition-colors">
-                            {t.uiConfigureRxTitle}
-                          </h5>
-                          <p className="text-[11px] text-[var(--text-muted)] mt-1 line-clamp-2 leading-relaxed">
-                            {t.uiConfigureRxDesc}
-                          </p>
-                        </div>
-                      </Link>
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <h4 className="text-sm sm:text-base font-bold text-[var(--text-primary)]">
+                          {t.uiClinicAtGlance}
+                        </h4>
+                        <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
+                          {t.uiClinicAtGlanceDesc}
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Link
+                          href={`/clinics/${setupResult.clinic.slug}/landing`}
+                          target="_blank"
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] text-[11px] font-semibold text-[var(--text-secondary)] transition-all"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          {t.uiClinicViewPublicPage}
+                        </Link>
+                        <Link
+                          href="/clinics"
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] hover:bg-[var(--bg-subtle)] text-[11px] font-semibold text-[var(--text-secondary)] transition-all"
+                        >
+                          <Building2 className="w-3.5 h-3.5" />
+                          {t.uiClinicDirectoryLink}
+                        </Link>
+                      </div>
                     </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+                      {[
+                        { label: t.uiClinicNameLabel.replace(" *", ""), value: setupResult.clinic.name, icon: Building2 },
+                        { label: t.uiClinicTypeLabel, value: clinicTypeLabel(setupResult.clinic.type), icon: Shield },
+                        {
+                          label: t.uiClinicRegistrationLabel,
+                          value: setupResult.clinic.registrationNumber || "—",
+                          icon: FileText,
+                        },
+                        {
+                          label: t.uiClinicAddressLabel,
+                          value: setupResult.clinic.address || "—",
+                          icon: MapPin,
+                        },
+                        {
+                          label: t.uiClinicPhoneLabel,
+                          value: setupResult.clinic.contactPhone || "—",
+                          icon: Phone,
+                        },
+                        {
+                          label: t.uiClinicHotlineLabel,
+                          value: setupResult.clinic.hotline || "—",
+                          icon: Activity,
+                        },
+                      ].map((item) => {
+                        const Icon = item.icon;
+                        return (
+                          <div
+                            key={item.label}
+                            className="p-4 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-app)] flex items-start gap-3"
+                          >
+                            <div className="w-8 h-8 rounded-md bg-[var(--brand-surface)] text-[var(--brand-primary)] flex items-center justify-center shrink-0">
+                              <Icon className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                                {item.label}
+                              </p>
+                              <p className="text-xs font-bold text-[var(--text-primary)] mt-0.5 break-words">
+                                {item.value}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Quick links to the spaces required after onboarding */}
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-sm sm:text-base font-bold text-[var(--text-primary)]">
+                        {t.uiLaunchpadQuickLinks}
+                      </h4>
+                      <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
+                        {t.uiLaunchpadQuickLinksDesc}
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                      {quickLinks.map((link) => {
+                        const Icon = link.icon;
+                        return (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            className="p-4 rounded-lg border border-[var(--border-subtle)] hover:border-[var(--brand-primary)] bg-[var(--bg-surface)] hover:bg-[var(--brand-surface)] transition-all group shadow-2xs"
+                          >
+                            <div className="w-9 h-9 rounded-md bg-[var(--bg-subtle)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--brand-primary)] mb-3 group-hover:scale-105 transition-transform">
+                              <Icon className="w-4 h-4" />
+                            </div>
+                            <h5 className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--brand-primary)] transition-colors">
+                              {link.title}
+                            </h5>
+                            <p className="text-[11px] text-[var(--text-muted)] mt-1 line-clamp-2 leading-relaxed">
+                              {link.desc}
+                            </p>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Reference information & policies */}
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-3 border-t border-[var(--border-subtle)]">
+                    <span className="text-[11px] font-semibold text-[var(--text-muted)]">
+                      {t.uiLinkReferences}
+                    </span>
+                    <Link href="/terms" className="text-[11px] font-semibold text-[var(--brand-primary)] hover:underline">
+                      {t.uiLinkTerms}
+                    </Link>
+                    <Link href="/privacy" className="text-[11px] font-semibold text-[var(--brand-primary)] hover:underline">
+                      {t.uiLinkPrivacy}
+                    </Link>
+                    <Link href="/disclaimer" className="text-[11px] font-semibold text-[var(--brand-primary)] hover:underline">
+                      {t.uiLinkDisclaimer}
+                    </Link>
+                    <a
+                      href={`mailto:${setupResult.clinic.contactEmail}`}
+                      className="ml-auto text-[11px] font-semibold text-[var(--text-secondary)] hover:text-[var(--brand-primary)] inline-flex items-center gap-1.5"
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                      {t.uiNeedHelp}
+                    </a>
                   </div>
 
                   {/* Primary Enter Dashboard Button */}

@@ -2,7 +2,7 @@ import crypto from "crypto";
 import { resolveTxt } from "node:dns/promises";
 import { db } from "@/lib/db";
 import { AppError } from "@/lib/errors";
-import { OrganizationStatus, RoleName } from "@prisma/client";
+import { OrganizationStatus, Prisma, RoleName } from "@prisma/client";
 import { logActivity } from "@/features/activity-log/activity-log.service";
 import { medicineService, testService } from "@/features/catalog/catalog.service";
 import { sendTemplatedEmail } from "@/features/email-templates/email-template.service";
@@ -126,6 +126,8 @@ export type CreateOrgParams = {
   contactPhone?: string;
   address?: string;
   logoUrl?: string;
+  /** Free-form tenant configuration (clinic profile captured during onboarding). */
+  settingsJson?: Prisma.InputJsonValue;
 };
 
 export async function validateSlugAvailability(rawSlug: string): Promise<{
@@ -221,6 +223,7 @@ export async function createOrganization(params: CreateOrgParams, creatorUserId?
       contactPhone: params.contactPhone,
       address: params.address,
       logoUrl: params.logoUrl,
+      settingsJson: params.settingsJson,
       status: OrganizationStatus.ACTIVE,
     },
     include: { plan: true },
@@ -263,6 +266,7 @@ export async function updateOrganization(
       contactPhone: data.contactPhone,
       address: data.address,
       logoUrl: data.logoUrl,
+      settingsJson: data.settingsJson,
       status: data.status,
     },
     include: { plan: true },
