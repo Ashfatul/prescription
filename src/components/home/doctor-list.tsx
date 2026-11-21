@@ -4,13 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Calendar, 
-  Search, 
-  MapPin, 
-  ChevronDown, 
-  ChevronUp, 
-  UserCheck, 
+import {
+  Calendar,
+  Search,
+  MapPin,
+  ChevronDown,
+  ChevronUp,
+  UserCheck,
   Sparkles,
   Filter
 } from "lucide-react";
@@ -19,7 +19,7 @@ import { useAuth } from "@/lib/auth/auth-context";
 import { AppointmentBookingModal } from "@/components/appointments/appointment-booking-modal";
 import { DoctorScheduleDisplay } from "@/components/doctors/doctor-schedule-display";
 
-type ScheduleData = {
+export type ScheduleData = {
   days?: string[] | string;
   startTime?: string;
   endTime?: string;
@@ -28,7 +28,7 @@ type ScheduleData = {
   [key: string]: unknown;
 };
 
-type PublicDoctor = {
+export type PublicDoctor = {
   id: string;
   name: string;
   imageUrl: string | null;
@@ -50,20 +50,25 @@ type PublicDoctor = {
 
 const INITIAL_DISPLAY_LIMIT = 9;
 
-interface DoctorListProps {
+export interface DoctorListProps {
   initialLimit?: number;
   clinicSlug?: string;
+  initialDoctors?: PublicDoctor[];
 }
 
-export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }: DoctorListProps = {}) {
+export function DoctorList({
+  initialLimit = INITIAL_DISPLAY_LIMIT,
+  clinicSlug,
+  initialDoctors = [],
+}: DoctorListProps = {}) {
   const { user } = useAuth();
   const isStaffOrDoctor = user && (user.role === "DOCTOR" || user.role === "STAFF" || user.role === "SUPER_ADMIN");
 
-  const [doctors, setDoctors] = useState<PublicDoctor[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [doctors, setDoctors] = useState<PublicDoctor[]>(initialDoctors);
+  const [loading, setLoading] = useState(initialDoctors.length === 0);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [selectedDoctorForBooking, setSelectedDoctorForBooking] = useState<string | undefined>(undefined);
-  
+
   // Filtering & Expand/Collapse state
   const [searchQuery, setSearchQuery] = useState(() => {
     if (typeof window !== "undefined") {
@@ -80,9 +85,12 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
   useEffect(() => {
     let active = true;
 
-    const load = async () => {
+    const load = async (background = false) => {
       if (typeof document !== "undefined" && document.visibilityState !== "visible") {
         return;
+      }
+      if (!background && initialDoctors.length === 0) {
+        setLoading(true);
       }
       try {
         const queryParam = clinicSlug ? `?clinic=${encodeURIComponent(clinicSlug)}` : "";
@@ -99,12 +107,15 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
       }
     };
 
-    void load();
-    const timer = setInterval(load, 45000);
+    if (initialDoctors.length === 0) {
+      void load(false);
+    }
+
+    const timer = setInterval(() => void load(true), 45000);
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        void load();
+        void load(true);
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -114,7 +125,7 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
       clearInterval(timer);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [clinicSlug]);
+  }, [clinicSlug, initialDoctors.length]);
 
   // Compute unique specializations
   const specializations = useMemo(() => {
@@ -258,11 +269,10 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
                     setSelectedSpecialty(spec);
                     setIsExpanded(false); // Reset to preview limit when changing category
                   }}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                    active
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${active
                       ? "bg-[var(--brand-primary)] text-white shadow-xs"
                       : "bg-[var(--bg-subtle)] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800"
-                  }`}
+                    }`}
                 >
                   {spec}
                 </button>
@@ -330,16 +340,14 @@ export function DoctorList({ initialLimit = INITIAL_DISPLAY_LIMIT, clinicSlug }:
                         {/* Live Chamber Status Pill */}
                         <div className="flex items-center gap-1.5 mb-1">
                           <span
-                            className={`w-2 h-2 rounded-full ${
-                              doctor.available ? "bg-emerald-500 animate-pulse" : "bg-slate-400"
-                            }`}
+                            className={`w-2 h-2 rounded-full ${doctor.available ? "bg-emerald-500 animate-pulse" : "bg-slate-400"
+                              }`}
                           />
                           <span
-                            className={`text-[10px] font-bold uppercase tracking-wider ${
-                              doctor.available
+                            className={`text-[10px] font-bold uppercase tracking-wider ${doctor.available
                                 ? "text-emerald-700 dark:text-emerald-400"
                                 : "text-slate-400"
-                            }`}
+                              }`}
                           >
                             {doctor.available ? t.chamberOpen : t.chamberOffline}
                           </span>

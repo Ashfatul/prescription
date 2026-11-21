@@ -81,10 +81,11 @@ export async function proxy(req: NextRequest) {
   }
 
   // SaaS Subdomain Routing:
-  // If accessing a clinic subdomain at root "/", rewrite to the clinic's dedicated profile page
+  // A clinic subdomain root (e.g. lab-aid.prescription.test/) is that clinic's
+  // public-facing LANDING page, not the internal dashboard-style profile view.
   if (subdomain && pathname === "/") {
     const url = req.nextUrl.clone();
-    url.pathname = `/clinics/${subdomain}`;
+    url.pathname = `/clinics/${subdomain}/landing`;
     const rewriteResponse = NextResponse.rewrite(url, {
       request: {
         headers: requestHeaders,
@@ -94,12 +95,8 @@ export async function proxy(req: NextRequest) {
     return applySecurityHeaders(rewriteResponse, req);
   }
 
-  // If user is already on the subdomain and navigates to "/clinics/:subdomain", canonicalize to "/"
-  if (subdomain && pathname === `/clinics/${subdomain}`) {
-    const url = req.nextUrl.clone();
-    url.pathname = "/";
-    return applySecurityHeaders(NextResponse.redirect(url), req);
-  }
+  // The internal profile path (/clinics/:subdomain) stays reachable on the
+  // subdomain so "Clinic profile & staff" links keep working from the landing page.
 
   const token =
     req.cookies.get(AUTH_COOKIE)?.value ||

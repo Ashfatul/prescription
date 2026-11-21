@@ -269,8 +269,9 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
                     <div className="min-w-0 flex-1 space-y-1.5">
                       <div className="flex flex-wrap items-center gap-2">
                         <Link
-                          href={`/clinics/${clinic.slug}`}
+                          href={`/clinics/${clinic.slug}/landing`}
                           className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight leading-snug hover:text-[var(--brand-text)] transition truncate max-w-full"
+                          title={t("uiLandingViewLandingPage", "View clinic landing page")}
                         >
                           {clinic.name}
                         </Link>
@@ -444,7 +445,7 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
 
                         {remainingDoctorsCount > 0 && (
                           <Link
-                            href={`/clinics/${clinic.slug}`}
+                            href={`/clinics/${clinic.slug}/landing`}
                             className="w-full py-1.5 text-center text-[11px] font-bold text-[var(--brand-text)] hover:underline block"
                           >
                             {language === "bn"
@@ -485,7 +486,16 @@ export function ClinicDirectory({ initialClinics }: ClinicDirectoryProps) {
 
                 {/* Card Action Buttons: Fully Responsive Layout */}
                 <div className="pt-5 mt-6 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Link
+                      href={`/clinics/${clinic.slug}/landing`}
+                      className="min-h-[42px] px-3.5 py-2 rounded-xl border border-[var(--brand-border)] bg-[var(--brand-surface)] hover:opacity-90 text-xs font-bold text-[var(--brand-text)] transition flex items-center justify-center gap-1.5 flex-1 sm:flex-initial shadow-2xs"
+                      title={t("uiVisitThisClinicSDedicated", "Visit this clinic's dedicated portal")}
+                    >
+                      <Globe className="w-3.5 h-3.5 shrink-0" />
+                      <span>{t("uiLandingViewLandingPage", "View landing page")}</span>
+                    </Link>
+
                     <Link
                       href={`/clinics/${clinic.slug}`}
                       className="min-h-[42px] px-3.5 py-2 rounded-xl border border-[var(--border-default)] hover:border-[var(--brand-primary)] bg-[var(--bg-subtle)] hover:bg-[var(--brand-surface)] text-xs font-bold text-slate-800 dark:text-slate-200 hover:text-[var(--brand-text)] transition flex items-center justify-center gap-1.5 flex-1 sm:flex-initial shadow-2xs"
